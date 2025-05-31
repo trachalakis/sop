@@ -1,0 +1,56 @@
+{% extends 'skeleton.twig' %}
+
+{% block content %}
+	<div class="page__content-header">
+        <h1 class="page-title fade-up">
+        	<span class="page-title__el page-title__el--secondary">The </span><span class="page-title__el page-title__el--primary">menu</span>
+        </h1>
+    </div>
+    <div class="page__main main-content main-content_menu">
+        <div class="main-content__section">
+            <div class="main-content__block main-content__block_intro">
+                <p>Our menu takes a refreshingly creative approach to some of the most famous Cretan recipes and ingredients.</p>
+            </div>
+        </div>
+        {% for menuSection in activeMenu.getMenuSections %}
+        	<div class="menu__category">
+            	<h2 class="menu__category-title">{{menuSection.getTranslation(language).getName}}</h2>
+            	<div class="menu__category-content">
+	            	{% for menuItem in menuSection.getPublicMenuItems %}
+	            		{% if menuItem.getIsFeatured %}
+	            			<div class="menu__item menu__item--featured">
+                                <figure>
+                                	<img
+                                		class="img-fluid"
+                                		src="{{menuItem.getPath}}"
+                                		alt="{{menuItem.getTranslation(language).getName}}"
+                                	>
+                                </figure>
+                                <h3 class="menu__item-title">{{menuItem.getTranslation(language).getName}}</h3>
+                                <p class="menu__item-description">
+                                	{{menuItem.getTranslation(language).getWebsiteDescription}}
+                                </p>
+                                <span class="menu__price">{{menuItem.getPrice}}&euro;</span>
+                            </div>
+	            		{% else %}
+		            		<div class="menu__item">
+			                    <h3 class="menu__item-title">{{menuItem.getTranslation(language).getName}}</h3>
+			                    <p class="menu__item-description">{{menuItem.getTranslation(language).getWebsiteDescription}}</p>
+			                    <span class="menu__price">{{menuItem.getPrice}}&euro;</span>
+			                </div>
+		                {% endif %}
+	            	{% endfor %}
+	            </div>
+            </div>
+        {% endfor %}
+    </div>
+    <aside class="aside">
+        <h2 class="aside__title">sounds good?</h2>
+        <ul class="nav aside__nav">
+            <li class="nav-item"></li>
+        </ul>
+    </aside>
+    <div class="section__cta">
+    	<a class="btn cta" href="/{{language}}/reservations">make a reservation</a>
+    	</div>
+{% endblock %}

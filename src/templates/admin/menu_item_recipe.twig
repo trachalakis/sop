@@ -1,0 +1,134 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menu' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Recipe for {{menuItem.getTranslation('en').getName}}</h1>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Comments</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="comments">{{- recipe.getComments -}}</textarea>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Comments</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="comments">{{- recipe.getComments -}}</textarea>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10">
+			<div class="row mb-2">
+				<div class="col"><label>Supply</label></div>
+				<div class="col"><label>Quantity</label></div>
+				<div class="col"><label>Unit</label></div>
+				<div class="col"></div>
+			</div>
+			{% for ingredient in recipe.getIngredients %}
+				<div class="row mb-3 gx-1 ingredient">
+					<div class="col">
+						<input
+							class="form-control"
+							list="supplies"
+							name="ingredient[{{loop.index}}][supply]"
+							value="{{ingredient.getSupply.getName}}"
+						/>
+					</div>
+					<div class="col">
+						<input
+							type="number"
+							min="0"
+							step="0.1"
+							class="form-control"
+							name="ingredient[{{loop.index}}][quantity]"
+							value="{{ingredient.getQuantity}}"
+						/>
+					</div>
+					<div class="col">
+						<select class="form-select" name="ingredient[{{loop.index}}][unit]">
+							<option value="item" {{ingredient.getUnit == 'unit' ? 'selected' : ''}}>Tεμ</option>
+		            		<option value="kg" {{ingredient.getUnit == 'kg' ? 'selected' : ''}}>Kg</option>
+		            		<option value="lt" {{ingredient.getUnit == 'lt' ? 'selected' : ''}}>Lt</option>
+						</select>
+					</div>
+					<div class="col">
+		                <a class="btn btn-sm btn-danger delete-ingredient">
+		                    <i class="fa fa-trash-alt"></i>
+		                </a>
+		            </div>
+				</div>
+			{% endfor %}
+    		<a class="btn btn-sm btn-success add-ingredient">
+				<i class="fa fa-plus"></i>
+			</a>
+    	</div>
+    </div>
+    
+    <hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+<datalist id="supplies">
+	{% for supply in supplies %}
+		<option value="{{supply.getName}}"/>
+	{% endfor %}
+</datalist>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script id="ingredient-template" type="text/x-handlebars-template">
+        <div class="row mb-3 gx-1 ingredient">
+			<div class="col">
+				<input
+					class="form-control"
+					list="supplies"
+					name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][supply]"
+				/>
+			</div>
+			<div class="col">
+				<input
+					type="number"
+					min="0"
+					step="0.1"
+					class="form-control"
+					name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
+				/>
+			</div>
+			<div class="col">
+				<select class="form-select" name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][unit]">
+					<option value="item">Tεμ</option>
+            		<option value="kg">Kg</option>
+            		<option value="lt">Lt</option>
+				</select>
+			</div>
+			<div class="col">
+                <a class="btn btn-sm btn-danger delete-ingredient">
+                    <i class="fa fa-trash-alt"></i>
+                </a>
+            </div>
+		</div>
+    </script>
+    <script>
+        $('.add-ingredient').click(function() {
+            var source   = $('#ingredient-template').html();
+            var template = Handlebars.compile(source);
+
+            $(this).before(template({
+                index: $('.ingredient').length + 1
+            }));
+        });
+
+        $('form').on('click', '.delete-ingredient', function() {
+            $(this).parent().parent().remove();
+        });
+    </script>
+{% endblock %}

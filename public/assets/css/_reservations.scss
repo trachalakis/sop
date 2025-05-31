@@ -1,0 +1,64 @@
+#reservations-link.hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.main-content.reservation-page__main-content {
+  padding-top: 0;
+}
+
+.reservation-page__intro {
+  margin-top: -3rem;
+  position: relative;
+  z-index: 5;
+  padding-top: 5rem;
+  @include container;
+  background-color: #fff;
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.05);
+  background-repeat: no-repeat;
+  background-size: auto 70%, auto 100%;
+  background-image: url("/assets/img/mermaid.png"),
+    url("/assets/img/sailor_fx.png");
+  background-position: 5% center, 100% 0;
+  background-blend-mode: multiply;
+  padding-bottom: 5rem;
+  min-height: 15vw;
+  border-color: $color-accent;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 4rem;
+  @media screen and (max-width: 1200px) {
+    background-image: url("/assets/img/mermaid_sq.png"),
+      url("/assets/img/sailor_web_feather.png");
+    background-position: 5% center, 95% center;
+    background-size: 23% auto, 23% auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  @media screen and (max-width: 767px) and (orientation: portrait) {
+    margin-top: -1.5rem;
+    background-image: url("/assets/img/sailor_web_feather.png");
+    background-position: center 7vw;
+    background-size: auto 20vw;
+    padding: 30% 1.5rem 1.25rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.reservation-page__intro > * {
+  @media screen and (max-width: 1200px) {
+    max-width: 40%;
+    text-align: center;
+  }
+  @media screen and (max-width: 767px) and (orientation: portrait) {
+    max-width: none;
+  }
+}
+
+.reservation-page__intro-title {
+  text-align: center;
+  font-weight: 300;
+}

@@ -1,0 +1,179 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'recipes' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">New recipe</h1>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="name"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Menu Item</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="menuItem">
+				<option value="">Select menu item</option>
+				{% for menuItem in menuItems %}
+					<option value="{{menuItem.getId}}">{{menuItem.getTranslation('en').getName}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Duration (minutes)</label>
+		<div class="col-sm-10">
+			<input type="number" min="0" step="1" class="form-control" name="duration"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Yield</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="yield"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Yield unit</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="yieldUnit">
+				<option value="item">item</option>
+            	<option value="kg">kg</option>
+            	<option value="lt">lt</option>
+			</select>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Comments</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="comments"></textarea>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10">
+			<div class="row mb-2">
+				<div class="col"><label>Supply</label></div>
+				<div class="col"><label>Quantity</label></div>
+				<div class="col"><label>Unit</label></div>
+				<div class="col"></div>
+			</div>
+    		<a class="btn btn-sm btn-success add-supply">
+				<i class="fa fa-plus"></i>
+			</a>
+    	</div>
+    </div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label"></label>
+		<div class="col-sm-10">
+			<div class="row mb-2">
+				<div class="col"><label>Recipe</label></div>
+				<div class="col"><label>Quantity</label></div>
+				<div class="col"><label>Unit</label></div>
+				<div class="col"></div>
+			</div>
+    		<a class="btn btn-sm btn-success add-preparation">
+				<i class="fa fa-plus"></i>
+			</a>
+    	</div>
+    </div>
+    <hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script id="supply-template" type="text/x-handlebars-template">
+        <div class="row mb-3 gx-1 supply">
+			<div class="col">
+				<select class="form-select" name="supply[{% verbatim %}{{index}}{% endverbatim %}][id]">
+					{% for supply in supplies %}
+						<option value="{{supply.getId}}">{{supply.getName}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col">
+				<input
+					type="number"
+					min="0"
+					step="0.1"
+					class="form-control"
+					name="supply[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
+				/>
+			</div>
+			<div class="col">
+				<select class="form-select" name="supply[{% verbatim %}{{index}}{% endverbatim %}][unit]">
+					<option value="item">item</option>
+            		<option value="kg">kg</option>
+            		<option value="lt">lt</option>
+				</select>
+			</div>
+			<div class="col">
+                <a class="btn btn-sm btn-danger delete">
+                    <i class="fa fa-trash-alt"></i>
+                </a>
+            </div>
+		</div>
+    </script>
+    <script id="preparation-template" type="text/x-handlebars-template">
+        <div class="row mb-3 gx-1 preparation">
+			<div class="col">
+				<select class="form-select" name="preparation[{% verbatim %}{{index}}{% endverbatim %}][id]">
+					{% for preparation in preparations %}
+						<option value="{{preparation.getId}}">{{preparation.getName}}</option>
+					{% endfor %}
+				</select>
+			</div>
+			<div class="col">
+				<input
+					type="number"
+					min="0"
+					step="0.1"
+					class="form-control"
+					name="preparation[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
+				/>
+			</div>
+			<div class="col">
+				<select class="form-select" name="preparation[{% verbatim %}{{index}}{% endverbatim %}][unit]">
+					<option value="item">item</option>
+            		<option value="kg">kg</option>
+            		<option value="lt">lt</option>
+				</select>
+			</div>
+			<div class="col">
+                <a class="btn btn-sm btn-danger delete">
+                    <i class="fa fa-trash-alt"></i>
+                </a>
+            </div>
+		</div>
+    </script>
+    <script>
+        let supplyTemplate = Handlebars.compile($('#supply-template').html());
+        let recipeTemplate = Handlebars.compile($('#preparation-template').html());
+
+        $('.add-supply').click(function() {
+            $(this).before(supplyTemplate({
+                index: $('.supply').length + 1
+            }));
+        });
+
+        $('.add-preparation').click(function() {
+            $(this).before(recipeTemplate({
+                index: $('.preparation').length + 1
+            }));
+        });
+
+        $('form').on('click', '.delete', function() {
+            $(this).parent().parent().remove();
+        });
+    </script>
+{% endblock %}

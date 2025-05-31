@@ -1,0 +1,173 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% set activeNavLink = 'reservations' %}
+
+{% block pageCss %}
+	<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
+	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+	<style>
+		.iti {
+			width: 100%;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<form method="post" autocomplete="off">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/reservations-app/" class="text-decoration-none"><i class='bx bx-phone'></i></a> /
+	    	<span>Νέα κράτηση</span>
+	    </h1>
+    	<!--<div class="btn-toolbar">
+	       	<button href="#" class="btn btn-lg btn-primary d-none d-sm-inline">Αποθήκευση</button>
+	    </div>-->
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Όνομα</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control form-control-lg" name="name" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
+		<div class="col-sm-10">
+			{% for i in 1..20 %}
+				<input 
+					type="radio" 
+					class="btn-check" 
+					name="adults" 
+					id="adults-{{i}}" 
+					autocomplete="off"
+					value="{{i}}"
+					required
+					{{i == 2 ? 'checked' : ''}}
+				/>
+				<label class="btn fs-4" for="adults-{{i}}">{{i}}</label>
+			{% endfor %}
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ανήλικοι</label>
+		<div class="col-sm-10">
+			{% for i in 0..20 %}
+				<input 
+					type="radio" 
+					class="btn-check" 
+					name="minors" 
+					id="minors-{{i}}" 
+					autocomplete="off"
+					value="{{i}}"
+					{{i == 0 ? 'checked' : ''}}
+				/>
+				<label class="btn fs-4" for="minors-{{i}}">{{i}}</label>
+			{% endfor %}
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ώρα</label>
+		<div class="col-sm-10">
+			<div class="row">
+				<div class="col-12">
+					{% for i in ['12', '13', '14', '15', '16'] %}
+						<input 
+							type="radio" 
+							class="btn-check" 
+							name="time" 
+							id="time-{{i}}00" 
+							autocomplete="off"
+							value="{{i}}:00"
+							required
+						/>
+						<label class="btn fs-4" for="time-{{i}}00">{{i}}:00</label>
+						<input 
+							type="radio" 
+							class="btn-check" 
+							name="time" 
+							id="time-{{i}}30" 
+							autocomplete="off"
+							value="{{i}}:30"
+							required
+						/>
+						<label class="btn fs-4" for="time-{{i}}30">{{i}}:30</label>
+					{% endfor %}
+				</div>
+				<div class="col-12">
+					{% for i in ['17', '18', '19', '20', '21'] %}
+						<input 
+							type="radio" 
+							class="btn-check" 
+							name="time" 
+							id="time-{{i}}00" 
+							autocomplete="off"
+							value="{{i}}:00"
+							required
+						/>
+						<label class="btn fs-4" for="time-{{i}}00">{{i}}:00</label>
+						<input 
+							type="radio" 
+							class="btn-check" 
+							name="time" 
+							id="time-{{i}}30" 
+							autocomplete="off"
+							value="{{i}}:30"
+							required
+						/>
+						<label class="btn fs-4" for="time-{{i}}30">{{i}}:30</label>
+					{% endfor %}
+				</div>
+			</div>
+    	</div>
+
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Μέρα</label>
+		<div class="col-sm-10">
+			<input type="text" id="datepicker" name="date" style="display:none"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+		<div class="col-sm-10">
+			<input type="tel" class="form-control form-control-lg" name="phone" id="phone" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
+		<div class="col-sm-10">
+			<textarea class="form-control form-control-lg" name="comments"></textarea>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-lg btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/flatpickr/flatpickr.min.js"></script>
+	<script>
+		$(function () {
+			$('#datepicker').flatpickr({
+				inline: true,
+				minDate: 'today',
+				maxDate: '{{'last day of November'|date('Y-m-d')}}'
+			});
+		});
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+	<script>
+		const input = document.querySelector("#phone");
+		window.intlTelInput(input, {
+			separateDialCode: true,
+			strictMode: true,
+			nationalMode: true,
+			hiddenInput: () => ({ phone: "telephoneNumber", country: "country_code" }),
+			loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
+		});
+	</script>
+{% endblock %}

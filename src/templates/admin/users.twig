@@ -1,0 +1,52 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'users' %}
+
+{%  block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Users</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/users/create" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> New user
+        </a>
+    </div>
+</div>
+<div class="table-responsive">
+	<table class="table table-striped">
+    	<thead>
+            <tr>
+                <th>Name</th>
+                <!--<th></th>-->
+            </tr>
+        </thead>
+		<tbody>
+			{% for user in users %}
+				<tr>
+					<td>
+						<a class="text-decoration-none" href="/admin/users/update?id={{user.getId}}">
+							{{user.getFullName}}
+						</a>
+						{% if not user.getIsActive %}
+							<span class="badge rounded-pill text-bg-danger">Inactive</span>
+						{% endif %}
+					</td>
+					<!--<td class="text-end">
+						<a class="text-decoration-none" href="/admin/users/qr-code?id={{user.getId}}">
+							Qr code
+						</a> |
+						<a class="text-decoration-none" href="/admin/scans/user?id={{user.getId}}">
+							Scans
+						</a> |
+						<a class="text-decoration-none" href="/admin/users/orders?id={{user.getId}}">
+							Orders
+						</a> |
+						
+							Update
+						</a>
+					</td>-->
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{%  endblock %}

@@ -1,0 +1,162 @@
+{% extends 'skeleton.twig' %}
+
+{% block css %}
+	{{ parent() }}
+	<link rel="stylesheet" href="/assets/intlTelInput/css/intlTelInput.min.css">
+	<style>
+		.iti__flag {background-image: url("/assets/intlTelInput/img/flags.png");}
+
+		@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		  .iti__flag {background-image: url("/assets/intlTelInput/img/flags@2x.png");}
+		}
+
+		.iti.iti--allow-dropdown {
+			display: block!important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<main class="page__content reservation">
+	<div class="page__content-header">
+	    <h1 class="page-title fade-up">
+	    	<span class="page-title__el page-title__el--primary">Reservations</span>
+	    </h1>
+	</div>
+	<div class="page__main main-content reservation-page__main-content">
+	    <div class="main-content__section reservation-page__intro  fade-up">
+	        <div>
+	            <h2 class="reservation-page__intro-title">Hello there sea-food lover!</h2>
+	        </div>
+	        <div class="main-content__block">
+	            <p>You can make a reservation request by filling the form bellow. Please check that your
+	                contact details are correct, so that we can get back to you to confirm the reservation.
+	            </p>
+	        </div>
+	    </div>
+	    <div class="main-content__section">
+	        <div class="contact__wrap main-content__block">
+	            <form class="form" method="post" action="/{{language}}/reservations" autocomplete="off">
+	                <div class="form-group form-group_lg">
+	                	<label for="name">Name (*)</label>
+	                	<input id="name" class="form-control form-control-lg text-input" type="text" required/>
+	                </div>
+	                <div class="form-group form-group_lg">
+	                	<label for="telephoneNumber">Telephone number (*)</label>
+	                	<input id="telephoneNumber" class="form-control form-control-lg text-input" type="tel" required/>
+	                </div>
+	                <div class="form-group form-group_lg">
+	                	<label for="email">Email</label>
+	                	<input id="email" class="form-control form-control-lg text-input" type="email"/>
+	                </div>
+	                <div class="form-group">
+	                	<label for="adults">Number of adults</label>
+	                	<select id="adults" class="form-control form-control-lg">
+	                        {% for i in 1..20 %}
+	                        	<option value="{{i}}" {{i == 2 ? 'selected' : ''}}>{{i}}</option>
+	                        {% endfor %}
+	                    </select>
+	                </div>
+	                <div class="form-group">
+	                	<label for="minors">Number of minors</label>
+	                	<select id="minors" class="form-control form-control-lg">
+	                        {% for i in 0..20 %}
+	                        	<option value="{{i}}" {{i == 0 ? 'selected' : ''}}>{{i}}</option>
+	                        {% endfor %}
+	                    </select>
+	                </div>
+	                <div class="form-group form-group_md">
+	                	<label for="date">Date of reservation (*)</label>
+	                	<input
+	                		id="date"
+	                		class="form-control form-control-lg form-group_lg js-datepicker datetimepicker"
+	                		type="date"
+	                		required
+	                	/>
+	                </div>
+	                <div class="form-group form-group_md">
+	                	<label for="time">Time of reservation (*)</label>
+	                	<input
+	                		id="time"
+	                		class="form-control form-control-lg form-group_lg js-timepicker datetimepicker "
+	                		type="time"
+	                		min="12:30"
+	                		max="22:30"
+	                		required
+	                	/>
+	                	<div class="invalid-feedback">
+	          				Please choose a username.
+	        			</div>
+	                </div>
+	                <div class="form-group form-group_lg">
+	                	<label for="message">Message</label>
+	                	<textarea id="message" class="form-control form-control-lg text-input text-input_area"></textarea>
+	                </div>
+	                <div class="form-group form-group_submit form-group_lg">
+	                	<button class="btn btn-primary btn-lg form__submit cta" type="submit">send request</button>
+	                </div>
+	            </form>
+	        </div>
+	    </div>
+	</div>
+</main>
+<div class="modal fade" role="dialog" tabindex="-1" id="feedback-modal">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title"></h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                	<span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/intlTelInput/js/intlTelInput.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script>
+		var input = document.querySelector('#telephoneNumber');
+		var iti = window.intlTelInput(input, {
+		    utilsScript: '/assets/intlTelInput/js/utils.js',
+		    separateDialCode: true
+		  });
+	</script>
+	<script>
+		$('form').submit(function (evt) {
+			evt.preventDefault();
+
+			if (!iti.isValidNumber()) {
+				alert('The telephone number you entered is not valid');
+				return;
+			}
+			var form = new FormData();
+            form.append('name', $('#name').val());
+            form.append('telephoneNumber', iti.getNumber());
+            form.append('emailAddress', $('#email').val());
+            form.append('adults', $('#adults').val());
+            form.append('minors', $('#minors').val());
+            form.append('date', $('#date').val());
+            form.append('time', $('#time').val());
+            form.append('message', $('#message').val());
+
+			axios.post($(this).attr('action'), form)
+                .then(function (response) {
+                    $('#feedback-modal').find('.modal-title').html('Your request has been sent');
+                    $('#feedback-modal').find('.modal-body').html('<p>Your message has been submitted. We\'ll get back to you as soon as possible!</p>');
+                    $('#feedback-modal').modal('show');
+                })
+                .catch(function (error) {
+                    $('#feedback-modal').find('.modal-title').html('Unable to send your request');
+                    $('#feedback-modal').find('.modal-body').html('<p>Could not send your request. Please try again!</p>');
+                    $('#feedback-modal').modal('show');
+                });
+
+			return false;
+		});
+	</script>
+{% endblock %}

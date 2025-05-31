@@ -1,0 +1,215 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menus' %}
+
+{% block pageCss %}
+	<style>
+		.menu-item td {
+			padding-left: 2em;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{menu.getName}}</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/menu-sections/create?menu={{menu.getId}}" class="btn btn-primary me-2">
+            <i class="fa-solid fa-plus"></i> New section
+        </a>
+        <a href="/admin/menu-items/create?menu={{menu.getId}}" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> New item
+        </a>
+    </div>
+</div>
+<div class="row">
+	<div class="col-8">
+		<ul class="list-group menu-sections-list">
+		  	{% for menuSection in menu.getMenuSections %}
+		  		<li class="list-group-item border border-0" id="menu-section-{{menuSection.getId}}">
+		  			<div class="d-flex justify-content-between align-items-start border-bottom w-100 menu-section" data-id="{{menuSection.getId}}">
+		  				<div class="text">
+		  					<a class="text-decoration-none fs-4" href="/admin/menu-sections/update?id={{menuSection.getId}}">
+		  						{{menuSection.getTranslation('el').getName}}
+		  					</a>
+		  					{% if menuSection.getPrintMenuPage > 0 %}
+		  						<a
+		  							class="text-decoration-none ms-2"
+		  							href="/admin/menu/print?page={{menuSection.getPrintMenuPage}}"
+		  							target="_blank"
+		  						>
+		  							<span class="badge text-bg-info">{{menuSection.getPrintMenuPage}}</span>
+		  						</a>
+		  					{% endif %}
+		  					{% if not menuSection.getIsActive %}
+		   						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+		   					{% endif %}
+		  				</div>
+		  				<!--<div>
+			  				<a class="text-decoration-none" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
+								Statistics
+							</a> |
+			  				<a class="text-decoration-none" href="/admin/menu-sections/update?id={{menuSection.getId}}">
+								Update
+							</a>
+						</div>-->
+		  			</div>
+			  		<ul class="list-group list-group-flush menu-items-list">
+				  		{% for menuItem in menuSection.getMenuItems|filter(menuItem => not menuItem.getIsArchived) %}
+				  			<li class="list-group-item border-bottom d-flex justify-content-between align-items-start pe-0">
+				  				<span class="menu-item" data-id="{{menuItem.getId}}">
+				  					<div class="form-check form-check-inline form-switch">
+		  								<input class="form-check-input toggle-switch" type="checkbox" id="menu-item-{{menuItem.getId}}" data-id="{{menuItem.getId}}" {{menuItem.getIsActive ? 'checked' : ''}}>
+		  								<label class="form-check-label" for="menu-item-{{menuItem.getId}}"></label>
+									</div>
+				  					<a class="text-decoration-none" href="/admin/menu-items/update?id={{menuItem.getId}}">
+				  						{{menuItem.getTranslation('el').getName}}
+				  					</a>
+				  					{% if menuItem.getPrice > 0 %} / &euro;{{menuItem.getPrice}} {% endif %}
+				  					{#{% if not menuItem.getIsActive %}
+			    						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+			    					{% endif %}#}
+			    					{% if menuItem.getStations|length == 0 %}
+			    						<i class="fa-solid fa-circle-exclamation"></i>
+			    					{% endif %}
+				  				</span>
+				  				<span>
+					  				<!-- <a class="text-decoration-none" href="/admin/menu-items/recipe?id={{menuItem.getId}}">
+										Recipe
+									</a> | -->
+									{% if menuItem.getTrackAvailableQuantity %}
+										<form action="/admin/menu-items/update?id={{menuItem.getId}}" method="post" style="display:inline-block">
+											<select class="form-select form-select-sm" name="availableQuantity" >
+								  				{% for i in 0..60 %}
+								  					<option value="{{i}}" {{i == menuItem.getAvailableQuantity ? 'selected' : ''}}>{{i}}</option>
+								  				{% endfor %}
+											</select>
+										</form>
+									{% endif %}
+									<!--
+										<a class="text-decoration-none" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
+											Statistics
+										</a> |
+									-->
+								</span>
+				  			</li>
+				  		{% endfor %}
+				  	</ul>
+		  		</li>
+		  	{% endfor %}
+		</ul>
+	</div>
+	<div class="col-4">
+		<div class="list-group">
+			{% for menuSection in menu.getMenuSections %}
+				<a class="list-group-item list-group-item-action" href="#menu-section-{{menuSection.getId}}">
+					{{menuSection.getTranslation('el').getName}}
+				</a>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Archived menu items</h1>
+</div>
+<ul class="list-group">
+  	{% for menuSection in  menu.menuSections %}
+  		<li class="list-group-item border border-0">
+  			<div class="d-flex justify-content-between align-items-start border-bottom w-100 menu-section" data-id="{{menuSection.getId}}">
+  				<div class="text">
+  					<span class="fs-4">{{menuSection.getTranslation('el').getName}}</span>
+  				</div>
+  				<div></div>
+  			</div>
+	  		<ul class="list-group list-group-flush menu-items-list">
+		  		{% for menuItem in menuSection.getMenuItems|filter(menuItem => menuItem.getIsArchived) %}
+		  			<li class="list-group-item border-bottom d-flex justify-content-between align-items-start pe-0">
+		  				<span class="menu-item" data-id="{{menuItem.getId}}">
+		  					<div class="form-check form-check-inline form-switch">
+  								<input class="form-check-input toggle-switch" type="checkbox" id="menu-item-{{menuItem.getId}}" data-id="{{menuItem.getId}}" {{menuItem.getIsActive ? 'checked' : ''}}>
+  								<label class="form-check-label" for="menu-item-{{menuItem.getId}}"></label>
+							</div>
+		  					{{menuItem.getTranslation('el').getName}} / &euro;{{menuItem.getPrice}}
+		  				</span>
+		  				<span>
+							<a class="text-decoration-none" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
+								Statistics
+							</a> |
+			  				<a class="text-decoration-none" href="/admin/menu-items/update?id={{menuItem.getId}}">
+								Update
+							</a>
+						</span>
+		  			</li>
+		  		{% endfor %}
+		  	</ul>
+  		</li>
+  	{% endfor %}
+</ul>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		switches = document.querySelectorAll('.toggle-switch');
+		switches.forEach(function (s) {
+			//id = ;
+			//console.log(id);
+			//s.addEventListener('click', event => {window.location.href = '/admin/menu-items/toggle?id=' + s.dataset.id});
+			s.addEventListener('click', function (evt) {
+				fetch(
+					'/admin/menu-items/toggle?id=' + s.dataset.id
+				);
+			});
+		});
+		if (window.innerWidth >= 1024) {
+			var sortable = new Sortable(document.querySelector('.menu-sections-list'), {
+				onSort: function (evt) {
+					ids = [];
+					evt.srcElement.querySelectorAll('.menu-section').forEach(menuSection => {
+						ids.push(menuSection.dataset.id);
+					})
+					//post
+					fetch(
+						'/admin/menu-sections/sort',
+						{
+							method: 'POST',
+							body: JSON.stringify(ids),
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						}
+					);
+				}
+			});
+
+			lists = document.querySelectorAll('.menu-items-list');
+			lists.forEach(function (list) {
+				var sortable = new Sortable(list, {
+					onSort: function (evt) {
+						ids = [];
+						evt.srcElement.querySelectorAll('span.menu-item').forEach(menuItem => {
+							ids.push(menuItem.dataset.id);
+						})
+						//post
+						fetch(
+							'/admin/menu-items/sort',
+							{
+								method: 'POST',
+	  							body: JSON.stringify(ids),
+								headers: {
+									'Content-Type': 'application/json'
+								}
+							}
+						);
+					}
+				});
+			});
+		}
+	</script>
+	<script>
+		$('form > select').change(function() {
+			$(this).parent().submit();
+		});
+	</script>
+{% endblock %}

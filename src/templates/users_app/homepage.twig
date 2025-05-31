@@ -1,0 +1,106 @@
+{% extends 'users_app/skeleton.twig' %}
+
+{% block users_app_content %}
+<div class="row mb-3">
+	<div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header"><a class="text-decoration-none" href="/users-app/scans">Ώρες εργασίας</a></div>
+            <div class="card-body">
+                <h5 class="card-title">Σήμερα</h5>
+                <p class="card-text">
+                	{{hours}}h {{minutes}}m
+                </p>
+                <p class="card-text">
+                	{% if userIsWorking %}
+                		<button type="button" class="btn btn-danger btn-lg start-stop">Λήξη εργασίας</button>
+                	{% else %}
+                		<button type="button" class="btn btn-success btn-lg start-stop">Έναρξη εργασίας</button>
+                	{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    <!--<div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header"><a class="text-decoration-none" href="/users-app/orders">Αυτοπαράδοση</a></div>
+            <div class="card-body">
+                <h5 class="card-title">Κατανάλωση</h5>
+                <p class="card-text">
+                	5h 25m
+                </p>
+                <p class="card-text">
+                	<a href="" class="btn btn-primary btn-lg">Αγορά</a>
+                </p>
+            </div>
+        </div>
+    </div>-->
+    {% if user.isWaiter %}
+    	<div class="col-6">
+	        <div class="card text-bg-light mb-3">
+	            <div class="card-header"><a class="text-decoration-none" href="/orders-app/">Παραγγελιοληψία</a></div>
+	            <div class="card-body">
+	                <h5 class="card-title">{{openOrders|length}} τραπέζια</h5>
+	                <p class="card-text">
+	                	{{adults}} ενήλικες, {{minors}} ανήλικοι
+	                </p>
+	                <p class="card-text">
+	                	<a href="/orders-app/create" class="btn btn-primary btn-lg">Νέα παραγγελία</a>
+	                </p>
+	            </div>
+	        </div>
+	    </div>
+	{% endif %}
+	<div class="col-6">
+		<div class="card text-bg-light mb-3">
+			<div class="card-header"><a class="text-decoration-none" href="/users-app/orders">Αυτοπαραδόσεις</a></div>
+			<div class="card-body">
+				<h5 class="card-title">{{selfDeliveries|length}} αυτοπαραδόσεις</h5>
+				<p class="card-text">
+					{% set total = 0 %}
+					{% for selfDelivery in selfDeliveries %}
+						{% set total = total + selfDelivery.getPrice %}
+					{% endfor %}
+					Συνολικό κόστος &euro;{{total}}
+				</p>
+				<p class="card-text">
+					<a href="/users-app/create-order" class="btn btn-primary btn-lg">Νέα αυτοπαράδοση</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/axios.min.js"></script>
+    <script
+		src="https://code.jquery.com/jquery-3.6.3.min.js"
+		integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+		crossorigin="anonymous"
+	></script>
+	<script
+    	src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/6.0.0/bootbox.min.js"
+    	integrity="sha512-oVbWSv2O4y1UzvExJMHaHcaib4wsBMS5tEP3/YkMP6GmkwRJAa79Jwsv+Y/w7w2Vb/98/Xhvck10LyJweB8Jsw=="
+    	crossorigin="anonymous"
+    	referrerpolicy="no-referrer"
+    ></script>
+    <script>
+    	$('.start-stop').click(function () {
+	    	var form = new FormData();
+	        form.append('passwordHash', '{{user.getPasswordHash}}');
+
+	        axios.post('/clock', form)
+	            .then(function (response) {
+	                bootbox.alert(response.data);
+	                //window.setTimeout(function () { postingQrCode = false; }, 2000);
+	                $('.start-stop').toggleClass('btn-danger');
+	                $('.start-stop').toggleClass('btn-success');
+	                $('.start-stop').html($('.start-stop').html() == 'Λήξη εργασίας' ? 'Έναρξη εργασίας' : 'Λήξη εργασίας');
+	            })
+	            .catch(function (error) {
+	                //bootbox.alert('Something bad happened. Please try again');
+	            });
+	    });
+  	</script>
+{% endblock %}

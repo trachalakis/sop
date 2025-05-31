@@ -1,0 +1,97 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'users' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{user.getFullName}}</h1>
+</div>
+<ul class="nav nav-tabs mb-4">
+	<li class="nav-item">
+    	<a class="nav-link active" href="/admin/users/update?id={{user.getId}}">Γενικά</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link" href="/admin/scans/user?id={{user.getId}}">Scans</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link" href="/admin/users/qr-code?id={{user.getId}}">Qr code</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link" href="/admin/users/orders?id={{user.getId}}">Αυτόπαράδοση</a>
+  	</li>
+</ul>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Active</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isActive">
+  				<option value="1" {{user.getIsActive ? 'selected' : ''}}>Yes</option>
+  				<option value="0" {{user.getIsActive ? '' : 'selected'}}>No</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="fullName" value="{{user.getFullName}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Email</label>
+		<div class="col-sm-10">
+			<input type="email" class="form-control" name="emailAddress" value="{{user.getEmailAddress}}"/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Password</label>
+		<div class="col-sm-10">
+			<div class="input-group mb-3">
+  				<input type="text" class="form-control" name="password">
+  				<button class="btn btn-outline-primary" type="button" id="generate-password">Generate</button>
+			</div>
+    	</div>
+		
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Hourly rate</label>
+		<div class="col-sm-10">
+			<input type="number" step="0.5" min="4" class="form-control" name="hourlyRate" value="{{user.getHourlyRate}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Monthly credits</label>
+		<div class="col-sm-10">
+			<input type="number" step="1" min="0" class="form-control" name="monthlyCredits" value="{{user.getMonthlyCredits}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Roles</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="roles[]" style="height:200px;" multiple>
+  				<option value="webmaster" {{'webmaster' in user.getRoles ? 'selected' : ''}}>webmaster</option>
+            	<option value="administrator" {{'administrator' in user.getRoles ? 'selected' : ''}}>administrator</option>
+            	<option value="employee" {{'employee' in user.getRoles ? 'selected' : ''}}>employee</option>
+            	<option value="waiter" {{'waiter' in user.getRoles ? 'selected' : ''}}>waiter</option>
+            	<option value="foh" {{'foh' in user.getRoles ? 'selected' : ''}}>foh</option>
+            	<option value="boh" {{'boh' in user.getRoles ? 'selected' : ''}}>boh</option>
+            	<option value="terminal" {{'terminal' in user.getRoles ? 'selected' : ''}}>terminal</option>
+			</select>
+    	</div>
+	</div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script>
+		$('#generate-password').click(function () {
+			$('input[name=password]').val(Math.random().toString(36).slice(2));
+		})
+	</script>
+{%  endblock %}

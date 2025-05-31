@@ -1,0 +1,54 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Domain\Repositories;
+
+use Domain\Entities\MenuItem;
+use Domain\Entities\OrderEntry;
+use Domain\Repositories\OrderEntriesRepositoryInterface;
+use Doctrine\ORM\EntityRepository;
+
+class OrderEntriesRepository extends EntityRepository implements OrderEntriesRepositoryInterface
+{
+	public function persist(OrderEntry $orderEntry)
+	{
+		$this->_em->persist($orderEntry);
+       	$this->_em->flush();
+	}
+
+	public function delete(OrderEntry $orderEntry)
+	{
+		$this->_em->remove($orderEntry);
+       	$this->_em->flush();
+	}
+
+	public function findByMenuItemAndPeriod(MenuItem $menuItem, \DatePeriod $datePeriod)
+	{
+		$qb = $this->getEntityManager()->createQueryBuilder();
+
+		$qb->select('oe')
+			->from('Domain\Entities\OrderEntry', 'oe')
+			->join('oe.orderEntryGroup', 'oeg')
+			->andWhere(
+				$qb->expr()->andX(
+					$qb->expr()->eq('oe.menuItem', ':menuItem'),
+					$qb->expr()->gte('oeg.createdAt', ':startDate'),
+					$qb->expr()->lte('oeg.createdAt', ':endDate')
+				)
+			)
+			//->andWhere(
+			//	$qb->expr()->andX(
+			//		$qb->expr()->gte('oeg.createdAt', ':startDate'),
+			//		$qb->expr()->lte('oeg.createdAt', ':endDate')
+			//	)
+			//)
+			->setParameter(':menuItem', $menuItem)
+			->setParameter(':startDate', $datePeriod->getStartDate())
+			->setParameter(':endDate', $datePeriod->getEndDate());
+
+        return $qb->getQuery()->getResult();
+
+        //return $query->getResult();
+	}
+}

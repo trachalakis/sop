@@ -1,0 +1,72 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'users' %}
+
+{% block pageCss %}
+    {{ parent() }}
+    <style>
+        @media print {
+            header, .btn, .actions, .nav {
+                display: none !important;
+            }
+
+            td {font-size:  9px !important}
+        }
+    </style>
+{%  endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{user.getFullName}}</h1>
+</div>
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+        <a class="nav-link " href="/admin/users/update?id={{user.getId}}">Γενικά</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="/admin/users/qr-code?id={{user.getId}}">Qr code</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link active" href="/admin/users/orders?id={{user.getId}}">Αυτόπαράδοση</a>
+    </li>
+</ul>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Ημ/νία</th>
+                <th>Παραγγελεία</th>
+                <th>Σύνολο</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set total = 0 %}
+            {% for order in orders %}
+                {% if order.getPrice > 3 %}
+                    {% set total = total + order.getPrice %}
+                {% endif %}
+            	<tr>
+                    <td>{{order.getCreatedAt.format('Y-m-d H:i')}}</td>
+                    <td>
+                        {% for orderEntry in order.getOrderEntries %}
+                            {% if orderEntry.getQuantity > 1 %}
+                                {{ orderEntry.getQuantity }} <strong>&times;</strong>
+                            {% endif %}
+                            {{ orderEntry.getMenuItem.getTranslation('el').getName }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <span class="{{order.getPrice > 3 ? 'fw-bold' : ''}}">{{order.getPrice}}</span>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>{{total}}&euro; / <strong>{{total / 2}}&euro;</strong></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

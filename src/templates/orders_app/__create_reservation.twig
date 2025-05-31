@@ -1,0 +1,62 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% set activeNavLink = 'reservations' %}
+
+{% block content %}
+<form method="post" autocomplete="off">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/orders-app/" class="text-decoration-none">&#x2302</a> /
+	    	<span>Νέα κράτηση</span>
+	    </h1>
+    	<div class="btn-toolbar">
+	       	<button href="#" class="btn btn-lg btn-primary d-none d-sm-inline">Αποθήκευση</button>
+	    </div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control form-control-lg" name="name" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Adults</label>
+		<div class="col-sm-10">
+			<select class="form-select form-select-lg" name="adults" required>
+  				{% for i in 1..10 %}
+  					<option value="{{i}}" {{i == 2 ? 'selected' : ''}}>{{i}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Minors (under 18)</label>
+		<div class="col-sm-10">
+			<select class="form-select form-select-lg" name="minors">
+  				<option value="0">0</option>
+  				{% for i in 1..10 %}
+  					<option value="{{i}}">{{i}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Date & time</label>
+		<div class="col-sm-10">
+			<input type="datetime-local" class="form-control form-control-lg" name="dateTime" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Telephone</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control form-control-lg" name="telephoneNumber" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Comments</label>
+		<div class="col-sm-10">
+			<textarea class="form-control form-control-lg" name="comments"></textarea>
+    	</div>
+	</div>
+</form>
+{% endblock %}

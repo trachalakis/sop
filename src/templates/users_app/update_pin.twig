@@ -1,0 +1,28 @@
+{% extends 'users_app/skeleton.twig' %}
+
+{% block breadcrumbs %}
+	<a href="/users-app/"><i class='bx bxs-home'></i></a> / Αλλαγή pin
+{% endblock %}
+
+{% block users_app_content %}
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Παλιό pin</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="oldPin" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Νέο pin</label>
+		<div class="col-sm-10">
+			<input type="number" step="1" class="form-control" name="newPin" required/>
+    	</div>
+	</div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-lg btn-primary">Αλλαγή pin</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

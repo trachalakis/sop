@@ -1,0 +1,113 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block content %}{% verbatim %}
+<div id="app">
+	<div class="modal d-block" tabindex="-1">
+  		<div class="modal-dialog modal-fullscreen-sm-down">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<h5 class="modal-title">
+        				<i class="fa-solid fa-print"></i> Εκτύπωση
+        			</h5>
+      			</div>
+      			<div class="modal-body">
+		        	<div class="row gx-1 text-center">
+		        		<span class="fs-4">
+		        			<i class="fa-solid fa-sync fa-spin"></i>
+							Αποστολή στον εκτυπωτή
+						</span>
+		        	</div>
+      			</div>
+      			<div class="modal-footer">
+      			</div>
+    		</div>
+  		</div>
+	</div>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/axios"></script>
+	<script src="https://unpkg.com/lodash"></script>
+	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		todaysReservations: [],
+		    		stations: []
+		    	}
+		    },
+		    mounted () {
+		    	let id = new URLSearchParams(window.location.search).get('id');
+
+		    	axios({
+                    url: '/admin/graph-ql',
+                    method: 'post',
+                    data: `{
+                        todaysReservations {
+                        	id, name, adults, minors, dateTime, comments, telephoneNumber,
+                        },
+                        stations {
+                        	id, name, printerAddress, hasReceiptPrinter
+                        }
+                    }`
+                }).then(response => {
+                    this.todaysReservations = response.data.data.todaysReservations;
+                    this.stations = response.data.data.stations;
+
+                    this.print();
+                });
+		    },
+		    methods: {
+				getTranslation(object, language) {
+					return _.find(object.translations, translation => {
+						return translation.language == language;
+					});
+				},
+				print() {
+					var today = new Date();
+					let printer = new epson.ePOSBuilder();
+
+					printer.addTextFont(printer.FONT_B);
+					printer.addTextSmooth(true);
+					printer.addTextAlign(printer.ALIGN_CENTER);
+					printer.addTextSize(2, 2);
+					printer.addText(`Reservations\n`);
+					printer.addText(`\n--------------------------------\n`);
+					printer.addFeedLine(3);
+					printer.addTextLineSpace(40);
+
+					_.each(this.todaysReservations, reservation => {
+						printer.addText(`${reservation.name}/${reservation.dateTime}/${reservation.adults}/${reservation.minors}\n`);
+						printer.addText(`${reservation.comments}\n`);
+						printer.addFeedLine(2);
+					});
+
+					printer.addFeedLine(3);
+					printer.addCut(printer.CUT_FEED);
+
+					var printerAddress = '';
+					_.each(this.stations, station => {
+						if (station.hasReceiptPrinter) {
+							printerAddress = station.printerAddress;
+						}
+					});
+
+					var address = `https://${printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+ 					var epos = new epson.ePOSPrint(address);
+					epos.onreceive = function (res) {
+						if (!res.success) {
+							alert('A print error occurred');
+						} else {
+							window.location.href = '/orders-app/';
+						}
+					}
+					epos.send(printer.toString());
+		    	}
+			}
+		}).mount('#app');
+	</script>
+{% endblock %}

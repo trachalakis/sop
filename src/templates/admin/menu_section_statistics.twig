@@ -1,0 +1,86 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menus' %}
+
+{% block content %}
+<ul class="nav nav-tabs mb-3 mt-3">
+	<li class="nav-item">
+    	<a class="nav-link fs-4" href="/admin/menu-sections/update?id={{menuSection.getId}}">{{menuSection.getTranslation('el').getName}}</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link active fs-4" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">Στατιστικά</a>
+  	</li>
+</ul>
+<ul class="nav nav-pills border-bottom pb-3 mb-3">
+    <li class="nav-item">
+        <a class="nav-link {{period == 'week' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=week">Εβδομάδα</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{period == 'month' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=month">Μήνας</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{period == 'year' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=year">Χρόνος</a>
+    </li>
+</ul>
+<div class="row mb-3">
+    <div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header">Sales</div>
+            <div class="card-body">
+                <h5 class="card-title">&euro;{{totalSales}}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header">Count</div>
+            <div class="card-body">
+                <h5 class="card-title">{{count}}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+	<div class="col-12">
+		<canvas id="salesChart"></canvas>
+	</div>
+</div>
+<br/>
+<br/>
+{% for v in menuItems %}
+    {% if v.weight > 0 %}
+        {{v.menuItem.getTranslation('el').getName}} / {{v.count}} / {{v.weight / 1000}}kg / {{v.totalSales}}&euro;
+    {% else %}
+        {{v.menuItem.getTranslation('el').getName}} / {{v.count}} / {{v.totalSales}}&euro;
+    {% endif %}
+    <br/>
+{% endfor %}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script>
+        const chartLabels = {% autoescape false %}{{sales|keys|json_encode}}{% endautoescape %};
+        const sales = [{{sales|join(',')}}];
+
+  		new Chart(document.getElementById('salesChart'), {
+    		type: 'bar',
+		    data: {
+		    	labels: chartLabels,
+		      	datasets: [{
+		        	label: 'sales / day',
+		        	data: sales,
+		        	borderWidth: 1
+		      	}]
+		    },
+		    options: {
+		      	scales: {
+		        	y: {
+		        		beginAtZero: true
+		        	}
+		      	}
+		    }
+  		});
+	</script>
+{% endblock %}

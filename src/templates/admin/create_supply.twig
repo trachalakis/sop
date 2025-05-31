@@ -1,0 +1,66 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'supplies' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">New supply</h1>
+</div>
+<form method="post" autocomplete="off" action="">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="name"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Unit</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="unit">
+  				<option value="item">item</option>
+  				<option value="kg">kg</option>
+  				<option value="lt">lt</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Vat percentage</label>
+		<div class="col-sm-10">
+			<input type="number" class="form-control" name="vatPercentage"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Description</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" rows="3" name="description"></textarea>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Supply group</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="supplyGroup">
+  				{% for supplyGroup in supplyGroups %}
+  					<option value="{{supplyGroup.getId}}">{{supplyGroup.getName}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Supplier</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="supplier">
+  				<option value="">None</option>
+  				{% for supplier in suppliers %}
+  					<option value="{{supplier.getId}}">{{supplier.getName}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

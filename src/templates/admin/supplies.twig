@@ -1,0 +1,35 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'supplies' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Supplies</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/supplies/create" class="btn btn-primary me-2">
+            <i class="fa-solid fa-plus"></i> New supply
+        </a>
+    </div>
+</div>
+<ul class="list-group">
+  	{% for supplyGroup in supplyGroups %}
+  		<li class="list-group-item border border-0" id="supply-group-{{supplyGroup.getId}}">
+  			<div class="border-bottom">
+  				{{supplyGroup.getName}}
+  			</div>
+	  		<ul class="list-group list-group-flush">
+		  		{% for supply in supplyGroup.getSupplies|filter(s => s.isActive) %}
+		  			<li class="list-group-item border-bottom">
+	  					<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">
+	  						{{supply.getName}}
+	  					</a>
+	  					{% if not supply.getIsActive %}
+	   						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+	   					{% endif %}
+		  			</li>
+		  		{% endfor %}
+		  	</ul>
+  		</li>
+  	{% endfor %}
+</ul>
+{% endblock %}

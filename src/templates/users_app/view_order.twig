@@ -1,0 +1,144 @@
+{% extends 'users_app/skeleton.twig' %}
+
+{% block breadcrumbs %}
+	<a href="/users-app/"><i class="bx bxs-home"></i></a>
+    / #{{order.getUuid|slice(0, 8)}} / &euro;{{order.getPrice}}
+{% endblock %}
+
+{% block users_app_content %}
+	
+	{% if order.getOrderEntryGroups|length > 0 %}
+		{% for orderEntryGroup in order.getOrderEntryGroups %}
+			<div class="border rounded mb-3">
+				<div class="row">
+					<div class="col">
+						<div class="fs-5 fw-medium text-center border-bottom p-1 bg-secondary-subtle">
+							{{orderEntryGroup.getCreatedAt.format("D j/m/Y H:i")}}
+							{% if orderEntryGroup.getNotes|length > 0 %}
+								/ <span>{{orderEntryGroup.getNotes}}</span>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+				{% for i in 1..7 %}
+					{% for orderEntry in orderEntryGroup.getOrderEntries|filter(o => o.getTiming == i) %}
+						<div class="mb-1 p-1 ps-2 pe-2">
+							<div
+								class="mb-2"
+								v-for="(orderEntry, index) in filterGroupEntries(orderEntryGroup, i)"
+							>
+				      			<div class="d-flex w-100 justify-content-between">
+					      			<div class="fs-5">
+					      				{{orderEntry.getQuantity}} &times;
+					      				{{orderEntry.getMenuItem.getTranslation('el').getName}}
+					      				 / &euro;{{orderEntry.getPrice}}
+					      				{% if orderEntry.getDiscount != 0 %}
+						      				<span class="text-danger">
+						      					(-&euro;{{orderEntry.getDiscount}})
+						      				</span>
+						      			{% endif %}
+					      			</div>
+					      			<div></div>
+					      		</div>
+					    		<div class="mb-0 ps-3">
+				    				{% if orderEntry.getWeight > 0 %}
+					    				<span>
+					    					βάρος <span class="fw-bold">{{orderEntry.getWeight}}gr</span>
+					    				</span>
+					    			{% endif %}
+					    			{% if orderEntry.getWeight > 0 and orderEntry.getFamily != 1 %}
+					    				/ οικογένεια <span class="fw-bold">{{orderEntry.getFamily}}</span>
+					    			{% endif %}
+					    			{% if orderEntry.getOrderEntryExtras|length > 0 %}
+						    			<div>
+						    				{% for orderEntryExtra in orderEntry.getOrderEntryExtras %}
+							    				<span>
+							    					{{orderEntryExtra.getName}} {% if not loop.last %} / {% endif %}
+							    				</span>
+							    			{% endfor %}
+						    			</div>
+						    		{% endif %}
+					    			{% if orderEntry.getNotes|length > 0 %}
+					    				<div>{{orderEntry.getNotes}}</div>
+					    			{% endif %}
+					    		</div>
+					    		<div class="mb-0 ps-3">
+					    			{% for orderEntryCancellation in orderEntry.getOrderEntryCancellations %}
+						    			<div>
+						    				<span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt.format('H:i')}}</span>
+						    			</div>
+						    		{% endfor %}
+					    		</div>
+					  		</div>
+						</div>
+						{% if loop.index >= 1 %}
+							<hr class="m-1"/>
+						{% endif %}
+					{% endfor %}
+
+				{% endfor %}
+			</div>
+		{% endfor %}
+	{% else %}
+		<div class="border rounded mb-3">
+			<div class="row">
+				<div class="col">
+					<div class="fs-5 fw-medium text-center border-bottom p-1 bg-secondary-subtle">
+						{{order.getCreatedAt.format("H:i")}}
+						{% if order.getNotes|length > 0 %}
+							/ <span>{{order.getNotes}}</span>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+			{% for i in 1..7 %}
+				{% for orderEntry in order.getOrderEntries|filter(o => o.getTiming == i) %}
+					<div class="mb-1 p-1 ps-2 pe-2">
+						<div class="mb-2">
+			      			<div class="d-flex w-100 justify-content-between">
+				      			<div class="fs-5">
+				      				{{orderEntry.getQuantity}} &times;
+				      				{{orderEntry.getMenuItem.getTranslation('el').name}}
+				      				<span v-if="orderEntry.quantity > 0">
+				      				 / &euro;{{orderEntry.getPrice}}
+				      				</span>
+				      				{% if orderEntry.getDiscount != 0 %}
+					      				<span class="text-danger">
+					      					(-&euro;{{orderEntry.getDiscount}})
+					      				</span>
+					      			{% endif %}
+				      			</div>
+				      			<div></div>
+				      		</div>
+				    		<div class="mb-0 ps-3">
+			    				{% if orderEntry.getWeight > 0 %}
+				    				<span>
+				    					βάρος <span class="fw-bold">{{orderEntry.getWeight}}gr</span>
+				    				</span>
+				    			{% endif %}
+				    			{% if orderEntry.getWeight > 0 and orderEntry.getFamily != 1 %}
+				    				/ οικογένεια <span class="fw-bold">{{orderEntry.getFamily}}</span>
+				    			{% endif %}
+				    			{% if orderEntry.getOrderEntryExtras|length > 0 %}
+					    			<div>
+					    				{% for orderEntryExtra in orderEntry.getOrderEntryExtras %}
+						    				<span>
+						    					{{orderEntryExtra.getName}} {% if not loop.last %} / {% endif %}
+						    				</span>
+						    			{% endfor %}
+					    			</div>
+					    		{% endif %}
+				    			{% if orderEntry.getNotes|length > 0 %}
+				    				<div>{{orderEntry.getNotes}}</div>
+				    			{% endif %}
+				    		</div>
+				  		</div>
+					</div>
+					{% if loop.index >= 1 %}
+						<hr class="m-1"/>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+		</div>
+	{% endif %}
+{% endblock %}

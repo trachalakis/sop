@@ -1,0 +1,82 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'reservations' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Update reservation</h1>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Status</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="status">
+  				<option value="CONFIRMED" {{reservation.getStatus == 'CONFIRMED' ? 'selected' : ''}}>CONFIRMED</option>
+  				<option value="UNCONFIRMED" {{reservation.getStatus == 'UNCONFIRMED' ? 'selected' : ''}}>UNCONFIRMED</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="name" value="{{reservation.getName}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Adults</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="adults">
+  				{% for i in 1..10 %}
+  					<option value="{{i}}" {{i == reservation.getAdults ? 'selected' : ''}}>{{i}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Minors</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="minors">
+  				{% for i in 0..10 %}
+  					<option value="{{i}}" {{i == reservation.getMinors ? 'selected' : ''}}>{{i}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Date & time</label>
+		<div class="col-sm-10">
+			<input
+				type="datetime-local"
+				class="form-control"
+				name="dateTime"
+				value="{{reservation.getDateTime.format('Y-m-d\\TH:i:s')}}"
+				required
+			/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Telephone</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="telephoneNumber" value="{{reservation.getTelephoneNumber}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Email address</label>
+		<div class="col-sm-10">
+			<input type="email" class="form-control" name="emailAddress" value="{{reservation.getEmailAddress}}"/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Message</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" name="message">{{- reservation.getMessage -}}</textarea>
+    	</div>
+	</div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

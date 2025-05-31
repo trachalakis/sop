@@ -1,0 +1,174 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block pageCss %}
+    {{ parent() }}
+    <style>
+        @media print {
+            a {
+            	color: #000;
+            }
+
+            header, .header, .btn, .actions, .badge {
+                display: none !important;
+            }
+
+            td {font-size:  11px !important}
+        }
+    </style>
+{%  endblock %}
+
+{% block content %}
+<div class="header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1>
+	    <a class="text-decoration-none" href="/orders-app/"><i class='bx bx-restaurant'></i></a>
+	    / <i class='bx bx-phone'></i>
+	</h1>
+    <div class="btn-toolbar">
+       	<a href="/reservations-app/print" class="btn btn-primary btn-lg me-1"><i class='bx bx-printer' ></i></a>
+       	<a href="/reservations-app/create" class="btn btn-primary btn-lg">Νέα κράτηση</a>
+    </div>
+</div>
+<div class="row gx-1 mb-2">
+	<div class="col">
+		<div class="header d-flex justify-content-between">
+			<!--<span>
+				<a class="btn btn-outline-primary btn-lg {{not showAll ? 'active':''}}" href="/reservations-app/?date={{date.format('Y-m-d')}}">Επόμενες</a>
+				<a class="btn btn-outline-primary btn-lg me-2 {{showAll ? 'active':''}}" href="?all&date={{date.format('Y-m-d')}}">Όλες</a>
+			</span>-->
+			<a class="btn btn-primary btn-lg " href="?all&date={{prev.format('Y-m-d')}}">
+	            <i class='bx bxs-chevron-left' ></i>
+	        </a>
+	        <h2 class="mb-0 display-6">{{date.format('D j M')}}</h2>
+	        <a class="btn btn-primary btn-lg" href="?all&date={{next.format('Y-m-d')}}">
+	            <i class='bx bxs-chevron-right' ></i>
+	        </a>
+		</div>
+	</div>
+</div>
+<div class="row gx-1">
+	<div class="col">
+		<p class="h6 text-center">{{reservations|length}} / {{coverCount}}</p>
+	</div>
+</div>
+
+
+
+
+
+<table class="table table-striped fs-4 mt-4">
+	<tbody>
+		{% for reservation in reservations %}
+			<tr>
+				<td>
+					<a class="text-decoration-none" href="/reservations-app/update?id={{reservation.getId}}">
+						{{reservation.getDateTime.format('H:i')}} /
+						{{reservation.getAdults}} / {{reservation.getMinors}} /
+						{{reservation.getName}}
+
+					</a>
+					{% if reservation.getTable is not null %}
+						<span class="badge text-bg-success ms-2">{{reservation.getTable.getName}}</span>
+					{% endif %}
+					<div>
+						<small class="text-body-secondary">
+						{#{% if reservation.getTelephoneNumber|trim|length > 0 %}
+							<small class="text-body-secondary">{{reservation.getTelephoneNumber}}</small>
+						{% endif %}#}
+						{% if reservation.getcomments|trim|length > 0 %}
+							{{reservation.getComments|nl2br}}
+						{% endif %}
+						</small>
+					</div>
+				</td>
+				<td class="text-end">
+				
+
+<!--<div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Dropdown button
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+  </ul>
+</div>-->
+
+
+					<!--<a class="btn btn-lg btn-outline-secondary me-1" href="/orders-app/create?reservationId={{reservation.getId}}">
+						Νέα παραγγελία
+					</a>
+						<a class="btn btn-lg btn-outline-danger" aclick="reservationF" @click="reservationForDeletion = reservation.id">
+							Διαγραφή
+						</a>-->
+					<!--<div class="btn-group d-block d-sm-block d-md-none">
+						<button class="btn btn-outline-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown">
+								&ctdot;
+						</button>
+						<ul class="dropdown-menu">
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/payment?id=' + order.id">
+									Πληρωμή
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/print-receipt?id=' + order.id">
+									Εκτύπωση
+								</a>
+							</li>
+						</ul>
+					</div>-->
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!--<div class="modal modal-lg d-block" v-if="reservationForDeletion != null">
+		<div class="modal-dialog">
+		<div class="modal-content">
+  			<div class="modal-header">
+    			<h5 class="modal-title">Διαγραφή κράτησης</h5>
+    			<button type="button" class="btn-close" @click="reservationForDeletion = null"></button>
+  			</div>
+  			<div class="modal-body">
+    			<p>Είσαι σίγουρος;</p>
+  			</div>
+  			<div class="modal-footer">
+  				<button type="button" class="btn btn-secondary" @click="reservationForDeletion = null">Cancel</button>
+    			<a class="btn btn-primary" :href="'/reservations-app/delete?id=' + reservationForDeletion">Οκ</a>
+  			</div>
+		</div>
+		</div>
+</div>-->
+
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script>
+		/*$(document).ready(function () {
+			$('.event').on("dragstart", function (event) {
+				var dt = event.originalEvent.dataTransfer;
+				dt.setData('Text', $(this).attr('id'));
+			});
+			$('table td').on("dragenter dragover drop", function (event) {
+				event.preventDefault();
+				if (event.type === 'drop') {
+					var data = event.originalEvent.dataTransfer.getData('Text', $(this).attr('id'));
+					
+					de = $('#' + data).detach();
+					if (event.originalEvent.target.tagName === "SPAN") {
+						de.insertBefore($(event.originalEvent.target));
+					}
+					else {
+						de.appendTo($(this));
+					}
+				};
+			});
+		})*/
+	</script>
+	<!--<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/axios"></script>
+	<script src="https://unpkg.com/lodash"></script>-->
+{% endblock %}

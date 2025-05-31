@@ -1,0 +1,300 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block content %}{% verbatim %}
+<div id="app">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/orders-app/" class="text-decoration-none"><i class='bx bx-restaurant'></i></a> /
+	    	{{order.table.name}} / {{order.adults}} / {{order.minors}} / &euro;{{totalPrice}}
+	    </h1>
+	    <div class="btn-toolbar">
+		    <a href="#" class="btn btn-lg btn-outline-secondary me-2 d-inline d-sm-none" @click="showOptions = true;">
+	            <span class="fw-bold">&ctdot;</span>
+	        </a>
+		    <button class="btn btn-lg btn-primary d-none d-sm-inline me-2" @click="pay()" :disabled="selectedOrderEntries.length == 0">
+		        Πληρωμή
+		    </button>
+	    </div>
+	</div>
+	<div class="row gx-1 mb-2 d-none d-sm-flex" v-if="orderFamilies.length > 1">
+		<div class="col">
+        	<button
+        		type="button"
+        		class="btn btn-outline-primary btn-lg w-100"
+        		:class="{active: selectedOrderEntries.length == unpaidOrderEntries.length}"
+        		@click="toggleAll"
+        	>
+				Όλα
+			</button>
+        </div>
+		<div class="col" v-for="family in orderFamilies">
+        	<button
+        		type="button"
+        		class="btn btn-outline-primary btn-lg w-100"
+        		:class="{active: entriesBelongTo(family)}"
+        		@click="selectFamily(family);"
+        	>
+				Οικογένεια {{family}}
+			</button>
+        </div>
+	</div>
+
+	<div v-for="orderEntryGroup in order.orderEntryGroups" class="border rounded mb-3">
+		<div class="row">
+			<div class="col">
+				<div class="fs-5 fw-medium text-center border-bottom p-1 bg-secondary-subtle">
+					{{orderEntryGroup.createdAt.substring(11, 16)}}
+					<span v-if="orderEntryGroup.notes.length > 0">/ {{orderEntryGroup.notes}}</span>
+				</div>
+			</div>
+		</div>
+		<div v-for="(n, i) in 7">
+			<div class="mb-1 p-1 ps-2 pe-2" v-if="filterGroupEntries(orderEntryGroup, i).length > 0">
+				<div
+					class="mb-2"
+					v-for="(orderEntry, index) in filterGroupEntries(orderEntryGroup, i)"
+				>
+	      			<div class="d-flex w-100 justify-content-between">
+			      		<span class="fs-4">
+		      				{{orderEntry.quantity}} &times; {{getTranslation(orderEntry.menuItem, 'el').name}}
+			      		</span>
+		      			<div>
+		      				<input
+		      					class="form-check-input form-control-lg me-1"
+		      					type="checkbox"
+		      					v-model="selectedOrderEntries"
+		      					v-if="!orderEntry.isPaid"
+		      					:value="orderEntry"
+		      				/>
+			      		</div>
+		      		</div>
+		    		<div class="mb-0 ps-3">
+		    			<div v-if="orderEntry.weight > 0 || orderHasManyFamilies">
+		    				<span v-if="orderEntry.weight > 0">
+		    					βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
+		    				</span>
+		    				<span v-if="orderEntry.weight > 0 && orderHasManyFamilies"> / </span>
+		    				<span v-if="orderHasManyFamilies">οικογένεια <span class="fw-bold">{{orderEntry.family}}</span></span>
+		    			</div>
+		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
+		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
+			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+			    			</span>
+		    			</div>
+		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+		    		</div>
+		    		<div class="mb-0 ps-3">
+		    			<div v-for="orderEntryCancellation in orderEntry.orderEntryCancellations">
+		    				<span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt}}</span>
+		    			</div>
+		    		</div>
+		  		</div>
+			</div>
+			<hr v-if="filterGroupEntries(orderEntryGroup, i).length > 0 && filterGroupEntries(orderEntryGroup, i + 1).length > 0" class="m-1"/>
+		</div>
+	</div>
+
+	<div class="offcanvas offcanvas-start" :class="showOptions ? 'show' : ''" tabindex="-1">
+  		<div class="offcanvas-header">
+    		<h5 class="offcanvas-title" id="offcanvasExampleLabel">Επιλογές</h5>
+    		<button type="button" class="btn-close" @click="showOptions = false"></button>
+  		</div>
+  		<div class="offcanvas-body">
+  			<div class="row mb-4">
+  				<div class="col-xs-12">
+			        <button class="btn btn-lg btn-primary w-100" @click="pay()" :disabled="selectedOrderEntries.length == 0">
+			            Πληρωμή
+			        </button>
+			    </div>
+  			</div>
+  			<div class="row mb-4" v-if="orderFamilies.length > 1">
+				<div class="col-xs-12 mb-2">
+		        	<button
+		        		type="button"
+		        		class="btn btn-outline-primary btn-lg w-100"
+		        		:class="{active: selectedOrderEntries.length == unpaidOrderEntries.length}"
+		        		@click.stop="toggleAll();showOptions = false"
+		        	>
+						Όλα
+					</button>
+		        </div>
+				<div class="col-xs-12 mb-2" v-for="family in orderFamilies">
+					<button
+		        		type="button"
+		        		class="btn btn-outline-primary btn-lg w-100"
+		        		:class="{active: entriesBelongTo(family)}"
+		        		@click="selectFamily(family);showOptions = false"
+		        	>
+						Οικογένεια {{family}}
+					</button>
+				</div>
+		    </div>
+    	</div>
+  	</div>
+  	<div class="offcanvas-backdrop fade show" v-if="showOptions"></div>
+
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<script src="/assets/js/lodash.min.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		selectedOrderEntries: [],
+		    		order: {
+		    			table: {},
+		    			orderEntries: []
+		    		},
+
+		    		employees: [],
+		    		employee: null,
+
+		    		showOptions: false
+		    	}
+		    },
+		    mounted () {
+		    	let id = new URLSearchParams(window.location.search).get('id');
+
+                axios({
+                    url: '/admin/graph-ql',
+                    method: 'post',
+                    data: `{
+                        order (id: ${id}) {
+	                        id,
+	                        table {
+	                        	id, name
+	                        },
+	                        adults, minors
+	                        orderEntryGroups {
+	                        	createdAt, notes
+		                        orderEntries {
+		                        	id, discount, timing, family, quantity, notes, menuItemPrice, weight, isPaid
+		                        	menuItem {
+		                        		id, price, translations { name, language },
+		                        		menuItemExtras {
+	                            			name, price
+	                            		},
+	                            		stations {id, name, printerAddress}
+		                        	},
+		                        	orderEntryExtras {
+		                        		name, price
+		                        	},
+		                        	orderEntryCancellations {
+		                        		id, createdAt, cancellationReason
+		                        	}
+		                        }
+		                    }
+	                    }
+                    }`
+                }).then(response => {
+                    this.order = response.data.data.order;
+                    this.initialOrder = JSON.parse(JSON.stringify(response.data.data.order));
+
+                    this.selectedOrderEntries = this.unpaidOrderEntries;
+                });
+		    },
+		    computed: {
+		    	allOrdeEntries() {
+		    		let allOrdeEntries = []
+
+		    		_.each(this.order.orderEntryGroups , orderEntryGroup => {
+		    			_.each(orderEntryGroup.orderEntries, orderEntry => {
+		    				allOrdeEntries.push(orderEntry);
+		    			})
+		    		})
+
+		    		return allOrdeEntries
+		    	},
+		    	unpaidOrderEntries () {
+		    		return _.filter(this.allOrdeEntries, orderEntry => orderEntry.isPaid == false);
+		    	},
+		    	orderFamilies () {
+		    		return _.uniq(_.map(this.unpaidOrderEntries, 'family'));
+		    	},
+		    	totalPrice () {
+		    		let totalPrice = 0;
+
+		    		_.each(this.selectedOrderEntries, orderEntry => {
+			    		totalPrice += this.calculateOrderEntryPrice(orderEntry)
+			    	});
+
+		    		return _.round(totalPrice, 1);
+		    	},
+		    },
+		    methods: {
+		    	filterGroupEntries(orderGroup, timing) {
+		    		return orderGroup.orderEntries.filter(
+		    			orderEntry =>
+		    			orderEntry.timing == timing
+		    		);
+		    	},
+		    	calculateOrderEntryPrice(orderEntry) {
+		    		let price = orderEntry.menuItemPrice;
+
+		    		let weight = orderEntry.weight;
+		    		if (weight > 0) {
+		    			if (weight < 1000) {
+		    				price -= (price * ((1000 - weight) / 1000));
+		    			} else {
+		    				price += price * ((weight - 1000) / 1000);
+		    			}
+		    		}
+
+		    		_.each(orderEntry.orderEntryExtras, extra => {
+		    			price += extra.price;
+		    		})
+
+		    		return (price * orderEntry.quantity) - orderEntry.discount;
+		    	},
+
+
+		    	getTranslation(object, language) {
+		    		return _.find(object.translations, translation => {
+		    			return translation.language == language;
+		    		});
+		    	},
+		    	toggleAll () {
+		    		if (this.selectedOrderEntries.length == 0) {
+		    			this.selectedOrderEntries = this.unpaidOrderEntries
+		    		} else {
+		    			this.selectedOrderEntries= [];
+		    		}
+		    	},
+		    	selectFamily(family) {
+		    		this.selectedOrderEntries = _.filter(this.allOrdeEntries, entry => {
+		    			return [family].includes(entry.family);
+		    		});
+		    	},
+		    	entriesBelongTo (family) {
+		    		let index = _.findIndex(this.selectedOrderEntries, entry => family != entry.family);
+
+		    		if (this.selectedOrderEntries.length == 0 || index != -1) {
+		    			return false;
+		    		}
+
+		    		return true;
+		    	},
+		    	pay () {
+		    		axios.post(
+		    			'/orders-app/payment',
+		    			{
+		    				'orderId': this.order.id,
+		    				'orderEntries': this.selectedOrderEntries
+		    			}
+		    		).then(response => {
+	                    if (response.data == 'ok') {
+	                    	window.location.href = '/orders-app/';
+	                    }
+	                }).catch(function (error) {
+    					console.log(error);
+  					});
+		    	}
+		    }
+		}).mount('#app')
+	</script>
+{% endblock %}

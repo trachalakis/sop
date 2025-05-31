@@ -1,0 +1,66 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menu' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">New section</h1>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Active</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isActive">
+  				<option value="1" selected>Yes</option>
+  				<option value="0">No</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Public</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isPublic">
+  				<option value="1">Yes</option>
+  				<option value="0" selected>No</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Position</label>
+		<div class="col-sm-10">
+			<input type="number" min="1" step="1" class="form-control" name="position" required>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Menu</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="menu">
+  				{% for menu in menus %}
+					<option value="{{menu.getId}}" {{selectedMenu == menu ? 'selected' : ''}}>{{menu.getName}}</option>
+				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Print menu page</label>
+		<div class="col-sm-10">
+			<input type="number" min="0" step="1" class="form-control" name="printMenuPage" value="0" required>
+		</div>
+	</div>
+	<h5 class="mb-3 pb-2 border-bottom text-muted">Translations</h5>
+	{% for language in languages %}
+		<div class="row mb-3">
+			<label class="col-sm-2 col-form-label">Name [{{language.getIsoCode}}]</label>
+			<div class="col-sm-10">
+				<input type="text" class="form-control" name="translations[{{language.getId}}][name]">
+			</div>
+		</div>
+	{% endfor %}
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

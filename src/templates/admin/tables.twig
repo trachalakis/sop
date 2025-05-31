@@ -1,0 +1,41 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'tables' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Tables</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/tables/create" class="btn btn-primary me-2">
+            <i class="fa-solid fa-plus"></i> New table
+        </a>
+    </div>
+</div>
+<div class="table-responsive">
+	<table class="table table-striped">
+    	<thead>
+      		<tr>
+      			<th>Table</th>
+      			<th></th>
+      		</tr>
+    	</thead>
+    	<tbody>
+    		{% for table in tables %}
+    			<tr>
+    				<td>
+    					{{table.getName}}
+    					{% if not table.getIsActive %}
+    						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+    					{% endif %}
+    				</td>
+    				<td class="text-end">
+						<a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
+							Update
+						</a>
+					</td>
+    			</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+</div>
+{% endblock %}

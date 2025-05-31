@@ -1,0 +1,181 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'supplies' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Update supply</h1>
+</div>
+<form method="post" autocomplete="off" action="">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Name</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="name" value="{{supply.getName}}"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Active</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isActive">
+  				<option value="1" {{supply.getIsActive ? 'selected' : ''}}>Yes</option>
+  				<option value="0" {{supply.getIsActive ? '' : 'selected'}}>No</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Unit</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="unit">
+  				<option value="item" {{supply.getUnit == 'item' ? 'selected' : ''}}>item</option>
+  				<option value="kg" {{supply.getUnit == 'kg' ? 'selected' : ''}}>kg</option>
+  				<option value="lt" {{supply.getUnit == 'lt' ? 'selected' : ''}}>lt</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Vat percentage</label>
+		<div class="col-sm-10">
+			<input type="number" class="form-control" name="vatPercentage" value="{{supply.getVatPercentage}}"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Supply group</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="supplyGroup">
+  				{% for supplyGroup in supplyGroups %}
+  					<option value="{{supplyGroup.getId}}" {{supply.getSupplyGroup.getId == supplyGroup.getId ? 'selected' : ''}}>
+  						{{supplyGroup.getName}}
+  					</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Supplier</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="supplier">
+  				<option value="">None</option>
+  				{% for supplier in suppliers %}
+  					<option value="{{supplier.getId}}" {{supplier.getId == supply.getSupplier.getId ? 'selected' : ''}}>{{supplier.getName}}</option>
+  				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Description</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" rows="3" name="description">{{supply.getDescription}}</textarea>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Custom fields</label>
+		<div class="col-sm-10">
+			{% for field, value in supply.getCustomFields %}
+				<div class="row custom-field-entry mb-2">
+		            <div class="col-sm-5">
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][field]"
+		                	value="{{field}}"
+		                	required
+		                />
+		            </div>
+		            <div class="col-sm-5">
+		                <textarea
+		                	rows="3"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][value]"
+		                >
+		                	{{- value -}}
+		                </textarea>
+		            </div>
+		            <div class="col-sm-2">
+		                <a class="btn btn-sm btn-danger delete-custom-field">
+		                    <i class="bx bx-trash-alt"></i>
+		                </a>
+		            </div>
+		        </div>
+		    {% endfor %}
+			<a class="btn btn-sm btn-success add-custom-field">
+				<i class="bx bx-plus"></i>
+			</a>
+		</div>
+	</div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Save</button>
+		</div>
+	</div>
+</form>
+<hr/>
+<div class="table-responsive">
+	<table class="table table-striped">
+    	<thead>
+      		<tr>
+      			<th>Invoice</th>
+      			<th>Price</th>
+      		</tr>
+    	</thead>
+    	<tbody>
+    		{% for invoiceEntry in supply.getInvoiceEntries %}
+    			<tr>
+    				<td>
+    					<a class="text-decoration-none" href="/admin/invoices/view?id={{invoiceEntry.getInvoice.getId}}" target="_blank">
+	    					{{invoiceEntry.getInvoice.getSupplier.getName}}
+	    					-
+	    					{{invoiceEntry.getInvoice.getDate.format('d/m/Y')}}
+	    				</a>
+    				</td>
+    				<td>{{(invoiceEntry.getPrice / invoiceEntry.getQuantity)|round(2, 'floor')}}&euro; / {{supply.getUnit}}</td>
+    			</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+	{{parent()}}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script id="custom-field-template" type="text/x-handlebars-template">
+        <div class="row custom-field-entry mb-2">
+            <div class="col-sm-5">
+                <input
+                	type="text"
+                	class="form-control"
+                	name="customFields[{% verbatim %}{{index}}{% endverbatim %}][field]"
+                	required
+                />
+            </div>
+            <div class="col-sm-5">
+                <textarea
+                	rows="3"
+                	class="form-control"
+                	name="customFields[{% verbatim %}{{index}}{% endverbatim %}][value]"
+                ></textarea>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-sm btn-danger delete-custom-field">
+                    <i class="bx bx-trash-alt"></i>
+                </a>
+            </div>
+        </div>
+    </script>
+    <script>
+        $('.add-custom-field').click(function() {
+            var source   = $('#custom-field-template').html();
+            var template = Handlebars.compile(source);
+
+            $(this).before(template({
+                index: $('.custom-field-entry').length + 1
+            }));
+        });
+
+        $('form').on('click', '.delete-custom-field', function() {
+            $(this).parent().parent().remove();
+        });
+    </script>
+{% endblock %}

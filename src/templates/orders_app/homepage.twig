@@ -1,0 +1,95 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block content %}{% verbatim %}
+<div id="app">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+		    <i class='bx bx-restaurant'></i> / <a class="text-decoration-none" href="/reservations-app/"><i class='bx bx-phone'></i></a>
+		</h1>
+	    <div class="btn-toolbar">
+	       	<a href="/orders-app/create" class="btn btn-primary btn-lg">Νέα παραγγελία</a>
+	    </div>
+	</div>
+	<table class="table table-striped fs-4 mt-4">
+		<tbody>
+			<tr v-for="order in orders">
+				<td>
+					<a class="text-decoration-none" :href="'/orders-app/update?id=' + order.id">
+					<span v-if="order.table == null">Take away</span>
+					<span v-else>{{order.table.name}}</span> /
+					&euro;{{order.price}} /
+					{{getTime(order.createdAt)}}</a>
+				</td>
+				<td class="text-end">
+					<div class="d-none d-sm-none d-md-block">
+						<a class="btn btn-lg btn-outline-secondary me-1" :href="'/orders-app/payment?id=' + order.id">
+							Πληρωμή
+						</a>
+						<a class="btn btn-lg btn-outline-secondary" :href="'/orders-app/print-receipt?id=' + order.id">
+							Εκτύπωση
+						</a>
+					</div>
+					<div class="btn-group d-block d-sm-block d-md-none">
+						<button class="btn btn-outline-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown">
+								&ctdot;
+						</button>
+						<ul class="dropdown-menu">
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/payment?id=' + order.id">
+									Πληρωμή
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/print-receipt?id=' + order.id">
+									Εκτύπωση
+								</a>
+							</li>
+						</ul>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<!--<script src="https://unpkg.com/lodash"></script>-->
+	<script src="/assets/js/lodash.min.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		orders: []
+		    	}
+		    },
+		    mounted () {
+		    	setInterval(() => {
+					this.fetchOrders()
+				}, 5000)
+                this.fetchOrders();
+		    },
+		    methods: {
+		    	fetchOrders () {
+		    		axios({
+	                    url: '/admin/graph-ql',
+	                    method: 'post',
+	                    data: `{
+	                        activeOrders {
+	                        	id, table {id, name}, price, createdAt
+	                        }
+	                    }`
+	                }).then(response => {
+	                    this.orders = response.data.data.activeOrders
+	                });
+		    	},
+		    	getTime(date) {
+		    		return date.substr(date.length - 8, 5);
+		    	}
+		    }
+		}).mount('#app');
+	</script>
+{% endblock %}

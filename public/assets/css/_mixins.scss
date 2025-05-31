@@ -1,0 +1,57 @@
+@mixin bp-hd {
+  @media screen and (min-width: 1367px) {
+    @content;
+  }
+}
+@mixin bp-4k {
+  @media screen and (min-width: 1921px) {
+    @content;
+  }
+}
+
+@mixin ratio($ratio) {
+  display: flex;
+  flex-wrap: wrap;
+  &::before {
+    content: "";
+    padding-top: $ratio;
+  }
+}
+
+@mixin container {
+  max-width: 1192px;
+  margin-left: auto;
+  margin-right: auto;
+  @media screen and (min-width: 1921px) {
+    max-width: 1600px;
+  }
+}
+
+@mixin bg-cover {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@mixin bg-contain {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@mixin center-contents {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin center-self {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin pos($x, $y) {
+  transform: translate($x, $y);
+}

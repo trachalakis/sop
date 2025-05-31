@@ -1,0 +1,37 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<h1 class="h4">
+    	<a href="/orders-app/" class="text-decoration-none"><i class="fa-solid fa-house"></i></a> /
+    	Report / {{start.format('D j M Y')}}
+    </h1>
+    <div class="btn-toolbar">
+        <a class="btn btn-primary me-2" href="/orders-app/report?date={{prev.format('Y-m-d')}}">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <a class="btn btn-primary" href="/orders-app/report?date={{next.format('Y-m-d')}}">
+            <i class="fa-solid fa-chevron-right"></i>
+        </a>
+    </div>
+</div>
+<table class="table table-striped fs-4">
+	<tbody>
+		{% for order in orders %}
+			<tr>
+				<td>
+					#{{order.getTable.getName}} /
+					{{order.getPrice}}&euro; /
+					{{order.getCreatedAt.format('H:i')}}
+				</td>
+				<td class="text-end">
+				</td>
+			</tr>
+		{% endfor %}
+		<tr>
+			<td class="text-end"></td>
+			<td class="text-end">Total: {{total}}</td>
+		</tr>
+	</tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,295 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% block pageCss %}
+    {{ parent() }}
+    <style>
+        @media print {
+            form, .totals, .table-responsive, .sales, .btn, header, hr {
+                display: none !important;
+            }
+        }
+    </style>
+{%  endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Report {{start.format('D j M Y')}} - {{end.format('D j M Y')}}</h1>
+    <div class="btn-toolbar">
+        <a class="btn btn-primary me-2" href="/admin/report?date={{oneYearAgo.format('Y-m-d')}}" target="_blank">
+            Last year
+        </a>
+        <a class="btn btn-primary me-2" href="/admin/report?date={{prev.format('Y-m-d')}}">
+            <i class='bx bxs-chevron-left' ></i>
+        </a>
+        <a class="btn btn-primary me-4" href="/admin/report?date={{next.format('Y-m-d')}}">
+            <i class='bx bxs-chevron-right' ></i>
+        </a>
+    </div>
+</div>
+
+<form class="row gx-2 align-items-center" method="get" autocomplete="off">
+    <div class="col-auto">
+        <div class="input-group">
+            <div class="input-group-text">From</div>
+            <input type="date" name="filter[start]" class="form-control" value="{{start.format('Y-m-d')}}"/>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="input-group">
+            <div class="input-group-text">To</div>
+            <input type="date" name="filter[end]" class="form-control" value="{{end.format('Y-m-d')}}"/>
+        </div>
+    </div>
+    <div class="col-auto">
+        <div class="input-group">
+            <select name="filter[service]" class="form-select">
+                <option value="all">all</option>
+                <option value="lunch" {{filter.service == 'lunch' ? 'selected' : ''}}>lunch</option>
+                <option value="dinner" {{filter.service == 'dinner' ? 'selected' : ''}}>dinner</option>
+            </select>
+        </div>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <input type="reset" class="btn btn-primary" value="Reset"/>
+    </div>
+</form>
+<hr/>
+<div class="totals">
+    sales: <strong>&euro;{{sales}}</strong> &bull;
+    {% if orders|length > 0 %}
+    	sales / cover: <strong>&euro;{{(sales / (coversAdults + coversMinors))|round(1, 'floor')}}</strong> &bull;
+    	sales / order: <strong>&euro;{{(sales / (orders|length))|round(1, 'floor')}}</strong>
+    {% endif %}
+    &bull;
+    take away: <strong>&euro;{{salesTakeAway}}</strong>
+    </br>
+    orders: <strong>{{orders|length}}</strong> &bull;
+    covers: <strong>{{coversAdults + coversMinors}} </strong> &bull;
+    adults: <strong>{{coversAdults}}</strong> &bull;
+    minors: <strong>{{coversMinors}}</strong>
+    <br/>
+    man-hours: <strong>{{manHours}}h:{{manMinutes}}m:{{manSeconds}}s</strong> &bull;
+    salaries: <strong>&euro;{{salaries|round}}</strong> &bull;
+	BOH Salaries: <strong>&euro;{{bohSalaries|round}}</strong> &bull;
+	FOH Salaries: <strong>&euro;{{fohSalaries|round}}</strong> &bull;
+    <a href="/admin/scans?date={{start.format('Y-m-d')}}" target="_blank">Scans</a><br/>
+	fish weight: <strong>{{totalWeight / 1000}}Kg</strong>
+    <br/>
+    standard deviation: <strong>{{standardDeviation}}</strong>
+	<br/>
+	served menu items : <strong>{{servedMenuItems}}</strong>
+	<br/>
+	served drinks : <strong>{{servedDrinks}}</strong>
+	{% if servedMenuItems > 0 %}
+		<br/>
+		labour cost per served menu item: {{(salaries / servedMenuItems )|round(2)}}
+	{% endif %}
+	{% if servedDrinks > 0 %}
+		<br/>
+		labour cost per served drink: {{(fohSalaries / servedDrinks )|round(2)}}
+	{% endif %}
+</div>
+<hr/>
+{% if end.diff(start).days >= 2 %}
+<div class="row mb-3">
+	<div class="col">
+		<canvas id="perDayChart"></canvas>
+	</div>
+</div>
+{% endif %}
+<div class="row mb-3">
+	<div class="col">
+		<canvas id="coversPerHourChart"></canvas>
+	</div>
+	<div class="col">
+		<canvas id="salesPerHourChart"></canvas>
+	</div>
+	<div class="col">
+		<canvas id="ordersPerHourChart"></canvas>
+	</div>
+</div>
+<hr/>
+<div class="row">
+    {% for i,v in menuSections %}
+	    <div class="col-sm-3 mb-3">
+	    	<h5>{{v.menuSection.getTranslation('el').getName }} / {{v.count}} / <span class="sales">{{v.sales }}&euro;</span></h5>
+	    	{% for j,k in v.menuItems %}
+                {% if k.menuItem.isPricePerKg %}
+                    <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / {{k.weight / 1000}}Kg / <span class="sales">{{k.sales}}&euro;</span></p>
+                {% else %}
+                    <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / <span class="sales">{{k.sales}}&euro;</span></p>
+                {% endif %}
+            {% endfor %}
+	    </div>
+	{% endfor %}
+</div>
+<hr/>
+{% if end.diff(start).days <= 2 %}
+    <div class="table-responsive">
+    	<table class="table table-striped">
+        	<thead>
+          		<tr>
+          			<th></th>
+          			<th>Τραπέζι</th>
+          			<th>Σύνολο</th>
+          			<th>Δημιουργήθηκε</th>
+                    <th>Πληρώθηκε</th>
+                    <th>Σερβιτόρος</th>
+          			<th></th>
+          		</tr>
+        	</thead>
+        	<tbody>
+        		{% for order in orders %}
+        			<tr>
+        				<td>
+        					<a class="text-decoration-none" href="/admin/orders/view?id={{order.getId}}" target="_blank">
+        						#{{order.getId}}
+        						{% if order.hasCancelledEntries %}
+        							<i class="fa-solid fa-trash-can"></i>
+        						{% endif %}
+                                {% if order.hasDiscountedEntries %}
+                                    <i class="fa-solid fa-percent"></i>
+                                {% endif %}
+        					</a>
+        				</td>
+        				<td>T{{order.getTable.getName}}</td>
+        				<td>
+        					&euro;{{order.getPrice}}
+        				</td>
+        				<td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
+                        <td>{{order.getPaidAt.format('Y-m-d H:i A')}}</td>
+                        <td>{{order.getWaiter.getFullName}}</td>
+        				<td class="text-end">
+                            <a class="btn btn-primary confirm me-2" href="/admin/orders/open?id={{order.getId}}">
+                                Open
+                            </a>
+                            <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
+                                Delete
+                            </a>
+    					</td>
+        			</tr>
+        		{% endfor %}
+        	</tbody>
+        </table>
+    </div>
+    <h3 class="mb-2">Αυτοπαράδοση</h3>
+    <div class="table-responsive">
+    	<table class="table table-striped">
+        	<thead>
+          		<tr>
+          			<th></th>
+          			<th>Εργαζόμενος</th>
+          			<th>Price</th>
+          			<th>Created</th>
+          			<th></th>
+          		</tr>
+        	</thead>
+        	<tbody>
+        		{% for order in employeeOrders %}
+        			<tr>
+        				<td>
+        					<a class="text-decoration-none" href="/admin/orders/update?id={{order.getId}}" target="_blank">
+        						#{{order.getId}}
+        					</a>
+        				</td>
+        				<td>{{order.getEmployee.getFullName}}</td>
+        				<td>
+        					{{order.getPrice}}&euro;
+        				</td>
+        				<td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
+        				<td class="text-end">
+                            <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
+                                Delete
+                            </a>
+    					</td>
+        			</tr>
+        		{% endfor %}
+        	</tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script>
+    	const chartLabels = {{chartLabels|json_encode }}
+
+    	const coversPerHourData = [{{coversPerHourData|join(',')}}]
+  		new Chart(document.getElementById('coversPerHourChart'), {
+    		type: 'bar',
+		    data: {
+		    	labels: chartLabels,
+		      	datasets: [{
+		        	label: 'covers / hour',
+		        	data: coversPerHourData,
+		        	borderWidth: 1
+		      	}]
+		    },
+		    options: {
+		      	scales: {
+		        	y: {
+		        		beginAtZero: true
+		        	}
+		      	}
+		    }
+  		});
+
+    	const salesPerHourData = [{{salesPerHourData|join(',')}}]
+  		new Chart(document.getElementById('salesPerHourChart'), {
+    		type: 'bar',
+		    data: {
+		    	labels: chartLabels,
+		      	datasets: [{
+		        	label: 'sales / hour',
+		        	data: salesPerHourData,
+		        	borderWidth: 1
+		      	}]
+		    },
+		    options: {
+		    	scales: {
+		        	y: {
+		          		beginAtZero: true
+		        	}
+		      	}
+		    }
+  		});
+
+  		const ordersPerHourData = [{{ordersPerHourData|join(',')}}]
+  		new Chart(document.getElementById('ordersPerHourChart'), {
+    		type: 'bar',
+		    data: {
+		    	labels: chartLabels,
+		      	datasets: [{
+		        	label: 'orders / hour',
+		        	data: ordersPerHourData,
+		        	borderWidth: 1
+		      	}]
+		    },
+		    options: {
+		    	scales: {
+		        	y: {
+		          		beginAtZero: true
+		        	}
+		      	}
+		    }
+  		});
+
+  		const perDayData = {
+  labels: [1,2,3,4,5,6,7],
+  datasets: [{
+    label: 'My First Dataset',
+    data: [65, 59, 80, 81, 56, 55, 40],
+    fill: false,
+    borderColor: 'rgb(75, 192, 192)',
+    tension: 0.1
+  }]
+};
+  		new Chart(document.getElementById('perDayChart'), {
+    		type: 'line',
+		    data: perDayData
+  		});
+	</script>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'suppliers' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Suppliers</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/suppliers/create" class="btn btn-primary">
+            New supplier
+        </a>
+    </div>
+</div>
+<div class="table-responsive">
+	<table class="table table-striped">
+    	<thead>
+      		<tr>
+      			<th>Name</th>
+      		</tr>
+    	</thead>
+    	<tbody>
+    		{% for supplier in suppliers %}
+    			<tr>
+    				<td><a class="text-decoration-none" href="/admin/suppliers/update?id={{supplier.getId}}">{{supplier.getName}}</a></td>
+    			</tr>
+    		{% endfor %}
+    	</tbody>
+    </table>
+</div>
+{% endblock %}

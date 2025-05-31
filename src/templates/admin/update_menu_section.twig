@@ -1,0 +1,77 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menus' %}
+
+{% block content %}
+<!--<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Update {{menuSection.getTranslation('el').getName}}</h1>
+</div>-->
+<ul class="nav nav-tabs mb-4 mt-3">
+	<li class="nav-item">
+    	<a class="nav-link active fs-4" href="">{{menuSection.getTranslation('el').getName}}</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-4" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">Στατιστικά</a>
+  	</li>
+</ul>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Ενεργό</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isActive">
+  				<option vale="1" {{menuSection.getIsActive ? 'selected' : ''}}>Ναί</option>
+  				<option value="0" {{menuSection.getIsActive ? '' : 'selected'}}>Όχι</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Public</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isPublic">
+  				<option vale="1" {{menuSection.getIsPublic ? 'selected' : ''}}>Yes</option>
+  				<option value="0" {{menuSection.getIsPublic ? '' : 'selected'}}>No</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Position</label>
+		<div class="col-sm-10">
+			<input type="number" min="1" step="1" class="form-control" name="position" value="{{menuSection.getPosition}}" required/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Print menu page</label>
+		<div class="col-sm-10">
+			<input
+				type="number"
+				min="0"
+				step="1"
+				class="form-control"
+				name="printMenuPage"
+				value="{{menuSection.getPrintMenuPage}}"
+				required
+			>
+		</div>
+	</div>
+	<h5 class="mb-3 pb-2 border-bottom text-muted">Μεταφράσεις</h5>
+	{% for language in languages %}
+		<div class="row mb-3">
+			<label class="col-sm-2 col-form-label">Όνομα [{{language.getIsoCode}}]</label>
+			<div class="col-sm-10">
+				<input
+					type="text"
+					class="form-control" name="translations[{{language.getId}}][name]"
+					value="{{menuSection.getTranslation(language.getIsoCode).getName}}"
+					required
+				/>
+			</div>
+		</div>
+	{% endfor %}
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

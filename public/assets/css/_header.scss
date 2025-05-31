@@ -1,0 +1,225 @@
+.header {
+  font-size: 1rem;
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 300;
+  transition: $transition;
+  @media screen and (max-width: 560px) {
+    background: mix($color-accent, black, 80%);
+  }
+}
+
+body:not(.nav-open) .header.headroom--not-top {
+  background: #fff;
+  box-shadow: 0 0.5rem 1rem transparentize($color-accent, 0.9);
+  @media screen and (max-width: 560px) {
+    background: black;
+    background: mix($color-accent, black, 80%);
+  }
+}
+
+body:not(.nav-open) .header.headroom--not-top.headroom--unpinned {
+  @media screen and (orientation: landscape) and (max-height: 960px) {
+    transform: translateY(-100%);
+  }
+}
+
+.header__title {
+  text-align: center;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none !important;
+  transition: $transition;
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 0;
+  left: 0;
+  position: relative;
+  transform: none;
+  z-index: 210;
+  &::after {
+    $size: 10rem;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    content: "";
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: $transition-ease;
+    background-position: center;
+    background-repeat: no-repeat;
+    left: 0;
+    background-color: $color-accent;
+    background-image: url("/assets/img/logo-white.svg");
+    background-size: auto 80%;
+    height: 4rem;
+    width: 6rem;
+    left: 0;
+    transform: none;
+    position: static;
+     @media screen and (max-width: 359px) {
+       width:5rem;
+     }
+  }
+}
+
+.header__title-text {
+  transition: $transition-ease;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  &,
+  &:hover,
+  &:active {
+    color: transparent;
+  }
+  // @media screen and (orientation:portrait) and (max-width:1200px) {
+  display: none;
+  // }
+}
+
+.nav-open .header__title,
+.headroom--not-top .header__title {
+  &:after {
+    @media screen and (orientation: portrait) and (max-width: 1200px) {
+      opacity: 1;
+    }
+  }
+}
+
+.nav-open .header__title-text,
+.headroom--not-top .header__title-text {
+  color: $color-dark;
+  @media screen and (orientation: portrait) and (max-width: 1200px) {
+    color: transparent;
+  }
+}
+
+.header__link {
+  margin-left: auto;
+  flex: 0 0 15%;
+}
+.nav-toggle {
+  background: black !important;
+  width: 3.5rem;
+  height: 4em;
+  border-radius: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  &:focus {
+    box-shadow: none;
+  }
+  @media screen and (max-width: 560px) {
+    background-color: mix($color-accent, black, 80%) !important;
+  }
+}
+
+.nav-open .nav-toggle,
+.menu-open .nav-toggle {
+  background: transparent !important;
+  @media screen and (max-width: 560px) {
+    background-color: mix($color-accent, black, 80%) !important;
+  }
+}
+
+.header__nav {
+  flex: 0 0 6rem;
+}
+
+.header__toggle {
+  position: relative;
+  height: 4rem;
+  width: auto;
+  padding: 0.5rem 1.25rem;
+  z-index: 210;
+}
+
+.reservations-link {
+  position: relative;
+  z-index: 210;
+  flex: 0 0 auto;
+  margin-left:auto;
+  margin-right:auto;
+  color: $color-accent !important;
+  text-decoration: none !important;
+  display: inline-block;
+  height: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 2em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.5em;
+  @media (min-width:560px) {
+    &:hover {
+      letter-spacing:0.7em;
+    }
+  }
+  @media (max-width: 560px) {
+    flex:1;
+    background: mix($color-accent, black, 80%);
+    letter-spacing: 0.25em;
+    padding: 0.5em 0.5em;
+    height: auto;
+    color: #fff !important;
+    i {
+      display: none;
+    }
+  }
+  @media (orientation:portrait) and (max-width: 360px) {
+      padding: 0.5em 0em 0.5em 1em;
+   }
+}
+.reservations-link > * {
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out, letter-spacing 0.4s ease-out;
+}
+
+.page-reservation .reservations-link {
+    pointer-events:none;
+}
+
+.page-reservation .reservations-link > * {
+  transform:translateY(-2rem);
+  opacity:0;
+}
+
+.menu-open .reservations-link {
+  opacity: 0;
+}
+
+.toggle__bar {
+  width: 3.5rem;
+  height: 2px;
+  border-radius: 2px;
+  background: #fff;
+  margin: 0.15rem 0;
+  display: block;
+  transition: $transition;
+  &:not(:nth-child(odd)) {
+    width: 3rem;
+  }
+  animation: expand 0.5s ease;
+  @media screen and (max-width: 560px) {
+    background: #fff;
+  }
+}
+
+@keyframes expand {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}

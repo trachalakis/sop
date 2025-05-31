@@ -1,0 +1,21 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'users' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">{{user.getFullName}}</h1>
+</div>
+<ul class="nav nav-tabs mb-4">
+	<li class="nav-item">
+    	<a class="nav-link " href="/admin/users/update?id={{user.getId}}">Γενικά</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link active" href="/admin/users/qr-code?id={{user.getId}}">Qr code</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link" href="/admin/users/orders?id={{user.getId}}">Αυτόπαράδοση</a>
+  	</li>
+</ul>
+<img src="data:image/png;{{qrCode.getDataUri}}"/>
+{% endblock %}

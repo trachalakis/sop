@@ -1,0 +1,36 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'price-lists' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Price Lists</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/price-lists/create" class="btn btn-primary">
+            New price list
+        </a>
+    </div>
+</div>
+<table class="table table-striped table-responsive">
+	<!--<thead>
+  		<tr>
+  			<th>Table</th>
+  			<th></th>
+  		</tr>
+	</thead>-->
+	<tbody>
+		{% for priceList in priceLists %}
+			<tr>
+				<td>
+					<a class="text-decoration-none" href="/admin/price-lists/update?id={{priceList.getId}}">{{priceList.getName}}</a>
+					{% if not priceList.getIsActive %}
+						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+					{% endif %}
+				</td>
+				<td class="text-end">
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+{% endblock %}

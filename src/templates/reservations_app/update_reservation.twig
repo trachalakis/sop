@@ -1,0 +1,128 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% set activeNavLink = 'reservations' %}
+
+{% block pageCss %}
+	<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
+{% endblock %}
+
+{% block content %}
+<form method="post" autocomplete="off">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/reservations-app/" class="text-decoration-none"><i class='bx bx-phone'></i></a> /
+	    	<span>Κράτηση #{{reservation.getId}}</span>
+	    </h1>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Όνομα</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control form-control-lg" name="name" value="{{reservation.getName}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
+		<div class="col-sm-10">
+			{% for adult in 1..12 %}
+				<div class="form-check form-check-inline fs-4">
+	  				<input
+	  					class="form-check-input"
+	  					type="radio"
+	  					id="adultsCheckbox{{adult}}"
+	  					name="adults" value="{{adult}}"
+	  					{{adult == reservation.getAdults ? 'checked' : ''}}
+	  					required
+	  				>
+	  				<label class="form-check-label" for="adultsCheckbox{{adult}}">{{adult}}</label>
+				</div>
+			{% endfor %}
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ανήλικοι</label>
+		<div class="col-sm-10">
+			{% for minor in 0..12 %}
+				<div class="form-check form-check-inline fs-4">
+	  				<input
+	  					class="form-check-input"
+	  					type="radio"
+	  					id="minorsCheckbox{{minor}}"
+	  					name="minors" value="{{minor}}"
+	  					{{minor == reservation.getMinors ? 'checked' : ''}}
+	  					required
+	  				>
+	  				<label class="form-check-label" for="minorsCheckbox{{minor}}">{{minor}}</label>
+				</div>
+			{% endfor %}
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Ώρα</label>
+		<div class="col-sm-10">
+			{% for hour in ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22'] %}
+				{% if hour != '12' %}
+					<div class="form-check form-check-inline fs-4">
+						<input
+							class="form-check-input"
+							type="radio"
+							id="timeCheckBox{{hour}}_00"
+							name="time" value="{{hour}}:00"
+							{{reservation.getDateTime.format('G:i') == hour ~ ':00' ? 'checked' : ''}}
+							required
+						>
+						<label class="form-check-label" for="timeCheckBox{{hour}}_00">{{hour}}:00</label>
+					</div>
+				{% endif %}
+				<div class="form-check form-check-inline fs-4">
+	  				<input
+	  					class="form-check-input"
+	  					type="radio"
+	  					id="timeCheckBox{{hour}}_30"
+	  					name="time"
+	  					value="{{hour}}:30"
+	  					{{reservation.getDateTime.format('G:i') == hour ~ ':30' ? 'checked' : ''}}
+	  					required
+	  				>
+	  				<label class="form-check-label" for="timeCheckBox{{hour}}_30">{{hour}}:30</label>
+				</div>
+			{% endfor %}
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Μέρα</label>
+		<div class="col-sm-10">
+			<input type="text" id="datepicker" name="date" value="{{reservation.getDateTime().format('Y-m-d')}}" style="display:none"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+		<div class="col-sm-10">
+			<input type="tel" class="form-control form-control-lg" name="telephoneNumber" value="{{reservation.getTelephoneNumber}}" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
+		<div class="col-sm-10">
+			<textarea class="form-control form-control-lg" name="comments">{{reservation.getComments}}</textarea>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-lg btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+</form>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/flatpickr/flatpickr.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#datepicker').flatpickr({
+				inline: true,
+				minDate: "today"
+			});
+		});
+	</script>
+{% endblock %}

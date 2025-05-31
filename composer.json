@@ -1,0 +1,28 @@
+{
+    "require": {
+        "slim/slim": "4.*",
+        "slim/psr7": "^1.5",
+        "monolog/monolog": "^2.4",
+        "twig/twig": "^3.0",
+        "slim/twig-view": "^3.0",
+        "php-di/php-di": "^6.3",
+        "doctrine/orm": "^2.11.0",
+        "doctrine/dbal": "^3.2",
+        "doctrine/annotations": "1.13.2",
+        "symfony/cache": "^5.4",
+        "webonyx/graphql-php": "^14.11",
+        "endroid/qr-code": "^4.4",
+        "vlucas/phpdotenv": "^5.6",
+        "ramsey/uuid": "^4.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "Application\\": "src/Application",
+            "Domain\\": "src/Domain",
+            "Middleware\\": "src/Middleware"
+        }
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^6.0"
+    }
+}

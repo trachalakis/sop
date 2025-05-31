@@ -1,0 +1,94 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menus' %}
+
+{% block content %}
+<ul class="nav nav-tabs mb-3 mt-3">
+	<li class="nav-item">
+    	<a class="nav-link fs-4" href="/admin/menu-items/update?id={{menuItem.getId}}">{{menuItem.getTranslation('el').getName}}</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link active fs-4" href="/admin/menu-items/statistics?id={{menuItem.getId}}">Στατιστικά</a>
+  	</li>
+</ul>
+<ul class="nav nav-pills border-bottom pb-3 mb-3">
+    <li class="nav-item">
+        <a class="nav-link {{period == 'week' ? 'active' : ''}}" href="?id={{menuItem.getId}}&period=week">Εβδομάδα</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{period == 'month' ? 'active' : ''}}" href="?id={{menuItem.getId}}&period=month">Μήνας</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{period == 'year' ? 'active' : ''}}" href="?id={{menuItem.getId}}&period=year">Χρόνος</a>
+    </li>
+</ul>
+<div class="row mb-3">
+    <div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header">Sales</div>
+            <div class="card-body">
+                <h5 class="card-title">&euro;{{totalSales}}</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header">Count</div>
+            <div class="card-body">
+                <h5 class="card-title">{{count}}</h5>
+            </div>
+        </div>
+    </div>
+    {% if days|length > 0 %}
+	    <div class="col-6">
+	        <div class="card text-bg-light mb-3">
+	            <div class="card-header">Max count</div>
+	            <div class="card-body">
+	                <h5 class="card-title">{{max(days)}}</h5>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="col-6">
+	        <div class="card text-bg-light mb-3">
+	            <div class="card-header">Min Count</div>
+	            <div class="card-body">
+	                <h5 class="card-title">{{min(days)}}</h5>
+	            </div>
+	        </div>
+	    </div>
+    {% endif %}
+</div>
+<div class="row mb-3">
+    <div class="col">
+        <canvas id="salesPerDayChart"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+    <script>
+        const chartLabels = {% autoescape false %}{{days|keys|json_encode }}{% endautoescape %}
+
+        const days = [{{days|join(',')}}]
+        new Chart(document.getElementById('salesPerDayChart'), {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: 'sales / day',
+                    data: days,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

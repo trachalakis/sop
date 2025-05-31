@@ -1,0 +1,176 @@
+{% extends 'skeleton.twig' %}
+
+{% block content %}
+    <div class="hero__wrap">
+        <div class="hero js-load">
+            <h1 class="hero__title fade-up">Al fresco dining by the sea <span class="hero__sig fade-up">by Almiriki</span></h1>
+        </div>
+    </div>
+    <div class="intro__wrap">
+        <div class="intro section">
+            <div class="container">
+                <h2 class="intro__title">
+                    The quintessential "greek taverna" experience. Elevated to an art form.
+                </h2>
+                <div class="intro__content">
+                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod
+                        tincidunt ut laoreet dolore magna aliquam erat volutpat. Etiam tristique, ante ut
+                        condimentum convallis. Ut wisi enim ad minim veniam,
+                        quis nostrud exerci tation ullamcorper suscipit lobortis . </p>
+                    <p>Ut sed eros eu ex placerat fermentum. Vestibulum commodo cursus mollis. Etiam nec varius
+                        arcu. Aliquam tristique tellus eget commodo. Etiam tristique, ante ut convallis, dolor leo
+                        faucibus ex, eu pharetra dui nulla non nulla.&nbsp;</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <section class="section menu-section">
+        <h2 data-aos="fade-up" data-aos-duration="750" class="title section__title">Our beloved protagonists</h2>
+        <div class="section__content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col menu-section_col">
+                        <div class="c-card">
+                            <figure class="figure c-card__figure c-card__figure--80">
+                                <img alt="fish" class="img-fluid figure-img" src="assets/img/fish_color.png">
+                                <figcaption class="figure-caption c-card__caption">fish</figcaption>
+                            </figure>
+                            <p class="c-card__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                                volutpat.</p>
+                        </div>
+                    </div>
+                    <div class="col menu-section_col">
+                        <div class="c-card">
+                            <figure class="figure c-card__figure c-card__figure--80">
+                                <img alt="shellfish" class="img-fluid figure-img" src="assets/img/lobster_color.png">
+                                <figcaption class="figure-caption c-card__caption">shellfish</figcaption>
+                            </figure>
+                            <p class="c-card__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                                volutpat.</p>
+                        </div>
+                    </div>
+                    <div class="col menu-section_col">
+                        <div class="c-card">
+                            <figure class="figure c-card__figure c-card__figure--80">
+                                <img alt="mollusks" class="img-fluid figure-img c-card__img" src="assets/img/squid_color.png">
+                                <figcaption class="figure-caption c-card__caption">mollusks</figcaption>
+                            </figure>
+                            <p class="c-card__text">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                                volutpat.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="note section__note">we also serve a carefully considered selection of meat plates</p>
+        <div class="section__cta"><a class="btn btn-outline-primary cta" role="button" href="/{{language}}/menu">See our
+                menu</a></div>
+    </section>
+    <section class="section zorba">
+        <h2 data-aos="fade-up" data-aos-duration="750" class="title section__title">Jorba the greek was here</h2>
+        <div class="section__content zorba__content">
+            <figure class="figure zorba__fig_03"><img class="img-fluid figure-img" src="/assets/img/view.jpg">
+            </figure>
+            <figure class="figure zorba__fig_02"><img class="img-fluid figure-img" src="/assets/img/mill.jpg">
+            </figure>
+            <div class="zorba__text">
+                <p>
+                	Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla eget lacus volutpat, bibendum leo
+                    non, tempor augue. Fusce et odio laoreet, pellentesque dolor eu, interdum orci. Proin nisi urna,
+                    tristique vitae augue sit amet, rhoncus semper lectus. Suspendisse a bibendum risus. Nam
+                    sagittis enim sed efficitur tempus. Nunc tincidunt massa a est pharetra, vitae pulvinar lorem
+                    ultricies. Suspendisse consectetur vestibulum elit, ut dictum tellus fringilla quis. Quisque id
+                    lorem odio. Sed quis convallis eros. Aliquam ipsum ligula, interdum et consectetur vel, faucibus
+                    eu nisi.
+                 </p>
+            </div>
+        </div>
+        <div class="section__cta"><a class="btn cta" href="/{{language}}/location">read about stavros beach</a></div>
+    </section>
+    <section class="section featured">
+        <h2 data-aos="fade-up" data-aos-duration="750" class="title section__title title_dark title_overlap-down">
+            You have to try this
+        </h2>
+        <div class="section__content featured__content">
+            <div class="swiper-button-next slides__btn slides__btn_next slides__btn_next_featured"></div>
+            <div class="swiper-button-prev slides__btn slides__btn_prev slides__btn_prev_featured"></div>
+            <div class="swiper-container slides slides_bg slides_featured">
+                <div class="swiper-wrapper slides__wrapper">
+                    <div class="swiper-slide slide slides__item slide_featured">
+                        <figure class="figure slide__figure slide__figure--featured"
+                            style="background-image:url(assets/img/shrimps.jpg);"
+                            data-swiper-parallax="-300" data-swiper-parallax-duration="750"></figure>
+                        <div class="slide__caption" data-swiper-parallax="-300" data-swiper-parallax-duration="850">
+                            <h3 class="slide__title">Shrimps kataifi</h3>
+                            <p class="slide__description">
+                            	Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                                volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
+                                suscipit lobortis nisl ut aliquip ex ea commodo
+                            </p>
+                        </div>
+                    </div>
+                    <div class="swiper-slide slide slides__item slide_featured">
+                        <figure class="figure slide__figure slide__figure--featured"
+                            style="background-image: url(&quot;assets/img/sepia.jpg&quot;);"
+                            data-swiper-parallax="-300" data-swiper-parallax-duration="750"></figure>
+                        <div class="slide__caption" data-swiper-parallax="-300" data-swiper-parallax-duration="850">
+                            <h3 class="slide__title">Sepia sauted with onions</h2>
+                            <p class="slide__description">
+                            	Lorem ipsum dolor sit amet, consectetuer adipiscing
+                                elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat
+                                volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper
+                                suscipit lobortis nisl ut aliquip ex ea commodo
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {#<!--<section class="section blog">
+        <h2 data-aos="fade-up" data-aos-duration="750" class="title section__title blog__title">The captain's log
+        </h2>
+        <div class="section__content blog__content">
+            <div class="swiper-button-next slides__btn slides__btn_next slides__btn_next_blog"></div>
+            <div class="swiper-button-prev slides__btn slides__btn_prev slides__btn_prev_blog"></div>
+            <div class="swiper-container slides slides_blog slides_grid">
+                <div class="swiper-wrapper slides__wrapper">
+                    <div class="swiper-slide slide slides__item slide_grid media-item">
+                        <figure class="figure slide__figure"><img class="figure-img" src="assets/img/blog_01.jpg">
+                        </figure>
+                        <div class="slide__caption" data-swiper-parallax-duration="850">
+                            <h3 class="slide__title">Introducing our new chef</h2>
+                            <p class="slide__description">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy</p><span class="slide__date">05/03</span><a
+                                class="slide__more-link" href="/blog-post.html" data-swup-preload>read more</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide slide slides__item slide_grid media-item">
+                        <figure class="figure slide__figure"><img class="figure-img" src="assets/img/blog_02.jpg">
+                        </figure>
+                        <div class="slide__caption" data-swiper-parallax-duration="850">
+                            <h3 class="slide__title">The perfect catch!</h2>
+                            <p class="slide__description">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy</p><span class="slide__date">05/03</span><a
+                                class="slide__more-link" href="#">read more</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide slide slides__item slide_grid media-item">
+                        <figure class="figure slide__figure"><img class="figure-img" src="assets/img/cooking.jpg">
+                        </figure>
+                        <div class="slide__caption" data-swiper-parallax-duration="850">
+                            <h3 class="slide__title">Let's cook fish</h3>
+                            <p class="slide__description">Lorem ipsum dolor sit amet, consectetuer adipiscing elit,
+                                sed diam nonummy&nbsp;</p><span class="slide__date">05/03</span><a
+                                class="slide__more-link" href="#">read more</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>-->#}
+{% endblock %}

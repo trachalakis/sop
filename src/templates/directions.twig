@@ -1,0 +1,55 @@
+{% extends 'skeleton.twig' %}
+
+{% block content %}
+    <div class="page__content-header">
+        <h1 class="page-title fade-up"><span class="page-title__el page-title__el--primary">Map &amp; Directions</span></h1>
+    </div>
+    <div class="page__main main-content reservation-page__main-content">
+        <div class="main-content__section generic-page__intro fade-up">
+            <div class="map embed-responsive" id="map">
+            	<!--<iframe allowfullscreen="" frameborder="0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyB7wNsCcB5bE3hNcOR35_xo2MU4GK-lVR4&amp;q=almyriki%2C+chania&amp;zoom=11" width="100%" height="400"></iframe>-->
+            </div>
+        </div>
+        <div class="main-content__section">
+            <div class="contact__wrap main-content__block">
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque iure tempora repellendus
+                    exercitationem reprehenderit ipsum eligendi assumenda ullam, mollitia omnis quisquam!
+                    Sint necessitatibus consequuntur dolor laboriosam nulla ratione eius ullam.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+	{{parent()}}
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB7wNsCcB5bE3hNcOR35_xo2MU4GK-lVR4&language=en"></script>
+	<script>
+		var center = {lat: 35.59255, lng: 24.09486 };
+
+		var map = new google.maps.Map(document.getElementById('map'), {
+		    center: center,
+		    zoom: 11,
+		    streetViewControl: false,
+		    mapTypeControl: false,
+		    scrollwheel: false,
+		    zoomControl: true,
+			zoomControlOptions: {
+    			position: google.maps.ControlPosition.RIGHT_BOTTOM
+			},
+			scaleControl: true,
+			scaleControlOptions: {
+    			position: google.maps.ControlPosition.BOTTOM_LEFT
+			},
+			styles : [{
+		        featureType : 'poi.business',
+		        elementType : 'labels',
+		        stylers : [{visibility : 'off'}]
+		    }]
+		});
+
+		var marker = new google.maps.Marker({
+			map: map,
+			position: center
+		});
+	</script>
+{% endblock %}

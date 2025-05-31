@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Menu | Almyriki.gr</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+	<style type="text/css">
+		body {
+			font-family: 'pfalfabeta', 'Aegithalos', Fallback, sans-serif;
+		}
+
+		@font-face {
+    		font-family: Aegithalos;
+    		src: url("/assets/fonts/aegithalos.otf") format("opentype");
+		}
+
+		@font-face {
+    		font-family: 'pfalfabeta';
+    		src: url('/assets/fonts/pfalfabeta/pfalfabeta-regular.otf') format('opentype');
+    		font-weight: normal;
+    		font-style: normal;
+		}
+	</style>
+</head>
+<body contenteditable="true">
+	<div class="container-fluid text-center">
+		<div class="row mb-3">
+			<div class="col-12 text-center">
+				<img src="/assets/img/logo_no_name.png" height="100"/>
+			</div>
+		</div>
+		{% for menuSection in menuSections %}
+			{% for menuItem in menuSection.getActiveMenuItems %}
+				{% if menuItem.getIsActive and menuItem.getIsPublic %}
+					<div class="row mb-3">
+						<div class="col-12 text-center">
+							<h5 class="mb-0">
+								{{(menuItem.getTranslation(lang).getName|split('/'))[0]}} &centerdot; &euro;{{menuItem.getPrice}}
+							</h5>
+							<p class="mb-1">
+								{% if menuItem.getCustomField('print_description_' ~ lang) %}
+									{{menuItem.getCustomField('print_description_' ~ lang)}}
+								{% endif %}
+							</p>
+						</div>
+					</div>
+				{% endif %}
+				{% if menuItem.getId == 1 %} {# Bread #}
+					<div class="row mb-3">
+						<div class="col-12 text-center">
+							<h5 class="mb-0">
+								{{lang == 'en' ? 'Catch of the day' : 'Ψάρι ημέρας' }}
+							</h5>
+							<p class="mb-1">
+								{{lang == 'en' ? 'fresh local fish, different selection each day, please ask for advice' : 'Ρωτήστε μας για το φρέσκο ψάρι ημέρας'}}
+							</p>
+						</div>
+					</div>
+				{% endif %}
+
+			{% endfor %}
+		{% endfor %}
+		<div class="row mb-3">
+			<div class="col-12 text-center">
+				<p class="mb-1">
+					{% for i in 1..10 %}
+						<img width="50" src="/assets/img/fish_color.png"/>
+					{% endfor %}
+				</p>
+				<p class="mb-1">
+					{{
+						lang == 'en' ? ' Please let us know of any food allergies we should be aware of in the preparation of your meal.' 
+						: 'Παρακαλούμε ενημερώστε το προσωπικό της επιχείρησης μας για τυχόν αλλεργίες ή δυσανεξίες που μπορεί να έχετε. '}}
+				</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

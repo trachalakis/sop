@@ -1,0 +1,111 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block content %}{% verbatim %}
+<div id="app">
+	<div class="modal d-block" tabindex="-1">
+  		<div class="modal-dialog modal-fullscreen-sm-down">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<h5 class="modal-title">
+        				<i class="fa-solid fa-print"></i> Κέρασμα τραπέζι {{order.table.name}}
+        			</h5>
+      			</div>
+      			<div class="modal-body">
+		        	<div class="row gx-1 text-center">
+		        		<span class="fs-4">
+		        			<i class="fa-solid fa-sync fa-spin"></i>
+							Αποστολή στον εκτυπωτή
+						</span>
+		        	</div>
+      			</div>
+      			<div class="modal-footer">
+      			</div>
+    		</div>
+  		</div>
+	</div>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/axios"></script>
+	<script src="https://unpkg.com/lodash"></script>
+	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		order: {
+		    			table: {name: ''},
+		    			adults: null,
+		    			minors: null,
+		    			notes: '',
+		    			orderEntries: []
+		    		}
+		    	}
+		    },
+		    mounted () {
+		    	let id = new URLSearchParams(window.location.search).get('id');
+
+		    	axios({
+                    url: '/admin/graph-ql',
+                    method: 'post',
+                    data: `{
+                        order (id: ${id}) {
+	                        id,
+	                        table {
+	                        	id, name
+	                        },
+	                        notes,
+	                        adults, minors, price
+	                    }
+                    }`
+                }).then(response => {
+                    this.order = response.data.data.order;
+
+                    this.print();
+                });
+		    },
+		    methods: {
+				getTranslation(object, language) {
+					return _.find(object.translations, translation => {
+						return translation.language == language;
+					});
+				},
+				print() {
+					var today = new Date();
+					let printer = new epson.ePOSBuilder();
+
+					printer.addText(`${today.getHours()}:${today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()}\n`);
+					printer.addTextFont(printer.FONT_B);
+					printer.addTextSmooth(true);
+					printer.addFeedLine(1);
+					printer.addTextAlign(printer.ALIGN_CENTER);
+					printer.addTextSize(3, 3);
+					printer.addText(`Τραπέζι ${this.order.table.name}\n`);
+					printer.addFeedLine(1);
+					printer.addTextSize(2, 2);
+					printer.addText(`Ενήλικοι ${this.order.adults} / Άνήλικοι ${this.order.minors}\n`);
+					printer.addText(`\n--------------------------------\n`);
+					printer.addFeedLine(3);
+					printer.addTextSize(3, 3);
+					printer.addText('ΚΕΡΑΣΜΑ');
+
+					printer.addFeedLine(7);
+					printer.addCut(printer.CUT_FEED);
+					var address = `https://192.168.1.15/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+ 					var epos = new epson.ePOSPrint(address);
+					epos.onreceive = function (res) {
+						if (!res.success) {
+							alert('A print error occurred');
+						} else {
+							window.location.href = '/orders-app/';
+						}
+					}
+					epos.send(printer.toString());
+		    	}
+			}
+		}).mount('#app');
+	</script>
+{% endblock %}
