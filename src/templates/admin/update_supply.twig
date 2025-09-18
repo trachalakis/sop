@@ -13,7 +13,7 @@
 			<input type="text" class="form-control" name="name" value="{{supply.getName}}"/>
 		</div>
 	</div>
-	<div class="row mb-3">
+	<!--<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Active</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="isActive">
@@ -21,7 +21,7 @@
   				<option value="0" {{supply.getIsActive ? '' : 'selected'}}>No</option>
 			</select>
     	</div>
-	</div>
+	</div>-->
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Unit</label>
 		<div class="col-sm-10">
@@ -32,12 +32,12 @@
 			</select>
     	</div>
 	</div>
-	<div class="row mb-3">
+	{#<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Vat percentage</label>
 		<div class="col-sm-10">
 			<input type="number" class="form-control" name="vatPercentage" value="{{supply.getVatPercentage}}"/>
 		</div>
-	</div>
+	</div>#}
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Supply group</label>
 		<div class="col-sm-10">
@@ -61,18 +61,18 @@
 			</select>
     	</div>
 	</div>
-	<div class="row mb-3">
+	<!--<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Description</label>
 		<div class="col-sm-10">
 			<textarea class="form-control" rows="3" name="description">{{supply.getDescription}}</textarea>
 		</div>
-	</div>
+	</div>-->
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Custom fields</label>
 		<div class="col-sm-10">
 			{% for field, value in supply.getCustomFields %}
-				<div class="row custom-field-entry mb-2">
-		            <div class="col-sm-5">
+				<div class="row custom-field-entry">
+		            <div class="col-sm-5 mb-2">
 		                <input
 		                	type="text"
 		                	class="form-control"
@@ -81,7 +81,7 @@
 		                	required
 		                />
 		            </div>
-		            <div class="col-sm-5">
+		            <div class="col-sm-5 mb-2">
 		                <textarea
 		                	rows="3"
 		                	class="form-control"
@@ -90,7 +90,7 @@
 		                	{{- value -}}
 		                </textarea>
 		            </div>
-		            <div class="col-sm-2">
+		            <div class="col-sm-2 mb-2">
 		                <a class="btn btn-sm btn-danger delete-custom-field">
 		                    <i class="bx bx-trash-alt"></i>
 		                </a>
@@ -109,31 +109,6 @@
 		</div>
 	</div>
 </form>
-<hr/>
-<div class="table-responsive">
-	<table class="table table-striped">
-    	<thead>
-      		<tr>
-      			<th>Invoice</th>
-      			<th>Price</th>
-      		</tr>
-    	</thead>
-    	<tbody>
-    		{% for invoiceEntry in supply.getInvoiceEntries %}
-    			<tr>
-    				<td>
-    					<a class="text-decoration-none" href="/admin/invoices/view?id={{invoiceEntry.getInvoice.getId}}" target="_blank">
-	    					{{invoiceEntry.getInvoice.getSupplier.getName}}
-	    					-
-	    					{{invoiceEntry.getInvoice.getDate.format('d/m/Y')}}
-	    				</a>
-    				</td>
-    				<td>{{(invoiceEntry.getPrice / invoiceEntry.getQuantity)|round(2, 'floor')}}&euro; / {{supply.getUnit}}</td>
-    			</tr>
-    		{% endfor %}
-    	</tbody>
-    </table>
-</div>
 
 {% endblock %}
 

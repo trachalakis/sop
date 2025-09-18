@@ -43,9 +43,20 @@ class User
     private int $monthlyCredits;
 
     /**
+     * @Column(type="string", name="notes")
+     */
+    private ?string $notes;
+
+    /**
      * @Column(type="string", name="password_hash")
      */
     private string $passwordHash;
+
+    /*
+     * @OneToOne(targetEntity="Station")
+     * @JoinColumn(name="receipt_station_id", referencedColumnName="id")
+     *
+    private ?Station $receiptStation = null;*/
 
     /**
      * @Column(type="array", name="roles")
@@ -98,10 +109,20 @@ class User
         return $this->monthlyCredits;
     }
 
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
     }
+
+    /*public function getReceiptStation(): ?Station
+    {
+        return $this->receiptStation;
+    }*/
 
     public function getRoles(): array
     {
@@ -118,37 +139,47 @@ class User
         return in_array('waiter', $this->roles);
     }
 
-    public function setEmailAddress(string $emailAddress)
+    public function setEmailAddress(string $emailAddress): void
     {
     	$this->emailAddress = $emailAddress;
     }
 
-    public function setFullName(string $fullName)
+    public function setFullName(string $fullName): void
     {
     	$this->fullName = $fullName;
     }
 
-    public function setHourlyRate(float $hourlyRate)
+    public function setHourlyRate(float $hourlyRate): void
     {
         $this->hourlyRate = $hourlyRate;
     }
 
-    public function setIsActive(bool $isActive)
+    public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
     }
 
+    public function setNotes(?string $notes): void
+    {
+        $this->notes = $notes;
+    }
+    
     public function setMonthlyCredits(int $monthlyCredits): void
     {
         $this->monthlyCredits = $monthlyCredits;
     }
 
-    public function setPassword(string $password)
+    public function setPassword(string $password): void
     {
         $this->passwordHash = password_hash($password, PASSWORD_BCRYPT);
     }
 
-    public function setRoles(array $roles)
+    /*public function setReceiptStation(?Station $receiptStation): void
+    {
+        $this->receiptStation = $receiptStation;
+    }*/
+
+    public function setRoles(array $roles): void
     {
         $this->roles = $roles;
     }

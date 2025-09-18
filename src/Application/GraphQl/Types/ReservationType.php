@@ -24,7 +24,8 @@ class ReservationType extends ObjectType
                     'dateTime' => Types::date(),
                     'comments' => Type::string(),
                     'status' => Type::string(),
-                    'telephoneNumber' => Type::string()
+                    'telephoneNumber' => Type::string(),
+                    'tables' => Type::listOf(Type::string())
                 ];
             },
             'resolveField' => function ($object, $args, $context, $info) {

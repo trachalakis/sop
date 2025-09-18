@@ -25,7 +25,7 @@ final class Supplies
 
     public function __invoke(Request $request, Response $response)
     {
-        $supplyGroups = $this->supplyGroupsRepository->findBy([], ['position' => 'asc']);
+        $supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
 
         return $this->twig->render($response, 'admin/supplies.twig', ['supplyGroups' => $supplyGroups]);
     }

@@ -4,18 +4,24 @@
 <div id="app">
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	    <h1>
-		    <i class='bx bx-restaurant'></i> / <a class="text-decoration-none" href="/reservations-app/"><i class='bx bx-phone'></i></a>
+		    <i class='bx bx-restaurant'></i> / <a class="text-decoration-none" href="/reservations-app/"><i class="bx bx-phone"></i></a>
 		</h1>
 	    <div class="btn-toolbar">
-	       	<a href="/orders-app/create" class="btn btn-primary btn-lg">Νέα παραγγελία</a>
+			<div class="btn-group" v-if="hasTakeOut">
+  				<a href="/orders-app/create" class="btn btn-outline-primary btn-lg">Dine in</a>
+				<a href="/orders-app/take-out" class="btn btn-outline-primary btn-lg">Take out</a>
+			</div>
+			<div class="btn-group" v-else>
+  				<a href="/orders-app/create" class="btn btn-primary btn-lg">Παραγγελία</a>
+			</div>
 	    </div>
 	</div>
 	<table class="table table-striped fs-4 mt-4">
 		<tbody>
-			<tr v-for="order in orders">
+			<tr v-for="(order, index) in orders">
 				<td>
 					<a class="text-decoration-none" :href="'/orders-app/update?id=' + order.id">
-					<span v-if="order.table == null">Take away</span>
+					<span v-if="order.table == null">Take away #{{index}}</span>
 					<span v-else>{{order.table.name}}</span> /
 					&euro;{{order.price}} /
 					{{getTime(order.createdAt)}}</a>
@@ -57,13 +63,14 @@
 	{{ parent() }}
 	<script src="/assets/js/vue.global.prod.js"></script>
 	<script src="/assets/js/axios.min.js"></script>
-	<!--<script src="https://unpkg.com/lodash"></script>-->
 	<script src="/assets/js/lodash.min.js"></script>
 	<script>
 		vueApp = Vue.createApp({
 		    data() {
 		    	return {
-		    		orders: []
+		    		orders: [],
+					menus: [],
+					//takeAwayTables: 0
 		    	}
 		    },
 		    mounted () {
@@ -71,6 +78,17 @@
 					this.fetchOrders()
 				}, 5000)
                 this.fetchOrders();
+				axios({
+					url: '/admin/graph-ql',
+					method: 'post',
+					data: `{
+						activeMenus {
+							id, name
+						}
+					}`
+				}).then(response => {
+					this.menus = response.data.data.activeMenus
+				});
 		    },
 		    methods: {
 		    	fetchOrders () {
@@ -79,7 +97,7 @@
 	                    method: 'post',
 	                    data: `{
 	                        activeOrders {
-	                        	id, table {id, name}, price, createdAt
+	                        	id, uuid, table {id, name}, price, createdAt
 	                        }
 	                    }`
 	                }).then(response => {
@@ -89,7 +107,20 @@
 		    	getTime(date) {
 		    		return date.substr(date.length - 8, 5);
 		    	}
-		    }
+		    },
+			computed: {
+				hasTakeOut () {
+					let ret = false;
+					
+					_.each(this.menus, menu => {
+						if (menu.name == 'Take Out') {
+							ret = true;
+						}
+					});
+
+					return ret;
+				}
+			}
 		}).mount('#app');
 	</script>
 {% endblock %}

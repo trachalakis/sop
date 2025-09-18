@@ -18,6 +18,11 @@ class Types
         return static::get(LanguageType::class);
     }
 
+    public static function menu()
+    {
+        return static::get(MenuType::class);
+    }
+    
     public static function menuSection()
     {
         return static::get(MenuSectionType::class);

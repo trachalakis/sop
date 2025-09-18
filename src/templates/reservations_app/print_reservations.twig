@@ -48,7 +48,7 @@
                     method: 'post',
                     data: `{
                         todaysReservations {
-                        	id, name, adults, minors, dateTime, comments, telephoneNumber,
+                        	id, name, adults, minors, dateTime, comments, telephoneNumber, tables
                         },
                         stations {
                         	id, name, printerAddress, hasReceiptPrinter
@@ -79,9 +79,8 @@
 					printer.addTextAlign(printer.ALIGN_CENTER);
 					printer.addTextSize(2, 2);
 					printer.addFeedLine(5);
-					printer.addText(`Reservations\n`);
-					printer.addText(_.repeat('-', 24));
-					printer.addFeedLine(3);
+					printer.addText('----- ΚΡΑΤΗΣΕΙΣ -----');
+					printer.addFeedLine(5);
 					//printer.addTextLineSpace(40);
 					printer.addTextAlign(printer.ALIGN_LEFT);
 
@@ -89,6 +88,10 @@
 						let time = this.getTime(reservation.dateTime);
 
 						printer.addText(`${reservation.name}/${time}/${reservation.adults}/${reservation.minors}\n`);
+						_.each(reservation.tables, table => {
+							printer.addText(`T${table} `);
+						});
+						printer.addFeedLine(1);
 						printer.addText(`${reservation.comments}\n`);
 						printer.addFeedLine(2);
 					});

@@ -11,6 +11,13 @@
         </a>
     </div>
 </div>
+<ul class="nav border-bottom mb-3">
+	{% for supplyGroup in supplyGroups %} 
+		<li class="nav-item">
+			<a class="nav-link active" aria-current="page" href="#supply-group-{{supplyGroup.getId}}">{{supplyGroup.getName}}</a>
+		</li>
+	{% endfor %}
+</ul>
 <ul class="list-group">
   	{% for supplyGroup in supplyGroups %}
   		<li class="list-group-item border border-0" id="supply-group-{{supplyGroup.getId}}">
@@ -21,8 +28,8 @@
 		  		{% for supply in supplyGroup.getSupplies|filter(s => s.isActive) %}
 		  			<li class="list-group-item border-bottom">
 	  					<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">
-	  						{{supply.getName}}
-	  					</a>
+	  						{{supply.getName}} 
+	  					</a> &euro;{{supply.getCustomField('price')}}/{{supply.getUnit}} {{supply.getCustomField('supplier')}}
 	  					{% if not supply.getIsActive %}
 	   						<span class="badge rounded-pill text-bg-danger">Inactive</span>
 	   					{% endif %}

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Actions\ReservationsApp;
 
-use Domain\Entities\Reservation;
 use Domain\Repositories\ReservationsRepositoryInterface;
+use Domain\Repositories\TablesRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -14,13 +14,17 @@ final class UpdateReservation
 {
     private ReservationsRepositoryInterface $reservationsRepository;
 
+    private TablesRepositoryInterface $tablesRepository;
+
     private Twig $twig;
 
     public function __construct(
         ReservationsRepositoryInterface $reservationsRepository,
+        TablesRepositoryInterface $tablesRepository,
         Twig $twig
     ) {
         $this->reservationsRepository = $reservationsRepository;
+        $this->tablesRepository = $tablesRepository;
         $this->twig = $twig;
     }
 
@@ -32,6 +36,7 @@ final class UpdateReservation
 
         if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();
+            
             //dd($requestData);
             //$reservation = new Reservation;
             //$reservation->setEmailAddress(null);
@@ -42,6 +47,7 @@ final class UpdateReservation
             $reservation->setAdults(intval($requestData['adults']));
             $reservation->setMinors(intval($requestData['minors']));
             $reservation->setTelephoneNumber($requestData['telephoneNumber']);
+            $reservation->setTables($requestData['tables']);
             $reservation->setComments(mb_strtoupper($requestData['comments']));
 
             $this->reservationsRepository->persist($reservation);
@@ -49,6 +55,15 @@ final class UpdateReservation
             return $response->withHeader('Location', '/reservations-app/')->withStatus(302);
     	}
 
-        return $this->twig->render($response, 'reservations_app/update_reservation.twig', ['reservation' => $reservation]);
+        $tables = $this->tablesRepository->findBy(['isActive' => true], ['name' => 'asc']);
+
+        return $this->twig->render(
+            $response,
+            'reservations_app/update_reservation.twig',
+            [
+                'reservation' => $reservation,
+                'tables' => $tables
+            ]
+        );
     }
 }

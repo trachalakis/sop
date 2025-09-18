@@ -70,6 +70,16 @@
 						<span class="badge text-bg-success ms-2">{{reservation.getTable.getName}}</span>
 					{% endif %}
 					<div>
+						{% for table in reservation.getTables %}
+							<a
+								href="/reservations-app/toggle-table-lock?reservationId={{reservation.getId}}"
+								class="badge text-bg-info text-decoration-none"
+							>
+								{{table}}{% if reservation.getIsTableLocked %}!{% endif %}
+							</a>
+						{% endfor %}
+					</div>
+					<div>
 						<small class="text-body-secondary">
 						{#{% if reservation.getTelephoneNumber|trim|length > 0 %}
 							<small class="text-body-secondary">{{reservation.getTelephoneNumber}}</small>
@@ -81,18 +91,22 @@
 					</div>
 				</td>
 				<td class="text-end">
-				
-
-<!--<div class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Dropdown button
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Action</a></li>
-    <li><a class="dropdown-item" href="#">Another action</a></li>
-    <li><a class="dropdown-item" href="#">Something else here</a></li>
-  </ul>
-</div>-->
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							{% if reservation.getStatus == 'PENDING' %}
+								ΑΝΑΜΕΝΕΤΑΙ
+							{% elseif reservation.getStatus == 'ARRIVED' %}
+								ΗΡΘΕ
+							{% elseif  reservation.getStatus == 'CANCELLED' %}
+								ΑΚΥΡΩΘΗΚΕ
+							{% endif %}
+						</button>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">ΗΡΘΕ</a></li>
+							<li><a class="dropdown-item" href="#">ΑΚΥΡΩΘΗΚΕ</a></li>
+							<li><a class="dropdown-item" href="#">ΑΝΑΜΕΝΕΤΑΙ</a></li>
+						</ul>
+					</div>
 
 
 					<!--<a class="btn btn-lg btn-outline-secondary me-1" href="/orders-app/create?reservationId={{reservation.getId}}">

@@ -7,6 +7,7 @@ namespace Application\Actions\Admin;
 use Domain\Repositories\UsersRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Domain\Repositories\StationsRepositoryInterface;
 use Slim\Views\Twig;
 
 final class UpdateUser
@@ -36,6 +37,7 @@ final class UpdateUser
             $user->setHourlyRate(floatval($requestData['hourlyRate']));
             $user->setMonthlyCredits(intval($requestData['monthlyCredits']));
             $user->setRoles($requestData['roles']);
+            $user->setNotes($requestData['notes']);
 
             $this->usersRepository->persist($user);
 

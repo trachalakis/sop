@@ -8,21 +8,17 @@ use Application\GraphQl\Resolvers\FieldResolver;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class UserType extends ObjectType
+class MenuType extends ObjectType
 {
     public function __construct()
     {
         $config = [
-            'name' => 'User',
+            'name' => 'Menu',
             'fields' => function ()  {
                 return [
                     'id' => Type::id(),
-                    'emailAddress' => Type::string(),
-                    'fullName' => Type::string(),
-                    'hourlyRate' => Type::float(),
                     'isActive' => Type::boolean(),
-                    'roles' => Type::listOf(Type::string()),
-                    'defaultMenu' => Type::string()
+                    'name' => Type::string()
                 ];
             },
             'resolveField' => function ($object, $args, $context, $info) {

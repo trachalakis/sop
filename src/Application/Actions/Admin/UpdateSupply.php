@@ -41,15 +41,15 @@ final class UpdateSupply
 
 		if ($request->getMethod() == 'POST') {
 			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
-			$supplier = $this->suppliersRepository->findOneBy(['id' => $requestData['supplier']]);
+			//$supplier = $this->suppliersRepository->findOneBy(['id' => $requestData['supplier']]);
 
-			$supply->setDescription($requestData['description']);
-			$supply->setIsActive(boolval($requestData['isActive']));
+			//$supply->setDescription($requestData['description']);
+			//$supply->setIsActive(boolval($requestData['isActive']));
 			$supply->setName($requestData['name']);
-			$supply->setSupplier($supplier);
+			//$supply->setSupplier($supplier);
 			$supply->setSupplyGroup($supplyGroup);
 			$supply->setUnit($requestData['unit']);
-			$supply->setVatPercentage(floatval($requestData['vatPercentage']));
+			//$supply->setVatPercentage(floatval($requestData['vatPercentage']));
 
 			$customFields = [];
             if (isset($requestData['customFields'])) {
@@ -65,7 +65,7 @@ final class UpdateSupply
 		}
 
 		$suppliers = $this->suppliersRepository->findBy([], ['name' => 'asc']);
-		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['position' => 'asc']);
+		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
 		return $this->twig->render(
 			$response,
 			'admin/update_supply.twig',

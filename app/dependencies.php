@@ -43,6 +43,8 @@ use Domain\Repositories\OrderEntryCancellationsRepositoryInterface;
 use Domain\Repositories\TablesRepositoryInterface;
 use Domain\Repositories\StationsRepositoryInterface;
 use Domain\Repositories\OrderEntryGroupsRepositoryInterface;
+use Domain\Repositories\SupplyGroupsRepositoryInterface;
+use Domain\Repositories\SuppliersRepositoryInterface;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -113,7 +115,7 @@ return function (ContainerBuilder $containerBuilder) {
         },*/
         EntityManagerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get('settings')['db'];
-
+           
             return Doctrine\ORM\EntityManager::create(
                 [
                     'driver' => 'pdo_mysql',
@@ -201,12 +203,17 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(Supply::class);
         },
-        /*SuppliersRepositoryInterface::class => function (ContainerInterface $c) {
+        SupplyGroupsRepositoryInterface::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManagerInterface::class);
+
+            return $em->getRepository(SupplyGroup::class);
+        }, 
+        SuppliersRepositoryInterface::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManagerInterface::class);
 
             return $em->getRepository(Supplier::class);
         },
-        'Domain\Repositories\SuppliesRepositoryInterface' => function (ContainerInterface $c) {
+        /*'Domain\Repositories\SuppliesRepositoryInterface' => function (ContainerInterface $c) {
             $em = $c->get(EntityManagerInterface::class);
 
             return $em->getRepository(Supply::class);

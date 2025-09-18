@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Repositories\ReservationsRepositoryInterface;
+use Domain\Repositories\TablesRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -14,11 +15,17 @@ final class UpdateReservation
 	private Twig $twig;
 
     private ReservationsRepositoryInterface $reservationsRepository;
+    
+    private TablesRepositoryInterface $tablesRepository;
 
-    public function __construct(Twig $twig, ReservationsRepositoryInterface $reservationsRepository)
-    {
-        $this->twig = $twig;
+    public function __construct(
+        ReservationsRepositoryInterface $reservationsRepository,
+        TablesRepositoryInterface $tablesRepository,
+        Twig $twig
+    ) {
         $this->reservationsRepository = $reservationsRepository;
+        $this->tablesRepository = $tablesRepository;
+        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)
@@ -42,6 +49,15 @@ final class UpdateReservation
             return $response->withHeader('Location', '/admin/reservations')->withStatus(302);
     	}
 
-		return $this->twig->render($response, 'admin/update_reservation.twig', ['reservation' => $reservation]);
+        $tables = $this->tablesRepository->findAllBy(['active' => true, 'name' => 'asc']);
+
+		return $this->twig->render(
+            $response, 
+            'admin/update_reservation.twig', 
+            [
+                'reservation' => $reservation,
+                'tables' => $tables
+            ]
+        );
 	}
 }

@@ -290,6 +290,7 @@
   									type="button"
   									class="btn btn-lg btn-outline-primary w-75"
   									@click="showMenuItemOptionsModal(menuItem)"
+									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
   								>
   									{{getTranslation(menuItem, 'el').name}}
   									<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
@@ -306,6 +307,7 @@
 	  										orderEntryExtras: []
 	  									});
 	  								"
+									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
   								>
   									{{getTranslation(menuItem, 'el').name}} <span class="text-body-secondary">(&euro;{{menuItem.price}})</span>
   									<span
@@ -319,6 +321,7 @@
   									type="button"
   									class="btn btn-lg btn-outline-primary w-25"
   									@click="showMenuItemOptionsModal(menuItem)"
+									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
   								>
   									<span class="fw-bold">&ctdot;</span>
   								</button>
@@ -631,6 +634,27 @@
   		</div>
 	</div>
 
+	<!-- error modal -->
+	<div class="modal modal-lg d-block" v-if="printerError != null">
+  		<div class="modal-dialog modal-fullscreen-sm-down">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<h5 class="modal-title">Λάθος εκτύπωσης</h5>
+        			<button
+        				type="button"
+        				class="btn-close"
+        				@click="printerError = null"
+        			></button>
+      			</div>
+      			<div class="modal-body">
+      				<div class="mb-3">
+						<p class="text-center fs-5">{{printerError.errorText}}</p>
+					</div>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+
 	<div class="border rounded mb-3" v-if="newOrderEntryGroup.orderEntries.length > 0">
 		<div class="row">
 			<div class="col">
@@ -740,6 +764,7 @@
   										orderEntryExtras: orderEntry.orderEntryExtras
   									});
 			      				"
+								:disabled="orderEntry.menuItem.trackAvailableQuantity && orderEntry.menuItem.availableQuantity == 0"
 			      			>
 			      				<span class="fw-bold">&#x002B;</span>
 			      			</button>
@@ -846,6 +871,7 @@
 		    		waiter: null,
 
 		    		reprinting: false,
+					printerError: null
 		    	}
 		    },
 		    watch: {
@@ -885,7 +911,7 @@
                         menuSections (menu: "Default") {
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
-                            	id, availableQuantity, isPricePerKg, isDrink, price, menuPosition, translations { name, language },
+                            	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, menuPosition, translations { name, language },
                             	menuItemExtras {
                             		name, price
                             	},
@@ -1177,7 +1203,8 @@
 						printer.addTextFont(printer.FONT_B);
 						printer.addTextAlign(printer.ALIGN_CENTER);
 						printer.addFeedLine(1);
-						printer.addText('--- EXTRA ---');
+						printer.addTextSize(2, 2);
+						printer.addText('--- REPRINT ---');
 						printer.addFeedLine(3);
 						printer.addTextSize(3, 3);
 						printer.addText(`Τραπέζι ${this.order.table.name}`);
@@ -1185,6 +1212,7 @@
 						printer.addTextSize(2, 2);
 						printer.addText(`Άτομα ${this.order.adults} / ${this.order.minors}`);
 						if (orderEntryGroup.notes.length > 0) {
+							printer.addFeedLine(2);
 							printer.addText(`***\n${orderEntryGroup.notes}\n***`);
 						}
 						printer.addFeedLine(2);
@@ -1294,6 +1322,7 @@
 						printer.addTextSize(2, 2);
 						printer.addText(`Άτομα ${this.order.adults} / ${this.order.minors}`);
 						if (this.newOrderEntryGroup.notes.length > 0) {
+							printer.addFeedLine(2);
 							printer.addText(`***\n${this.newOrderEntryGroup.notes}\n***`);
 						}
 						printer.addFeedLine(2);
@@ -1367,6 +1396,10 @@
 
 						printer.addFeedLine(10);
 						printer.addCut(printer.CUT_FEED);
+
+						//printer.onreceive = function (res) { alert(res.printjobid); };
+ 						//printer.onerror = function (err) { alert(err.status); };
+
 						if (orderEntriesCount > 0) {
 							station.printOk = false;
 							var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
@@ -1375,11 +1408,18 @@
  							//Send the print document
  							epos.onreceive = function (res) {
  								if (!res.success) {
- 									alert(`A print error occurred. Station ${station.name}`);
+ 									alert(`Αδύνατη η εκτύπωση στον εκτυπωτή ${station.name}`);
  								} else {
  									station.printOk = true;
  								}
  							}
+
+							//let printerError =this.printerError;
+							epos.onerror  = err => { 
+								this.savingOrder = false;
+								this.printerError = {};
+								this.printerError.errorText = `Αδύνατη η εκτύπωση στον εκτυπωτή ${station.name}`;
+							};
  							epos.send(printer.toString());
 						} else {
 							station.printOk = true;

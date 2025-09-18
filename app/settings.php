@@ -10,6 +10,8 @@ return function (ContainerBuilder $containerBuilder) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../app');
     $dotenv->load();
 
+    
+
     // Global Settings Object
     $containerBuilder->addDefinitions([
         'settings' => [

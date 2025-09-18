@@ -92,6 +92,11 @@ final class UpdateOrder
                     if ($menuItem->getTrackAvailableQuantity()) {
                         $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));
                         $this->menuItemsRepository->persist($menuItem);
+
+                        //TODO
+                        if (function_exists('apcu_clear_cache')) {
+                            apcu_clear_cache();
+                        }
                     }
 
                     $orderEntry = new OrderEntry;

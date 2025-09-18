@@ -71,11 +71,11 @@ final class CreateOrder
 
             $datetime = new Datetime;
 
-            $orderIsPaid = $employee != null || $table->getName() == 'Take away';
+            //$orderIsPaid = $employee != null || $table->getName() == 'Take away';
 
             $order = new Order;
             $order->setUuid(Uuid::uuid4()->toString());
-            $order->setStatus($orderIsPaid ? 'PAID' : 'OPEN');
+            $order->setStatus($employee != null ? 'PAID' : 'OPEN'); //todo create separate action for user orders
             $order->setTable($table);
             $order->setAdults(intval($requestData['adults']));
             $order->setMinors(intval($requestData['minors']));
@@ -97,9 +97,6 @@ final class CreateOrder
 
             	if ($menuItem->getTrackAvailableQuantity()) {
                     $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));
-                    if ($menuItem->getAvailableQuantity() == 0) {
-                        $menuItem->setIsActive(false);
-                    }
                     $this->menuItemsRepository->persist($menuItem);
 
                     //TODO

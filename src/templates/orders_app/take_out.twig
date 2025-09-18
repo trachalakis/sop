@@ -1,0 +1,541 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+{% block pageCss %}
+	<style>
+		.mt-n1 {
+	  		margin-top: -0.25rem !important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}{% verbatim %}
+<canvas id="canvas-test" width="257" height="212" style="display: none;"></canvas>
+<div id="app">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/orders-app/" class="text-decoration-none"><i class="bx bx-restaurant"></i></a> /
+	    	<span>
+		    	<a class="text-primary text-decoration-none">Take out</a>
+				/ &euro;{{totalPrice}}
+			</span>
+	    </h1>
+    	<div class="btn-toolbar">
+	       	<button href="#" class="btn btn-lg btn-primary" @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
+	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Ok
+	        </button>
+	    </div>
+	</div>
+
+	<div class="row gx-1 mb-2">
+        <div class="sticky-top">
+			<button
+				type="button"
+				class="btn btn-lg btn-primary w-100 mt-2 mb-2"
+				@click="isMenuSectionsModalVisible = true"
+			>
+				Προσθήκη
+			</button>
+		</div>
+
+		<div class="modal modal-lg" :class="isMenuSectionsModalVisible ? 'd-block' :''" tabindex="-1">
+	  		<div class="modal-dialog modal-fullscreen-sm-down">
+	    		<div class="modal-content">
+	      			<div class="modal-header">
+	        			<h5 class="modal-title">Επιλογή κατηγορίας</h5>
+	        			<button type="button" class="btn-close" @click="isMenuSectionsModalVisible = false"></button>
+	      			</div>
+	      			<div class="modal-body">
+						<div class="row gx-1">
+			        		<div class="col-sm-6 mb-2" v-for="menuSection in menuSections">
+			        			<button
+			        				type="button"
+			        				class="btn btn-outline-primary btn-lg w-100"
+			        				@click="activeMenuSection = menuSection;isMenuSectionsModalVisible = false "
+			        			>
+			        				{{getTranslation(menuSection, 'el').name}}
+			        			</button>
+			        		</div>
+			        	</div>
+	      			</div>
+	      			<div class="modal-footer">
+	        			<button type="button" class="btn btn-lg btn-secondary" @click="isMenuSectionsModalVisible = false">
+	        				Κλείσιμο
+	        			</button>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>
+
+		<div class="modal modal-lg d-block" v-if="activeMenuSection != null">
+	  		<div class="modal-dialog modal-fullscreen-sm-down">
+	    		<div class="modal-content">
+	      			<div class="modal-header">
+	        			<h5 class="modal-title">Επιλογή πιάτου</h5>
+	        			<button
+	        				type="button"
+	        				class="btn-close"
+	        				@click="activeMenuSection = null;isMenuSectionsModalVisible = false"
+	        			></button>
+	      			</div>
+	      			<div class="modal-body">
+						<div class="row gx-1">
+			        		<div class="col-sm-6 mb-2" v-for="menuItem in activeMenuSection.menuItems">
+			        			<div class="btn-group w-100">
+	  								<button v-if="menuItem.isPricePerKg"
+	  									type="button"
+	  									class="btn btn-lg btn-outline-primary w-75"
+	  									@click="showMenuItemOptionsModal(menuItem)"
+	  								>
+	  									{{getTranslation(menuItem, 'el').name}}
+	  									<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
+	  								</button>
+	  								<button v-else
+	  									type="button"
+	  									class="btn btn-lg btn-outline-primary w-75"
+	  									@click="
+		  									addOrderEntry({
+		  										menuItem: menuItem,
+		  										timing: 1,
+		  										family: 1,
+		  										notes: '',
+		  										orderEntryExtras: []
+		  									});
+		  								"
+	  								>
+	  									{{getTranslation(menuItem, 'el').name}}
+	  									<span class="text-body-secondary">(&euro;{{menuItem.price}})</span>
+	  									<span
+	  										v-if="menuItem.trackAvailableQuantity && menuItem.availableQuantity <= 7"
+	  										class="badge rounded-pill text-bg-danger ms-1"
+	  									>
+	  										{{menuItem.availableQuantity}}
+	  									</span>
+	  								</button>
+	  								<button
+	  									type="button"
+	  									class="btn btn-lg btn-outline-primary w-25"
+	  									@click="showMenuItemOptionsModal(menuItem)"
+	  								>
+	  									<span class="fw-bold">&ctdot;</span>
+	  								</button>
+								</div>
+			        		</div>
+			        	</div>
+	      			</div>
+	      			<div class="modal-footer">
+	        			<button
+	        				type="button"
+	        				class="btn btn-lg btn-secondary"
+	        				@click="activeMenuSection = null; isMenuSectionsModalVisible = true"
+	        			>
+	        				Πίσω
+	        			</button>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>
+		
+        </div>
+        <div class="col-sm-12 mt-3">
+			<div
+				class="mb-3"
+				v-for="orderEntry in order.orderEntries"
+				@click="activeOrderEntry = orderEntry"
+			>
+				<div class="d-flex w-100 justify-content-between">
+					<div class="fs-5">
+						{{orderEntry.quantity}} &times;
+						{{getTranslation(orderEntry.menuItem, 'el').name}}
+						/ &euro;{{calculateOrderEntryPrice(orderEntry)}}
+					</div>
+					<div>
+						<button
+							type="button"
+							class="btn btn-secondary me-2"
+							@click.stop="if (orderEntry.quantity > 1) { orderEntry.quantity--; } else { deleteOrderEntry(orderEntry.index) }"
+						>
+							<span class="fw-bold">&#x2212;</span>
+						</button>
+						<button
+							type="button"
+							class="btn btn-secondary"
+							@click.stop="orderEntry.quantity++"
+						>
+							<span class="fw-bold">&#x002B;</span>
+						</button>
+					</div>
+				</div>
+				<div class="mt-n1 ps-3">
+					<div v-if="orderEntry.orderEntryExtras.length > 0">
+						<span v-for="(extra, index) in orderEntry.orderEntryExtras">
+							<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+						</span>
+					</div>
+					<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+				</div>
+			</div>
+        </div>
+
+		<div class="modal modal-lg d-block" v-if="newMenuItem != null">
+	  		<div class="modal-dialog modal-fullscreen-sm-down">
+	    		<div class="modal-content">
+	      			<div class="modal-header">
+	        			<h5 class="modal-title">Επιλογές</h5>
+	        			<button
+	        				type="button"
+	        				class="btn-close"
+	        				@click="newMenuItem = null;"
+	        			></button>
+	      			</div>
+	      			<div class="modal-body">
+						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.menuItemExtras">
+	  						<label class="form-check-label w-100 fs-5">
+		  						<input
+		  							class="form-check-input"
+		  							type="checkbox"
+		  							:value="extra"
+		  							v-model="newOrderEntry.orderEntryExtras"
+		  						>
+			    				{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
+	  						</label>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Σχόλια</label>
+	  						<textarea
+	  							class="form-control"
+	  							rows="2"
+	  							v-model="newOrderEntry.notes"
+	  						></textarea>
+						</div>
+	      			</div>
+	      			<div class="modal-footer">
+	      				<button
+	        				type="button"
+	        				class="btn btn-secondary btn-lg"
+	        				@click="newMenuItem = null"
+	        			>Πίσω</button>
+	        			<button
+	        				type="button"
+	        				class="btn btn-primary btn-lg"
+	        				@click="
+	        					newOrderEntry.menuItem = newMenuItem;
+	        					addOrderEntry(newOrderEntry);
+	        					newMenuItem = null;
+	        					newOrderEntry = {notes:'', orderEntryExtras: []};
+	        				"
+	        			>Ok</button>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>
+
+		<div class="modal modal-lg d-block" v-if="activeOrderEntry != null">
+	  		<div class="modal-dialog modal-fullscreen-sm-down">
+	    		<div class="modal-content">
+	      			<div class="modal-header">
+	        			<h5 class="modal-title">Επιλογές</h5>
+	        			<button
+	        				type="button"
+	        				class="btn-close"
+	        				@click="activeOrderEntry = null;"
+	        			></button>
+	      			</div>
+	      			<div class="modal-body">
+						
+						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.menuItemExtras">
+	  						<label class="form-check-label w-100 fs-5">
+		  						<input
+		  							class="form-check-input"
+		  							type="checkbox"
+		  							:value="extra"
+		  							v-model="activeOrderEntry.orderEntryExtras"
+		  						>
+								{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
+	  						</label>
+						</div>
+						
+						<div class="mb-3">
+							<label class="form-label">Σχόλια</label>
+	  						<textarea
+	  							class="form-control form-control-lg"
+	  							rows="2"
+	  							v-model="activeOrderEntry.notes"
+	  						></textarea>
+						</div>
+	      			</div>
+	      			<div class="modal-footer">
+	      				<button
+	        				type="button"
+	        				class="btn btn-secondary btn-lg"
+	        				@click="activeOrderEntry = null"
+	        			>Πίσω</button>
+	        			<button
+	        				type="button"
+	        				class="btn btn-primary btn-lg"
+	        				@click="
+	        					activeOrderEntry = null
+	        				"
+	        			>Ok</button>
+	      			</div>
+	    		</div>
+	  		</div>
+		</div>
+	</div>
+</div>
+
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<script src="/assets/js/lodash.min.js"></script>
+	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		showNotesModal: false,
+		    		savingOrder: false,
+
+		    		newMenuItem: null,
+		    		activeOrderEntry: null,
+					isMenuSectionsModalVisible: false,
+					activeMenuSection: null,
+
+		    		menuSections: [],
+		    		stations: [],
+		    		waiter: null,
+
+		    		family: 1,
+		    		timing: 1,
+
+		    		newOrderEntry: {
+		    			orderEntryExtras: [],
+		    			notes: '',
+		    			weight: null
+		    		},
+
+		    		order: {
+		    			table: null,
+		    			adults: null,
+		    			minors: null,
+		    			notes: '',
+		    			orderEntries: [],
+		    			employee: null,
+		    			reservationId: null
+		    		}
+		    	}
+		    },
+    		watch: {
+		        'stations' : {
+		        	handler: function ()  {
+			        	let isTrue = _.reduce(this.stations, function(result, station) {
+	  						return result && station.printOk;
+						}, true);
+
+						if (isTrue) {
+							window.location.href = '/orders-app/take-out';
+						}
+					},
+					deep: true,
+		            immediate: false
+		        }
+		    },
+		    mounted () {
+		    	this.order.reservationId = new URLSearchParams(window.location.search).get('reservationId');
+
+		    	axios({
+                    url: '/admin/graph-ql?useCachedResults=true',
+                    method: 'post',
+                    data: `{
+                        menuSections(menu: "Take out") {
+                            id, translations { name, language } ,
+                            menuItems: activeMenuItems {
+                            	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, translations { name, language }, menuPosition,
+                            	menuItemExtras {
+                            		id, name, price
+                            	},
+                            	stations {id, name, printerAddress}
+                            }
+                        },
+                        stations {
+                        	id, name, printerAddress, hasReceiptPrinter
+                        }
+                    }`
+                }).then(response => {
+                    this.menuSections = response.data.data.menuSections
+                    this.stations = response.data.data.stations
+                });
+                
+                axios({
+                    url: '/admin/graph-ql',
+                    method: 'post',
+                    data: `{
+                        activeUser {
+                        	id, fullName
+                        }
+                    }`
+                }).then(response => {
+                    this.waiter = response.data.data.activeUser
+                });
+		    },
+		    computed: {
+		    	totalPrice () {
+		    		let totalPrice = 0;
+
+		    		_.each(this.order.orderEntries, orderEntry => {
+			    		totalPrice += this.calculateOrderEntryPrice(orderEntry)
+			    	});
+
+		    		return _.round(totalPrice, 1);
+		    	},
+		    },
+		    methods: {
+		    	getHm() {
+		    		var today = new Date();
+		    		return `${today.getHours()}:${today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()}\n`
+		    	},
+		    	getTranslation(object, language) {
+		    		return _.find(object.translations, translation => {
+		    			return translation.language == language;
+		    		});
+		    	},
+		    	save () {
+		    		if (this.order.orderEntries.length == 0) {
+		    			return;
+		    		}
+
+		    		if (this.savingOrder) {
+		    			return;
+		    		}
+		    		this.savingOrder = true;
+
+		    		axios.post('/orders-app/take-out', this.order)
+		                .then(response => {
+		                    if (response.data == 'ok') {
+		                    	this.printOrder();
+		                    }
+		                }).catch(function (error) {
+	    					alert(error);
+	  					});
+		    	},
+		    	printOrder() {
+					_.each(this.stations, station => {
+						let printer = new epson.ePOSBuilder();
+
+						printer.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
+						printer.addFeedLine(2);
+						printer.addTextAlign(printer.ALIGN_CENTER);
+						printer.addTextSmooth(true);
+						printer.addText(this.getHm());
+						printer.addTextFont(printer.FONT_B);
+						printer.addTextAlign(printer.ALIGN_CENTER);
+						printer.addFeedLine(1);
+						printer.addTextSize(2, 2);
+						printer.addText('--- TAKE AWAY ---');
+						printer.addFeedLine(3);
+						printer.addCommand(_.repeat('-', 32));
+						printer.addFeedLine(1);
+						printer.addTextAlign(printer.ALIGN_LEFT);
+						printer.addTextLineSpace(40);
+
+						let orderEntriesCount = 0;
+						_.each(this.order.orderEntries, orderEntry => {
+							let index = _.findIndex(orderEntry.menuItem.stations, s => s.id == station.id);
+
+							if (index != -1) {
+								orderEntriesCount++;
+								let quantity = orderEntry.quantity;
+								let name = this.getTranslation(orderEntry.menuItem, 'el').name;
+								let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
+
+								printer.addText(`${quantity} x ${name} (${priceBlock})\n`);
+								_.each(orderEntry.orderEntryExtras, orderEntryExtra => {
+									printer.addText(`\t${orderEntryExtra.name}\n`);
+								});
+								if (orderEntry.notes.length > 0) {
+									printer.addText(`\t${orderEntry.notes}\n`);
+								}
+							}
+						});
+						printer.addCommand(_.repeat('-', 32));
+						printer.addTextAlign(printer.ALIGN_RIGHT);
+						printer.addText("Σύνολο: €" + this.totalPrice);
+
+						printer.addFeedLine(10);
+						printer.addCut(printer.CUT_FEED);
+						if (orderEntriesCount > 0) {
+							station.printOk = false;
+							var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+ 							var epos = new epson.ePOSPrint(address);
+ 							epos.onreceive = function (res) {
+ 								if (!res.success) {
+									console.log(res);
+ 									alert(`A print error occurred. Station ${station.name}`);
+ 								} else {
+ 									station.printOk = true;
+ 								}
+ 							}
+ 							epos.send(printer.toString());
+						} else {
+							station.printOk = true;
+						}
+					});
+		    	},
+		    	showMenuItemOptionsModal (menuItem) {
+		    		this.newMenuItem = menuItem;
+		    		this.newOrderEntry.timing = this.timing;
+					this.newOrderEntry.family = this.family;
+					this.newOrderEntry.notes = '';
+
+		    		if (menuItem.isPricePerKg) {
+	  					this.newOrderEntry.weight = '';
+		    		}
+		    	},
+
+		    	addOrderEntry(newOrderEntry) {
+		    		let index = this.order.orderEntries.findIndex(
+		    			orderEntry =>
+		    				orderEntry.menuItem.id == newOrderEntry.menuItem.id
+		    				&& orderEntry.family == newOrderEntry.family
+		    				&& orderEntry.timing == newOrderEntry.timing
+		    				&& orderEntry.notes == newOrderEntry.notes
+		    				&& _.isEqual(orderEntry.orderEntryExtras, newOrderEntry.orderEntryExtras)
+		    		);
+
+	    			if (index != -1) {
+	    				this.order.orderEntries[index].quantity++;
+	    			} else {
+		    			this.order.orderEntries.splice(this.order.orderEntries.length, 0, {
+			    			index: this.order.orderEntries.length,
+			    			quantity: 1,
+			    			family: 1,
+			    			timing: 1,
+			    			menuItem: newOrderEntry.menuItem,
+			    			orderEntryExtras: newOrderEntry.orderEntryExtras,
+			    			notes: newOrderEntry.notes,
+			    			weight: newOrderEntry.weight,
+			    			price: this.calculateOrderEntryPrice(newOrderEntry)
+			    		});
+			    	}
+		    	},
+		    	deleteOrderEntry(i) {
+		    		let index = this.order.orderEntries.findIndex(
+		    			orderEntry => orderEntry.index == i
+		    		)
+		    		this.order.orderEntries.splice(index, 1);
+		    	},
+		    	calculateOrderEntryPrice(orderEntry) {
+		    		let price = orderEntry.menuItem.price;
+
+		    		_.each(orderEntry.orderEntryExtras, extra => {
+		    			price += extra.price;
+		    		})
+
+		    		return _.round(price * orderEntry.quantity, 1);
+		    	}
+		    }
+		}).mount('#app');
+	</script>
+{% endblock %}

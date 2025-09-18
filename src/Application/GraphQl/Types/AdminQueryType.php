@@ -8,7 +8,6 @@ use Domain\Repositories\LanguagesRepositoryInterface;
 use Domain\Repositories\MenuItemsRepositoryInterface;
 use Domain\Repositories\MenuSectionsRepositoryInterface;
 use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
 use Domain\Repositories\ReservationsRepositoryInterface;
 use Domain\Repositories\StationsRepositoryInterface;
 use Domain\Repositories\SuppliersRepositoryInterface;
@@ -17,7 +16,6 @@ use Domain\Repositories\TablesRepositoryInterface;
 use Domain\Repositories\UsersRepositoryInterface;
 use Domain\Repositories\MenusRepositoryInterface;
 use GraphQL\Type\Definition\ObjectType;
-use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 
 class AdminQueryType extends ObjectType
@@ -27,6 +25,14 @@ class AdminQueryType extends ObjectType
     	$config = [
             'name' => 'Query',
             'fields' => [
+                'activeMenus' => [
+                    'type' => Type::listOf(Types::menu()),
+                    'resolve' => function ($rootValue, $args, $context, $info) {
+                        return $context
+                        	->get(MenusRepositoryInterface::class)
+                        	->findBy(['isActive' => true]);
+                    }
+                ],
                 'menuSections' => [
                     'type' => Type::listOf(Types::menuSection()),
                     'args' => [

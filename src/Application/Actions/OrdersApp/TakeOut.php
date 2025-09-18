@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Ramsey\Uuid\Uuid;
 use Slim\Views\Twig;
 
-final class TakeAway
+final class TakeOut
 {
     private Twig $twig;
 
@@ -59,7 +59,7 @@ final class TakeAway
 
             $order = new Order;
             $order->setUuid(Uuid::uuid4()->toString());
-            $order->setStatus('PAID');
+            $order->setStatus('OPEN');
             $order->setTable(null);
             $order->setAdults(intval($requestData['adults']));
             $order->setMinors(intval($requestData['minors']));
@@ -93,7 +93,7 @@ final class TakeAway
             	$orderEntry->setFamily(1);
             	$orderEntry->setTiming(1);
             	$orderEntry->setNotes($entry['notes']);
-            	$orderEntry->setIsPaid(true);
+            	$orderEntry->setIsPaid(false);
                 $orderEntry->setOrderEntryGroup($orderEntryGroup);
             	$orderEntry->setWeight(null);
 
@@ -119,6 +119,6 @@ final class TakeAway
 			return $response;
     	}
 
-        return $this->twig->render($response, 'orders_app/take_away.twig');
+        return $this->twig->render($response, 'orders_app/take_out.twig');
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Datetime;
-use Domain\Entities\Table;
 
 /**
  * @Entity(repositoryClass="Domain\Repositories\ReservationsRepository")
@@ -46,6 +45,11 @@ class Reservation
     private ?string $comments;
 
     /**
+     * @Column(type="boolean", name="is_table_locked")
+     */
+    private bool $isTableLocked;
+
+    /**
      * @Column(type="integer", name="minors")
      */
     private int $minors;
@@ -59,12 +63,6 @@ class Reservation
      * @Column(type="string", name="status")
      */
     private string $status;
-
-    /**
-     * @OneToOne(targetEntity="Table")
-     * @JoinColumn(name="table_id", referencedColumnName="id")
-     */
-    private ?Table $table;
 
     /**
      * @Column(type="array", name="tables")
@@ -106,6 +104,11 @@ class Reservation
         return $this->comments;
     }
 
+    public function getIsTableLocked(): bool
+    {
+        return $this->isTableLocked;
+    }
+
     public function getMinors(): int
     {
     	return $this->minors;
@@ -119,11 +122,6 @@ class Reservation
     public function getStatus(): string
     {
     	return $this->status;
-    }
-
-    public function getTable(): ?Table
-    {
-        return $this->table;
     }
 
     public function getTables(): ?array
@@ -161,6 +159,11 @@ class Reservation
         $this->comments = $comments;
     }
 
+    public function setIsTableLocked(bool $isTableLocked): void
+    {
+        $this->isTableLocked = $isTableLocked;
+    }
+
     public function setMinors(int $minors): void
     {
     	$this->minors = $minors;
@@ -174,11 +177,6 @@ class Reservation
     public function setStatus(string $status): void
     {
     	$this->status = $status;
-    }
-
-    public function setTable(?Table $table): void
-    {
-        $this->table = $table;
     }
 
     public function setTables(?array $tables): void

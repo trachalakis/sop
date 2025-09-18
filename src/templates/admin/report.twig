@@ -15,13 +15,13 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Report {{start.format('D j M Y')}} - {{end.format('D j M Y')}}</h1>
     <div class="btn-toolbar">
-        <a class="btn btn-primary me-2" href="/admin/report?date={{oneYearAgo.format('Y-m-d')}}" target="_blank">
+        <a class="btn btn-primary me-2" href="/admin/report?filter[start]={{oneYearAgo.format('Y-m-d')}}" target="_blank">
             Last year
         </a>
-        <a class="btn btn-primary me-2" href="/admin/report?date={{prev.format('Y-m-d')}}">
+        <a class="btn btn-primary me-2" href="/admin/report?filter[start]={{previousDay.format('Y-m-d')}}">
             <i class='bx bxs-chevron-left' ></i>
         </a>
-        <a class="btn btn-primary me-4" href="/admin/report?date={{next.format('Y-m-d')}}">
+        <a class="btn btn-primary me-4" href="/admin/report?filter[start]={{nextDay.format('Y-m-d')}}">
             <i class='bx bxs-chevron-right' ></i>
         </a>
     </div>

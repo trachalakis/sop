@@ -146,6 +146,7 @@
 	  									type="button"
 	  									class="btn btn-lg btn-outline-primary w-75"
 	  									@click="showMenuItemOptionsModal(menuItem)"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
 	  								>
 	  									{{getTranslation(menuItem, 'el').name}}
 	  									<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
@@ -162,6 +163,7 @@
 		  										orderEntryExtras: []
 		  									});
 		  								"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
 	  								>
 	  									{{getTranslation(menuItem, 'el').name}}
 	  									<span class="text-body-secondary">(&euro;{{menuItem.price}})</span>
@@ -176,6 +178,7 @@
 	  									type="button"
 	  									class="btn btn-lg btn-outline-primary w-25"
 	  									@click="showMenuItemOptionsModal(menuItem)"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
 	  								>
 	  									<span class="fw-bold">&ctdot;</span>
 	  								</button>
@@ -638,7 +641,9 @@
 		    			orderEntries: [],
 		    			employee: null,
 		    			reservationId: null
-		    		}
+		    		},
+
+					menuName: null
 		    	}
 		    },
     		watch: {
@@ -658,12 +663,13 @@
 		    },
 		    mounted () {
 		    	this.order.reservationId = new URLSearchParams(window.location.search).get('reservationId');
+				this.menuName = new URLSearchParams(window.location.search).get('menu');
 
 		    	axios({
                     url: '/admin/graph-ql?useCachedResults=true',
                     method: 'post',
                     data: `{
-                        menuSections (menu: "Default") {
+                        menuSections (menu: "${this.menuName}") {
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
                             	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, translations { name, language }, menuPosition,

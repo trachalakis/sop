@@ -32,7 +32,7 @@ final class CreateReservation
             $reservation = new Reservation;
             $reservation->setEmailAddress(null);
             $reservation->setCreatedAt(new \Datetime);
-            $reservation->setStatus('CONFIRMED');
+            $reservation->setStatus('PENDING');
             $reservation->setDateTime(new \Datetime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
             $reservation->setName(mb_strtoupper($requestData['name']));
             $reservation->setAdults(intval($requestData['adults']));

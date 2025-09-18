@@ -13,7 +13,7 @@
 	        <i class="bx bxs-chevron-right"></i>
 	    </a>
        	<a href="/admin/scans/create" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> New scan
+            <i class="fa-solid fa-plus"></i> <strong>N</strong>ew scan
         </a>
     </div>
 </div>
@@ -54,4 +54,16 @@
 		</tbody>
 	</table>
 </div>
+{% endblock %}
+
+{% block javascript %}
+    {{parent()}}
+    <script>
+        document.addEventListener('keyup', (event) => {
+            let key = event.key;
+            if (key == "n" || key == "N") { 
+                window.location.href = '/admin/scans/create';
+            }
+        })
+    </script>
 {% endblock %}

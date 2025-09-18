@@ -40,21 +40,31 @@ final class Report
 		$ordersRepository = $this->ordersRepository;
 		$queryParams = $request->getQueryParams();
 		$filter = $queryParams['filter'] ?? null;
-        $date = $queryParams['date'] ?? null;
-		if ((new Datetime())->format('G') <= 4) {
-			$start = new Datetime('yesterday 05:00');
-		} else {
-			$start = new Datetime('today 05:00');
-		}
-		$end = (clone $start)->add(new \DateInterval('PT18H'));
+        
+        if (!empty($filter['start']) && !empty($filter['end'])) {
+	        $start = new Datetime($filter['start']);
+	        $end = new Datetime($filter['end']);
+	    } else if (!empty($filter['start']) && empty($filter['end'])){
+            $start = new Datetime($filter['start'] . ' 05:00');
+            $end = (clone $start)->add(new \DateInterval('PT21H'));
+        } else if ((new Datetime())->format('G') <= 4) {
+            $start = new Datetime('yesterday 05:00');
+            $end = (clone $start)->add(new \DateInterval('PT21H'));
+        } else {
+            $start = new Datetime('today 05:00');
+            $end = (clone $start)->add(new \DateInterval('PT21H'));
+        }
+        
 
+        //dd($end);
+        /*$date = $queryParams['date'] ?? null;
 		if (!empty($date)) {
 			$start = new Datetime($date . ' 5:00:00 AM');
 			$end = (clone $start)->add(new \DateInterval('PT21H'));
 		} else if (!empty($filter['start']) && !empty($filter['end'])){
 	        $start = new Datetime($filter['start']);
 	        $end = new Datetime($filter['end']);
-	    }
+	    }*/
 
 	    $criteria = new Criteria;
         $criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
@@ -94,6 +104,9 @@ final class Report
         }*/
 
         foreach($orders as $order) {
+            if ($order->getTable() == null) {
+                continue;
+            }
             $sales += $order->getPrice();
 
             if ($order->getTable() == null) {
@@ -201,7 +214,7 @@ final class Report
 	        }
         }
 
-        $oneYearAgo = (clone $start)->sub(new \DateInterval('P1Y'));
+        
 
         /*** Statistics ***/
         if (count($orders) > 0) {
@@ -243,7 +256,9 @@ final class Report
         //    $labourCost = $salaries / $servedMenuItems;
         //}
 
-
+        $oneYearAgo = (clone $start)->sub(new \DateInterval('P1Y'));
+        
+        
         return $this->twig->render(
             $response,
             'admin/report.twig',
@@ -251,10 +266,10 @@ final class Report
                 'filter' => $filter,
             	'start'=> $start,
                 'end' => $end,
-                'prev' => (clone $start)->sub(new \DateInterval('P1D')),
-                'next' => (clone $start)->add(new \DateInterval('P1D')),
+                'previousDay' => (clone $start)->sub(new \DateInterval('P1D')),
+                'nextDay' => (clone $start)->add(new \DateInterval('P1D')),
             	'orders' => $orders,
-            	'employeeOrders' => $employeeOrders,
+            	//'employeeOrders' => $employeeOrders,
             	'sales' => $sales,
             	'salesTakeAway' => $salesTakeAway,
             	'coversAdults' => $coversAdults,
