@@ -164,8 +164,6 @@
 
 {% block javascript %}
 	{{ parent() }}
-	<!--<script src="https://unpkg.com/vue@3.4.30"></script>-->
-	<!--<script src="https://unpkg.com/axios"></script>-->
 	<script src="/assets/js/vue.global.prod.js"></script>
 	<script src="/assets/js/axios.min.js"></script>
 	<script src="/assets/js/lodash.min.js"></script>
@@ -292,6 +290,29 @@
 		    			return this.selectedFamilies.includes(entry.family);
 		    		});
 		    	},
+				groupedOrderEntries () {
+					let entries = [];
+
+					_.each(this.selectedOrderEntries, orderEntry => {
+						if (orderEntry.quantity > 0 && orderEntry.menuItemPrice > 0) {
+							let x = _.find(entries, function(e) { return e.id == orderEntry.menuItem.id; });
+
+							if (_.isUndefined(x)) {
+								entries.push({
+									id: orderEntry.menuItem.id,
+									menuItem: orderEntry.menuItem,
+									quantity: orderEntry.quantity,
+									price: this.calculateOrderEntryPrice(orderEntry)
+								})
+							} else {
+								x.quantity += orderEntry.quantity
+								x.price += this.calculateOrderEntryPrice(orderEntry)
+							}
+						}
+					})
+
+					return entries;
+				},
 		    	unpaidOrderEntries () {
 		    		return _.filter(this.allOrdeEntries, entry => {
 		    			return entry.isPaid == false;
@@ -375,30 +396,41 @@
 					printer.addTextAlign(printer.ALIGN_LEFT);
 					printer.addTextLineSpace(40);
 
-					_.each(this.selectedOrderEntries, orderEntry => {
+					_.each(this.groupedOrderEntries, orderEntry => {
+						let quantity = orderEntry.quantity;
+
+						let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name
+
+						let menuItemBlock = '';
+						menuItemBlock = `${quantity} x ${name}`;
+						if (menuItemBlock.length >= 32) {
+							name = name.substring(
+								0, name.indexOf('/') - (quantity.toString().length - 1)
+							); //minus 1 is for times symbol
+							menuItemBlock = `${quantity} x ${name}`;
+						}
+
+						let dotsBlock = '';
+						let priceBlock = '€' + orderEntry.price;
+						if ((menuItemBlock.length + priceBlock.length) <= 32) {
+							dotsBlock = '.'.repeat(32 - (menuItemBlock.length + priceBlock.length));
+						}
+						printer.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
+					});
+					/*_.each(this.selectedOrderEntries, orderEntry => {
 						if (orderEntry.quantity > 0 && orderEntry.menuItemPrice > 0) {
 							let quantity = orderEntry.quantity;
 
 							let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name
 
 							let menuItemBlock = '';
-							/*if (orderEntry.weight != null) {
-								let weight = `${orderEntry.weight / 1000}Kg`;
-
-								menuItemBlock = `${quantity} x ${name}(${weight})`;
-
-								if (menuItemBlock.length >= 32) {
-									menuItemBlock = `${quantity} x ${name}`;
-								}
-							} else {*/
+							menuItemBlock = `${quantity} x ${name}`;
+							if (menuItemBlock.length >= 32) {
+								name = name.substring(
+									0, name.indexOf('/') - (quantity.toString().length - 1)
+								); //minus 1 is for times symbol
 								menuItemBlock = `${quantity} x ${name}`;
-								if (menuItemBlock.length >= 32) {
-									name = name.substring(
-										0, name.indexOf('/') - (quantity.toString().length - 1)
-									); //minus 1 is for times symbol
-									menuItemBlock = `${quantity} x ${name}`;
-								}
-							//}
+							}
 
 							let dotsBlock = '';
 							let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
@@ -407,14 +439,11 @@
 							}
 							printer.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
 
-							//if (this.orderHasManyFamilies()) {
-							//	printer.addText(`\t(F${orderEntry.family})\n`);
-							//}
 							if (orderEntry.weight != null) {
 								printer.addText(`\t${orderEntry.weight / 1000}Kg\n`);
 							}
 						}
-					});
+					});*/
 
 					printer.addText(_.repeat('-', 32));
 					printer.addFeedLine(1);
@@ -425,10 +454,10 @@
 					printer.addTextSize(3, 3);
 					printer.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
 					printer.addFeedLine(3);
-					if (this.activeLanguage.isoCode == 'en') {
+					/*if (this.activeLanguage.isoCode == 'en') {
 						printer.addTextSize(1, 1);
 						printer.addText('Tips not required but greatly appreciated.\n');
-					}
+					}*/
 					printer.addText(this.getHm());
 					printer.addFeedLine(2);
 					printer.addCut(printer.CUT_FEED);
@@ -438,73 +467,6 @@
 		            } else {
 		            	var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
 		            }
- 					var epos = new epson.ePOSPrint(address);
-					epos.onreceive = function (res) {
-						if (!res.success) {
-							alert(`A print error occurred. Station ${station.name}`);
-						} else {
-							window.location.href = '/orders-app/';
-						}
-					}
-					epos.send(printer.toString());
-		    	},
-		    	printMamas(station) {
-		    		//if (this.printingOrder) {
-		    		//	return
-		    		//}
-		    		//this.printingOrder = true;
-
-					let printer = new epson.ePOSBuilder();
-					//printer.addCommand('\x1B\x40\x1B\x74\x13');
-					//printer.addText(('\xC4'))
-					printer.addTextAlign(printer.ALIGN_CENTER);
-					var ctxMamas = document.getElementById('mamas-place-logo');
-        			ctxMamas = ctxMamas.getContext('2d');
-
-        			printer.addFeedLine(3);
-					printer.addImage(ctxMamas, 0, 0, 556, 368, printer.COLOR_1, printer.MODE_MONO);
-					printer.addFeedLine(1);
-					printer.addTextFont(printer.FONT_B);
-					printer.addTextSmooth(true);
-					printer.addFeedLine(3);
-					printer.addTextAlign(printer.ALIGN_CENTER);
-					printer.addTextSize(3, 3);
-					printer.addText("10% discount");
-					printer.addFeedLine(3);
-					printer.addTextSize(2, 2);
-					printer.addText("Use this coupon and \n get a 10% discount \n for your next visit at \n Mamas place in Stavros");
-					/*printer.addText(_.replace(i18n._("Table %s\n", this.activeLanguage.isoCode), '%s', this.order.table.name))
-					printer.addTextSize(2, 2);
-					if (this.selectedFamilies.length == 1 && this.orderFamilies.length > 1) {
-						printer.addText(_.replace(i18n._("Family %s\n", this.activeLanguage.isoCode), '%s', this.selectedFamilies[0]))
-					}
-					printer.addFeedLine(1);
-					printer.addText(_.repeat('-', 32));
-					printer.addFeedLine(1);
-					printer.addTextAlign(printer.ALIGN_LEFT);
-					printer.addTextLineSpace(40);
-
-					printer.addText(_.repeat('-', 32));
-					printer.addFeedLine(1);
-					//printer.addTextAlign(printer.ALIGN_RIGHT);
-					printer.addText(_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice))
-					printer.addFeedLine(3);
-					printer.addTextAlign(printer.ALIGN_CENTER);
-					printer.addTextSize(3, 3);
-					printer.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
-					printer.addFeedLine(3);
-					if (this.activeLanguage.isoCode == 'en') {
-						printer.addTextSize(1, 1);
-						printer.addText('Tips not required but greatly appreciated.\n');
-					}
-					printer.addText(this.getHm());*/
-					printer.addFeedLine(3);
-					printer.addTextSize(1, 1);
-					printer.addText(this.order.uuid);
-					printer.addFeedLine(5);
-					printer.addCut(printer.CUT_FEED);
-
-		            var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  					var epos = new epson.ePOSPrint(address);
 					epos.onreceive = function (res) {
 						if (!res.success) {
