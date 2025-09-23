@@ -79,6 +79,16 @@
     	</div>
 	</div>
 	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Menu access</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="allowedMenus[]" multiple>
+  				{% for menu in menus %}
+					<option value="{{menu.getId}}" {{menu.getId in user.getAllowedMenus ? 'selected' : ''}}>{{menu.getName}}</option>
+				{% endfor %}
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Σημειώσεις</label>
 		<div class="col-sm-10">
 			<textarea rows="5" class="form-control" name="notes">{{user.getNotes}}</textarea>

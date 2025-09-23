@@ -36,6 +36,8 @@ final class CreateUser
                 $requestData['roles']
             );
             $user->setMonthlyCredits(intval($requestData['monthlyCredits']));
+            $user->setAllowedMenus($requestData['allowedMenus']);
+            $user->setNotes($requestData['notes']);
             $this->usersRepository->persist($user);
 
             return $response->withHeader('Location', '/admin/users')->withStatus(302);

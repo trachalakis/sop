@@ -52,16 +52,15 @@ class User
      */
     private string $passwordHash;
 
-    /*
-     * @OneToOne(targetEntity="Station")
-     * @JoinColumn(name="receipt_station_id", referencedColumnName="id")
-     *
-    private ?Station $receiptStation = null;*/
-
     /**
      * @Column(type="array", name="roles")
      */
     private array $roles;
+
+    /**
+     * @Column(type="array", name="allowed_menus")
+     */
+    private array $allowedMenus;
 
     public function __construct(
         bool $isActive,
@@ -82,6 +81,11 @@ class User
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function getAllowedMenus(): array
+    {
+        return $this->allowedMenus;
     }
 
     public function getEmailAddress(): string
@@ -119,11 +123,6 @@ class User
         return $this->passwordHash;
     }
 
-    /*public function getReceiptStation(): ?Station
-    {
-        return $this->receiptStation;
-    }*/
-
     public function getRoles(): array
     {
         return $this->roles;
@@ -137,6 +136,11 @@ class User
     public function isWaiter(): bool
     {
         return in_array('waiter', $this->roles);
+    }
+
+    public function setAllowedMenus(array $allowedMenus): void
+    {
+        $this->allowedMenus = $allowedMenus;
     }
 
     public function setEmailAddress(string $emailAddress): void
@@ -173,11 +177,6 @@ class User
     {
         $this->passwordHash = password_hash($password, PASSWORD_BCRYPT);
     }
-
-    /*public function setReceiptStation(?Station $receiptStation): void
-    {
-        $this->receiptStation = $receiptStation;
-    }*/
 
     public function setRoles(array $roles): void
     {
