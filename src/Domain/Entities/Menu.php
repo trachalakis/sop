@@ -33,7 +33,7 @@ class Menu
 
     /**
      * @OneToMany(targetEntity="MenuSection", mappedBy="menu", cascade={"persist"})
-     * @OrderBy({"position" = "ASC"})
+     * @OrderBy({"isActive" = "DESC", "position" = "ASC"})
      */
     private $menuSections;
 
