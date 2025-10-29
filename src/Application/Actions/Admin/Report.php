@@ -228,6 +228,7 @@ final class Report
 
         $servedMenuItems = 0;
         $servedDrinks = 0;
+        $servedPlates = 0;
         foreach($orders as $order) {
             /*if ($order->getTable() == null) {
                 $orders->removeElement($order);
@@ -239,15 +240,26 @@ final class Report
                     continue;
                 }
 
-                if ($orderEntry->getMenuItem()->getId() == 1) {
-                    $servedMenuItems++;
-                } else {
-                    if ($orderEntry->getMenuItem()->getIsDrink()) {
-                        $servedDrinks += $orderEntry->getQuantity();
-                    }
-                    
+                if ($orderEntry->getMenuItem()->getIsDrink()) {
+                    $servedDrinks += $orderEntry->getQuantity();
                     $servedMenuItems += $orderEntry->getQuantity();
+                } else {
+                    if ($orderEntry->getMenuItem()->getId() == 1) {
+                        $servedPlates++;
+                        $servedMenuItems++;
+                    } else {
+                        $servedPlates += $orderEntry->getQuantity();
+                        $servedMenuItems += $orderEntry->getQuantity();
+                    }
                 }
+
+                //if ($orderEntry->getMenuItem()->getId() == 1) {
+                //    $servedMenuItems++;
+                //} else {
+                    
+                    
+                    
+                //}
             }
         }
 
@@ -295,6 +307,7 @@ final class Report
                 'standardDeviation' => $standardDeviation,
 
                 'servedMenuItems' => $servedMenuItems,
+                'servedPlates' => $servedPlates,
                 'servedDrinks' => $servedDrinks,
                 //'labourCost' => $labourCost
             ]

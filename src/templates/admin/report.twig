@@ -85,6 +85,10 @@
 		<br/>
 		labour cost per served menu item: {{(salaries / servedMenuItems )|round(2)}}
 	{% endif %}
+	{% if servedPlates > 0 %}
+		<br/>
+		labour cost per served plate: {{(salaries / servedPlates )|round(2)}}
+	{% endif %}
 	{% if servedDrinks > 0 %}
 		<br/>
 		labour cost per served drink: {{(fohSalaries / servedDrinks )|round(2)}}
