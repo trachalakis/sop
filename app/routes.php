@@ -2,25 +2,21 @@
 
 declare(strict_types=1);
 
-use Application\Actions\Clock;
 use Application\Actions\Homepage;
 use Application\Actions\Login;
 use Application\Actions\Logout;
-use Application\Actions\Test;
 use Application\Actions\Admin\CloneMenu;
 use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateInvoice;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
 use Application\Actions\Admin\CreateRecipe;
-//use Application\Actions\Admin\CreateReservation;
 use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateShoppingList;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
 use Application\Actions\Admin\DeleteOrder;
-use Application\Actions\Admin\DeleteReservation;
 use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\DeleteMenuItem;
 use Application\Actions\Admin\GraphQl;
@@ -38,7 +34,6 @@ use Application\Actions\Admin\PrintMenu;
 use Application\Actions\Admin\PoStrings;
 use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\Report;
-use Application\Actions\Admin\Reservations as AdminReservations;
 use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\MakeShoppingList;
 use Application\Actions\Admin\ShoppingLists;
@@ -52,7 +47,6 @@ use Application\Actions\Admin\UpdateMenuItem;
 use Application\Actions\Admin\UpdateMenuSection;
 use Application\Actions\Admin\ViewOrder;
 use Application\Actions\Admin\UpdateRecipe;
-//use Application\Actions\Admin\UpdateReservation;
 use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateShoppingList;
 use Application\Actions\Admin\UpdateSupplier;
@@ -92,9 +86,6 @@ use Slim\Routing\RouteCollectorProxy;
 
 return function (App $app, $container) {
     $app->get('/[{language:[a-z]{2}}]', Homepage::class);
-    $app->get('/this-is-a-test', Test::class);
-
-    $app->map(['GET', 'POST'], '/clock', Clock::class);
 
     $app->map(['GET', 'POST'], '/login', Login::class);
     $app->get('/logout', Logout::class);
@@ -105,11 +96,6 @@ return function (App $app, $container) {
         $group->get('/orders/open', OpenOrder::class);
         $group->get('/orders/view', ViewOrder::class);
         $group->get('/orders/delete', DeleteOrder::class);
-
-        $group->get('/reservations', AdminReservations::class);
-        //$group->map(['GET', 'POST'], '/reservations/create', CreateReservation::class);
-        $group->map(['GET', 'POST'], '/reservations/update', UpdateReservation::class);
-        $group->get('/reservations/delete', DeleteReservation::class);
 
         $group->get('/tables', Tables::class);
         $group->map(['GET', 'POST'], '/tables/create', CreateTable::class);
@@ -130,8 +116,6 @@ return function (App $app, $container) {
         $group->post('/menu-items/sort', SortMenuItems::class);
         $group->post('/menu-sections/sort', SortMenuSections::class);
 
-        
-        //$group->get('/menus', Menus::class);
         $group->get('/clone-menu', CloneMenu::class);
 
         $group->get('/price-lists', PriceLists::class);
