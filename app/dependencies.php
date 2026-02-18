@@ -118,7 +118,7 @@ return function (ContainerBuilder $containerBuilder) {
            
             return Doctrine\ORM\EntityManager::create(
                 [
-                    'driver' => 'pdo_mysql',
+                    'driver' => 'pdo_pgsql',
                     'host' => $settings['host'],
                     'user' => $settings['username'],
                     'password' => $settings['password'],
