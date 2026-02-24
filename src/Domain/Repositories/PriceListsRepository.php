@@ -12,13 +12,13 @@ class PriceListsRepository extends EntityRepository implements PriceListsReposit
 {
 	public function persist(PriceList $priceList)
 	{
-		$this->_em->persist($priceList);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($priceList);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(PriceList $priceList)
 	{
-		$this->_em->remove($priceList);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($priceList);
+	   	$this->getEntityManager()->flush();
 	}
 }

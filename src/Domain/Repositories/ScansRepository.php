@@ -14,20 +14,20 @@ class ScansRepository extends EntityRepository implements ScansRepositoryInterfa
 {
 	public function add(Scan $scan)
 	{
-		$this->_em->persist($scan);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($scan);
+        $this->getEntityManager()->flush();
 	}
 
 	public function persist(Scan $scan)
 	{
-		$this->_em->persist($scan);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($scan);
+        $this->getEntityManager()->flush();
 	}
 
     public function delete(Scan $scan)
     {
-        $this->_em->remove($scan);
-        $this->_em->flush();
+        $this->getEntityManager()->remove($scan);
+        $this->getEntityManager()->flush();
     }
 
 	public function findLastUserCheckIn($user)

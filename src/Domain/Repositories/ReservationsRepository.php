@@ -28,13 +28,13 @@ class ReservationsRepository extends EntityRepository implements ReservationsRep
 
 	public function persist(Reservation $reservation)
 	{
-		$this->_em->persist($reservation);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($reservation);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Reservation $reservation)
 	{
-		$this->_em->remove($reservation);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($reservation);
+	   	$this->getEntityManager()->flush();
 	}
 }

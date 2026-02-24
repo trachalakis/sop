@@ -12,13 +12,13 @@ class UsersRepository extends EntityRepository implements UsersRepositoryInterfa
 {
 	public function persist(User $user)
 	{
-		$this->_em->persist($user);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($user);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(User $user)
 	{
-		$this->_em->remove($user);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($user);
+       	$this->getEntityManager()->flush();
 	}
 }

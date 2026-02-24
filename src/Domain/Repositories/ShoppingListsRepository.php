@@ -12,13 +12,13 @@ class ShoppingListsRepository extends EntityRepository implements ShoppingListsR
 {
 	public function persist(ShoppingList $shoppingList)
 	{
-		$this->_em->persist($shoppingList);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($shoppingList);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(ShoppingList $shoppingList)
 	{
-		$this->_em->remove($shoppingList);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($shoppingList);
+	   	$this->getEntityManager()->flush();
 	}
 }

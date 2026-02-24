@@ -12,13 +12,13 @@ class OrderEntryCancellationsRepository extends EntityRepository implements Orde
 {
 	public function persist(OrderEntryCancellation $orderEntryCancellation)
 	{
-		$this->_em->persist($orderEntryCancellation);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($orderEntryCancellation);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(OrderEntryCancellation $orderEntryCancellation)
 	{
-		$this->_em->remove($orderEntryCancellation);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($orderEntryCancellation);
+	   	$this->getEntityManager()->flush();
 	}
 }

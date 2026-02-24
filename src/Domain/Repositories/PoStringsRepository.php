@@ -12,13 +12,13 @@ class PoStringsRepository extends EntityRepository implements PoStringsRepositor
 {
 	public function persist(PoString $poString)
 	{
-		$this->_em->persist($poString);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($poString);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(PoString $poString)
 	{
-		$this->_em->remove($poString);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($poString);
+	   	$this->getEntityManager()->flush();
 	}
 }

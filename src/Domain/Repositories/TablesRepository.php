@@ -12,13 +12,13 @@ class TablesRepository extends EntityRepository implements TablesRepositoryInter
 {
 	public function persist(Table $table)
 	{
-		$this->_em->persist($table);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($table);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Table $table)
 	{
-		$this->_em->remove($table);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($table);
+	   	$this->getEntityManager()->flush();
 	}
 }

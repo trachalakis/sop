@@ -12,13 +12,13 @@ class MenuItemExtrasRepository extends EntityRepository implements MenuItemExtra
 {
 	public function persist(MenuItemExtra $menuItemExtra)
 	{
-		$this->_em->persist($menuItemExtra);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($menuItemExtra);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(MenuItemExtra $menuItemExtra)
 	{
-		$this->_em->remove($menuItemExtra);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($menuItemExtra);
+	   	$this->getEntityManager()->flush();
 	}
 }

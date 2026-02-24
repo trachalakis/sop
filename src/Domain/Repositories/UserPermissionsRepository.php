@@ -12,13 +12,13 @@ class UserPermissionsRepository extends EntityRepository implements UserPermissi
 {
 	public function persist(UserPermission $userPermission)
 	{
-		$this->_em->persist($userPermission);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($userPermission);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(UserPermission $userPermission)
 	{
-		$this->_em->remove($userPermission);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($userPermission);
+	   	$this->getEntityManager()->flush();
 	}
 }

@@ -12,13 +12,13 @@ class StationsRepository extends EntityRepository implements StationsRepositoryI
 {
 	public function persist(Station $station)
 	{
-		$this->_em->persist($station);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($station);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Station $station)
 	{
-		$this->_em->remove($station);
-       	$this->_em->flush();
+        $this->getEntityManager()->remove($station);
+       	$this->getEntityManager()->flush();
 	}
 }

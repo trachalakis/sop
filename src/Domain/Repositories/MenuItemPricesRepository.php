@@ -12,13 +12,13 @@ class MenuItemPricesRepository extends EntityRepository implements MenuItemPrice
 {
 	public function persist(MenuItemPrice $menuItemPrice)
 	{
-		$this->_em->persist($menuItemPrice);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($menuItemPrice);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(MenuItemPrice $menuItemPrice)
 	{
-		$this->_em->remove($menuItemPrice);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($menuItemPrice);
+	   	$this->getEntityManager()->flush();
 	}
 }

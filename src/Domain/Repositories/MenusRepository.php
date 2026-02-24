@@ -12,13 +12,13 @@ class MenusRepository extends EntityRepository implements MenusRepositoryInterfa
 {
 	public function persist(Menu $menu)
 	{
-		$this->_em->persist($menu);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($menu);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Menu $menu)
 	{
-		$this->_em->remove($menu);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($menu);
+	   	$this->getEntityManager()->flush();
 	}
 }

@@ -13,14 +13,14 @@ class OrderEntriesRepository extends EntityRepository implements OrderEntriesRep
 {
 	public function persist(OrderEntry $orderEntry)
 	{
-		$this->_em->persist($orderEntry);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($orderEntry);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(OrderEntry $orderEntry)
 	{
-		$this->_em->remove($orderEntry);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($orderEntry);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function findByMenuItemAndPeriod(MenuItem $menuItem, \DatePeriod $datePeriod)

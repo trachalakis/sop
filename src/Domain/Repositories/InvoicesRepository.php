@@ -12,13 +12,13 @@ class InvoicesRepository extends EntityRepository implements InvoicesRepositoryI
 {
 	public function persist(Invoice $invoice)
 	{
-		$this->_em->persist($invoice);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($invoice);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Invoice $invoice)
 	{
-		$this->_em->remove($invoice);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($invoice);
+	   	$this->getEntityManager()->flush();
 	}
 }

@@ -12,13 +12,13 @@ class LanguagesRepository extends EntityRepository implements LanguagesRepositor
 {
 	public function persist(Language $language)
 	{
-		$this->_em->persist($language);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($language);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Language $language)
 	{
-		$this->_em->remove($language);
-       	$this->_em->flush();
+        $this->getEntityManager()->remove($language);
+       	$this->getEntityManager()->flush();
 	}
 }

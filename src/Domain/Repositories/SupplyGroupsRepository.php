@@ -12,13 +12,13 @@ class SupplyGroupsRepository extends EntityRepository implements SupplyGroupsRep
 {
 	public function persist(SupplyGroup $supplyGroup)
 	{
-		$this->_em->persist($supplyGroup);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($supplyGroup);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(SupplyGroup $supplyGroup)
 	{
-		$this->_em->remove($supplyGroup);
-       	$this->_em->flush();
+        $this->getEntityManager()->remove($supplyGroup);
+       	$this->getEntityManager()->flush();
 	}
 }

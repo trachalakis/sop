@@ -12,13 +12,13 @@ class RecipesRepository extends EntityRepository implements RecipesRepositoryInt
 {
 	public function persist(Recipe $recipe)
 	{
-		$this->_em->persist($recipe);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($recipe);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Recipe $recipe)
 	{
-		$this->_em->remove($recipe);
-       	$this->_em->flush();
+        $this->getEntityManager()->remove($recipe);
+       	$this->getEntityManager()->flush();
 	}
 }

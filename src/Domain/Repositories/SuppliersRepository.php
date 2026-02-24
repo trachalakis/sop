@@ -12,13 +12,13 @@ class SuppliersRepository extends EntityRepository implements SuppliersRepositor
 {
 	public function persist(Supplier $supplier)
 	{
-		$this->_em->persist($supplier);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($supplier);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Supplier $supplier)
 	{
-		$this->_em->remove($supplier);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($supplier);
+	   	$this->getEntityManager()->flush();
 	}
 }

@@ -12,13 +12,13 @@ class OrderEntryGroupsRepository extends EntityRepository implements OrderEntryG
 {
 	public function persist(OrderEntryGroup $orderEntryGroup)
 	{
-		$this->_em->persist($orderEntryGroup);
-       	$this->_em->flush();
+        $this->getEntityManager()->persist($orderEntryGroup);
+       	$this->getEntityManager()->flush();
 	}
 
 	public function delete(OrderEntryGroup $orderEntryGroup)
 	{
-		$this->_em->remove($orderEntryGroup);
-       	$this->_em->flush();
+        $this->getEntityManager()->remove($orderEntryGroup);
+       	$this->getEntityManager()->flush();
 	}
 }

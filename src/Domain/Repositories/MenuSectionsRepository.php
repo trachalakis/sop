@@ -12,13 +12,13 @@ class MenuSectionsRepository extends EntityRepository implements MenuSectionsRep
 {
 	public function persist(MenuSection $menuSection)
 	{
-		$this->_em->persist($menuSection);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($menuSection);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(MenuSection $menuSection)
 	{
-		$this->_em->remove($menuSection);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($menuSection);
+	   	$this->getEntityManager()->flush();
 	}
 }

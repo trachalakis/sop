@@ -33,13 +33,13 @@ class OrdersRepository extends EntityRepository implements OrdersRepositoryInter
 
 	public function persist(Order $order)
 	{
-		$this->_em->persist($order);
-       	$this->_em->flush();
+		$this->getEntityManager()->persist($order);
+	   	$this->getEntityManager()->flush();
 	}
 
 	public function delete(Order $order)
 	{
-		$this->_em->remove($order);
-       	$this->_em->flush();
+		$this->getEntityManager()->remove($order);
+	   	$this->getEntityManager()->flush();
 	}
 }
