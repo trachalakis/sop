@@ -40,17 +40,23 @@ final class MenuItemStatistics
 	{
 		$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 		
-
-		$period = $request->getQueryParams()['period'] ?? 'week';
-		if ($period == 'year') {
-			$startDate = new Datetime('first day of january this year midnight');
-			$endDate = new Datetime('last day of december this year midnight');
-		} else if ($period == 'month') {
-			$startDate = new Datetime('first day of this month midnight');
-			$endDate = new Datetime('last day of this month midnight');
+		$filter = $request->getQueryParams()['filter'] ?? [];
+		if (!empty($filter)) {
+			$startDate = new Datetime($filter['start']);
+			$endDate = new Datetime($filter['end']);
+			$period = null;
 		} else {
-			$startDate = new Datetime('monday this week');
-			$endDate = (clone $startDate)->add(new \DateInterval('P7D'));
+			$period = $request->getQueryParams()['period'] ?? 'week';
+			if ($period == 'year') {
+				$startDate = new Datetime('first day of january this year midnight');
+				$endDate = new Datetime('last day of december this year midnight');
+			} else if ($period == 'month') {
+				$startDate = new Datetime('first day of this month midnight');
+				$endDate = new Datetime('last day of this month midnight');
+			} else {
+				$startDate = new Datetime('monday this week');
+				$endDate = (clone $startDate)->add(new \DateInterval('P7D'));
+			}
 		}
 		$datePeriod = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
 
@@ -108,7 +114,7 @@ final class MenuItemStatistics
             	
             	'days' => $days,
             	//'consumptions' => $suppliesMatrix
-            	'timePeriod' => $timePeriod,
+            	//'timePeriod' => $timePeriod,
             	'startDate' => $startDate,
             	'endDate' => $endDate
             ]
