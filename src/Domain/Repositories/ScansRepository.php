@@ -61,11 +61,9 @@ class ScansRepository extends EntityRepository implements ScansRepositoryInterfa
         $qb->select('s')
             ->from(Scan::class, 's')
             ->andWhere(
-                $qb->expr()->andX(
-                    $qb->expr()->like('s.checkIn', ':checkIn')
-                )
+                $qb->expr()->eq('DATE(s.checkIn)', ':checkIn')
             )
-            ->setParameter(':checkIn', '%' . $datetime->format('Y-m-d') . '%');
+            ->setParameter(':checkIn', $datetime->format('Y-m-d'));
 
         return $qb->getQuery()->getResult();
     }

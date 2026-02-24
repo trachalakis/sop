@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Reservation;
-use Domain\Repositories\ReservatonsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
 class ReservationsRepository extends EntityRepository implements ReservationsRepositoryInterface
@@ -14,11 +13,9 @@ class ReservationsRepository extends EntityRepository implements ReservationsRep
 	{
 		$qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('r')
-            ->from('Domain\Entities\Reservation', 'r')
+            ->from(Reservation::class, 'r')
             ->andWhere(
-                //$qb->expr()->orX(
-                    $qb->expr()->eq('DATE(r.dateTime)', ':date')
-                //)
+                $qb->expr()->eq('DATE(r.dateTime)', ':date')
             )
             ->orderBy('r.dateTime', 'asc')
             ->setParameter(':date', $date->format('Y-m-d'));
