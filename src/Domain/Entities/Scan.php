@@ -7,39 +7,28 @@ namespace Domain\Entities;
 use DateInterval;
 use Datetime;
 use Domain\Entities\User;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\ScansRepository")
- * @Table(name="scans")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\ScansRepository')]
+#[ORM\Table(name: 'scans')]
 class Scan
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="datetime", name="check_in")
-     */
+    #[ORM\Column(type: 'datetime', name: 'check_in')]
     private Datetime $checkIn;
 
-    /**
-     * @Column(type="datetime", name="check_out")
-     */
+    #[ORM\Column(type: 'datetime', name: 'check_out')]
     private ?Datetime $checkOut;
 
-    /**
-     * @Column(type="float", name="hourly_rate")
-     */
+    #[ORM\Column(type: 'float', name: 'hourly_rate')]
     private float $hourlyRate;
 
-    /**
-     * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User $user;
 
     public function __construct(

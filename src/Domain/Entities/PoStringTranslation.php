@@ -6,35 +6,26 @@ namespace Domain\Entities;
 
 use Domain\Entities\PoString;
 use Domain\Entities\Language;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="po_string_translations")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'po_string_translations')]
 class PoStringTranslation
 {
-    /**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="PoString", inversedBy="translations")
-     * @JoinColumn(name="po_string_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: PoString::class, inversedBy: 'translations')]
+    #[ORM\JoinColumn(name: 'po_string_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private PoString $poString;
 
-    /**
-     * @ManyToOne(targetEntity="Language")
-     * @JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: Language::class)]
+    #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Language $language;
 
-    /**
-     * @Column(type="string", name="translation")
-     */
+    #[ORM\Column(type: 'string', name: 'translation')]
     private string $translation;
 
     public function __construct

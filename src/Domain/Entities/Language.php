@@ -4,32 +4,24 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\LanguagesRepository")
- * @Table(name="languages")
- **/
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\LanguagesRepository')]
+#[ORM\Table(name: 'languages')]
 class Language
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="string", name="locale")
-     */
+    #[ORM\Column(type: 'string', name: 'locale')]
     private string $locale;
 
-    /**
-     * @Column(type="string", name="name", unique=true)
-     */
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
     public function getId(): int

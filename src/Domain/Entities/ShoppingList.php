@@ -8,28 +8,21 @@ use Datetime;
 use Domain\Entities\Supply;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\ShoppingListsRepository")
- * @Table(name="shopping_lists")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\ShoppingListsRepository')]
+#[ORM\Table(name: 'shopping_lists')]
 class ShoppingList
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="date", name="date")
-     */
+    #[ORM\Column(type: 'date', name: 'date')]
     private Datetime $date;
 
-    /**
-     * @OneToMany(targetEntity="ShoppingListItem", mappedBy="shoppingList", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: ShoppingListItem::class, mappedBy: 'shoppingList', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $shoppingListItems;
 
    	public function __construct()

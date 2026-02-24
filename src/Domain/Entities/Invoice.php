@@ -6,69 +6,46 @@ namespace Domain\Entities;
 
 use Datetime;
 use Domain\Entities\Supplier;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\InvoicesRepository")
- * @Table(name="invoices")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\InvoicesRepository')]
+#[ORM\Table(name: 'invoices')]
 class Invoice
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="text", name="comments")
-     */
+    #[ORM\Column(type: 'text', name: 'comments')]
     private ?string $comments;
 
-    /**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private Datetime $createdAt;
 
-    /**
-     * @Column(type="date", name="date")
-     */
+    #[ORM\Column(type: 'date', name: 'date')]
     private Datetime $date;
 
-    /**
-     * @OneToMany(targetEntity="InvoiceEntry", mappedBy="invoice", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: InvoiceEntry::class, mappedBy: 'invoice', cascade: ['persist'], orphanRemoval: true)]
     private $invoiceEntries;
 
-    /**
-     * @Column(type="string", name="invoice_number")
-     */
+    #[ORM\Column(type: 'string', name: 'invoice_number')]
     private ?string $invoiceNumber = null;
 
-    /**
-     * @ManyToOne(targetEntity="Supplier", cascade={"persist"})
-     * @JoinColumn(name="supplier_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Supplier::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'supplier_id', referencedColumnName: 'id')]
     private Supplier $supplier;
 
-    /**
-     * @Column(type="float", name="total")
-     */
+    #[ORM\Column(type: 'float', name: 'total')]
     private ?float $total;
 
-	/**
-     * @Column(type="string", name="type")
-     */
+    #[ORM\Column(type: 'string', name: 'type')]
     private string $type;
 
-    /**
-     * @Column(type="datetime", name="updated_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'updated_at')]
     private Datetime $updatedAt;
 
-    /**
-     * @Column(type="float", name="vat")
-     */
+    #[ORM\Column(type: 'float', name: 'vat')]
     private ?float $vat;
 
     public function __construct()

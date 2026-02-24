@@ -4,37 +4,27 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\StationsRepository")
- * @Table(name="stations")
- **/
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\StationsRepository')]
+#[ORM\Table(name: 'stations')]
 class Station
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="has_receipt_printer")
-     */
+    #[ORM\Column(type: 'boolean', name: 'has_receipt_printer')]
     private bool $hasReceiptPrinter;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="string", name="name", unique=true)
-     */
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
-    /**
-     * @Column(type="string", name="printer_address")
-     */
+    #[ORM\Column(type: 'string', name: 'printer_address')]
     private string $printerAddress;
 
     public function __construct(string $name, string $printerAddress)

@@ -5,39 +5,28 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\Supply;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\SupplyGroupsRepository")
- * @Table(name="supply_groups")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\SupplyGroupsRepository')]
+#[ORM\Table(name: 'supply_groups')]
 class SupplyGroup
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="string", unique=true)
-     */
+    #[ORM\Column(type: 'string', unique: true)]
     private string $name;
 
-    /**
-     * @Column(type="integer", name="position")
-     */
+    #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
 
-    /**
-     * @Column(type="boolean", name="show_in_shopping_list")
-     */
+    #[ORM\Column(type: 'boolean', name: 'show_in_shopping_list')]
     private string $showInShoppingList;
 
-    /**
-     * @OneToMany(targetEntity="Supply", mappedBy="supplyGroup", cascade={"persist"})
-     * @OrderBy({"isActive" = "DESC", "name" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: Supply::class, mappedBy: 'supplyGroup', cascade: ['persist'])]
+    #[ORM\OrderBy(['isActive' => 'DESC', 'name' => 'ASC'])]
     private $supplies;
 
     public function getId()

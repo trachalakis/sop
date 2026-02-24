@@ -5,73 +5,48 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Datetime;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\ReservationsRepository")
- * @Table(name="reservations")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\ReservationsRepository')]
+#[ORM\Table(name: 'reservations')]
 class Reservation
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="integer", name="adults")
-     */
+    #[ORM\Column(type: 'integer', name: 'adults')]
     private int $adults;
 
-	/**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private Datetime $createdAt;
 
-    /**
-     * @Column(type="datetime", name="date_time")
-     */
+    #[ORM\Column(type: 'datetime', name: 'date_time')]
     private Datetime $dateTime;
 
-    /**
-     * @Column(type="string", name="email_address")
-     */
+    #[ORM\Column(type: 'string', name: 'email_address')]
     private ?string $emailAddress;
 
-    /**
-     * @Column(type="string", name="comments")
-     */
+    #[ORM\Column(type: 'string', name: 'comments')]
     private ?string $comments;
 
-    /**
-     * @Column(type="boolean", name="is_table_locked")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_table_locked')]
     private bool $isTableLocked;
 
-    /**
-     * @Column(type="integer", name="minors")
-     */
+    #[ORM\Column(type: 'integer', name: 'minors')]
     private int $minors;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private string $name;
 
-    /**
-     * @Column(type="string", name="status")
-     */
+    #[ORM\Column(type: 'string', name: 'status')]
     private string $status;
 
-    /**
-     * @Column(type="array", name="tables")
-     */
+    #[ORM\Column(type: 'array', name: 'tables')]
     private ?array $tables;
 
-    /**
-     * @Column(type="string", name="telephone_number")
-     */
+    #[ORM\Column(type: 'string', name: 'telephone_number')]
     private string $telephoneNumber;
 
     public function getId(): int

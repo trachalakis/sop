@@ -5,34 +5,25 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\OrderEntry;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="order_entry_extras")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'order_entry_extras')]
 class OrderEntryExtra
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="string")
-     */
+    #[ORM\Column(type: 'string')]
     private string $name;
 
-	/**
-     * @Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
     private float $price;
 
-    /**
-     * @ManyToOne(targetEntity="OrderEntry", inversedBy="orderEntryExtras")
-     * @JoinColumn(name="order_entry_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: OrderEntry::class, inversedBy: 'orderEntryExtras')]
+    #[ORM\JoinColumn(name: 'order_entry_id', referencedColumnName: 'id')]
     private OrderEntry $orderEntry;
 
     public function getId()

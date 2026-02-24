@@ -6,30 +6,23 @@ namespace Domain\Entities;
 
 use Domain\Entities\ShoppingList;
 use Domain\Entities\Supply;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="shopping_list_items")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'shopping_list_items')]
 class ShoppingListItem
 {
-    /**
-     * @Column(type="float", name="quantity")
-     */
+    #[ORM\Column(type: 'float', name: 'quantity')]
     private float $quantity;
 
-    /**
-     * @Id
-     * @ManyToOne(targetEntity="ShoppingList", inversedBy="shoppingListItems")
-     * @JoinColumn(name="shopping_list_id", referencedColumnName="id")
-     */
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: ShoppingList::class, inversedBy: 'shoppingListItems')]
+    #[ORM\JoinColumn(name: 'shopping_list_id', referencedColumnName: 'id')]
     private ShoppingList $shoppingList;
 
-    /**
-     * @Id
-     * @OneToOne(targetEntity="Supply")
-     * @JoinColumn(name="supply_id", referencedColumnName="id")
-     */
+    #[ORM\Id]
+    #[ORM\OneToOne(targetEntity: Supply::class)]
+    #[ORM\JoinColumn(name: 'supply_id', referencedColumnName: 'id')]
     private Supply $supply;
 
     public function getId()

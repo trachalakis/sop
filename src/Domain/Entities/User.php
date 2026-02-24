@@ -4,62 +4,42 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\UsersRepository")
- * @Table(name="users")
- **/
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\UsersRepository')]
+#[ORM\Table(name: 'users')]
 class User
 {
-    /**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="string", name="email_address")
-     */
+    #[ORM\Column(type: 'string', name: 'email_address')]
     private string $emailAddress;
 
-    /**
-     * @Column(type="string", name="full_name")
-     */
+    #[ORM\Column(type: 'string', name: 'full_name')]
     private string $fullName;
 
-    /**
-     * @Column(type="float", name="hourly_rate")
-     */
+    #[ORM\Column(type: 'float', name: 'hourly_rate')]
     private ?float $hourlyRate;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="integer", name="monthly_credits")
-     */
+    #[ORM\Column(type: 'integer', name: 'monthly_credits')]
     private int $monthlyCredits;
 
-    /**
-     * @Column(type="string", name="notes")
-     */
+    #[ORM\Column(type: 'string', name: 'notes')]
     private ?string $notes;
 
-    /**
-     * @Column(type="string", name="password_hash")
-     */
+    #[ORM\Column(type: 'string', name: 'password_hash')]
     private string $passwordHash;
 
-    /**
-     * @Column(type="array", name="roles")
-     */
+    #[ORM\Column(type: 'array', name: 'roles')]
     private array $roles;
 
-    /**
-     * @Column(type="array", name="allowed_menus")
-     */
+    #[ORM\Column(type: 'array', name: 'allowed_menus')]
     private array $allowedMenus;
 
     public function __construct(

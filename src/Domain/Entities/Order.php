@@ -8,60 +8,41 @@ use Datetime;
 use Domain\Entities\Reservation;
 use Domain\Entities\Table;
 use Domain\Entities\User;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity (repositoryClass="Domain\Repositories\OrdersRepository")
- * @Table(name="orders")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrdersRepository')]
+#[ORM\Table(name: 'orders')]
 class Order
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="integer", name="adults")
-     */
+    #[ORM\Column(type: 'integer', name: 'adults')]
     private int $adults;
 
-    /**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private Datetime $createdAt;
 
-    /**
-     * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="employee_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'employee_id', referencedColumnName: 'id')]
     private ?User $employee;
 
-    /**
-     * @Column(type="integer", name="minors")
-     */
+    #[ORM\Column(type: 'integer', name: 'minors')]
     private int $minors;
 
-	/**
-     * @Column(type="string", name="notes")
-     */
+    #[ORM\Column(type: 'string', name: 'notes')]
     private string $notes;
 
-    /**
-     * @OneToMany(targetEntity="OrderEntry", mappedBy="order", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: OrderEntry::class, mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
     private $orderEntries;
 
-    /**
-     * @OneToMany(targetEntity="OrderEntryGroup", mappedBy="order", cascade={"persist"}, orphanRemoval=true)
-     * @OrderBy({"createdAt" = "DESC"})
-     */
+    #[ORM\OneToMany(targetEntity: OrderEntryGroup::class, mappedBy: 'order', cascade: ['persist'], orphanRemoval: true)]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private $orderEntryGroups;
 
-    /**
-     * @Column(type="datetime", name="paid_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'paid_at')]
     private ?Datetime $paidAt;
 
     /*
@@ -69,32 +50,22 @@ class Order
      *
     private string $paymentMethod;*/
 
-    /**
-     * @Column(type="string", name="status")
-     */
+    #[ORM\Column(type: 'string', name: 'status')]
     private string $status;
 
-    /**
-     * @OneToOne(targetEntity="Reservation")
-     * @JoinColumn(name="reservation_id", referencedColumnName="id")
-     */
+    #[ORM\OneToOne(targetEntity: Reservation::class)]
+    #[ORM\JoinColumn(name: 'reservation_id', referencedColumnName: 'id')]
     private ?Reservation $reservation;
 
-    /**
-     * @ManyToOne(targetEntity="Table", inversedBy="orders")
-     * @JoinColumn(name="table_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Table::class, inversedBy: 'orders')]
+    #[ORM\JoinColumn(name: 'table_id', referencedColumnName: 'id')]
     private ?Table $table;
 
-    /**
-     * @ManyToOne(targetEntity="User")
-     * @JoinColumn(name="user_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User $waiter;
 
-    /**
-     * @Column(type="string", name="uuid")
-     */
+    #[ORM\Column(type: 'string', name: 'uuid')]
     private string $uuid;
 
     public function getId(): int

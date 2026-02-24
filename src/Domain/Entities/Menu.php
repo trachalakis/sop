@@ -7,39 +7,28 @@ namespace Domain\Entities;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\MenusRepository")
- * @Table(name="menus")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenusRepository')]
+#[ORM\Table(name: 'menus')]
 class Menu
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="datetime_immutable", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime_immutable', name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @OneToMany(targetEntity="MenuSection", mappedBy="menu", cascade={"persist"})
-     * @OrderBy({"isActive" = "DESC", "position" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: MenuSection::class, mappedBy: 'menu', cascade: ['persist'])]
+    #[ORM\OrderBy(['isActive' => 'DESC', 'position' => 'ASC'])]
     private $menuSections;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private string $name;
 
     public function __construct()

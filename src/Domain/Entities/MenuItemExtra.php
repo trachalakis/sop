@@ -5,34 +5,25 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\MenuItem;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\MenuItemExtrasRepository")
- * @Table(name="menu_item_extras")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemExtrasRepository')]
+#[ORM\Table(name: 'menu_item_extras')]
 class MenuItemExtra
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private string $name;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @ManyToOne(targetEntity="MenuItem", inversedBy="menuItemExtras")
-     * @JoinColumn(name="menu_item_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: MenuItem::class, inversedBy: 'menuItemExtras')]
+    #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
     private MenuItem $menuItem;
 
     public function __construct(string $name, float $price, MenuItem $menuItem)

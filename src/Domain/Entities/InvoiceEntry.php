@@ -6,55 +6,38 @@ namespace Domain\Entities;
 
 use Domain\Entities\Supply;
 use Domain\Entities\Invoice;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="invoice_entries")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'invoice_entries')]
 class InvoiceEntry
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @ManyToOne(targetEntity="Invoice", inversedBy="invoiceEntries")
-     * @JoinColumn(name="invoice_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Invoice::class, inversedBy: 'invoiceEntries')]
+    #[ORM\JoinColumn(name: 'invoice_id', referencedColumnName: 'id')]
     private Invoice $invoice;
 
-	/**
-     * @Column(type="float", name="quantity")
-     */
+    #[ORM\Column(type: 'float', name: 'quantity')]
     private float $quantity;
 
-    /**
-     * @ManyToOne(targetEntity="Supply", cascade={"persist"})
-     * @JoinColumn(name="supply_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Supply::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'supply_id', referencedColumnName: 'id')]
     private Supply $supply;
 
-    /**
-     * @Column(type="string", name="unit")
-     */
+    #[ORM\Column(type: 'string', name: 'unit')]
     private string $unit;
 
-    /**
-     * @Column(type="float", name="vat")
-     */
+    #[ORM\Column(type: 'float', name: 'vat')]
     private float $vat;
 
-     /**
-     * @Column(type="float", name="vat_percentage")
-     */
+    #[ORM\Column(type: 'float', name: 'vat_percentage')]
     private $vatPercentage;
 
     public function getId()

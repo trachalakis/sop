@@ -6,35 +6,26 @@ namespace Domain\Entities;
 
 use Domain\Entities\MenuSection;
 use Domain\Entities\Language;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="menu_section_translations")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'menu_section_translations')]
 class MenuSectionTranslation
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-	/**
-     * @ManyToOne(targetEntity="Language")
-     * @JoinColumn(name="language_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: Language::class)]
+    #[ORM\JoinColumn(name: 'language_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Language $language;
 
-	/**
-     * @ManyToOne(targetEntity="MenuSection", inversedBy="translations")
-     * @JoinColumn(name="menu_section_id", referencedColumnName="id", onDelete="CASCADE")
-     */
+    #[ORM\ManyToOne(targetEntity: MenuSection::class, inversedBy: 'translations')]
+    #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private MenuSection $menuSection;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private string $name;
 
     public function getLanguage(): Language

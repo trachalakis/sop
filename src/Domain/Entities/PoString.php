@@ -4,27 +4,21 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\PoStringsRepository")
- * @Table(name="po_strings")
- **/
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\PoStringsRepository')]
+#[ORM\Table(name: 'po_strings')]
 class PoString
 {
-	/**
-     * @Id
-     * @GeneratedValue
-     * @Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="string", name="label")
-     */
+    #[ORM\Column(type: 'string', name: 'label')]
     private string $label;
 
     public function getId(): int

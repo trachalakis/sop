@@ -6,39 +6,28 @@ namespace Domain\Entities;
 
 use Datetime;
 use Domain\Entities\Order;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity (repositoryClass="Domain\Repositories\OrderEntryGroupsRepository")
- * @Table(name="order_entry_groups")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntryGroupsRepository')]
+#[ORM\Table(name: 'order_entry_groups')]
 class OrderEntryGroup
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private Datetime $createdAt;
 
-	/**
-     * @Column(type="string", name="notes")
-     */
+    #[ORM\Column(type: 'string', name: 'notes')]
     private string $notes;
 
-    /**
-     * @OneToMany(targetEntity="OrderEntry", mappedBy="orderEntryGroup", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: 'OrderEntry', mappedBy: 'orderEntryGroup', cascade: ['persist'], orphanRemoval: true)]
     private $orderEntries;
 
-    /**
-     * @ManyToOne(targetEntity="Order", inversedBy="orderEntryGroups")
-     * @JoinColumn(name="order_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderEntryGroups')]
+    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id')]
     private Order $order;
 
     public function getId(): int

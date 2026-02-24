@@ -6,46 +6,33 @@ namespace Domain\Entities;
 
 use Domain\Entities\Supply;
 use Domain\Entities\Recipe;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity
- * @Table(name="ingredients")
- **/
+#[ORM\Entity]
+#[ORM\Table(name: 'ingredients')]
 class Ingredient
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="float", name="quantity")
-     */
+    #[ORM\Column(type: 'float', name: 'quantity')]
     private float $quantity;
 
-    /**
-     * @ManyToOne(targetEntity="Recipe", inversedBy="ingredients", cascade={"persist"})
-     * @JoinColumn(name="recipe_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Recipe::class, inversedBy: 'ingredients', cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'recipe_id', referencedColumnName: 'id')]
     private Recipe $recipe;
 
-    /**
-     * @ManyToOne(targetEntity="Recipe")
-     * @JoinColumn(name="preparation_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Recipe::class)]
+    #[ORM\JoinColumn(name: 'preparation_id', referencedColumnName: 'id')]
     private ?Recipe $preparation;
 
-    /**
-     * @ManyToOne(targetEntity="Supply")
-     * @JoinColumn(name="supply_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Supply::class)]
+    #[ORM\JoinColumn(name: 'supply_id', referencedColumnName: 'id')]
     private ?Supply $supply;
 
-    /**
-     * @Column(type="string", name="unit")
-     */
+    #[ORM\Column(type: 'string', name: 'unit')]
     private string $unit;
 
     public function getId(): int

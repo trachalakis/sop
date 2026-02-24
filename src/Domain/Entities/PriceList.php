@@ -4,32 +4,24 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\PriceListsRepository")
- * @Table(name="price_lists")
- **/
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\PriceListsRepository')]
+#[ORM\Table(name: 'price_lists')]
 class PriceList
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="boolean", name="is_archived")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_archived')]
     private bool $isArchived;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private string $name;
 
 

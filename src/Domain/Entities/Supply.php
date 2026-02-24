@@ -6,70 +6,47 @@ namespace Domain\Entities;
 
 use Domain\Entities\Supplier;
 use Domain\Entities\SupplyGroup;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\SuppliesRepository")
- * @Table(name="supplies")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\SuppliesRepository')]
+#[ORM\Table(name: 'supplies')]
 class Supply
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
- 	/**
-     * @Column(type="array", name="custom_fields")
-     */
+    #[ORM\Column(type: 'array', name: 'custom_fields')]
     private ?array $customFields;
 
-    /**
-     * @Column(type="text", name="description")
-     */
+    #[ORM\Column(type: 'text', name: 'description')]
     private ?string $description;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="string", name="name", unique=true)
-     */
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
-    /**
-     * @OneToMany(targetEntity="InvoiceEntry", mappedBy="supply")
-     */
+    #[ORM\OneToMany(targetEntity: InvoiceEntry::class, mappedBy: 'supply')]
     private $invoiceEntries;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @ManyToOne(targetEntity="Supplier", cascade={"persist"},)
-     * @JoinColumn(name="supplier_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Supplier::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'supplier_id', referencedColumnName: 'id')]
     private ?Supplier $supplier;
 
-    /**
-     * @ManyToOne(targetEntity="SupplyGroup", cascade={"persist"},)
-     * @JoinColumn(name="supply_group_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: SupplyGroup::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'supply_group_id', referencedColumnName: 'id')]
     private SupplyGroup $supplyGroup;
 
-    /**
-     * @Column(type="string", name="unit")
-     */
+    #[ORM\Column(type: 'string', name: 'unit')]
     private string $unit;
 
-    /**
-     * @Column(type="float", name="vat_percentage")
-     */
+    #[ORM\Column(type: 'float', name: 'vat_percentage')]
     private float $vatPercentage;
 
     public function getId(): int

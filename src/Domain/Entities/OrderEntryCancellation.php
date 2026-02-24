@@ -8,34 +8,25 @@ use Datetime;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\MenuItem;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity (repositoryClass="Domain\Repositories\OrderEntryCancellationsRepository")
- * @Table(name="order_entry_cancellations")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntryCancellationsRepository')]
+#[ORM\Table(name: 'order_entry_cancellations')]
 class OrderEntryCancellation
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="text", name="cancellation_reason")
-     */
+    #[ORM\Column(type: 'text', name: 'cancellation_reason')]
     private string $cancellationReason;
 
-    /**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private ?Datetime $createdAt;
 
-    /**
-     * @OneToOne(targetEntity="OrderEntry")
-     * @JoinColumn(name="order_entry_id", referencedColumnName="id")
-     */
+    #[ORM\OneToOne(targetEntity: OrderEntry::class)]
+    #[ORM\JoinColumn(name: 'order_entry_id', referencedColumnName: 'id')]
     private OrderEntry $orderEntry;
 
     public function getId(): int

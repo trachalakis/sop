@@ -6,55 +6,38 @@ namespace Domain\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Domain\Entities\Menu;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\MenuSectionsRepository")
- * @Table(name="menu_sections")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuSectionsRepository')]
+#[ORM\Table(name: 'menu_sections')]
 class MenuSection
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="boolean", name="is_public")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_public')]
     private bool $isPublic;
 
-    /**
-     * @ManyToOne(targetEntity="Menu", cascade={"persist"},)
-     * @JoinColumn(name="menu_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Menu::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'menu_id', referencedColumnName: 'id')]
     private Menu $menu;
 
-    /**
-     * @OneToMany(targetEntity="MenuItem", mappedBy="menuSection", cascade={"persist"})
-     * @OrderBy({"position" = "ASC"})
-     */
+    #[ORM\OneToMany(targetEntity: MenuItem::class, mappedBy: 'menuSection', cascade: ['persist'])]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private $menuItems;
 
-    /**
-     * @Column(type="integer", name="position")
-     */
+    #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
 
-    /**
-     * @Column(type="integer", name="print_menu_page")
-     */
+    #[ORM\Column(type: 'integer', name: 'print_menu_page')]
     private int $printMenuPage;
 
-    /**
-     * @OneToMany(targetEntity="MenuSectionTranslation", mappedBy="menuSection", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: MenuSectionTranslation::class, mappedBy: 'menuSection', cascade: ['persist'], orphanRemoval: true)]
     private $translations;
 
     public function __construct()

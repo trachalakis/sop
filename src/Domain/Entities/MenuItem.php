@@ -10,92 +10,60 @@ use Domain\Entities\MenuSection;
 use Domain\Entities\MenuItemExtra;
 use Domain\Entities\MenuItemPrice;
 use Domain\Entities\Supply;
+use Domain\Entities\Station;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\MenuItemsRepository")
- * @Table(name="menu_items")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemsRepository')]
+#[ORM\Table(name: 'menu_items')]
 class MenuItem
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="integer", name="available_quantity")
-     */
+    #[ORM\Column(type: 'integer', name: 'available_quantity')]
     private ?int $availableQuantity;
 
-    /**
-     * @Column(type="array", name="custom_fields")
-     */
+    #[ORM\Column(type: 'array', name: 'custom_fields')]
     private ?array $customFields;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="boolean", name="is_archived")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_archived')]
     private bool $isArchived;
 
-    /**
-     * @Column(type="boolean", name="is_drink")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_drink')]
     private bool $isDrink;
 
-    /**
-     * @Column(type="boolean", name="is_price_per_kg")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_price_per_kg')]
     private bool $isPricePerKg;
 
-    /**
-     * @Column(type="boolean", name="is_public")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_public')]
     private bool $isPublic;
 
-    /**
-     * @ManyToOne(targetEntity="MenuSection", cascade={"persist"},)
-     * @JoinColumn(name="menu_section_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: MenuSection::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id')]
     private MenuSection $menuSection;
 
-    /**
-     * @OneToMany(targetEntity="MenuItemExtra", mappedBy="menuItem", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: MenuItemExtra::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
     private Collection $menuItemExtras;
 
-    /**
-     * @Column(type="integer", name="position")
-     */
+    #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @ManyToMany(targetEntity="Station")
-     * @JoinTable(name="menu_items_stations",
-     *      joinColumns={@JoinColumn(name="menu_item_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="station_id", referencedColumnName="id")})
-     */
+    #[ORM\ManyToMany(targetEntity: Station::class)]
+    #[ORM\JoinTable(name: 'menu_items_stations', joinColumns: [new ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')], inverseJoinColumns: [new ORM\JoinColumn(name: 'station_id', referencedColumnName: 'id')])]
     private $stations;
 
-    /**
-     * @Column(type="boolean", name="track_available_quantity")
-     */
+    #[ORM\Column(type: 'boolean', name: 'track_available_quantity')]
     private bool $trackAvailableQuantity;
 
-    /**
-     * @OneToMany(targetEntity="MenuItemTranslation", mappedBy="menuItem", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: MenuItemTranslation::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
     private $translations;
 
     public function __construct() {

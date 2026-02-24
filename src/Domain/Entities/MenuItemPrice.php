@@ -5,35 +5,26 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\MenuItem;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\MenuItemPricesRepository")
- * @Table(name="menu_item_prices")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemPricesRepository')]
+#[ORM\Table(name: 'menu_item_prices')]
 class MenuItemPrice
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @ManyToOne(targetEntity="MenuItem", inversedBy="menuItemPrices")
-     * @JoinColumn(name="menu_item_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: MenuItem::class, inversedBy: 'menuItemPrices')]
+    #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
     private MenuItem $menuItem;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @ManyToOne(targetEntity="PriceList", inversedBy="menuItemPrices")
-     * @JoinColumn(name="price_list_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: PriceList::class, inversedBy: 'menuItemPrices')]
+    #[ORM\JoinColumn(name: 'price_list_id', referencedColumnName: 'id')]
     private PriceList $priceList;
 
     public function __construct(float $price, PriceList $priceList, MenuItem $menuItem)

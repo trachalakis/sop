@@ -5,48 +5,33 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\EmailAddress;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\SuppliersRepository")
- * @Table(name="suppliers")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\SuppliersRepository')]
+#[ORM\Table(name: 'suppliers')]
 class Supplier
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="string", name="address")
-     */
+    #[ORM\Column(type: 'string', name: 'address')]
     private ?string $address;
 
-    /**
-     * @Column(type="string", name="email_address")
-     */
+    #[ORM\Column(type: 'string', name: 'email_address')]
     private ?string $emailAddress;
 
-    /**
-     * @Column(type="string", name="name", unique=true)
-     */
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
-    /**
-     * @Column(type="string", name="occupation")
-     */
+    #[ORM\Column(type: 'string', name: 'occupation')]
     private ?string $occupation;
 
-    /**
-     * @Column(type="string", name="tax_office")
-     */
+    #[ORM\Column(type: 'string', name: 'tax_office')]
     private ?string $taxOffice;
 
-    /**
-     * @Column(type="string", name="tax_registration_number")
-     */
+    #[ORM\Column(type: 'string', name: 'tax_registration_number')]
     private ?string $taxRegistrationNumber;
 
     public function getId(): int

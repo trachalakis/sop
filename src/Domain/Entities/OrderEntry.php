@@ -8,111 +8,72 @@ use Datetime;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\MenuItem;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity (repositoryClass="Domain\Repositories\OrderEntriesRepository")
- * @Table(name="order_entries")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntriesRepository')]
+#[ORM\Table(name: 'order_entries')]
 class OrderEntry
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="datetime", name="created_at")
-     */
+    #[ORM\Column(type: 'datetime', name: 'created_at')]
     private ?Datetime $createdAt;
 
-    /**
-     * @Column(type="float", name="discount")
-     */
+    #[ORM\Column(type: 'float', name: 'discount')]
     private float $discount;
 
-    /**
-     * @Column(type="string", name="discount_reason")
-     */
+    #[ORM\Column(type: 'string', name: 'discount_reason')]
     private ?string $discountReason;
 
-    /**
-     * @Column(type="integer", name="family")
-     */
+    #[ORM\Column(type: 'integer', name: 'family')]
     private int $family;
 
-    /**
-     * @Column(type="boolean", name="is_paid")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_paid')]
     private bool $isPaid;
 
-    /**
-     * @Column(type="integer", name="max_quantity")
-     */
+    #[ORM\Column(type: 'integer', name: 'max_quantity')]
     private ?int $maxQuantity;
 
-    /**
-     * @Column(type="integer", name="max_weight")
-     */
+    #[ORM\Column(type: 'integer', name: 'max_weight')]
     private ?int $maxWeight;
 
-    /**
-     * @OneToOne(targetEntity="MenuItem")
-     * @JoinColumn(name="menu_item_id", referencedColumnName="id")
-     */
+    #[ORM\OneToOne(targetEntity: MenuItem::class)]
+    #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
     private MenuItem $menuItem;
 
-    /**
-     * @Column(type="float", name="menu_item_price")
-     */
+    #[ORM\Column(type: 'float', name: 'menu_item_price')]
     private float $menuItemPrice;
 
-    /**
-     * @Column(type="text", name="notes")
-     */
+    #[ORM\Column(type: 'text', name: 'notes')]
     private string $notes;
 
-    /**
-     * @ManyToOne(targetEntity="Order", inversedBy="orderEntries")
-     * @JoinColumn(name="order_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: Order::class, inversedBy: 'orderEntries')]
+    #[ORM\JoinColumn(name: 'order_id', referencedColumnName: 'id')]
     private Order $order;
 
-    /**
-     * @ManyToOne(targetEntity="OrderEntryGroup", inversedBy="orderEntries")
-     * @JoinColumn(name="order_entry_group_id", referencedColumnName="id")
-     */
+    #[ORM\ManyToOne(targetEntity: OrderEntryGroup::class, inversedBy: 'orderEntries')]
+    #[ORM\JoinColumn(name: 'order_entry_group_id', referencedColumnName: 'id')]
     private ?OrderEntryGroup $orderEntryGroup;
 
-    /**
-     * @OneToMany(targetEntity="OrderEntryCancellation", mappedBy="orderEntry", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: OrderEntryCancellation::class, mappedBy: 'orderEntry', cascade: ['persist'], orphanRemoval: true)]
     private $orderEntryCancellations;
 
-    /**
-     * @OneToMany(targetEntity="OrderEntryExtra", mappedBy="orderEntry", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: OrderEntryExtra::class, mappedBy: 'orderEntry', cascade: ['persist'], orphanRemoval: true)]
     private $orderEntryExtras;
 
-    /**
-     * @Column(type="float", name="price")
-     */
+    #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    /**
-     * @Column(type="integer", name="quantity")
-     */
+    #[ORM\Column(type: 'integer', name: 'quantity')]
     private int $quantity;
 
-    /**
-     * @Column(type="integer", name="timing")
-     */
+    #[ORM\Column(type: 'integer', name: 'timing')]
     private int $timing;
 
-    /**
-     * @Column(type="integer", name="weight")
-     */
+    #[ORM\Column(type: 'integer', name: 'weight')]
     private ?int $weight;
 
     public function getId(): int

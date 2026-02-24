@@ -5,54 +5,38 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\MenuItem;
+use Domain\Entities\Ingredient;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\RecipesRepository")
- * @Table(name="recipes")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\RecipesRepository')]
+#[ORM\Table(name: 'recipes')]
 class Recipe
 {
-	/**
-     * @Id
-     * @Column(type="integer", name="id")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer', name: 'id')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="text", name="comments")
-     */
+    #[ORM\Column(type: 'text', name: 'comments')]
     private ?string $comments;
 
-    /**
-     * @Column(type="integer", name="duration")
-     */
+    #[ORM\Column(type: 'integer', name: 'duration')]
     private ?int $duration;
 
-    /**
-     * @OneToMany(targetEntity="Ingredient", mappedBy="recipe", cascade={"persist"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: Ingredient::class, mappedBy: 'recipe', cascade: ['persist'], orphanRemoval: true)]
     private $ingredients;
 
-    /**
-     * @OneToOne(targetEntity="MenuItem")
-     * @JoinColumn(name="menu_item_id", referencedColumnName="id")
-     */
+    #[ORM\OneToOne(targetEntity: MenuItem::class)]
+    #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
     private ?MenuItem $menuItem;
 
-    /**
-     * @Column(type="string", name="name")
-     */
+    #[ORM\Column(type: 'string', name: 'name')]
     private ?string $name;
 
-    /**
-     * @Column(type="float", name="yield")
-     */
+    #[ORM\Column(type: 'float', name: 'yield')]
     private float $yield;
 
-    /**
-     * @Column(type="string", name="yield_unit")
-     */
+    #[ORM\Column(type: 'string', name: 'yield_unit')]
     private string $yieldUnit;
 
     public function getId(): int

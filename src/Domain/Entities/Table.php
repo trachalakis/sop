@@ -5,33 +5,24 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\Order;
+use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @Entity(repositoryClass="Domain\Repositories\TablesRepository")
- * @Table(name="tables")
- **/
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\TablesRepository')]
+#[ORM\Table(name: 'tables')]
 class Table
 {
-	/**
-     * @Id
-     * @Column(type="integer")
-     * @GeneratedValue
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
     private int $id;
 
-    /**
-     * @Column(type="boolean", name="is_active")
-     */
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    /**
-     * @Column(type="string", unique=true)
-     */
+    #[ORM\Column(type: 'string', unique: true)]
     private string $name;
 
-    /**
-     * @OneToMany(targetEntity="Order", mappedBy="table", cascade={"persist"})
-     */
+    #[ORM\OneToMany(targetEntity: 'Order', mappedBy: 'table', cascade: ['persist'])]
     private $orders;
 
     public function getId()
