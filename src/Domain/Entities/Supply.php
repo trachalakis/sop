@@ -17,7 +17,7 @@ class Supply
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'array', name: 'custom_fields')]
+    #[ORM\Column(type: 'simple_array', name: 'custom_fields')]
     private ?array $customFields;
 
     #[ORM\Column(type: 'text', name: 'description')]

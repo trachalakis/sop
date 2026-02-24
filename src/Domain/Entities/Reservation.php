@@ -43,7 +43,7 @@ class Reservation
     #[ORM\Column(type: 'string', name: 'status')]
     private string $status;
 
-    #[ORM\Column(type: 'array', name: 'tables')]
+    #[ORM\Column(type: 'simple_array', name: 'tables')]
     private ?array $tables;
 
     #[ORM\Column(type: 'string', name: 'telephone_number')]

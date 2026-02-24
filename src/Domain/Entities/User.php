@@ -36,10 +36,10 @@ class User
     #[ORM\Column(type: 'string', name: 'password_hash')]
     private string $passwordHash;
 
-    #[ORM\Column(type: 'array', name: 'roles')]
+    #[ORM\Column(type: 'simple_array', name: 'roles')]
     private array $roles;
 
-    #[ORM\Column(type: 'array', name: 'allowed_menus')]
+    #[ORM\Column(type: 'simple_array', name: 'allowed_menus')]
     private array $allowedMenus;
 
     public function __construct(

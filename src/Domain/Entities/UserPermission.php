@@ -15,7 +15,7 @@ class UserPermission
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'array', name: 'allowed_roles')]
+    #[ORM\Column(type: 'simple_array', name: 'allowed_roles')]
     private array $allowedRoles;
 
     #[ORM\Column(type: 'string', name: 'path')]

@@ -25,7 +25,7 @@ class MenuItem
     #[ORM\Column(type: 'integer', name: 'available_quantity')]
     private ?int $availableQuantity;
 
-    #[ORM\Column(type: 'array', name: 'custom_fields')]
+    #[ORM\Column(type: 'simple_array', name: 'custom_fields')]
     private ?array $customFields;
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
