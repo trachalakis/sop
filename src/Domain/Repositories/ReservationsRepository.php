@@ -16,12 +16,12 @@ class ReservationsRepository extends EntityRepository implements ReservationsRep
         $qb->select('r')
             ->from('Domain\Entities\Reservation', 'r')
             ->andWhere(
-                $qb->expr()->orX(
-                    $qb->expr()->like('r.dateTime', ':date')
-                )
+                //$qb->expr()->orX(
+                    $qb->expr()->eq('DATE(r.dateTime)', ':date')
+                //)
             )
             ->orderBy('r.dateTime', 'asc')
-            ->setParameter(':date', '%' . $date->format('Y-m-d') . '%');
+            ->setParameter(':date', $date->format('Y-m-d'));
 
         return $qb->getQuery()->getResult();
 	}

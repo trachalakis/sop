@@ -133,6 +133,7 @@ return function (ContainerBuilder $containerBuilder) {
                 isDevMode: true,
             );
             $config->enableNativeLazyObjects(true);
+            $config->addCustomDatetimeFunction('DATE', DoctrineExtensions\Query\Postgresql\Date::class);
             
             $connection = DriverManager::getConnection([
                 'driver' => 'pdo_pgsql',
