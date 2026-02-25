@@ -14,7 +14,6 @@ use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryCancellation;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\PoString;
-use Domain\Entities\PriceList;
 use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
 use Domain\Entities\Station;

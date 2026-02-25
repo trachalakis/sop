@@ -31,11 +31,6 @@
 			<nav id="sidebarMenu" class="col-lg-2 col-md-3 d-md-block bg-light sidebar collapse">
 				<div class="position-sticky pt-3 sidebar-sticky">
 	        		<ul class="nav flex-column">
-						<!--<li class="nav-item">
-							<a class="nav-link" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
-						  		<i class="fa-solid fa-circle-chevron-left"></i> Minimize
-							</a>
-						</li>-->
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'dashboard' ? 'active' : ''}}" href="/admin/">
 						  		Αρχική
@@ -51,11 +46,6 @@
 						  		ReservationsApp
 							</a>
 						</li>
-						{#<!--<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'menu' ? 'active' : ''}}" href="/admin/menu">
-						  		Menu
-							</a>
-						</li>-->#}
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'menus' ? 'active' : ''}}" href="/admin/menu">
 						  		Μενού
@@ -75,29 +65,9 @@
 								</ul>
 							{% endif %}
 						</li>
-						<!--<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'shopping-lists' ? 'active' : ''}}" href="/admin/shopping-lists">
-						  		Shopping Lists
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'price-lists' ? 'active' : ''}}" href="/admin/price-lists">
-						  		Price Lists
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'reservations' ? 'active' : ''}}" href="/admin/reservations">
-								Reservations
-							</a>
-						</li>-->
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'tables' ? 'active' : ''}}" href="/admin/tables">
 								Τραπέζια
-							</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'invoices' ? 'active' : ''}}" href="/admin/invoices">
-								Invoices
 							</a>
 						</li>
 						<li class="nav-item">
@@ -106,25 +76,15 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'suppliers' ? 'active' : ''}}" href="/admin/suppliers">
-								Προμηθευτές
-							</a>
-						</li>
-						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'recipes' ? 'active' : ''}}" href="/admin/recipes">
 								Συνταγές
-							</a>
-						</li>
-						<!--<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'translations' ? 'active' : ''}}" href="/admin/po-strings">
-								Translations
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'stations' ? 'active' : ''}}" href="/admin/stations">
 								<i class="fa-solid fa-print"></i> Stations
 							</a>
-						</li>-->
+						</li>
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'scans' ? 'active' : ''}}" href="/admin/scans">
 								Scans

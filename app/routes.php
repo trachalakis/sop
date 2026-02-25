@@ -118,8 +118,6 @@ return function (App $app, $container) {
 
         $group->get('/clone-menu', CloneMenu::class);
 
-        $group->get('/price-lists', PriceLists::class);
-
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
         $group->map(['GET', 'POST'], '/users/update', UpdateUser::class);
@@ -132,23 +130,18 @@ return function (App $app, $container) {
         $group->get('/scans/delete', DeleteScan::class);
         $group->get('/scans/user', UserScans::class);
 
-        /*$group->get('/invoices', Invoices::class);
-        $group->map(['GET', 'POST'], '/invoices/create', CreateInvoice::class);
-        $group->get('/invoices/view', ViewInvoice::class);
-        $group->get('/invoices/delete', DeleteInvoice::class);*/
-
         $group->get('/supplies', Supplies::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
 
-        $group->get('/suppliers', Suppliers::class);
+        /*$group->get('/suppliers', Suppliers::class);
         $group->map(['GET', 'POST'], '/suppliers/update', UpdateSupplier::class);
 
         $group->get('/shopping-lists', ShoppingLists::class);
         $group->map(['GET', 'POST'], '/shopping-lists/create', CreateShoppingList::class);
         $group->map(['GET', 'POST'], '/shopping-lists/update', UpdateShoppingList::class);
 
-        $group->map(['GET', 'POST'], '/shopping-list', MakeShoppingList::class);
+        $group->map(['GET', 'POST'], '/shopping-list', MakeShoppingList::class);*/
 
         $group->get('/recipes', Recipes::class);
         $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);
