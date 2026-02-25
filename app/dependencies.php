@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use DI\Container;
-use Domain\Entities\Invoice;
 use Domain\Entities\Language;
 use Domain\Entities\Menu;
 use Domain\Entities\MenuSection;
@@ -18,7 +16,6 @@ use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
 use Domain\Entities\Station;
 use Domain\Entities\Scan;
-use Domain\Entities\ShoppingList;
 use Domain\Entities\Supplier;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
@@ -43,7 +40,6 @@ use Domain\Repositories\TablesRepositoryInterface;
 use Domain\Repositories\StationsRepositoryInterface;
 use Domain\Repositories\OrderEntryGroupsRepositoryInterface;
 use Domain\Repositories\SupplyGroupsRepositoryInterface;
-use Domain\Repositories\SuppliersRepositoryInterface;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
@@ -114,18 +110,6 @@ return function (ContainerBuilder $containerBuilder) {
         },*/
         EntityManager::class => function (ContainerInterface $c) {
             $dbSettings = $c->get('settings')['db'];
-           
-            /*return Doctrine\ORM\EntityManager::create(
-                [
-                    'driver' => 'pdo_pgsql',
-                    'host' => $settings['host'],
-                    'user' => $settings['username'],
-                    'password' => $settings['password'],
-                    'dbname' => $settings['databaseName'],
-                ],
-                //TODO
-                Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration([__DIR__ . '/../src/Domain/Entities'], $isDevMode = true)
-            );*/
 
             $config = ORMSetup::createAttributeMetadataConfig(
                 paths: [__DIR__ . '/../src/Domain/Entities'],
@@ -223,21 +207,11 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
-        }, 
-        SuppliersRepositoryInterface::class => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(Supplier::class);
         },
         /*'Domain\Repositories\SuppliesRepositoryInterface' => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Supply::class);
-        },
-        'Domain\Repositories\InvoicesRepositoryInterface' => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(Invoice::class);
         },*/
         RecipesRepositoryInterface::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
@@ -259,11 +233,6 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
-        },
-        'Domain\Repositories\ShoppingListsRepositoryInterface' => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(ShoppingList::class);
         }*/
     ]);
 };
