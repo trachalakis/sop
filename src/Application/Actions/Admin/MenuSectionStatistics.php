@@ -77,7 +77,7 @@ final class MenuSectionStatistics
 				}
 	        
 				//Sales breakdown
-				$date = $orderEntry->getOrderEntryGroup()->getCreatedAt()->format('D d/m/Y'); 
+				$date = $orderEntry->getOrderEntryGroup()->getCreatedAt()->format('Y-m-d'); 
 				if (isset($sales[$date])) {
 					$sales[$date] += $orderEntry->getPrice();
 				} else {
@@ -86,7 +86,15 @@ final class MenuSectionStatistics
 			}
 	    }
 
-		//dump($menuItems);
+		uksort($sales, function($a, $b) {
+			if ((new \Datetime($a)) > (new \Datetime($b))) {
+				return 1;
+			}
+			if ((new \Datetime($a)) < (new \Datetime($b))) {
+				return -1;
+			}
+			return 0;
+		});
 
 	    uasort($menuItems, function ($a, $b) {
 	    	if ($a['count'] < $b['count']) {
@@ -99,8 +107,6 @@ final class MenuSectionStatistics
 				return -1;
 			}
 	    });
-
-		//dd($menuItems);
 
         return $this->twig->render(
             $response,
