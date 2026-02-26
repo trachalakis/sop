@@ -11,17 +11,36 @@
     	<a class="nav-link active fs-4" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">Στατιστικά</a>
   	</li>
 </ul>
-<ul class="nav nav-pills border-bottom pb-3 mb-3">
-    <li class="nav-item">
-        <a class="nav-link {{period == 'week' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=week">Εβδομάδα</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{period == 'month' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=month">Μήνας</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link {{period == 'year' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=year">Χρόνος</a>
-    </li>
-</ul>
+<form method="get" autocomplete="off" action="">
+    <input name="id" type="hidden" value="{{menuSection.getId}}"/>
+    <ul class="nav nav-pills border-bottom pb-3 mb-3">
+        <li class="nav-item">
+            <a class="nav-link {{period == 'week' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=week">Εβδομάδα</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{period == 'month' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=month">Μήνας</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{period == 'year' ? 'active' : ''}}" href="?id={{menuSection.getId}}&period=year">Χρόνος</a>
+        </li>
+        <li class="nav-item me-2">
+            <div class="input-group">
+                <div class="input-group-text">From</div>
+                <input type="date" name="filter[start]" class="form-control" value="{{startDate.format('Y-m-d')}}"/>
+            </div>
+        </li>
+        <li class="nav-item me-2">
+            <div class="input-group">
+                <div class="input-group-text">To</div>
+                <input type="date" name="filter[end]" class="form-control" value="{{endDate.format('Y-m-d')}}"/>
+            </div>  
+        </li>
+        <li class="nav-item">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <input type="reset" class="btn btn-primary" value="Reset"/>
+        </li>
+    </ul>
+</form>
 <div class="row mb-3">
     <div class="col-6">
         <div class="card text-bg-light mb-3">

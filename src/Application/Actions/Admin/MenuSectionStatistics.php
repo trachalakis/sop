@@ -35,16 +35,23 @@ final class MenuSectionStatistics
 	{
 		$menuSection = $this->menuSectionsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 
-		$period = $request->getQueryParams()['period'] ?? 'week';
-		if ($period == 'year') {
-			$startDate = new Datetime('first day of january this year midnight');
-			$endDate = new Datetime('last day of december this year midnight');
-		} else if ($period == 'month') {
-			$startDate = new Datetime('first day of this month midnight');
-			$endDate = new Datetime('last day of this month midnight');
+		$filter = $request->getQueryParams()['filter'] ?? [];
+		if (!empty($filter)) {
+			$startDate = new Datetime($filter['start']);
+			$endDate = new Datetime($filter['end']);
+			$period = null;
 		} else {
-			$startDate = new Datetime('monday this week');
-			$endDate = (clone $startDate)->add(new \DateInterval('P7D'));
+			$period = $request->getQueryParams()['period'] ?? 'week';
+			if ($period == 'year') {
+				$startDate = new Datetime('first day of january this year midnight');
+				$endDate = new Datetime('last day of december this year midnight');
+			} else if ($period == 'month') {
+				$startDate = new Datetime('first day of this month midnight');
+				$endDate = new Datetime('last day of this month midnight');
+			} else {
+				$startDate = new Datetime('monday this week');
+				$endDate = (clone $startDate)->add(new \DateInterval('P7D'));
+			}
 		}
 		$datePeriod = new DatePeriod($startDate, new DateInterval('P1D'), $endDate);
 
@@ -79,9 +86,21 @@ final class MenuSectionStatistics
 			}
 	    }
 
+		//dump($menuItems);
+
 	    uasort($menuItems, function ($a, $b) {
-	    	return $a['count'] < $b['count'];
+	    	if ($a['count'] < $b['count']) {
+				return 1;
+			}
+			if ($a['count'] == $b['count']) {
+				return 0;
+			}
+			if ($a['count'] > $b['count']) {
+				return -1;
+			}
 	    });
+
+		//dd($menuItems);
 
         return $this->twig->render(
             $response,
@@ -92,8 +111,9 @@ final class MenuSectionStatistics
             	'count' => $count,
             	'menuSection' => $menuSection,
             	'menuItems' => $menuItems,
-
-				'sales' => $sales
+				'sales' => $sales,
+				'startDate' => $startDate,
+            	'endDate' => $endDate
             ]
         );
 	}
