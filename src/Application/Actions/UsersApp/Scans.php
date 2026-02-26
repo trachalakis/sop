@@ -36,9 +36,12 @@ final class Scans
         } else {
             $date = new \Datetime($queryParams['date']);
         }
-        $startOfMonth = $date->modify('first day of this month');
+        $startOfMonth = (clone $date)->modify('first day of this month');
+        $endOfMonth = (clone $date)->modify('first day of next month');
+        $interval = new \DateInterval('P1D');
+        $period = new \DatePeriod($startOfMonth, $interval, $endOfMonth);
 
-        $scans = $this->scansRepository->findUserCheckIns($user, $startOfMonth->format('Y-m'));
+        $scans = $this->scansRepository->findUserScans($user, $period);
 
         $hours = 0;
         $minutes = 0;
@@ -46,18 +49,20 @@ final class Scans
         foreach ($scans as $scan) {
             $interval = $scan->getInterval();
 
-            $hours += $interval->h;
-            $minutes += $interval->i;
-            $seconds += $interval->s;
+            if ($interval != null) {
+                $hours += $interval->h;
+                $minutes += $interval->i;
+                $seconds += $interval->s;
 
-            if ($seconds >= 60) {
-                $minutes++;
-                $seconds = $seconds - 60;
-            }
+                if ($seconds >= 60) {
+                    $minutes++;
+                    $seconds = $seconds - 60;
+                }
 
-            if ($minutes >= 60) {
-                $hours++;
-                $minutes = $minutes - 60;
+                if ($minutes >= 60) {
+                    $hours++;
+                    $minutes = $minutes - 60;
+                }
             }
         }
 

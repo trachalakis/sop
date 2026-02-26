@@ -41,7 +41,6 @@ use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateSupply;
 use Application\Actions\Admin\UpdateTable;
 use Application\Actions\Admin\UpdateUser;
-use Application\Actions\Admin\UserQrCode;
 use Application\Actions\Admin\Users;
 use Application\Actions\Admin\UserScans;
 use Application\Actions\Admin\UserOrders;
@@ -63,6 +62,7 @@ use Application\Actions\UsersApp\Orders as UsersAppOrders;
 use Application\Actions\UsersApp\CreateOrder as UsersAppCreateOrder;
 use Application\Actions\UsersApp\ViewOrder as UsersAppViewOrder;
 use Application\Actions\UsersApp\UpdatePin as UsersAppUpdatePin;
+use Application\Actions\UsersApp\Clock;
 use Middleware\Authentication;
 use Middleware\Authorization;
 use Middleware\Globals;
@@ -106,7 +106,6 @@ return function (App $app, $container) {
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
         $group->map(['GET', 'POST'], '/users/update', UpdateUser::class);
-        $group->get('/users/qr-code', UserQrCode::class);
         $group->get('/users/orders', UserOrders::class);
 
         $group->get('/scans', Scans::class);
@@ -114,6 +113,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/scans/update', UpdateScan::class);
         $group->get('/scans/delete', DeleteScan::class);
         $group->get('/scans/user', UserScans::class);
+        
 
         $group->get('/supplies', Supplies::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
@@ -175,6 +175,7 @@ return function (App $app, $container) {
         $group->get('/view-order', UsersAppViewOrder::class);
         $group->map(['GET', 'POST'], '/create-order', UsersAppCreateOrder::class);
         $group->map(['GET', 'POST'], '/update-pin', UsersAppUpdatePin::class);
+        $group->get('/clock', Clock::class);
     })
     ->add(new Authorization($container->get('Domain\Repositories\UserPermissionsRepositoryInterface')))
     ->add(new Authentication());

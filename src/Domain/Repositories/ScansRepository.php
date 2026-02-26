@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Repositories;
 
+use DatePeriod;
 use Domain\Entities\Scan;
 use Domain\Entities\User;
 use Domain\Repositories\UsersRepositoryInterface;
@@ -68,7 +69,7 @@ class ScansRepository extends EntityRepository implements ScansRepositoryInterfa
         return $qb->getQuery()->getResult();
     }
 
-    public function findUserCheckIns(User $user, string $date)
+    public function findUserScans(User $user, DatePeriod $datePeriod)
     {
         $qb = $this->getEntityManager()->createQueryBuilder();
         $qb->select('s')
@@ -76,12 +77,14 @@ class ScansRepository extends EntityRepository implements ScansRepositoryInterfa
             ->andWhere(
                 $qb->expr()->andX(
                     $qb->expr()->eq('s.user', ':user'),
-                    $qb->expr()->like('s.checkIn', ':checkIn')
+                    $qb->expr()->gte('s.checkIn', ':startDate'),
+                    $qb->expr()->lt('s.checkIn', ':endDate')
                 )
             )
-            ->orderBy('s.checkIn', 'asc')
             ->setParameter(':user', $user)
-            ->setParameter(':checkIn', '%' . $date . '%');
+            ->setParameter(':startDate', $datePeriod->getStartDate())
+            ->setParameter(':endDate', $datePeriod->getEndDate())
+            ->orderBy('s.checkIn', 'asc');
 
         return $qb->getQuery()->getResult();
     }

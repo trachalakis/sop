@@ -36,9 +36,12 @@ final class UserScans
         } else {
             $date = new \Datetime($queryParams['date']);
         }
-        $startOfMonth = $date->modify('first day of this month');
+        $startOfMonth = (clone $date)->modify('first day of this month');
+        $endOfMonth = (clone $date)->modify('first day of next month');
+        $interval = new \DateInterval('P1D');
+        $period = new \DatePeriod($startOfMonth, $interval, $endOfMonth);
 
-        $scans = $this->scansRepository->findUserCheckIns($user, $startOfMonth->format('Y-m'));
+        $scans = $this->scansRepository->findUserScans($user, $period);
 
         $hours = 0;
         $minutes = 0;

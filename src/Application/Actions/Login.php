@@ -34,7 +34,7 @@ final class Login
             if ($user != null) {
                 if (password_verify($requestParams['password'], $user->getPasswordHash())) {
                 	$_SESSION['user'] = $user;
-
+                    
                     if (in_array('webmaster', $user->getRoles())) {
                         return $response->withHeader('Location', '/admin/')->withStatus(302);
                     }

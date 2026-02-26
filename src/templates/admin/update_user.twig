@@ -11,10 +11,7 @@
     	<a class="nav-link active" href="/admin/users/update?id={{user.getId}}">Γενικά</a>
   	</li>
   	<li class="nav-item">
-    	<a class="nav-link" href="/admin/scans/user?id={{user.getId}}">Scans</a>
-  	</li>
-  	<li class="nav-item">
-    	<a class="nav-link" href="/admin/users/qr-code?id={{user.getId}}">Qr code</a>
+    	<a class="nav-link" href="/admin/scans/user?id={{user.getId}}">Ωράρια</a>
   	</li>
   	<li class="nav-item">
     	<a class="nav-link" href="/admin/users/orders?id={{user.getId}}">Αυτόπαράδοση</a>
@@ -67,14 +64,23 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Roles</label>
 		<div class="col-sm-10">
-			<select class="form-select" name="roles[]" style="height:200px;" multiple>
-  				<option value="webmaster" {{'webmaster' in user.getRoles ? 'selected' : ''}}>webmaster</option>
-            	<option value="administrator" {{'administrator' in user.getRoles ? 'selected' : ''}}>administrator</option>
-            	<option value="employee" {{'employee' in user.getRoles ? 'selected' : ''}}>employee</option>
-            	<option value="waiter" {{'waiter' in user.getRoles ? 'selected' : ''}}>waiter</option>
-            	<option value="foh" {{'foh' in user.getRoles ? 'selected' : ''}}>foh</option>
-            	<option value="boh" {{'boh' in user.getRoles ? 'selected' : ''}}>boh</option>
-            	<option value="terminal" {{'terminal' in user.getRoles ? 'selected' : ''}}>terminal</option>
+			<select class="form-select" name="roles[]" size="15" multiple>
+				<option value="webmaster" {{'webmaster' in user.getRoles ? 'selected' : ''}}>webmaster</option>
+				<option value="employee" {{'employee' in user.getRoles ? 'selected' : ''}}>employee</option>
+				<optgroup label="B.O.H">
+					<option value="boh" {{'boh' in user.getRoles ? 'selected' : ''}}>boh</option>
+					<option value="warm_cuisine" {{'warm_cuisine' in user.getRoles ? 'selected' : ''}}>warm_cuisine</option>
+					<option value="cold_cuisine" {{'cold_cuisine' in user.getRoles ? 'selected' : ''}}>cold_cuisine</option>
+					<option value="prep" {{'prep' in user.getRoles ? 'selected' : ''}}>prep</option>
+				</optgroup>
+				<optgroup label="F.O.H">
+					<option value="foh" {{'foh' in user.getRoles ? 'selected' : ''}}>foh</option>
+					<option value="waiter" {{'waiter' in user.getRoles ? 'selected' : ''}}>waiter</option>
+					<option value="reservations_manager" {{'reservations_manager' in user.getRoles ? 'selected' : ''}}>reservations manager</option>
+					<option value="assistant_waiter" {{'assistan_waiter' in user.getRoles ? 'selected' : ''}}>assistant waiter</option>
+					<option value="bar" {{'bar' in user.getRoles ? 'selected' : ''}}>bar</option>
+					<option value="terminal" {{'terminal' in user.getRoles ? 'selected' : ''}}>terminal</option>
+				</optgroup>
 			</select>
     	</div>
 	</div>

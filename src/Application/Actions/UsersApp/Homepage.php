@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Application\Actions\UsersApp;
 
 use Datetime;
+use DateInterval;
+use DatePeriod;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Domain\Repositories\ScansRepositoryInterface;
 use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Entities\Scan;
 use Slim\Views\Twig;
 
 final class Homepage
@@ -38,12 +39,16 @@ final class Homepage
         $hours = 0;
         $minutes = 0;
 
-        $date = new Datetime;
+        $startDate = (new Datetime)->modify('today midnight');
         if ((new Datetime)->format('G') <= 4) {
-            $date = new Datetime('yesterday');
+            $startDate = new Datetime('yesterday');
         }
+        $interval = new DateInterval('P1D');
+        $endDate = (clone $startDate)->add($interval);
+        $period = new DatePeriod($startDate, $interval, $endDate);
 
-        $todaysScans = $this->scansRepository->findUserCheckIns($_SESSION['user'], $date->format('Y-m-d'));
+        $todaysScans = $this->scansRepository->findUserScans($_SESSION['user'], $period);
+
         foreach($todaysScans as $scan) {
             $interval = $scan->getInterval();
             if ($interval == null) {
@@ -72,7 +77,7 @@ final class Homepage
         $selfDeliveries = $this->ordersRepository->findBy(['employee' => $_SESSION['user']]);
 
         return $this->twig->render($response, 'users_app/homepage.twig', [
-            'user' => $_SESSION['user'],
+            //'user' => $_SESSION['user'],
             'userIsWorking' => $lastCheckIn != null,
             'hours' => $hours,
             'minutes' => $minutes,

@@ -37,7 +37,6 @@ final class Authorization implements MiddlewareInterface
         foreach ($permissions as $permission) {
             $path = str_replace('/', '\/', $permission->getPath());
             $path = sprintf("/%s/", $path);
-            //if (preg_match($path, $route->getPattern())) {
             if (preg_match($path, $request->getUri()->getPath())) {
                 if (count(array_intersect($permission->getAllowedRoles(), $user->getRoles())) > 0) {
                     $response = $handler->handle($request);

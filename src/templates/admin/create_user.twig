@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">New user</h1>
+    <h1 class="h2">Νέος χρήστης</h1>
 </div>
 <form method="post" autocomplete="off">
 	<div class="row mb-3">
@@ -49,14 +49,23 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Roles</label>
 		<div class="col-sm-10">
-			<select class="form-select" name="roles[]" multiple>
+			<select class="form-select" name="roles[]" size="15" multiple>
   				<option value="webmaster">webmaster</option>
-            	<option value="administrator">administrator</option>
-            	<option value="employee">employee</option>
-            	<option value="waiter">waiter</option>
-            	<option value="foh">foh</option>
-            	<option value="boh">boh</option>
-            	<option value="terminal">terminal</option>
+				<option value="employee">employee</option>
+				<optgroup label="B.O.H">
+					<option value="boh">boh</option>
+					<option value="warm_cuisine">warm_cuisine</option>
+					<option value="cold_cuisine">cold_cuisine</option>
+					<option value="prep">prep</option>
+				</optgroup>
+				<optgroup label="F.O.H">
+					<option value="foh">foh</option>
+					<option value="waiter">waiter</option>
+					<option value="reservations_manager">reservations manager</option>
+					<option value="assistant_waiter">assistant waiter</option>
+					<option value="bar">bar</option>
+					<option value="terminal">terminal</option>
+				</optgroup>
 			</select>
     	</div>
 	</div>
