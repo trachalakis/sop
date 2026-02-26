@@ -16,7 +16,6 @@ use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
 use Domain\Entities\Station;
 use Domain\Entities\Scan;
-use Domain\Entities\Supplier;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
 use Domain\Entities\Table;
