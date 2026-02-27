@@ -5,12 +5,12 @@
 {% block pageCss %}
 	<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
 	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
+	<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
 	<style>
 		.iti {
 			width: 100%;
 		}
-	</style>
+	</style>-->
 {% endblock %}
 
 {% block content %}
@@ -25,6 +25,12 @@
 	    </div>-->
 	</div>
 	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+		<div class="col-sm-10">
+			<input type="tel" class="form-control form-control-lg" name="phone" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Όνομα</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control form-control-lg" name="name" required/>
@@ -33,6 +39,9 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
 		<div class="col-sm-10">
+			<input type="number" min="1" max="25" step="1" class="form-control form-control-lg" name="adults" required/>
+    	</div>
+		{#<div class="col-sm-10">
 			{% for i in 1..20 %}
 				<input 
 					type="radio" 
@@ -46,11 +55,14 @@
 				/>
 				<label class="btn fs-4" for="adults-{{i}}">{{i}}</label>
 			{% endfor %}
-    	</div>
+    	</div>#}
 	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Ανήλικοι</label>
 		<div class="col-sm-10">
+			<input inputmode="numeric" type="number" min="0" max="25" step="1" class="form-control form-control-lg" name="minors" required/>
+    	</div>
+		{#<div class="col-sm-10">
 			{% for i in 0..20 %}
 				<input 
 					type="radio" 
@@ -63,75 +75,52 @@
 				/>
 				<label class="btn fs-4" for="minors-{{i}}">{{i}}</label>
 			{% endfor %}
-    	</div>
+    	</div>#}
 	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Ώρα</label>
 		<div class="col-sm-10">
-			<div class="row">
-				<div class="col-12">
-					{% for i in ['12', '13', '14', '15', '16'] %}
-						<input 
-							type="radio" 
-							class="btn-check" 
-							name="time" 
-							id="time-{{i}}00" 
-							autocomplete="off"
-							value="{{i}}:00"
-							required
-						/>
-						<label class="btn fs-4" for="time-{{i}}00">{{i}}:00</label>
-						<input 
-							type="radio" 
-							class="btn-check" 
-							name="time" 
-							id="time-{{i}}30" 
-							autocomplete="off"
-							value="{{i}}:30"
-							required
-						/>
-						<label class="btn fs-4" for="time-{{i}}30">{{i}}:30</label>
-					{% endfor %}
-				</div>
-				<div class="col-12">
-					{% for i in ['17', '18', '19', '20', '21'] %}
-						<input 
-							type="radio" 
-							class="btn-check" 
-							name="time" 
-							id="time-{{i}}00" 
-							autocomplete="off"
-							value="{{i}}:00"
-							required
-						/>
-						<label class="btn fs-4" for="time-{{i}}00">{{i}}:00</label>
-						<input 
-							type="radio" 
-							class="btn-check" 
-							name="time" 
-							id="time-{{i}}30" 
-							autocomplete="off"
-							value="{{i}}:30"
-							required
-						/>
-						<label class="btn fs-4" for="time-{{i}}30">{{i}}:30</label>
-					{% endfor %}
-				</div>
-			</div>
+			<select class="form-control form-control-lg" name="time" required>
+				{% for i in ['12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22'] %}
+					<option value="{{i}}:00">{{i}}:00</option>
+					<option value="{{i}}:30">{{i}}:30</option>
+				{% endfor %}
+			</select>
     	</div>
-
 	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Μέρα</label>
-		<div class="col-sm-10">
-			<input type="text" id="datepicker" name="date" style="display:none"/>
+		<div class="col-sm-10 " >
+			<!--<input type="text" id="datepicker" name="date" style="display:none"/>-->
+			<div class="overflow-auto d-flex">
+				<!--<input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" checked>
+				<label class="btn " for="option1"><div class="fs-3">Tue</div><div>25 March</div></label>
+				<input type="radio" class="btn-check" name="options" id="option2" autocomplete="off" >
+				<label class="btn " for="option2">Checked1</label>
+				<input type="radio" class="btn-check" name="options" id="option3" autocomplete="off" >
+				<label class="btn " for="option3">Checked2</label>-->
+  <button type="button" class="btn btn-primary me-2">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button>
+  <button type="button" class="btn btn-primary">Left</button>
+  <button type="button" class="btn btn-primary">Middle</button>
+  <button type="button" class="btn btn-primary">Right</button></div>
 		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
-		<div class="col-sm-10">
-			<input type="tel" class="form-control form-control-lg" name="phone" id="phone" required/>
-    	</div>
 	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
@@ -159,7 +148,7 @@
 			});
 		});
 	</script>
-	<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
+	<!--<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
 	<script>
 		const input = document.querySelector("#phone");
 		window.intlTelInput(input, {
@@ -169,5 +158,5 @@
 			hiddenInput: () => ({ phone: "telephoneNumber", country: "country_code" }),
 			loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
 		});
-	</script>
+	</script>-->
 {% endblock %}
