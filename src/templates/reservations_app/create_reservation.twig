@@ -1,18 +1,5 @@
 {% extends 'orders_app/skeleton.twig' %}
 
-{% set activeNavLink = 'reservations' %}
-
-{% block pageCss %}
-	<link rel="stylesheet" href="/assets/flatpickr/flatpickr.min.css">
-	<link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/airbnb.css">
-	<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/css/intlTelInput.css">
-	<style>
-		.iti {
-			width: 100%;
-		}
-	</style>-->
-{% endblock %}
-
 {% block content %}
 <form method="post" autocomplete="off">
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -20,11 +7,7 @@
 	    	<a href="/reservations-app/" class="text-decoration-none"><i class='bx bx-phone'></i></a> /
 	    	<span>Νέα κράτηση</span>
 	    </h1>
-    	<!--<div class="btn-toolbar">
-	       	<button href="#" class="btn btn-lg btn-primary d-none d-sm-inline">Αποθήκευση</button>
-	    </div>-->
 	</div>
-	
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Όνομα</label>
 		<div class="col-sm-10">
@@ -41,6 +24,7 @@
 						class="btn-check"
 						name="adults"
 						id="adults-{{i}}"
+						value="{{i}}"
 						{{i == 1 ? 'checked' : ''}}
 					/>
 					<label class="btn fs-4" for="adults-{{i}}">{{i}}</label>
@@ -101,16 +85,17 @@
 			<div class="overflow-auto d-flex">
 				{% set now = 'now'|date %}
 				{% for i in 0..60 %}
+					{% set d = now|date_modify('+' ~ i ~ ' day') %}
 					<input 
 						type="radio" 
 						class="btn-check" 
 						name="date" 
 						id="date-{{i}}" 
-						checked
+						value="{{d|date('Y-m-d')}}"
 					/>
 					<label class="btn " for="date-{{i}}">
-						<div class="fs-4">{{now|date_modify('+' ~ i ~ ' day')|date('D')}}</div>
-						<div>{{now|date_modify('+' ~ i ~ ' day')|date('d M')}}</div>
+						<div class="fs-4">{{d|date('D')}}</div>
+						<div>{{d|date('d M')}}</div>
 					</label>
 				{% endfor %}
 			</div>
@@ -119,7 +104,7 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
 		<div class="col-sm-10">
-			<input type="tel" class="form-control form-control-lg" name="phone" required/>
+			<input type="tel" class="form-control form-control-lg" name="telephoneNumber" required/>
     	</div>
 	</div>
 	<div class="row mb-3">
@@ -134,29 +119,4 @@
 		</div>
 	</div>
 </form>
-{% endblock %}
-
-{% block javascript %}
-	{{ parent() }}
-	<script src="/assets/flatpickr/flatpickr.min.js"></script>
-	<script>
-		$(function () {
-			$('#datepicker').flatpickr({
-				inline: true,
-				minDate: 'today',
-				maxDate: '{{'last day of November'|date('Y-m-d')}}'
-			});
-		});
-	</script>
-	<!--<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/intlTelInput.min.js"></script>
-	<script>
-		const input = document.querySelector("#phone");
-		window.intlTelInput(input, {
-			separateDialCode: true,
-			strictMode: true,
-			nationalMode: true,
-			hiddenInput: () => ({ phone: "telephoneNumber", country: "country_code" }),
-			loadUtils: () => import("https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.1/build/js/utils.js"),
-		});
-	</script>-->
 {% endblock %}

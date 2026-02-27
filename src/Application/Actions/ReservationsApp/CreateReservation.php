@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\ReservationsApp;
 
+use DateTime;
 use Domain\Entities\Reservation;
 use Domain\Repositories\ReservationsRepositoryInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,12 +29,12 @@ final class CreateReservation
     {
     	if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();
-            //dd($requestData);
             $reservation = new Reservation;
+            $reservation->setIsTableLocked(false);
             $reservation->setEmailAddress(null);
-            $reservation->setCreatedAt(new \Datetime);
+            $reservation->setCreatedAt(new Datetime);
             $reservation->setStatus('PENDING');
-            $reservation->setDateTime(new \Datetime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
+            $reservation->setDateTime(new Datetime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
             $reservation->setName(mb_strtoupper($requestData['name']));
             $reservation->setAdults(intval($requestData['adults']));
             $reservation->setMinors(intval($requestData['minors']));
