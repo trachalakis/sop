@@ -82,13 +82,13 @@ final class Report
         $ordersPerHourData = [];
         $salesPerHourData = [];
 
-        if ($filter['service'] == 'lunch') {
+        if (!is_null($filter) && $filter['service'] == 'lunch') {
             $orders = $orders->filter(function ($order) {
                 return $order->getCreatedAt()->format('G') < 18;
             });
         }
 
-        if ($filter['service'] == 'dinner') {
+        if (!is_null($filter) && $filter['service'] == 'dinner') {
             $orders = $orders->filter(function ($order) {
                 return $order->getCreatedAt()->format('G') >= 18;
             });
@@ -217,6 +217,7 @@ final class Report
         
 
         /*** Statistics ***/
+        $standardDeviation = 0;
         if (count($orders) > 0) {
             $salesMean = $sales / count($orders);
             $squaresSum = 0;
