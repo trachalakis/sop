@@ -15,11 +15,22 @@
     <h1 class="h2">{{menu.getName}}</h1>
     <div class="btn-toolbar">
        	<a href="/admin/menu-sections/create?menu={{menu.getId}}" class="btn btn-primary me-2">
-            <i class="fa-solid fa-plus"></i> New section
+            New section
         </a>
         <a href="/admin/menu-items/create?menu={{menu.getId}}" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> New item
+            New item
         </a>
+		<div class="vr ms-2 me-2"></div>
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				Εργαλεία
+			</button>
+			<ul class="dropdown-menu">
+				<li><a class="dropdown-item" href="#">Μετονομασία</a></li>
+				<li><a class="dropdown-item" href="#">Αντιγραφή</a></li>
+				<li><a class="dropdown-item confirm" href="/admin/menus/delete?menu={{menu.getId}}">Αρχειοθέτηση</a></li>
+			</ul>
+		</div>
     </div>
 </div>
 <div class="row">
