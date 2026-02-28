@@ -11,6 +11,59 @@
         </a>
     </div>
 </div>
+{#<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="accordion-toggle" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+      <td>1</td>
+      <td>Mark Otto</td>
+      <td>Click to expand</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2">
+        <div id="collapseOne" class="collapse">
+          <p>Details about Mark Otto.</p>
+        </div>
+      </td>
+    </tr>
+    <tr class="accordion-toggle" data-toggle="collapse" data-target="#collapseTwo">
+      <td>2</td>
+      <td>Jacob Thornton</td>
+      <td>Click to expand</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td colspan="2">
+        <div id="collapseTwo" class="collapse">
+          <p>Details about Jacob Thornton.</p>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>#}
+
+{% for supplyGroup in supplyGroups %}
+	<h2 class="h4">{{supplyGroup.getName}}</h2>
+	<table class="table table-responsive">
+		<tbody>
+			{% for supply in supplyGroup.getSupplies|filter(s => s.isActive) %}
+				<tr>
+      				<td class="ps-4">
+						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
+					</td>
+    			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endfor %}
+
 <ul class="nav border-bottom mb-3">
 	{% for supplyGroup in supplyGroups %} 
 		<li class="nav-item">
