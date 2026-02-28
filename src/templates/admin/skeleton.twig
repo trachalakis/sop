@@ -127,6 +127,11 @@
         referrerpolicy="no-referrer">
     </script>
     <script src="/assets/js/popper.min.js"></script>
+	<script>
+		$('.confirm').click(function() {
+    		return confirm("Are you sure?");
+		});
+	</script>
 {%  endblock %}
 </body>
 </html>
