@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Actions\ReservationsApp;
 
+use Datetime;
+use DateInterval;
 use Domain\Repositories\ReservationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -26,9 +28,9 @@ final class Homepage
     {
         $queryParams = $request->getQueryParams();
         if (empty($queryParams['date'])) {
-            $date = new \Datetime();
+            $date = new Datetime();
         } else {
-            $date = new \Datetime($queryParams['date']);
+            $date = new Datetime($queryParams['date']);
         }
 
         $reservations = $this->reservationsRepository->findByDate($date);
@@ -36,7 +38,7 @@ final class Homepage
 
         if (!isset($queryParams['all'])) {
             $reservations = array_filter($reservations, function($reservation) {
-                return $reservation->getDateTime()->format('U') - (new \Datetime())->format('U') >= - 3200;
+                return $reservation->getDateTime()->format('U') - (new Datetime())->format('U') >= - 3200;
             });
         }
 
@@ -52,8 +54,8 @@ final class Homepage
             'coverCount' => $coverCount,
             'showAll' => isset($queryParams['all']),
             'date' => $date,
-            'prev' => (clone $date)->sub(new \DateInterval('P1D')),
-            'next' => (clone $date)->add(new \DateInterval('P1D'))
+            'prev' => (clone $date)->sub(new DateInterval('P1D')),
+            'next' => (clone $date)->add(new DateInterval('P1D'))
         ]);
     }
 }
