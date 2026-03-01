@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\PoString;
-use Domain\Repositories\OrdersRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class PoStringsRepository extends EntityRepository implements PoStringsRepositoryInterface
+class PoStringsRepository extends EntityRepository
 {
 	public function persist(PoString $poString)
 	{

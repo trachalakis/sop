@@ -6,22 +6,27 @@ namespace Application\Actions\ReservationsApp;
 
 use DateTime;
 use Domain\Entities\Reservation;
-use Domain\Repositories\ReservationsRepositoryInterface;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CreateReservation
 {
-    private ReservationsRepositoryInterface $reservationsRepository;
+    private ReservationsRepository $reservationsRepository;
+
+    private TablesRepository $tablesRepository;
 
     private Twig $twig;
 
     public function __construct(
-        ReservationsRepositoryInterface $reservationsRepository,
+        ReservationsRepository $reservationsRepository,
+        TablesRepository $tablesRepository,
         Twig $twig
     ) {
         $this->reservationsRepository = $reservationsRepository;
+        $this->tablesRepository = $tablesRepository;
         $this->twig = $twig;
     }
 
@@ -46,6 +51,14 @@ final class CreateReservation
             return $response->withHeader('Location', '/reservations-app/')->withStatus(302);
     	}
 
-        return $this->twig->render($response, 'reservations_app/create_reservation.twig');
+        $tables = $this->tablesRepository->findBy(['isActive' => true], ['name' => 'asc']);
+        
+        return $this->twig->render(
+            $response,
+            'reservations_app/create_reservation.twig',
+            [
+                'tables' => $tables
+            ]
+        );
     }
 }

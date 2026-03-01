@@ -6,9 +6,8 @@ namespace Domain\Repositories;
 
 use Domain\Entities\SupplyGroup;
 use Doctrine\ORM\EntityRepository;
-use Domain\Repositories\SupplyGroupsRepositoryInterface;
 
-class SupplyGroupsRepository extends EntityRepository implements SupplyGroupsRepositoryInterface
+class SupplyGroupsRepository extends EntityRepository
 {
 	public function persist(SupplyGroup $supplyGroup)
 	{

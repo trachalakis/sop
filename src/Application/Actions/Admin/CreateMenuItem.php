@@ -7,36 +7,36 @@ namespace Application\Actions\Admin;
 use Domain\Entities\MenuItem;
 use Domain\Entities\MenuItemExtra;
 use Domain\Entities\MenuItemTranslation;
-use Domain\Repositories\LanguagesRepositoryInterface;
-use Domain\Repositories\MenusRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\StationsRepositoryInterface;
+use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenusRepository;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\StationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CreateMenuItem
 {
-    private LanguagesRepositoryInterface $languagesRepository;
+    private LanguagesRepository $languagesRepository;
 
-    private MenusRepositoryInterface $menusRepository;
+    private MenusRepository $menusRepository;
     
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
 
-    private StationsRepositoryInterface $stationsRepository;
+    private StationsRepository $stationsRepository;
 
     private Twig $twig;
 
     public function __construct(
-        LanguagesRepositoryInterface $languagesRepository,
-        MenusRepositoryInterface $menusRepository,
-        MenuSectionsRepositoryInterface $menuSectionsRepository,
-        MenuItemsRepositoryInterface $menuItemsRepository,
-        StationsRepositoryInterface $stationsRepository,
+        LanguagesRepository $languagesRepository,
+        MenusRepository $menusRepository,
+        MenuSectionsRepository $menuSectionsRepository,
+        MenuItemsRepository $menuItemsRepository,
+        StationsRepository $stationsRepository,
         Twig $twig
     ) {
         $this->languagesRepository = $languagesRepository;

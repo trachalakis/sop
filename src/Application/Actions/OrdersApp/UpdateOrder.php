@@ -10,12 +10,12 @@ use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryCancellation;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\OrderEntryExtra;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
-use Domain\Repositories\OrderEntryCancellationsRepositoryInterface;
-use Domain\Repositories\OrderEntryGroupsRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\OrderEntriesRepository;
+use Domain\Repositories\OrderEntryCancellationsRepository;
+use Domain\Repositories\OrderEntryGroupsRepository;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -24,25 +24,25 @@ final class UpdateOrder
 {
     private Twig $twig;
 
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    private OrderEntriesRepositoryInterface $orderEntriesRepository;
+    private OrderEntriesRepository $orderEntriesRepository;
 
-    private OrderEntryCancellationsRepositoryInterface $orderEntryCancellationsRepository;
+    private OrderEntryCancellationsRepository $orderEntryCancellationsRepository;
 
-    private OrderEntryGroupsRepositoryInterface $orderEntryGroupsRepository;
+    private OrderEntryGroupsRepository $orderEntryGroupsRepository;
 
-    private TablesRepositoryInterface $tablesRepository;
+    private TablesRepository $tablesRepository;
 
     public function __construct(
-        MenuItemsRepositoryInterface $menuItemsRepository,
-        OrdersRepositoryInterface $ordersRepository,
-        OrderEntriesRepositoryInterface $orderEntriesRepository,
-        OrderEntryCancellationsRepositoryInterface $orderEntryCancellationsRepository,
-        OrderEntryGroupsRepositoryInterface $orderEntryGroupsRepository,
-        TablesRepositoryInterface $tablesRepository,
+        MenuItemsRepository $menuItemsRepository,
+        OrdersRepository $ordersRepository,
+        OrderEntriesRepository $orderEntriesRepository,
+        OrderEntryCancellationsRepository $orderEntryCancellationsRepository,
+        OrderEntryGroupsRepository $orderEntryGroupsRepository,
+        TablesRepository $tablesRepository,
         Twig $twig
     ) {
         $this->menuItemsRepository = $menuItemsRepository;

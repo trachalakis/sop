@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Entities\Table;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UpdateTable
 {
-	private $twig;
+    private TablesRepository $tablesRepository;
 
-    private $tablesRepository;
+    private Twig $twig;
 
-    public function __construct(Twig $twig, TablesRepositoryInterface $tablesRepository)
-    {
-        $this->twig = $twig;
+    public function __construct(
+        TablesRepository $tablesRepository,
+        Twig $twig
+    ) {
         $this->tablesRepository = $tablesRepository;
+        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

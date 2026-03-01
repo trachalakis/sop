@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Middleware;
 
-use Domain\Repositories\UserPermissionsRepositoryInterface;
+use Domain\Repositories\UserPermissionsRepository;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response;
@@ -12,9 +12,9 @@ use Psr\Http\Server\MiddlewareInterface;
 
 final class Authorization implements MiddlewareInterface
 {
-    private UserPermissionsRepositoryInterface $userPermissionsRepository;
+    private UserPermissionsRepository $userPermissionsRepository;
 
-    public function __construct(UserPermissionsRepositoryInterface $userPermissionsRepository)
+    public function __construct(UserPermissionsRepository $userPermissionsRepository)
     {
     	$this->userPermissionsRepository = $userPermissionsRepository;
     }

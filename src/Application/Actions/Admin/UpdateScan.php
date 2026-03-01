@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Scan;
-use Domain\Repositories\ScansRepositoryInterface;
+use Domain\Repositories\ScansRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -16,7 +16,7 @@ final class UpdateScan
 
     private $scansRepository;
 
-    public function __construct(Twig $twig, ScansRepositoryInterface $scansRepository)
+    public function __construct(Twig $twig, ScansRepository $scansRepository)
     {
         $this->twig = $twig;
         $this->scansRepository = $scansRepository;

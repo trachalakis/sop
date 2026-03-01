@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class Tables
 {
-	private $twig;
+	private Twig $twig;
 
-    private $tablesRepository;
+    private TablesRepository $tablesRepository;
 
     public function __construct(
         Twig $twig,
-        TablesRepositoryInterface $tablesRepository
+        TablesRepository $tablesRepository
     ) {
         $this->twig = $twig;
         $this->tablesRepository = $tablesRepository;
@@ -27,6 +27,10 @@ final class Tables
     {
         $tables = $this->tablesRepository->findBy([], ['name' => 'asc']);
 
-        return $this->twig->render($response, 'admin/tables.twig', ['tables' => $tables]);
+        return $this->twig->render(
+            $response, 
+            'admin/tables.twig', 
+            ['tables' => $tables]
+        );
     }
 }

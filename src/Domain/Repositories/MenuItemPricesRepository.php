@@ -6,9 +6,8 @@ namespace Domain\Repositories;
 
 use Domain\Entities\MenuItemPrice;
 use Doctrine\ORM\EntityRepository;
-use Domain\Repositories\MenuItemPricesRepositoryInterface;
 
-class MenuItemPricesRepository extends EntityRepository implements MenuItemPricesRepositoryInterface
+class MenuItemPricesRepository extends EntityRepository
 {
 	public function persist(MenuItemPrice $menuItemPrice)
 	{

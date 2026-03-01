@@ -9,21 +9,21 @@ use DateInterval;
 use DatePeriod;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Domain\Repositories\ScansRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
+use Domain\Repositories\ScansRepository;
+use Domain\Repositories\OrdersRepository;
 use Slim\Views\Twig;
 
 final class Homepage
 {
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    private ScansRepositoryInterface $scansRepository;
+    private ScansRepository $scansRepository;
 
     private Twig $twig;
 
     public function __construct(
-        OrdersRepositoryInterface $ordersRepository,
-        ScansRepositoryInterface $scansRepository,
+        OrdersRepository $ordersRepository,
+        ScansRepository $scansRepository,
         Twig $twig
     ) {
         $this->ordersRepository = $ordersRepository;

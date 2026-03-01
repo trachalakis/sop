@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Datetime;
-use Domain\Repositories\ScansRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
+use Domain\Repositories\ScansRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\MenuSectionsRepository;
 use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,18 +15,18 @@ use Slim\Views\Twig;
 
 final class Report
 {
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    private ScansRepositoryInterface $scansRepository;
+    private ScansRepository $scansRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	MenuSectionsRepositoryInterface $menuSectionsRepository,
-    	OrdersRepositoryInterface $ordersRepository,
-    	ScansRepositoryInterface $scansRepository,
+    	MenuSectionsRepository $menuSectionsRepository,
+    	OrdersRepository $ordersRepository,
+    	ScansRepository $scansRepository,
     	Twig $twig
     ) {
     	$this->menuSectionsRepository = $menuSectionsRepository;
@@ -54,17 +54,6 @@ final class Report
             $start = new Datetime('today 05:00');
             $end = (clone $start)->add(new \DateInterval('PT21H'));
         }
-        
-
-        //dd($end);
-        /*$date = $queryParams['date'] ?? null;
-		if (!empty($date)) {
-			$start = new Datetime($date . ' 5:00:00 AM');
-			$end = (clone $start)->add(new \DateInterval('PT21H'));
-		} else if (!empty($filter['start']) && !empty($filter['end'])){
-	        $start = new Datetime($filter['start']);
-	        $end = new Datetime($filter['end']);
-	    }*/
 
 	    $criteria = new Criteria;
         $criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
@@ -93,15 +82,6 @@ final class Report
                 return $order->getCreatedAt()->format('G') >= 18;
             });
         }
-
-        /*$employeeOrders = [];
-        foreach($orders as $order) {
-            if ($order->getTable() == null) {
-            	$employeeOrders[] = $order;
-            
-                $orders->removeElement($order);
-            }
-        }*/
 
         foreach($orders as $order) {
             if ($order->getTable() == null) {

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\MenuItemExtra;
-use Domain\Repositories\MenuExtrasRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class MenuItemExtrasRepository extends EntityRepository implements MenuItemExtrasRepositoryInterface
+class MenuItemExtrasRepository extends EntityRepository
 {
 	public function persist(MenuItemExtra $menuItemExtra)
 	{

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Application\Actions\ReservationsApp;
 
-use Domain\Repositories\ReservationsRepositoryInterface;
+use Domain\Repositories\ReservationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class ToggleTableLock
 {
-    private ReservationsRepositoryInterface $reservationsRepository;
+    private ReservationsRepository $reservationsRepository;
 
     private Twig $twig;
 
-    public function __construct(Twig $twig, ReservationsRepositoryInterface $reservationsRepository)
+    public function __construct(Twig $twig, ReservationsRepository $reservationsRepository)
     {
         $this->twig = $twig;
 

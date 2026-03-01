@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\MenuItemsRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class SortMenuItems
 {
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
     public function __construct(
-    	MenuItemsRepositoryInterface $menuItemsRepository
+    	MenuItemsRepository $menuItemsRepository
     ) {
         $this->menuItemsRepository = $menuItemsRepository;
     }

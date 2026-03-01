@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
+use Domain\Repositories\MenuSectionsRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -36,6 +36,6 @@ class MenuSectionType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(MenuSectionsRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(MenuSectionsRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

@@ -7,9 +7,9 @@ namespace Application\Actions\Admin;
 use Datetime;
 use DatePeriod;
 use DateInterval;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
-use Domain\Repositories\RecipesRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\OrderEntriesRepository;
+use Domain\Repositories\RecipesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -18,17 +18,17 @@ final class MenuItemStatistics
 {
 	private Twig $twig;
 
-	private MenuItemsRepositoryInterface $menuItemsRepository;
+	private MenuItemsRepository $menuItemsRepository;
 
-	private OrderEntriesRepositoryInterface $orderEntriesRepository;
+	private OrderEntriesRepository $orderEntriesRepository;
 
-	private RecipesRepositoryInterface $recipesRepository;
+	private RecipesRepository $recipesRepository;
 
 	public function __construct(
 		Twig $twig,
-		MenuItemsRepositoryInterface $menuItemsRepository,
-		OrderEntriesRepositoryInterface $orderEntriesRepository,
-		RecipesRepositoryInterface $recipesRepository
+		MenuItemsRepository $menuItemsRepository,
+		OrderEntriesRepository $orderEntriesRepository,
+		RecipesRepository $recipesRepository
 	) {
 		$this->twig = $twig;
 		$this->menuItemsRepository = $menuItemsRepository;

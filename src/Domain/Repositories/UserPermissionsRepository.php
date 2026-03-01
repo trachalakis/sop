@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\UserPermission;
-use Domain\Repositories\UserPermissionsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class UserPermissionsRepository extends EntityRepository implements UserPermissionsRepositoryInterface
+class UserPermissionsRepository extends EntityRepository
 {
 	public function persist(UserPermission $userPermission)
 	{

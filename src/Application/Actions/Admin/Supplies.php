@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\SupplyGroupsRepositoryInterface;
+use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class Supplies
 {
-    private SupplyGroupsRepositoryInterface $supplyGroupsRepository;
+    private SupplyGroupsRepository $supplyGroupsRepository;
 
     private Twig $twig;
 
     public function __construct(
-        SupplyGroupsRepositoryInterface $supplyGroupsRepository,
+        SupplyGroupsRepository $supplyGroupsRepository,
         Twig $twig
     ) {
         $this->twig = $twig;
@@ -27,6 +27,10 @@ final class Supplies
     {
         $supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
 
-        return $this->twig->render($response, 'admin/supplies.twig', ['supplyGroups' => $supplyGroups]);
+        return $this->twig->render(
+            $response, 
+            'admin/supplies.twig', 
+            ['supplyGroups' => $supplyGroups]
+        );
     }
 }

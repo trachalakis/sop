@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\OrderEntryCancellationsRepositoryInterface;
+use Domain\Repositories\OrderEntryCancellationsRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -31,6 +31,6 @@ class OrderEntryCancellationType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(OrderEntryCancellationsRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(OrderEntryCancellationsRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

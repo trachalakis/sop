@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Table;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -16,7 +16,7 @@ final class CreateTable
 
     private $tablesRepository;
 
-    public function __construct(Twig $twig, TablesRepositoryInterface $tablesRepository)
+    public function __construct(Twig $twig, TablesRepository $tablesRepository)
     {
         $this->twig = $twig;
         $this->tablesRepository = $tablesRepository;

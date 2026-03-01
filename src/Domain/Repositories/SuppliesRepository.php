@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Supply;
-use Domain\Repositories\SuppliesRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class SuppliesRepository extends EntityRepository implements SuppliesRepositoryInterface
+class SuppliesRepository extends EntityRepository
 {
 	public function persist(Supply $supply)
 	{

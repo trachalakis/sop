@@ -5,27 +5,27 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Supply;
-use Domain\Repositories\SuppliersRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
-use Domain\Repositories\SupplyGroupsRepositoryInterface;
+use Domain\Repositories\SuppliersRepository;
+use Domain\Repositories\SuppliesRepository;
+use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CreateSupply
 {
-    private SuppliersRepositoryInterface $suppliersRepository;
+    private SuppliersRepository $suppliersRepository;
 
-    private SuppliesRepositoryInterface $suppliesRepository;
+    private SuppliesRepository $suppliesRepository;
 
-    private SupplyGroupsRepositoryInterface $supplyGroupsRepository;
+    private SupplyGroupsRepository $supplyGroupsRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	SuppliersRepositoryInterface $suppliersRepository,
-    	SuppliesRepositoryInterface $suppliesRepository,
-    	SupplyGroupsRepositoryInterface $supplyGroupsRepository,
+    	SuppliersRepository $suppliersRepository,
+    	SuppliesRepository $suppliesRepository,
+    	SupplyGroupsRepository $supplyGroupsRepository,
     	Twig $twig
     ) {
         $this->suppliersRepository = $suppliersRepository;

@@ -15,6 +15,12 @@
     	</div>
 	</div>
 	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+		<div class="col-sm-10">
+			<input type="tel" class="form-control form-control-lg" name="telephoneNumber" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
 		<div class="col-sm-10">
 			<div class="overflow-auto d-flex">
@@ -102,11 +108,28 @@
 		</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
-		<div class="col-sm-10">
-			<input type="tel" class="form-control form-control-lg" name="telephoneNumber" required/>
-    	</div>
+		<label class="col-sm-2 col-form-label fs-4">Τραπέζι</label>
+		<div class="col-sm-10 " >
+			<div class="overflow-auto d-flex">
+				{% set now = 'now'|date %}
+				{% for i in 0..60 %}
+					{% set d = now|date_modify('+' ~ i ~ ' day') %}
+					<input 
+						type="radio" 
+						class="btn-check" 
+						name="date" 
+						id="date-{{i}}" 
+						value="{{d|date('Y-m-d')}}"
+					/>
+					<label class="btn " for="date-{{i}}">
+						<div class="fs-4">{{d|date('D')}}</div>
+						<div>{{d|date('d M')}}</div>
+					</label>
+				{% endfor %}
+			</div>
+		</div>
 	</div>
+
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
 		<div class="col-sm-10">

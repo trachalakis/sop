@@ -6,9 +6,8 @@ namespace Domain\Repositories;
 
 use Domain\Entities\Menu;
 use Doctrine\ORM\EntityRepository;
-use Domain\Repositories\MenusRepositoryInterface;
 
-class MenusRepository extends EntityRepository implements MenusRepositoryInterface
+class MenusRepository extends EntityRepository
 {
 	public function persist(Menu $menu)
 	{

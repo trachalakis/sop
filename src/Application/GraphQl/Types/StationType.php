@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\StationsRepositoryInterface;
+use Domain\Repositories\StationsRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -33,6 +33,6 @@ class StationType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(StationsRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(StationsRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Language;
-use Domain\Repositories\LanguagesRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class LanguagesRepository extends EntityRepository implements LanguagesRepositoryInterface
+class LanguagesRepository extends EntityRepository
 {
 	public function persist(Language $language)
 	{

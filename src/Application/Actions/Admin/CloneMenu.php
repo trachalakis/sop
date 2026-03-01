@@ -10,19 +10,19 @@ use Domain\Entities\MenuSection;
 use Domain\Entities\MenuItem;
 use Domain\Entities\MenuItemExtra;
 use Domain\Entities\MenuItemTranslation;
-use Domain\Repositories\MenusRepositoryInterface;
+use Domain\Repositories\MenusRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CloneMenu
 {
-	private MenusRepositoryInterface $menusRepository;
+	private MenusRepository $menusRepository;
 
 	private Twig $twig;
 
     public function __construct(
-        MenusRepositoryInterface $menusRepository,
+        MenusRepository $menusRepository,
         Twig $twig
     ) {
         $this->twig = $twig;

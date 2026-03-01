@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Application\Actions\ReservationsApp;
 
-use Domain\Repositories\ReservationsRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UpdateReservation
 {
-    private ReservationsRepositoryInterface $reservationsRepository;
+    private ReservationsRepository $reservationsRepository;
 
-    private TablesRepositoryInterface $tablesRepository;
+    private TablesRepository $tablesRepository;
 
     private Twig $twig;
 
     public function __construct(
-        ReservationsRepositoryInterface $reservationsRepository,
-        TablesRepositoryInterface $tablesRepository,
+        ReservationsRepository $reservationsRepository,
+        TablesRepository $tablesRepository,
         Twig $twig
     ) {
         $this->reservationsRepository = $reservationsRepository;

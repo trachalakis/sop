@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Table;
-use Domain\Repositories\TablesRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class TablesRepository extends EntityRepository implements TablesRepositoryInterface
+class TablesRepository extends EntityRepository
 {
 	public function persist(Table $table)
 	{

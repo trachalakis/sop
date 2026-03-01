@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Application\Actions\OrdersApp;
 
 use Datetime;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\OrderEntriesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class OrderPayment
 {
-	private OrdersRepositoryInterface $ordersRepository;
+	private OrdersRepository $ordersRepository;
 
-	private OrderEntriesRepositoryInterface $orderEntriesRepository;
+	private OrderEntriesRepository $orderEntriesRepository;
 
 	private Twig $twig;
 
 	public function __construct(
-    	OrdersRepositoryInterface $ordersRepository,
-    	OrderEntriesRepositoryInterface $orderEntriesRepository,
+    	OrdersRepository $ordersRepository,
+    	OrderEntriesRepository $orderEntriesRepository,
     	Twig $twig
     ) {
         $this->ordersRepository = $ordersRepository;

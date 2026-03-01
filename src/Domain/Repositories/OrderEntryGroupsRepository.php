@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\OrderEntryGroup;
-use Domain\Repositories\OrderEntryGroupsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class OrderEntryGroupsRepository extends EntityRepository implements OrderEntryGroupsRepositoryInterface
+class OrderEntryGroupsRepository extends EntityRepository
 {
 	public function persist(OrderEntryGroup $orderEntryGroup)
 	{

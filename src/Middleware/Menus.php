@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Middleware;
 
-use Domain\Repositories\MenusRepositoryInterface;
+use Domain\Repositories\MenusRepository;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,12 +13,12 @@ use Slim\Views\Twig;
 
 final class Menus implements MiddlewareInterface
 {
-    private MenusRepositoryInterface $menusRepository;
+    private MenusRepository $menusRepository;
 
     private Twig $twig;
 
 	public function __construct(
-        MenusRepositoryInterface $menusRepository,
+        MenusRepository $menusRepository,
         Twig $twig
     ) {
         $this->menusRepository = $menusRepository;

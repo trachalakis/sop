@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Ingredient;
-use Domain\Repositories\RecipesRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
+use Domain\Repositories\RecipesRepository;
+use Domain\Repositories\SuppliesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UpdateRecipe
 {
-	private RecipesRepositoryInterface $recipesRepository;
+	private RecipesRepository $recipesRepository;
 
-    private SuppliesRepositoryInterface $suppliesRepository;
+    private SuppliesRepository $suppliesRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	RecipesRepositoryInterface $recipesRepository,
-    	SuppliesRepositoryInterface $suppliesRepository,
+    	RecipesRepository $recipesRepository,
+    	SuppliesRepository $suppliesRepository,
     	Twig $twig
     ) {
     	$this->recipesRepository = $recipesRepository;

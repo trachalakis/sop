@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\OrdersRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class DeleteOrder
 {
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    public function __construct(OrdersRepositoryInterface $ordersRepository)
+    public function __construct(OrdersRepository $ordersRepository)
     {
         $this->ordersRepository = $ordersRepository;
     }

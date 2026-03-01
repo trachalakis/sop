@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\User;
-use Domain\Repositories\UsersRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class UsersRepository extends EntityRepository implements UsersRepositoryInterface
+class UsersRepository extends EntityRepository
 {
 	public function persist(User $user)
 	{

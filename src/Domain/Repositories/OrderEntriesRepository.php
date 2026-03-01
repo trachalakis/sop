@@ -6,10 +6,9 @@ namespace Domain\Repositories;
 
 use Domain\Entities\MenuItem;
 use Domain\Entities\OrderEntry;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class OrderEntriesRepository extends EntityRepository implements OrderEntriesRepositoryInterface
+class OrderEntriesRepository extends EntityRepository
 {
 	public function persist(OrderEntry $orderEntry)
 	{

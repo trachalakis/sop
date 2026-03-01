@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\OrdersRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -47,6 +47,6 @@ class OrderEntryType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(OrdersRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(OrdersRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

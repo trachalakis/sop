@@ -4,31 +4,25 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Entities\Supply;
-use Domain\Repositories\SuppliersRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
-use Domain\Repositories\SupplyGroupsRepositoryInterface;
+use Domain\Repositories\SuppliesRepository;
+use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UpdateSupply
 {
-    private SuppliersRepositoryInterface $suppliersRepository;
+    private SuppliesRepository $suppliesRepository;
 
-    private SuppliesRepositoryInterface $suppliesRepository;
-
-    private SupplyGroupsRepositoryInterface $supplyGroupsRepository;
+    private SupplyGroupsRepository $supplyGroupsRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	SuppliersRepositoryInterface $suppliersRepository,
-    	SuppliesRepositoryInterface $suppliesRepository,
-    	SupplyGroupsRepositoryInterface $supplyGroupsRepository,
+    	SuppliesRepository $suppliesRepository,
+    	SupplyGroupsRepository $supplyGroupsRepository,
     	Twig $twig
     ) {
-        $this->suppliersRepository = $suppliersRepository;
         $this->suppliesRepository = $suppliesRepository;
         $this->supplyGroupsRepository = $supplyGroupsRepository;
         $this->twig = $twig;
@@ -64,13 +58,11 @@ final class UpdateSupply
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);
 		}
 
-		$suppliers = $this->suppliersRepository->findBy([], ['name' => 'asc']);
 		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
 		return $this->twig->render(
 			$response,
 			'admin/update_supply.twig',
 			[
-				'suppliers' => $suppliers,
 				'supply' => $supply,
 				'supplyGroups' => $supplyGroups
 			]

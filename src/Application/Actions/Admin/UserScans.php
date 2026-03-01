@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\ScansRepositoryInterface;
+use Domain\Repositories\ScansRepository;
 use Domain\Entities\User;
-use Domain\Repositories\UsersRepositoryInterface;
+use Domain\Repositories\UsersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UserScans
 {
-	private $twig;
+	private Twig $twig;
 
-    private $scansRepository;
+    private ScansRepository $scansRepository;
 
-    private $usersRepository;
+    private UsersRepository $usersRepository;
 
-    public function __construct(Twig $twig, ScansRepositoryInterface $scansRepository, UsersRepositoryInterface $usersRepository)
-    {
+    public function __construct(
+        ScansRepository $scansRepository,
+        Twig $twig,
+        UsersRepository $usersRepository
+    ) {
         $this->twig = $twig;
         $this->usersRepository = $usersRepository;
         $this->scansRepository = $scansRepository;

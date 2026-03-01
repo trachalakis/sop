@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Entities\MenuSection;
 use Domain\Entities\MenuSectionTranslation;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\LanguagesRepositoryInterface;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\LanguagesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -16,14 +15,14 @@ final class UpdateMenuSection
 {
     private Twig $twig;
 
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    private LanguagesRepositoryInterface $languagesRepository;
+    private LanguagesRepository $languagesRepository;
 
     public function __construct(
     	Twig $twig,
-    	MenuSectionsRepositoryInterface $menuSectionsRepository,
-    	LanguagesRepositoryInterface $languagesRepository
+    	MenuSectionsRepository $menuSectionsRepository,
+    	LanguagesRepository $languagesRepository
     ) {
         $this->twig = $twig;
         $this->menuSectionsRepository = $menuSectionsRepository;

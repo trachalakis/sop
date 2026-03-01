@@ -7,11 +7,9 @@ namespace Domain\Repositories;
 use DatePeriod;
 use Domain\Entities\Scan;
 use Domain\Entities\User;
-use Domain\Repositories\UsersRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\DBAL\Types\Types;
 
-class ScansRepository extends EntityRepository implements ScansRepositoryInterface
+class ScansRepository extends EntityRepository
 {
 	public function add(Scan $scan)
 	{

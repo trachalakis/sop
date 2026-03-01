@@ -21,24 +21,24 @@ use Domain\Entities\SupplyGroup;
 use Domain\Entities\Table;
 use Domain\Entities\User;
 use Domain\Entities\UserPermission;
-use Domain\Repositories\LanguagesRepositoryInterface;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\MenusRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
-use Domain\Repositories\MenuItemExtrasRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\UserPermissionsRepositoryInterface;
-use Domain\Repositories\RecipesRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
-use Domain\Repositories\ScansRepositoryInterface;
-use Domain\Repositories\UsersRepositoryInterface;
-use Domain\Repositories\ReservationsRepositoryInterface;
-use Domain\Repositories\OrderEntryCancellationsRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
-use Domain\Repositories\StationsRepositoryInterface;
-use Domain\Repositories\OrderEntryGroupsRepositoryInterface;
-use Domain\Repositories\SupplyGroupsRepositoryInterface;
+use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\MenusRepository;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\OrderEntriesRepository;
+use Domain\Repositories\MenuItemExtrasRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\UserPermissionsRepository;
+use Domain\Repositories\RecipesRepository;
+use Domain\Repositories\SuppliesRepository;
+use Domain\Repositories\ScansRepository;
+use Domain\Repositories\UsersRepository;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\OrderEntryCancellationsRepository;
+use Domain\Repositories\TablesRepository;
+use Domain\Repositories\StationsRepository;
+use Domain\Repositories\OrderEntryGroupsRepository;
+use Domain\Repositories\SupplyGroupsRepository;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
@@ -127,108 +127,108 @@ return function (ContainerBuilder $containerBuilder) {
             
             return new EntityManager($connection, $config);
         },
-        LanguagesRepositoryInterface::class => function (ContainerInterface $c) {
+        LanguagesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Language::class);
         },
-        MenusRepositoryInterface::class => function (ContainerInterface $c) {
+        MenusRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Menu::class);
         },
-        MenuSectionsRepositoryInterface::class => function (ContainerInterface $c) {
+        MenuSectionsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(MenuSection::class);
         },
-        MenuItemsRepositoryInterface::class => function (ContainerInterface $c) {
+        MenuItemsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(MenuItem::class);
         },
-        MenuItemExtrasRepositoryInterface::class => function (ContainerInterface $c) {
+        MenuItemExtrasRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(MenuItemExtra::class);
         },
-        OrdersRepositoryInterface::class => function (ContainerInterface $c) {
+        OrdersRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Order::class);
         },
-        OrderEntriesRepositoryInterface::class => function (ContainerInterface $c) {
+        OrderEntriesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(OrderEntry::class);
         },
-        OrderEntryCancellationsRepositoryInterface::class => function (ContainerInterface $c) {
+        OrderEntryCancellationsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(OrderEntryCancellation::class);
         },
-        OrderEntryGroupsRepositoryInterface::class => function (ContainerInterface $c) {
+        OrderEntryGroupsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(OrderEntryGroup::class);
         },
-        StationsRepositoryInterface::class => function (ContainerInterface $c) {
+        StationsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Station::class);
         },
-        TablesRepositoryInterface::class => function (ContainerInterface $c) {
+        TablesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Table::class);
         },
-        ReservationsRepositoryInterface::class => function (ContainerInterface $c) {
+        ReservationsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Reservation::class);
         },
-        UsersRepositoryInterface::class => function (ContainerInterface $c) {
+        UsersRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(User::class);
         },
-        ScansRepositoryInterface::class => function (ContainerInterface $c) {
+        ScansRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Scan::class);
         },
-        SuppliesRepositoryInterface::class => function (ContainerInterface $c) {
+        SuppliesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Supply::class);
         },
-        SupplyGroupsRepositoryInterface::class => function (ContainerInterface $c) {
+        SupplyGroupsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
         },
-        /*'Domain\Repositories\SuppliesRepositoryInterface' => function (ContainerInterface $c) {
+        /*'Domain\Repositories\SuppliesRepository' => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Supply::class);
         },*/
-        RecipesRepositoryInterface::class => function (ContainerInterface $c) {
+        RecipesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Recipe::class);
         },
-        /*'Domain\Repositories\PoStringsRepositoryInterface' => function (ContainerInterface $c) {
+        /*'Domain\Repositories\PoStringsRepository' => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(PoString::class);
         },*/
-        UserPermissionsRepositoryInterface::class => function (ContainerInterface $c) {
+        UserPermissionsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(UserPermission::class);
         },
         /*
-        'Domain\Repositories\SupplyGroupsRepositoryInterface' => function (ContainerInterface $c) {
+        'Domain\Repositories\SupplyGroupsRepository' => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);

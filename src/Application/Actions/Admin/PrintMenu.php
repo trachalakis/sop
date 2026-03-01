@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\MenuSectionsRepositoryInterface;
+use Domain\Repositories\MenuSectionsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -13,9 +13,9 @@ final class PrintMenu
 {
     private Twig $twig;
 
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    public function __construct(Twig $twig, MenuSectionsRepositoryInterface $menuSectionsRepository)
+    public function __construct(Twig $twig, MenuSectionsRepository $menuSectionsRepository)
     {
         $this->twig = $twig;
         $this->menuSectionsRepository = $menuSectionsRepository;

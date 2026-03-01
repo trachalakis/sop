@@ -9,11 +9,11 @@ use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryExtra;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\ReservationsRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
-use Domain\Repositories\UsersRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\TablesRepository;
+use Domain\Repositories\UsersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Ramsey\Uuid\Uuid;
@@ -23,23 +23,23 @@ final class CreateOrder
 {
     private Twig $twig;
 
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    private ReservationsRepositoryInterface $reservationsRepository;
+    private ReservationsRepository $reservationsRepository;
 
-    private TablesRepositoryInterface $tablesRepository;
+    private TablesRepository $tablesRepository;
 
-    private UsersRepositoryInterface $usersRepository;
+    private UsersRepository $usersRepository;
 
     public function __construct(
         Twig $twig,
-        MenuItemsRepositoryInterface $menuItemsRepository,
-        OrdersRepositoryInterface $ordersRepository,
-        ReservationsRepositoryInterface $reservationsRepository,
-        TablesRepositoryInterface $tablesRepository,
-        UsersRepositoryInterface $usersRepository
+        MenuItemsRepository $menuItemsRepository,
+        OrdersRepository $ordersRepository,
+        ReservationsRepository $reservationsRepository,
+        TablesRepository $tablesRepository,
+        UsersRepository $usersRepository
     ) {
         $this->twig = $twig;
         $this->menuItemsRepository = $menuItemsRepository;

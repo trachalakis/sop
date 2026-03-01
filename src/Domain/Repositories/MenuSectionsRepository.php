@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\MenuSection;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class MenuSectionsRepository extends EntityRepository implements MenuSectionsRepositoryInterface
+class MenuSectionsRepository extends EntityRepository
 {
 	public function persist(MenuSection $menuSection)
 	{

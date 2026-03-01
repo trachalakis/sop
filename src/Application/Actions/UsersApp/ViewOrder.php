@@ -8,10 +8,10 @@ use Datetime;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryExtra;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\OrderEntriesRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\OrderEntriesRepository;
+use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -20,19 +20,19 @@ final class ViewOrder
 {
     private Twig $twig;
 
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
-    private OrderEntriesRepositoryInterface $orderEntriesRepository;
+    private OrderEntriesRepository $orderEntriesRepository;
 
-    private TablesRepositoryInterface $tablesRepository;
+    private TablesRepository $tablesRepository;
 
     public function __construct(
-        MenuItemsRepositoryInterface $menuItemsRepository,
-        OrdersRepositoryInterface $ordersRepository,
-        OrderEntriesRepositoryInterface $orderEntriesRepository,
-        TablesRepositoryInterface $tablesRepository,
+        MenuItemsRepository $menuItemsRepository,
+        OrdersRepository $ordersRepository,
+        OrderEntriesRepository $orderEntriesRepository,
+        TablesRepository $tablesRepository,
         Twig $twig
     ) {
         $this->menuItemsRepository = $menuItemsRepository;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\TablesRepositoryInterface;
+use Domain\Repositories\TablesRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -30,6 +30,6 @@ class TableType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(TablesRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(TablesRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

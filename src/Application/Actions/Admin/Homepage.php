@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Datetime;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\ReservationsRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\ReservationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -14,17 +14,17 @@ use Application\Settings\Settings;
 
 final class Homepage
 {
-	private OrdersRepositoryInterface $ordersRepository;
+	private OrdersRepository $ordersRepository;
 
-	private ReservationsRepositoryInterface $reservationsRepository;
+	private ReservationsRepository $reservationsRepository;
 
 	private Twig $twig;
 
     //private Settings $settings;
 
     public function __construct(
-    	OrdersRepositoryInterface $ordersRepository,
-        ReservationsRepositoryInterface $reservationsRepository,
+    	OrdersRepository $ordersRepository,
+        ReservationsRepository $reservationsRepository,
         Twig $twig
         //Settings $settings
     ) {

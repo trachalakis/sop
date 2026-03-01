@@ -31,9 +31,4 @@ class MenuSectionTranslationType extends ObjectType
         ];
         parent::__construct($config);
     }
-
-    /*public function resolveType($rootValue, $args, $context, $info)
-    {
-        return $context->get(MenuSectionsRepositoryInterface::class)->findOneBy(['id' => $args['id']]);
-    }*/
 }

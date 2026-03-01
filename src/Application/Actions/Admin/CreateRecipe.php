@@ -6,27 +6,27 @@ namespace Application\Actions\Admin;
 
 use Domain\Entities\Ingredient;
 use Domain\Entities\Recipe;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\RecipesRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\RecipesRepository;
+use Domain\Repositories\SuppliesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CreateRecipe
 {
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private RecipesRepositoryInterface $recipesRepository;
+    private RecipesRepository $recipesRepository;
 
-    private SuppliesRepositoryInterface $suppliesRepository;
+    private SuppliesRepository $suppliesRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	MenuItemsRepositoryInterface $menuItemsRepository,
-    	RecipesRepositoryInterface $recipesRepository,
-    	SuppliesRepositoryInterface $suppliesRepository,
+    	MenuItemsRepository $menuItemsRepository,
+    	RecipesRepository $recipesRepository,
+    	SuppliesRepository $suppliesRepository,
     	Twig $twig
     ) {
         $this->menuItemsRepository = $menuItemsRepository;

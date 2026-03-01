@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\OrderEntryCancellation;
-use Domain\Repositories\OrderEntryCancellationsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class OrderEntryCancellationsRepository extends EntityRepository implements OrderEntryCancellationsRepositoryInterface
+class OrderEntryCancellationsRepository extends EntityRepository
 {
 	public function persist(OrderEntryCancellation $orderEntryCancellation)
 	{

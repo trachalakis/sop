@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Actions\OrdersApp;
 
-use Domain\Repositories\OrdersRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class PrintOrderReceipt
 {
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	OrdersRepositoryInterface $ordersRepository,
+    	OrdersRepository $ordersRepository,
     	Twig $twig
     ) {
     	$this->ordersRepository = $ordersRepository;

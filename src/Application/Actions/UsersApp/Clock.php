@@ -6,24 +6,24 @@ namespace Application\Actions\UsersApp;
 
 use Datetime;
 use Domain\Entities\Scan;
-use Domain\Repositories\UsersRepositoryInterface;
-use Domain\Repositories\ScansRepositoryInterface;
+use Domain\Repositories\UsersRepository;
+use Domain\Repositories\ScansRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class Clock
 {
-	private ScansRepositoryInterface $scansRepository;
+	private ScansRepository $scansRepository;
 
 	private Twig $twig;
 
-	private UsersRepositoryInterface $usersRepository;
+	private UsersRepository $usersRepository;
 
 	public function __construct(
-		ScansRepositoryInterface $scansRepository,
+		ScansRepository $scansRepository,
 		Twig $twig,
-		UsersRepositoryInterface $usersRepository
+		UsersRepository $usersRepository
 	) {
 		$this->scansRepository = $scansRepository;
 		$this->twig = $twig;

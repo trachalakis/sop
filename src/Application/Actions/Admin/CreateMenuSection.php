@@ -6,9 +6,9 @@ namespace Application\Actions\Admin;
 
 use Domain\Entities\MenuSection;
 use Domain\Entities\MenuSectionTranslation;
-use Domain\Repositories\LanguagesRepositoryInterface;
-use Domain\Repositories\MenusRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
+use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenusRepository;
+use Domain\Repositories\MenuSectionsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -17,17 +17,17 @@ final class CreateMenuSection
 {
 	private Twig $twig;
 
-    private MenusRepositoryInterface $menusRepository;
+    private MenusRepository $menusRepository;
     
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    private LanguagesRepositoryInterface $languagesRepository;
+    private LanguagesRepository $languagesRepository;
 
     public function __construct(
     	Twig $twig,
-    	MenusRepositoryInterface $menusRepository,
-        MenuSectionsRepositoryInterface $menuSectionsRepository,
-    	LanguagesRepositoryInterface $languagesRepository
+    	MenusRepository $menusRepository,
+        MenuSectionsRepository $menuSectionsRepository,
+    	LanguagesRepository $languagesRepository
     ) {
         $this->twig = $twig;
         $this->menusRepository = $menusRepository;

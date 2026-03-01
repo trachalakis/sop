@@ -7,7 +7,7 @@ namespace Domain\Repositories;
 use Domain\Entities\Reservation;
 use Doctrine\ORM\EntityRepository;
 
-class ReservationsRepository extends EntityRepository implements ReservationsRepositoryInterface
+class ReservationsRepository extends EntityRepository
 {
 	public function findByDate(\Datetime $date)
 	{

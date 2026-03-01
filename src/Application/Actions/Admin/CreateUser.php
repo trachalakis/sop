@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\User;
-use Domain\Repositories\UsersRepositoryInterface;
+use Domain\Repositories\UsersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -16,7 +16,7 @@ final class CreateUser
 
     private $usersRepository;
 
-    public function __construct(Twig $twig, UsersRepositoryInterface $usersRepository)
+    public function __construct(Twig $twig, UsersRepository $usersRepository)
     {
         $this->twig = $twig;
         $this->usersRepository = $usersRepository;

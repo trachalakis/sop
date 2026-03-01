@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\MenusRepositoryInterface;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\MenusRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -18,7 +18,7 @@ final class Menu
 
     public function __construct(
         Twig $twig,
-        MenusRepositoryInterface $menusRepository
+        MenusRepository $menusRepository
     ) {
         $this->twig = $twig;
         $this->menusRepository = $menusRepository;

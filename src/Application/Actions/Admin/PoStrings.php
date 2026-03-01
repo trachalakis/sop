@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Repositories\PoStringsRepositoryInterface;
+use Domain\Repositories\PoStringsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -13,11 +13,11 @@ final class PoStrings
 {
     private Twig $twig;
 
-    private PoStringsRepositoryInterface $poStringsRepository;
+    private PoStringsRepository $poStringsRepository;
 
     public function __construct(
         Twig $twig,
-        PoStringsRepositoryInterface $poStringsRepository
+        PoStringsRepository $poStringsRepository
     ) {
         $this->twig = $twig;
         $this->poStringsRepository = $poStringsRepository;

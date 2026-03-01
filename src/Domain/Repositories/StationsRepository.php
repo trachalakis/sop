@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Station;
-use Domain\Repositories\StationsRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 
-class StationsRepository extends EntityRepository implements StationsRepositoryInterface
+class StationsRepository extends EntityRepository
 {
 	public function persist(Station $station)
 	{

@@ -62,6 +62,7 @@ use Application\Actions\UsersApp\CreateOrder as UsersAppCreateOrder;
 use Application\Actions\UsersApp\ViewOrder as UsersAppViewOrder;
 use Application\Actions\UsersApp\UpdatePin as UsersAppUpdatePin;
 use Application\Actions\UsersApp\Clock;
+use Domain\Repositories\UserPermissionsRepository;
 use Middleware\Authentication;
 use Middleware\Authorization;
 use Middleware\Globals;
@@ -154,7 +155,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/update', UpdateOrder::class);
         $group->map(['GET', 'POST'], '/take-out', TakeOut::class);
     })
-    ->add(new Authorization($container->get('Domain\Repositories\UserPermissionsRepositoryInterface')))
+    ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
 
     $app->group('/reservations-app', function (RouteCollectorProxy $group) {
@@ -163,7 +164,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/update', UpdateReservation::class);
         $group->get('/tabular-view', TabularView::class);
     })
-    ->add(new Authorization($container->get('Domain\Repositories\UserPermissionsRepositoryInterface')))
+    ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
 
     $app->group('/users-app', function (RouteCollectorProxy $group) {
@@ -175,6 +176,6 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/update-pin', UsersAppUpdatePin::class);
         $group->get('/clock', Clock::class);
     })
-    ->add(new Authorization($container->get('Domain\Repositories\UserPermissionsRepositoryInterface')))
+    ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
 };

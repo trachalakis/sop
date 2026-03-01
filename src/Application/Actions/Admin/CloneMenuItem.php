@@ -9,35 +9,35 @@ use Domain\Entities\MenuItemExtra;
 use Domain\Entities\MenuItemPrice;
 use Domain\Entities\MenuItemTranslation;
 use Domain\Entities\MenuSection;
-use Domain\Repositories\LanguagesRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\PriceListsRepositoryInterface;
-use Domain\Repositories\StationsRepositoryInterface;
+use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\PriceListsRepository;
+use Domain\Repositories\StationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CloneMenuItem
 {
-    private LanguagesRepositoryInterface $languagesRepository;
+    private LanguagesRepository $languagesRepository;
 
-    private MenuItemsRepositoryInterface $menuItemsRepository;
+    private MenuItemsRepository $menuItemsRepository;
 
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    private PriceListsRepositoryInterface $priceListsRepository;
+    private PriceListsRepository $priceListsRepository;
 
-    private StationsRepositoryInterface $stationsRepository;
+    private StationsRepository $stationsRepository;
 
     private Twig $twig;
 
     public function __construct(
-        LanguagesRepositoryInterface $languagesRepository,
-        MenuSectionsRepositoryInterface $menuSectionsRepository,
-        MenuItemsRepositoryInterface $menuItemsRepository,
-        PriceListsRepositoryInterface $priceListsRepository,
-        StationsRepositoryInterface $stationsRepository,
+        LanguagesRepository $languagesRepository,
+        MenuSectionsRepository $menuSectionsRepository,
+        MenuItemsRepository $menuItemsRepository,
+        PriceListsRepository $priceListsRepository,
+        StationsRepository $stationsRepository,
         Twig $twig
     ) {
         $this->languagesRepository = $languagesRepository;

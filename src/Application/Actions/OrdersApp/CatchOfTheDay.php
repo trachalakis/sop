@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Actions\OrdersApp;
 
-use Domain\Repositories\MenuItemsRepositoryInterface;
+use Domain\Repositories\MenuItemsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CatchOfTheDay
 {
-	private MenuItemsRepositoryInterface $menuItemsRepository;
+	private MenuItemsRepository $menuItemsRepository;
 
     private Twig $twig;
 
     public function __construct(
-        MenuItemsRepositoryInterface $menuItemsRepository,
+        MenuItemsRepository $menuItemsRepository,
         Twig $twig
     ) {
         $this->menuItemsRepository = $menuItemsRepository;

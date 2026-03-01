@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Domain\Repositories;
 
 use Domain\Entities\Order;
-use Domain\Repositories\OrdersRepositoryInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\DBAL\Types\Types;
 
-class OrdersRepository extends EntityRepository implements OrdersRepositoryInterface
+class OrdersRepository extends EntityRepository
 {
 	public function findByDate(\Datetime $date)
 	{

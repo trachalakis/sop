@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Scan;
-use Domain\Entities\User;
-use Domain\Repositories\UsersRepositoryInterface;
-use Domain\Repositories\ScansRepositoryInterface;
+use Domain\Repositories\UsersRepository;
+use Domain\Repositories\ScansRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -20,8 +19,11 @@ final class CreateScan
 
     private $scansRepository;
 
-    public function __construct(Twig $twig, UsersRepositoryInterface $usersRepository, ScansRepositoryInterface $scansRepository)
-    {
+    public function __construct(
+        ScansRepository $scansRepository,
+        Twig $twig,
+        UsersRepository $usersRepository
+    ) {
         $this->twig = $twig;
         $this->usersRepository = $usersRepository;
         $this->scansRepository = $scansRepository;
@@ -31,8 +33,6 @@ final class CreateScan
 	{
 		if ($request->getMethod() == 'POST') {
             $scanData = $request->getParsedBody();
-
-            //exit(var_dump($scanData));
 
             $scanData['checkIn'] = strlen($scanData['checkIn']) > 0 ? new \Datetime($scanData['checkIn']) : null;
             $scanData['checkOut'] = strlen($scanData['checkOut']) > 0 ? new \Datetime($scanData['checkOut']) : null;

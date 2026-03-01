@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Application\GraphQl\Types;
 
-use Domain\Repositories\LanguagesRepositoryInterface;
-use Domain\Repositories\MenuItemsRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\ReservationsRepositoryInterface;
-use Domain\Repositories\StationsRepositoryInterface;
-use Domain\Repositories\SuppliersRepositoryInterface;
-use Domain\Repositories\SuppliesRepositoryInterface;
-use Domain\Repositories\TablesRepositoryInterface;
-use Domain\Repositories\UsersRepositoryInterface;
-use Domain\Repositories\MenusRepositoryInterface;
+use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenuItemsRepository;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\StationsRepository;
+use Domain\Repositories\SuppliersRepository;
+use Domain\Repositories\SuppliesRepository;
+use Domain\Repositories\TablesRepository;
+use Domain\Repositories\UsersRepository;
+use Domain\Repositories\MenusRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
@@ -29,7 +29,7 @@ class AdminQueryType extends ObjectType
                     'type' => Type::listOf(Types::menu()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(MenusRepositoryInterface::class)
+                        	->get(MenusRepository::class)
                         	->findBy(['isActive' => true]);
                     }
                 ],
@@ -39,12 +39,12 @@ class AdminQueryType extends ObjectType
                 		'menu' => Type::nonNull(Type::string())
                 	],
                     'resolve' => function ($rootValue, $args, $context, $info) {
-                        $menu  = $context->get(MenusRepositoryInterface::class)
+                        $menu  = $context->get(MenusRepository::class)
                             ->findOneBy(['name' => $args['menu']]);
                         
                         if ($menu != null) {
                             return $context
-                                ->get(MenuSectionsRepositoryInterface::class)
+                                ->get(MenuSectionsRepository::class)
                                 ->findBy(
                                     ['isActive' => true, 'menu' => $menu], 
                                     ['position' => 'asc']
@@ -58,7 +58,7 @@ class AdminQueryType extends ObjectType
                     'type' => Type::listOf(Types::menuItem()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(MenuItemsRepositoryInterface::class)
+                        	->get(MenuItemsRepository::class)
                         	->findBy(['isActive' => true]);
                     }
                 ],
@@ -66,7 +66,7 @@ class AdminQueryType extends ObjectType
                     'type' => Type::listOf(Types::table()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(TablesRepositoryInterface::class)
+                        	->get(TablesRepository::class)
                         	->findBy(['isActive' => true], ['name' => 'asc']);
                     }
                 ],
@@ -74,11 +74,11 @@ class AdminQueryType extends ObjectType
                     'type' => Type::listOf(Types::table()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         $activeTables = $context
-                        	->get(TablesRepositoryInterface::class)
+                        	->get(TablesRepository::class)
                         	->findBy(['isActive' => true], ['name' => 'asc']);
 
                        	$orders = $context
-                       		->get(OrdersRepositoryInterface::class)
+                       		->get(OrdersRepository::class)
                        		->findBy(['status' => 'OPEN']);
 
                        	foreach ($orders as $order) {
@@ -95,7 +95,7 @@ class AdminQueryType extends ObjectType
                     'type' => Type::listOf(Types::station()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(StationsRepositoryInterface::class)
+                        	->get(StationsRepository::class)
                         	->findBy(['isActive' => true], ['name' => 'asc']);
                     }
                 ],
@@ -109,7 +109,7 @@ class AdminQueryType extends ObjectType
                 	'type' => Type::listOf(Types::language()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(LanguagesRepositoryInterface::class)
+                        	->get(LanguagesRepository::class)
                         	->findAll();
                     }
                 ],
@@ -117,7 +117,7 @@ class AdminQueryType extends ObjectType
                 	'type' => Type::listOf(Types::supplier()),
                 	'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(SuppliersRepositoryInterface::class)
+                        	->get(SuppliersRepository::class)
                         	->findBy([], ['name' => 'asc']);
                     }
                 ],
@@ -125,14 +125,14 @@ class AdminQueryType extends ObjectType
                 	'type' => Type::listOf(Types::supply()),
                 	'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(SuppliesRepositoryInterface::class)
+                        	->get(SuppliesRepository::class)
                         	->findBy([], ['name' => 'asc']);
                     }
                 ],
                 'employees' => [
                     'type' => Type::listOf(Types::user()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
-                        $users = $context->get(UsersRepositoryInterface::class)->findBy(['isActive' => true], ['fullName' => 'asc']);
+                        $users = $context->get(UsersRepository::class)->findBy(['isActive' => true], ['fullName' => 'asc']);
                         $employees = array_filter($users, fn($user) => $user->isEmployee());
 
                         return $employees;
@@ -141,7 +141,7 @@ class AdminQueryType extends ObjectType
                 'activeUser' => [
                     'type' => Types::user(),
                     'resolve' => function ($rootValue, $args, $context, $info) {
-                        //$users = $context->get(UsersRepositoryInterface::class)->findBy(['isActive' => true], ['fullName' => 'asc']);
+                        //$users = $context->get(UsersRepository::class)->findBy(['isActive' => true], ['fullName' => 'asc']);
                         //$employees = array_filter($users, fn($user) => $user->isEmployee());
 
                         return $_SESSION['user'];
@@ -150,7 +150,7 @@ class AdminQueryType extends ObjectType
                 'activeOrders' => [
                 	'type' => Type::listOf(Types::order()),
                 	'resolve' => function ($rootValue, $args, $context, $info) {
-                        $orders = $context->get(OrdersRepositoryInterface::class)->findBy(['status' => 'OPEN'], ['createdAt' => 'desc']);
+                        $orders = $context->get(OrdersRepository::class)->findBy(['status' => 'OPEN'], ['createdAt' => 'desc']);
                         //$employees = array_filter($users, fn($user) => $user->isEmployee());
 
                         return $orders;
@@ -159,7 +159,7 @@ class AdminQueryType extends ObjectType
                 'todaysReservations' => [
                     'type' => Type::listOf(Types::reservation()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
-                        $todaysReservations = $context->get(ReservationsRepositoryInterface::class)->findByDate(new \Datetime);
+                        $todaysReservations = $context->get(ReservationsRepository::class)->findByDate(new \Datetime);
 
                         return $todaysReservations;
                     }

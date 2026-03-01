@@ -8,19 +8,19 @@ use Application\Actions\Admin\MenuSections;
 use Datetime;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
-use Domain\Repositories\OrdersRepositoryInterface;
+use Domain\Repositories\MenuSectionsRepository;
+use Domain\Repositories\OrdersRepository;
 use Domain\Entities\Scan;
 use Slim\Views\Twig;
 
 final class CreateOrder
 {
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
     
     private Twig $twig;
 
     public function __construct(
-        MenuSectionsRepositoryInterface $menuSectionsRepository,
+        MenuSectionsRepository $menuSectionsRepository,
         Twig $twig
     ) {
         $this->menuSectionsRepository = $menuSectionsRepository;

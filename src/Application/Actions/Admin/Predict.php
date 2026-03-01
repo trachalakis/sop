@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Datetime;
-use Domain\Repositories\OrdersRepositoryInterface;
-use Domain\Repositories\MenuSectionsRepositoryInterface;
+use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\MenuSectionsRepository;
 use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,15 +14,15 @@ use Slim\Views\Twig;
 
 final class Predict
 {
-    private MenuSectionsRepositoryInterface $menuSectionsRepository;
+    private MenuSectionsRepository $menuSectionsRepository;
 
-    private OrdersRepositoryInterface $ordersRepository;
+    private OrdersRepository $ordersRepository;
 
     private Twig $twig;
 
     public function __construct(
-    	MenuSectionsRepositoryInterface $menuSectionsRepository,
-    	OrdersRepositoryInterface $ordersRepository,
+    	MenuSectionsRepository $menuSectionsRepository,
+    	OrdersRepository $ordersRepository,
     	Twig $twig
     ) {
     	$this->menuSectionsRepository = $menuSectionsRepository;

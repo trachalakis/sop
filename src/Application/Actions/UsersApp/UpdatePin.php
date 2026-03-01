@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\UsersApp;
 
-use Domain\Repositories\UsersRepositoryInterface;
+use Domain\Repositories\UsersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -13,10 +13,10 @@ final class UpdatePin
 {
     private Twig $twig;
 
-    private UsersRepositoryInterface $usersRepository;
+    private UsersRepository $usersRepository;
 
     public function __construct(
-        UsersRepositoryInterface $usersRepository,
+        UsersRepository $usersRepository,
         Twig $twig
     ) {
         $this->usersRepository = $usersRepository;
