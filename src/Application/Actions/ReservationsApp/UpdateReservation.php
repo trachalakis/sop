@@ -30,25 +30,18 @@ final class UpdateReservation
 
     public function __invoke(Request $request, Response $response)
     {
-    	//$id = $request->getQueryParams()['id'];
-
         $reservation = $this->reservationsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 
         if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();
             
-            //dd($requestData);
-            //$reservation = new Reservation;
-            //$reservation->setEmailAddress(null);
-            //$reservation->setCreatedAt(new \Datetime);
-            //$reservation->setStatus('CONFIRMED');
             $reservation->setDateTime(new \Datetime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
             $reservation->setName(mb_strtoupper($requestData['name']));
             $reservation->setAdults(intval($requestData['adults']));
             $reservation->setMinors(intval($requestData['minors']));
             $reservation->setTelephoneNumber($requestData['telephoneNumber']);
-            $reservation->setTables($requestData['tables']);
             $reservation->setComments(mb_strtoupper($requestData['comments']));
+            $reservation->setTables($requestData['tables'] ?? null);
 
             $this->reservationsRepository->persist($reservation);
 

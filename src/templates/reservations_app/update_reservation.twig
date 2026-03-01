@@ -15,6 +15,18 @@
     	</div>
 	</div>
 	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+		<div class="col-sm-10">
+			<input 
+				type="tel" 
+				class="form-control form-control-lg" 
+				name="telephoneNumber" 
+				value="{{reservation.getTelephoneNumber}}" 
+				required
+			/>
+    	</div>
+	</div>
+	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
 		<div class="col-sm-10">
 		<div class="overflow-auto d-flex">
@@ -104,35 +116,25 @@
 		</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
-		<div class="col-sm-10">
-			<input 
-				type="tel" 
-				class="form-control form-control-lg" 
-				name="telephoneNumber" 
-				value="{{reservation.getTelephoneNumber}}" 
-				required
-			/>
-    	</div>
-	</div>
-	{#<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Τραπέζι</label>
-		<div class="col-sm-10">
-			{% for table in tables %}
-				<input 
-					type="checkbox" 
-					class="btn-check" 
-					name="tables[]" 
-					id="table-{{table.getId}}" 
-					
-					value="{{table.getName}}"
-					{{table.getName in reservation.getTables ? 'checked' : ''}}
-				/>
-				<label class="btn fs-4" for="table-{{table.getId}}">{{table.getName}}</label>
-				
-			{% endfor %}
-    	</div>
-	</div>#}
+		<div class="col-sm-10 " >
+			<div class="overflow-auto d-flex">
+				{% for table in tables %}
+					<input 
+						type="checkbox" 
+						class="btn-check" 
+						name="tables[]" 
+						id="table-{{table.getId}}" 
+						value="{{table.getName}}"
+						{{table.getName in reservation.getTables ? 'checked' : ''}}
+					/>
+					<label class="btn fs-4" for="table-{{table.getId}}">
+						{{table.getName}}
+					</label>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
 		<div class="col-sm-10">
