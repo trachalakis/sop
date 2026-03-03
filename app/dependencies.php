@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Application\EventListeners\ReservationListener;
 use Domain\Entities\Language;
 use Domain\Entities\Menu;
 use Domain\Entities\MenuSection;
@@ -12,10 +11,8 @@ use Domain\Entities\Order;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryCancellation;
 use Domain\Entities\OrderEntryGroup;
-use Domain\Entities\PoString;
 use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
-use Domain\Entities\ReservationEdit;
 use Domain\Entities\Station;
 use Domain\Entities\Scan;
 use Domain\Entities\Supply;
@@ -37,7 +34,6 @@ use Domain\Repositories\ScansRepository;
 use Domain\Repositories\UsersRepository;
 use Domain\Repositories\OrderEntryCancellationsRepository;
 use Domain\Repositories\ReservationsRepository;
-use Domain\Repositories\ReservationEditsRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\StationsRepository;
 use Domain\Repositories\OrderEntryGroupsRepository;
@@ -104,12 +100,6 @@ return function (ContainerBuilder $containerBuilder) {
 
             return new Settings($settings);
         },
-        /*TwigMiddleware::class => function (ContainerInterface $container) {
-            return TwigMiddleware::createFromContainer(
-                $container->get(App::class),
-                Twig::class
-            );
-        },*/
         EntityManager::class => function (ContainerInterface $c) {
             $dbSettings = $c->get('settings')['db'];
 
@@ -135,21 +125,7 @@ return function (ContainerBuilder $containerBuilder) {
             ], $config);
 
 
-            $em = new EntityManager($connection, $config, $eventManager);
-            
-            //$listener = $c->get(ReservationListener::class);  
-            //$em->getConfiguration()->getEntityListenerResolver()->register($listener);
-            //$em->getConfiguration()-
-            
-            return $em;
-
-            //return new EntityManager($connection, $config);
-        },
-        ReservationListener::class => function (ContainerInterface $c) {
-            return new ReservationListener(
-                $c->get(ReservationEditsRepository::class),
-                $c
-            );
+            return new EntityManager($connection, $config, $eventManager);
         },
         LanguagesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
@@ -201,11 +177,6 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(Reservation::class);
         },
-        ReservationEditsRepository::class => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(ReservationEdit::class);
-        },
         StationsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
@@ -236,11 +207,6 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(SupplyGroup::class);
         },
-        /*'Domain\Repositories\SuppliesRepository' => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(Supply::class);
-        },*/
         RecipesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
@@ -259,7 +225,10 @@ return function (ContainerBuilder $containerBuilder) {
         'SessionUser' => function (ContainerInterface $c) {
             //$em = $c->get(EntityManager::class);
 
-            return $_SESSION['user'];
+            //if (isset($_SESSION['user'])) {
+
+            //}
+            return $_SESSION['user'] ?? null;
             //return $em->getRepository(User::class)->findOneBy(['id' => $_SESSION['user']->getId()]);
         },
         /*

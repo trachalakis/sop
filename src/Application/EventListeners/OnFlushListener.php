@@ -6,15 +6,13 @@ namespace Application\EventListeners;
 
 use Datetime;
 use Domain\Entities\Reservation;
-use Domain\Entities\ActivityLog;
 use Domain\Entities\User;
-use Domain\Repositories\ReservationEditsRepository;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Psr\Container\ContainerInterface;
 
 class OnFlushListener 
 {
-    private User $user;
+    private ?User $user;
 
     public function __construct(
         ContainerInterface $c
@@ -24,39 +22,46 @@ class OnFlushListener
 
     public function onFlush(OnFlushEventArgs $args)
     {
+        //Log things only when someone is logged in
+        if ($this->user != null) {
+            $entityManager = $args->getObjectManager();
+            $unitOfWork = $entityManager->getUnitOfWork();
+            $updatedEntities = $unitOfWork->getScheduledEntityUpdates();
 
-        $entityManager = $args->getObjectManager();
-        $unitOfWork = $entityManager->getUnitOfWork();
-        $updatedEntities = $unitOfWork->getScheduledEntityUpdates();
-
-        foreach ($updatedEntities as $updatedEntity) {
-
-            if ($updatedEntity instanceof Reservation) {
-
-                $changeset = $unitOfWork->getEntityChangeSet($updatedEntity);
+            foreach ($updatedEntities as $updatedEntity) {
                 
-                if (array_key_exists('dateTime', $changeset)) {
-                    if ($changeset['dateTime'][0] != $changeset['dateTime'][1]) {
+                //only log reservation edits for now
+                if ($updatedEntity instanceof Reservation) {
+                    $changeset = $unitOfWork->getEntityChangeSet($updatedEntity);
 
-                        $reservationEdit = new ActivityLog;
-                        $reservationEdit->setWhen(new Datetime);
-                        $reservationEdit->setWhat(sprintf(
-                            "%s: -%s +%s", 
-                                'datetime',
-                                $changeset['dateTime'][0]->format('Y-m-d H:i:s'), 
-                                $changeset['dateTime'][1]->format('Y-m-d H:i:s')
-                        ));
-                        $reservationEdit->setWho(sprintf("#%s %s",
-                            $this->user->getId(), $this->user->getFullName()
-                        ));
+                    $key = get_class($updatedEntity) . '#'. $updatedEntity->getId();
+                    if (apcu_exists($key)) {
+                        $cacheEntries = apcu_fetch($key);
+                    } else {
+                        $cacheEntries = [];
                     }
+                    foreach($changeset as $field => $changes) {
+                        if ($changes[0] != $changes[1]) {
+                            if ($changes[0] instanceof Datetime) {
+                                $changes[0] = $changes[0]->format('Y-m-d H:i');
+                            }
+                            if ($changes[1] instanceof Datetime) {
+                                $changes[1] = $changes[1]->format('Y-m-d H:i');
+                            }
+                        
+                            $cacheEntries[] = sprintf(
+                                "%s|%s|%s --> %s|#%s",
+                                (new Datetime)->format('Y/m/d H:i:s'),
+                                $field,
+                                $changes[0],
+                                $changes[1],
+                                $this->user->getId()
+                            );
+                        }
+                    }
+                    apcu_store($key, $cacheEntries, 604800);
                 }
 
-                if (isset($reservationEdit)) {
-                    $entityManager->persist($reservationEdit);
-                    $metaData = $entityManager->getClassMetadata(ActivityLog::class);
-                    $unitOfWork->computeChangeSet($metaData, $reservationEdit);
-                }
             }
         }
     }
