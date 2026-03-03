@@ -44,7 +44,7 @@ class Reservation
     private string $status;
 
     #[ORM\Column(type: 'simple_array', name: 'tables')]
-    private ?array $tables;
+    private array $tables;
 
     #[ORM\Column(type: 'string', name: 'telephone_number')]
     private string $telephoneNumber;
@@ -99,7 +99,7 @@ class Reservation
     	return $this->status;
     }
 
-    public function getTables(): ?array
+    public function getTables(): array
     {
         return $this->tables;
     }
@@ -154,7 +154,7 @@ class Reservation
     	$this->status = $status;
     }
 
-    public function setTables(?array $tables): void
+    public function setTables(array $tables): void
     {
         $this->tables = $tables;
     }

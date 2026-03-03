@@ -41,7 +41,7 @@ final class UpdateReservation
             $reservation->setMinors(intval($requestData['minors']));
             $reservation->setTelephoneNumber($requestData['telephoneNumber']);
             $reservation->setComments(mb_strtoupper($requestData['comments']));
-            $reservation->setTables($requestData['tables'] ?? null);
+            $reservation->setTables($requestData['tables'] ?? []);
 
             $this->reservationsRepository->persist($reservation);
 

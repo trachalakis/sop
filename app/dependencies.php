@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Application\EventListeners\ReservationListener;
 use Domain\Entities\Language;
 use Domain\Entities\Menu;
 use Domain\Entities\MenuSection;
@@ -14,6 +15,7 @@ use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\PoString;
 use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
+use Domain\Entities\ReservationEdit;
 use Domain\Entities\Station;
 use Domain\Entities\Scan;
 use Domain\Entities\Supply;
@@ -33,8 +35,9 @@ use Domain\Repositories\RecipesRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\UsersRepository;
-use Domain\Repositories\ReservationsRepository;
 use Domain\Repositories\OrderEntryCancellationsRepository;
+use Domain\Repositories\ReservationsRepository;
+use Domain\Repositories\ReservationEditsRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\StationsRepository;
 use Domain\Repositories\OrderEntryGroupsRepository;
@@ -117,6 +120,12 @@ return function (ContainerBuilder $containerBuilder) {
             $config->enableNativeLazyObjects(true);
             $config->addCustomDatetimeFunction('DATE', DoctrineExtensions\Query\Postgresql\Date::class);
             
+            $eventManager = new Doctrine\Common\EventManager();
+            $eventManager->addEventListener(
+                [Doctrine\ORM\Events::onFlush], 
+                new Application\EventListeners\OnFlushListener($c)
+            );
+            
             $connection = DriverManager::getConnection([
                 'driver' => 'pdo_pgsql',
                 'host' => $dbSettings['host'],
@@ -124,8 +133,23 @@ return function (ContainerBuilder $containerBuilder) {
                 'password' => $dbSettings['password'],
                 'dbname' => $dbSettings['databaseName'],
             ], $config);
+
+
+            $em = new EntityManager($connection, $config, $eventManager);
             
-            return new EntityManager($connection, $config);
+            //$listener = $c->get(ReservationListener::class);  
+            //$em->getConfiguration()->getEntityListenerResolver()->register($listener);
+            //$em->getConfiguration()-
+            
+            return $em;
+
+            //return new EntityManager($connection, $config);
+        },
+        ReservationListener::class => function (ContainerInterface $c) {
+            return new ReservationListener(
+                $c->get(ReservationEditsRepository::class),
+                $c
+            );
         },
         LanguagesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
@@ -172,6 +196,16 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(OrderEntryGroup::class);
         },
+        ReservationsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(Reservation::class);
+        },
+        ReservationEditsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(ReservationEdit::class);
+        },
         StationsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
@@ -181,11 +215,6 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(Table::class);
-        },
-        ReservationsRepository::class => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(Reservation::class);
         },
         UsersRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
@@ -226,6 +255,12 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(UserPermission::class);
+        },
+        'SessionUser' => function (ContainerInterface $c) {
+            //$em = $c->get(EntityManager::class);
+
+            return $_SESSION['user'];
+            //return $em->getRepository(User::class)->findOneBy(['id' => $_SESSION['user']->getId()]);
         },
         /*
         'Domain\Repositories\SupplyGroupsRepository' => function (ContainerInterface $c) {
