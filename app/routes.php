@@ -6,6 +6,7 @@ use Application\Actions\Homepage;
 use Application\Actions\Login;
 use Application\Actions\Logout;
 use Application\Actions\Admin\CloneMenu;
+use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
@@ -19,6 +20,7 @@ use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\GraphQl;
 use Application\Actions\Admin\Homepage as AdminHomepage;
 use Application\Actions\Admin\Menu as AdminMenu;
+use Application\Actions\Admin\Menus as AdminMenus;
 use Application\Actions\Admin\MenuItemRecipe;
 use Application\Actions\Admin\MenuItemStatistics;
 use Application\Actions\Admin\MenuSectionStatistics;
@@ -33,9 +35,9 @@ use Application\Actions\Admin\SortMenuItems;
 use Application\Actions\Admin\SortMenuSections;
 use Application\Actions\Admin\Tables;
 use Application\Actions\Admin\ToggleMenuItem;
+use Application\Actions\Admin\UpdateMenu;
 use Application\Actions\Admin\UpdateMenuItem;
 use Application\Actions\Admin\UpdateMenuSection;
-use Application\Actions\Admin\ViewOrder;
 use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateSupply;
@@ -44,6 +46,7 @@ use Application\Actions\Admin\UpdateUser;
 use Application\Actions\Admin\Users;
 use Application\Actions\Admin\UserScans;
 use Application\Actions\Admin\UserOrders;
+use Application\Actions\Admin\ViewOrder;
 use Application\Actions\OrdersApp\Homepage as OrdersAppHomepage;
 use Application\Actions\OrdersApp\CatchOfTheDay;
 use Application\Actions\OrdersApp\CreateOrder;
@@ -87,11 +90,17 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/tables/create', CreateTable::class);
         $group->map(['GET', 'POST'], '/tables/update', UpdateTable::class);
 
+        $group->get('/menus', AdminMenus::class);
+        $group->map(['GET', 'POST'], '/menus/create', CreateMenu::class);
+        $group->map(['GET', 'POST'], '/menus/update', UpdateMenu::class);
         $group->get('/menu', AdminMenu::class);
         $group->get('/menu/print', PrintMenu::class);
+        
         $group->map(['GET', 'POST'], '/menu-sections/create', CreateMenuSection::class);
         $group->map(['GET', 'POST'], '/menu-sections/update', UpdateMenuSection::class);
         $group->get('/menu-sections/statistics', MenuSectionStatistics::class);
+        $group->post('/menu-sections/sort', SortMenuSections::class);
+        
         $group->map(['GET', 'POST'], '/menu-items/create', CreateMenuItem::class);
         $group->map(['GET', 'POST'], '/menu-items/update', UpdateMenuItem::class);
         $group->map(['GET', 'POST'], '/menu-items/recipe', MenuItemRecipe::class);
@@ -99,10 +108,7 @@ return function (App $app, $container) {
         $group->get('/menu-items/toggle', ToggleMenuItem::class);
         $group->get('/menu-items/clone', CloneMenuItem::class);
         $group->post('/menu-items/sort', SortMenuItems::class);
-        $group->post('/menu-sections/sort', SortMenuSections::class);
-
-        $group->get('/clone-menu', CloneMenu::class);
-
+        
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
         $group->map(['GET', 'POST'], '/users/update', UpdateUser::class);

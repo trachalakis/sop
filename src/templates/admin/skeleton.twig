@@ -51,18 +51,15 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link {{activeNavLink == 'menus' ? 'active' : ''}}" href="/admin/menu">
+							<a class="nav-link {{activeNavLink == 'menus' ? 'active' : ''}}" href="/admin/menus">
 						  		Μενού
 							</a>
 							{% if menus is defined %}
 								<ul class="nav flex-column">
-									{% for menu in menus %}
+									{% for menu in menus|filter(m => m.getIsActive) %}
 										<li class="nav-item">
 											<a class="nav-link" style="padding-left:32px" href="/admin/menu?id={{menu.getId}}">
 												{{menu.getName}}
-												{% if menu.getIsActive %}
-													<!--<span class="badge rounded-pill text-bg-success">active</span>-->
-												{% endif %}
 											</a>
 										</li>
 									{% endfor %}

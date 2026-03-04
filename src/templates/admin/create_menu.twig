@@ -1,0 +1,49 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'menus' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Νέο μενού</h1>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Ενεργό</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="isActive">
+  				<option value="1">Ναί</option>
+  				<option value="0">Όχι</option>
+			</select>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Όνομα</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" name="name" value="" required/>
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Όνομα</label>
+		<div class="col-sm-10">
+			{% for menuType in menuTypes %}
+				<div class="form-check form-check-inline">
+					<input 
+						class="form-check-input" 
+						type="radio" 
+						id="menu-type-{{loop.index}}" 
+						value="{{menuType.value}}" 
+						name="menuType"
+						required
+					>
+					<label class="form-check-label" for="menu-type-{{loop.index}}">{{menuType.value}}</label>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

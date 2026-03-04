@@ -25,7 +25,7 @@ final class Menus
 
     public function __invoke(Request $request, Response $response)
     {
-        $menus = $this->menusRepository->findBy([], ['createdAt' => 'desc']);
+        $menus = $this->menusRepository->findBy([], ['isActive' => 'desc', 'createdAt' => 'desc']);
 
         return $this->twig->render($response, 'admin/menus.twig', ['menus' => $menus]);
     }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use DateTime;
 use DateTimeImmutable;
+use Domain\Enums\MenuType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -23,6 +23,9 @@ class Menu
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
+
+    #[ORM\Column(type: 'string', enumType: MenuType::class, name: 'menu_type')]
+    private MenuType $menuType;
 
     #[ORM\OneToMany(targetEntity: MenuSection::class, mappedBy: 'menu', cascade: ['persist'])]
     #[ORM\OrderBy(['isActive' => 'DESC', 'position' => 'ASC'])]
@@ -56,6 +59,11 @@ class Menu
         return $this->menuSections;
     }
 
+    public function getMenuType(): string
+    {
+        return $this->menuType->value;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -69,6 +77,11 @@ class Menu
     public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
+    }
+
+    public function setMenuType(MenuType $menuType): void
+    {
+        $this->menuType = $menuType;
     }
 
     public function setName(string $name): void

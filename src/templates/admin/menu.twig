@@ -12,7 +12,12 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{menu.getName}}</h1>
+    <h1 class="h2">
+		{{menu.getName}}
+		{% if not menu.getIsActive %}
+			<span class="badge rounded-pill text-bg-danger">Ανενεργό</span>
+		{% endif %}
+	</h1>
     <div class="btn-toolbar">
        	<a href="/admin/menu-sections/create?menu={{menu.getId}}" class="btn btn-primary me-2">
             New section
@@ -20,17 +25,6 @@
         <a href="/admin/menu-items/create?menu={{menu.getId}}" class="btn btn-primary">
             New item
         </a>
-		<div class="vr ms-2 me-2"></div>
-		<div class="dropdown">
-			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-				Εργαλεία
-			</button>
-			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="#">Μετονομασία</a></li>
-				<li><a class="dropdown-item" href="#">Αντιγραφή</a></li>
-				<li><a class="dropdown-item confirm" href="/admin/menus/delete?menu={{menu.getId}}">Αρχειοθέτηση</a></li>
-			</ul>
-		</div>
     </div>
 </div>
 <div class="row">

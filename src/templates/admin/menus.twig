@@ -4,10 +4,10 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Menus</h1>
+    <h1 class="h2">Μενού</h1>
     <div class="btn-toolbar">
-       	<a href="/admin/menu/create" class="btn btn-primary">
-            New menu
+       	<a href="/admin/menus/create" class="btn btn-primary">
+            Νέο μενού
         </a>
     </div>
 </div>
@@ -22,12 +22,15 @@
 		{% for menu in menus %}
 			<tr>
 				<td>
-					<a class="text-decoration-none" href="/admin/price-lists/update?id={{priceList.getId}}">{{menu.getName}}</a>
+					<a class="text-decoration-none" href="/admin/menu?id={{menu.getId}}">{{menu.getName}}</a>
 					{% if not menu.getIsActive %}
-						<span class="badge rounded-pill text-bg-danger">Inactive</span>
+						<span class="badge rounded-pill text-bg-danger">ανενεργό</span>
 					{% endif %}
 				</td>
 				<td class="text-end">
+					<a class="text-decoration-none" href="/admin/menus/update?id={{menu.getId}}">
+						Επεξεργασία
+					</a>
 				</td>
 			</tr>
 		{% endfor %}
