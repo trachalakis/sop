@@ -10,7 +10,6 @@ use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\ReservationsRepository;
 use Domain\Repositories\StationsRepository;
-use Domain\Repositories\SuppliersRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\UsersRepository;
@@ -111,14 +110,6 @@ class AdminQueryType extends ObjectType
                         return $context
                         	->get(LanguagesRepository::class)
                         	->findAll();
-                    }
-                ],
-                'suppliers' => [
-                	'type' => Type::listOf(Types::supplier()),
-                	'resolve' => function ($rootValue, $args, $context, $info) {
-                        return $context
-                        	->get(SuppliersRepository::class)
-                        	->findBy([], ['name' => 'asc']);
                     }
                 ],
                 'supplies' => [
