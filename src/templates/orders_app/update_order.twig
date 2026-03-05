@@ -358,7 +358,7 @@
 						<label class="form-label">Βάρος (γρ)</label>
 						<input class="form-control" type="number" min="50" step="1" v-model="newOrderEntry.weight"/>
 					</div>
-					<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.menuItemExtras">
+					<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.extras">
   						<label class="form-check-label w-100 fs-5">
 	  						<input
 	  							class="form-check-input"
@@ -544,7 +544,7 @@
 							step="1"
 							v-model="selectedNewOrderEntry.weight"/>
 					</div>
-					<div class="form-check form-control-lg mb-3" v-for="extra in selectedNewOrderEntry.menuItem.menuItemExtras">
+					<div class="form-check form-control-lg mb-3" v-for="extra in selectedNewOrderEntry.menuItem.extras">
   						<label class="form-check-label w-100" >
 	  						<input
 	  							class="form-check-input"
@@ -912,8 +912,8 @@
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
                             	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, menuPosition, translations { name, language },
-                            	menuItemExtras {
-                            		name, price
+                            	extras: allExtras {
+                            		id, name, price
                             	},
                             	stations {id, name, printerAddress}
                             }
@@ -967,9 +967,9 @@
 		                        	id, discount, discountReason, timing, family, quantity, notes, menuItemPrice, weight,
 		                        	menuItem {
 		                        		id, price, translations { name, language }, menuPosition,
-		                        		menuItemExtras {
-	                            			name, price
-	                            		},
+		                        		extras: allExtras {
+											id, name, price
+										},
 	                            		stations {id, name, printerAddress}
 		                        	},
 		                        	orderEntryExtras {

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Domain\Entities\Extra;
 use Domain\Entities\Menu;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,9 @@ class MenuSection
     #[ORM\OrderBy(['position' => 'ASC'])]
     private $menuItems;
 
+    #[ORM\OneToMany(targetEntity: Extra::class, mappedBy: 'menuSection', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $extras;
+
     #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
 
@@ -44,11 +49,17 @@ class MenuSection
     {
         $this->translations = new ArrayCollection();
         $this->menuItems = new ArrayCollection();
+        $this->extras = new ArrayCollection();
     }
 
     public function getId(): int
     {
         return $this->id;
+    }
+
+    public function addExtra(Extra $extra)
+    {
+        $this->extras[] = $extra;
     }
 
     public function getActiveMenuItems()
@@ -81,6 +92,11 @@ class MenuSection
     public function getMenuItems()
     {
         return $this->menuItems;
+    }
+
+    public function getExtras()
+    {
+        return $this->extras;
     }
 
 	public function getPosition(): int
@@ -124,6 +140,11 @@ class MenuSection
     public function setIsPublic(bool $isPublic): void
     {
         $this->isPublic = $isPublic;
+    }
+
+    public function setExtras($extras): void //TODO add arg type
+    {
+        $this->extras = $extras;
     }
 
     public function setPosition(?int $position): void

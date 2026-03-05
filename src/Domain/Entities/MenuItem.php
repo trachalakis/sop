@@ -6,10 +6,8 @@ namespace Domain\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Domain\Entities\Extra;
 use Domain\Entities\MenuSection;
-use Domain\Entities\MenuItemExtra;
-use Domain\Entities\MenuItemPrice;
-use Domain\Entities\Supply;
 use Domain\Entities\Station;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -47,8 +45,8 @@ class MenuItem
     #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id')]
     private MenuSection $menuSection;
 
-    #[ORM\OneToMany(targetEntity: MenuItemExtra::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
-    private Collection $menuItemExtras;
+    #[ORM\OneToMany(targetEntity: Extra::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $extras;
 
     #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
@@ -67,20 +65,35 @@ class MenuItem
     private $translations;
 
     public function __construct() {
+        $this->extras = new ArrayCollection;
         $this->stations = new ArrayCollection;
-        $this->menuItemExtras = new ArrayCollection;
         $this->translations = new ArrayCollection;
     }
 
-    public function addMenuItemExtra(MenuItemExtra $menuItemExtra)
+    public function addExtra(Extra $extra)
     {
-        $this->menuItemExtras[] = $menuItemExtra;
+        $this->extras[] = $extra;
     }
 
     public function getId(): int
     {
         return $this->id;
     }
+
+    public function getAllExtras()
+    {
+        $extras = [];
+
+        foreach ($this->getMenuSection()->getExtras() as $extra) {
+            $extras[] = $extra;
+        }
+        foreach ($this->getExtras() as $extra) {
+            $extras[] = $extra;
+        }
+
+        return $extras;
+    }
+
 
     public function getAvailableQuantity(): ?int
     {
@@ -99,6 +112,11 @@ class MenuItem
     public function getCustomFields(): ?array
     {
     	return $this->customFields;
+    }
+
+    public function getExtras()
+    {
+        return $this->extras;
     }
 
     public function getIsActive(): bool
@@ -134,11 +152,6 @@ class MenuItem
     public function getMenuSection(): MenuSection
     {
         return $this->menuSection;
-    }
-
-    public function getMenuItemExtras()
-    {
-        return $this->menuItemExtras;
     }
 
     public function getPosition(): ?int
@@ -187,6 +200,11 @@ class MenuItem
     	$this->customFields = $customFields;
     }
 
+    public function setExtras($extras): void //TODO add arg type
+    {
+        $this->extras = $extras;
+    }
+
     public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
@@ -210,11 +228,6 @@ class MenuItem
     public function setIsPublic(bool $isPublic): void
     {
         $this->isPublic = $isPublic;
-    }
-
-    public function setMenuItemExtras($menuItemExtras): void //TODO add arg type
-    {
-        $this->menuItemExtras = $menuItemExtras;
     }
 
     public function setMenuSection(MenuSection $menuSection): void

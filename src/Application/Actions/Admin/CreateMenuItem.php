@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Domain\Entities\Extra;
 use Domain\Entities\MenuItem;
-use Domain\Entities\MenuItemExtra;
 use Domain\Entities\MenuItemTranslation;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenusRepository;
@@ -87,17 +87,18 @@ final class CreateMenuItem
             }
             $menuItem->setTranslations($translations);
 
-            if (isset($postData['menuItemExtra'])) {
-                foreach ($postData['menuItemExtra'] as $extra) {
+            if (isset($postData['extra'])) {
+                foreach ($postData['extra'] as $extra) {
                     $name = trim($extra['name']);
                     if (strlen($name) > 0) {
-                        $menuItemExtra = new MenuItemExtra(
+                        $extra = new Extra(
                             $name,
                             floatval($extra['price']),
-                            $menuItem
+                            $menuItem,
+                            null
                         );
 
-                        $menuItem->addMenuItemExtra($menuItemExtra);
+                        $menuItem->addExtra($extra);
                     }
                 }
             }

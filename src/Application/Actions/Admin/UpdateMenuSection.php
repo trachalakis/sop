@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Domain\Entities\Extra;
 use Domain\Entities\MenuSectionTranslation;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\LanguagesRepository;
@@ -52,6 +54,23 @@ final class UpdateMenuSection
             	$translations[] = $menuSectionTranslation;
             }
             $menuSection->setTranslations($translations);
+
+            $extras = new ArrayCollection;
+            if (isset($postData['extra'])) {
+                foreach ($postData['extra'] as $extra) {
+                    $name = trim($extra['name']);
+                    if (strlen($name) > 0) {
+                        $extra = new Extra(
+                            $name,
+                            floatval($extra['price']),
+                            null,
+                            $menuSection
+                        );
+                        $extras->add($extra);
+                    }
+                }
+            }
+            $menuSection->setExtras($extras);
 
             $this->menuSectionsRepository->persist($menuSection);
 

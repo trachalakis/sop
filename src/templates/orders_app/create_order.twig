@@ -215,7 +215,7 @@
 							<label class="form-label">Βάρος (γρ)</label>
 							<input class="form-control" type="number" min="50" step="1" v-model="newOrderEntry.weight"/>
 						</div>
-						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.menuItemExtras">
+						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.extras">
 	  						<label class="form-check-label w-100 fs-5">
 		  						<input
 		  							class="form-check-input"
@@ -297,7 +297,7 @@
 								step="1"
 								v-model="activeOrderEntry.weight"/>
 						</div>
-						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.menuItemExtras">
+						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.extras">
 	  						<label class="form-check-label w-100 fs-5">
 		  						<input
 		  							class="form-check-input"
@@ -663,7 +663,8 @@
 		    },
 		    mounted () {
 		    	this.order.reservationId = new URLSearchParams(window.location.search).get('reservationId');
-				this.menuName = new URLSearchParams(window.location.search).get('menu');
+				//this.menuName = new URLSearchParams(window.location.search).get('menu');
+				this.menuName = 'Default';
 
 		    	axios({
                     url: '/admin/graph-ql?useCachedResults=true',
@@ -673,7 +674,7 @@
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
                             	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, translations { name, language }, menuPosition,
-                            	menuItemExtras {
+                            	extras: allExtras {
                             		id, name, price
                             	},
                             	stations {id, name, printerAddress}
@@ -971,15 +972,6 @@
 		    	},
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItem.price;
-
-		    		//ugly hack
-		    		if (this.order.table != null && this.order.table.name == 'Take away') {
-		    			_.each(orderEntry.menuItem.menuItemExtras, menuItemExtra => {
-		    				if (menuItemExtra.name == 'Take away') {
-		    					price += menuItemExtra.price;console.log('xoxox');
-		    				}
-		    			});
-		    		}
 
 		    		if (orderEntry.menuItem.isPricePerKg) {
 		    			let weight = orderEntry.weight;

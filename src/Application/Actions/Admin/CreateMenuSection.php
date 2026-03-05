@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Domain\Entities\Extra;
 use Domain\Entities\MenuSection;
 use Domain\Entities\MenuSectionTranslation;
 use Domain\Repositories\LanguagesRepository;
@@ -38,9 +39,9 @@ final class CreateMenuSection
     public function __invoke(Request $request, Response $response)
 	{
 		$languages = $this->languagesRepository->findAll();
-        $menus = $this->menusRepository->findBy(
+        /*$menus = $this->menusRepository->findBy(
             [], ['isActive' => 'desc', 'createdAt' => 'desc']
-        );
+        );*/
         $menu = $this->menusRepository->findOneBy([
             'id' => $request->getQueryParams()['menu']
         ]);
@@ -66,6 +67,22 @@ final class CreateMenuSection
             }
             $menuSection->setTranslations($translations);
 
+            if (isset($postData['extra'])) {
+                foreach ($postData['extra'] as $extra) {
+                    $name = trim($extra['name']);
+                    if (strlen($name) > 0) {
+                        $extra = new Extra(
+                            $name,
+                            floatval($extra['price']),
+                            null,
+                            $menuSection
+                        );
+
+                        $menuSection->addExtra($extra);
+                    }
+                }
+            }
+
             $this->menuSectionsRepository->persist($menuSection);
 
             if (function_exists('apcu_clear_cache')) {
@@ -80,8 +97,8 @@ final class CreateMenuSection
             'admin/create_menu_section.twig',
             [
                 'languages' => $languages, 
-                'menus' => $menus,
-                'selectedMenu' => $selectedMenu
+                'menu' => $menu,
+
             ]
         );
 	}

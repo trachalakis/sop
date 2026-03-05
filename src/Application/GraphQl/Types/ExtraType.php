@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Application\GraphQl\Types;
 
 use Application\GraphQl\Resolvers\FieldResolver;
-use Domain\Repositories\MenuItemExtrasRepository;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\Type;
 
-class MenuItemExtraType extends ObjectType
+class ExtraType extends ObjectType
 {
     public function __construct()
     {
         $config = [
-            'name' => 'MenuItemExtra',
+            'name' => 'Extra',
             'fields' => function ()  {
                 return [
                     'id' => Type::id(),
@@ -27,10 +26,5 @@ class MenuItemExtraType extends ObjectType
             }
         ];
         parent::__construct($config);
-    }
-
-    public function resolveType($rootValue, $args, $context, $info)
-    {
-        return $context->get(MenuItemExtrasRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }

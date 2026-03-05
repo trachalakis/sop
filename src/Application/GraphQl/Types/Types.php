@@ -13,6 +13,11 @@ class Types
         return static::get(DateType::class);
     }
 
+    public static function extra()
+    {
+        return static::get(ExtraType::class);
+    }
+
     public static function language()
     {
         return static::get(LanguageType::class);
@@ -41,11 +46,6 @@ class Types
     public static function menuItemTranslation()
     {
         return static::get(MenuItemTranslationType::class);
-    }
-
-    public static function menuItemExtra()
-    {
-        return static::get(MenuItemExtraType::class);
     }
 
     public static function table()

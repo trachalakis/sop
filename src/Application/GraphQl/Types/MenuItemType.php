@@ -26,7 +26,8 @@ class MenuItemType extends ObjectType
                     'price' => Type::float(),
                     'menuPosition' => Type::int(),
                     'translations' => Type::listOf(Types::menuItemTranslation()),
-                    'menuItemExtras' => Type::listOf(Types::menuItemExtra()),
+                    'extras' => Type::listOf(Types::extra()),
+                    'allExtras' => Type::listOf(Types::extra()),
                     'stations' => Type::listOf(Types::station()),
                 ];
             },

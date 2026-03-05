@@ -188,7 +188,7 @@
 	        			></button>
 	      			</div>
 	      			<div class="modal-body">
-						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.menuItemExtras">
+						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.extras">
 	  						<label class="form-check-label w-100 fs-5">
 		  						<input
 		  							class="form-check-input"
@@ -242,7 +242,7 @@
 	      			</div>
 	      			<div class="modal-body">
 						
-						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.menuItemExtras">
+						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.extras">
 	  						<label class="form-check-label w-100 fs-5">
 		  						<input
 		  							class="form-check-input"
@@ -353,7 +353,7 @@
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
                             	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, translations { name, language }, menuPosition,
-                            	menuItemExtras {
+                            	extras: allExtras {
                             		id, name, price
                             	},
                             	stations {id, name, printerAddress}

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\MenuItem;
+use Domain\Entities\MenuSection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemExtrasRepository')]
-#[ORM\Table(name: 'menu_item_extras')]
-class MenuItemExtra
+#[ORM\Entity]
+#[ORM\Table(name: 'extras')]
+class Extra
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]
@@ -22,15 +23,24 @@ class MenuItemExtra
     #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    #[ORM\ManyToOne(targetEntity: MenuItem::class, inversedBy: 'menuItemExtras')]
+    #[ORM\ManyToOne(targetEntity: MenuItem::class, inversedBy: 'extras')]
     #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
-    private MenuItem $menuItem;
+    private ?MenuItem $menuItem;
 
-    public function __construct(string $name, float $price, MenuItem $menuItem)
-    {
+    #[ORM\ManyToOne(targetEntity: MenuSection::class, inversedBy: 'extras')]
+    #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id')]
+    private ?MenuSection $menuSection;
+
+    public function __construct(
+        string $name, 
+        float $price, 
+        ?MenuItem $menuItem,
+        ?MenuSection $menuSection
+    ) {
         $this->setName($name);
         $this->setPrice($price);
         $this->setMenuItem($menuItem);
+        $this->setMenuSection($menuSection);
     }
 
     public function getId(): int
@@ -48,9 +58,14 @@ class MenuItemExtra
         return $this->price;
     }
 
-    public function getMenuItem(): MenuItem
+    public function getMenuItem(): ?MenuItem
     {
         return $this->menuItem;
+    }
+
+    public function getMenuSection(): ?MenuSection
+    {
+        return $this->menuSection;
     }
 
     public function setName(string $name): void
@@ -63,8 +78,13 @@ class MenuItemExtra
         $this->price = $price;
     }
 
-    public function setMenuItem(MenuItem $menuItem): void
+    public function setMenuItem(?MenuItem $menuItem): void
     {
         $this->menuItem = $menuItem;
+    }
+
+    public function setMenuSection(?MenuSection $menuSection): void
+    {
+        $this->menuSection = $menuSection;
     }
 }

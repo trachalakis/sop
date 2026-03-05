@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Domain\Entities\Extra;
 use Domain\Entities\MenuItemTranslation;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\MenuItemsRepository;
-use Domain\Repositories\PriceListsRepository;
 use Domain\Repositories\StationsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -45,7 +45,7 @@ final class UpdateMenuItem
     {
     	$languages = $this->languagesRepository->findAll();
     	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
-
+        //dd($menuItem->getExtras());
         if ($request->getMethod() == 'POST') {
     		$postData = $request->getParsedBody();
 
@@ -80,9 +80,25 @@ final class UpdateMenuItem
 
             $menuItem->setStations(new ArrayCollection);
             if (isset($postData['stations'])) {
-                //dd($this->stationsRepository->findBy(['id' => $postData['stations']]));
                 $menuItem->setStations($this->stationsRepository->findBy(['id' => $postData['stations']]));
             }
+
+            $extras = new ArrayCollection;
+            if (isset($postData['extra'])) {
+                foreach ($postData['extra'] as $extra) {
+                    $name = trim($extra['name']);
+                    if (strlen($name) > 0) {
+                        $extra = new Extra(
+                            $name,
+                            floatval($extra['price']),
+                            $menuItem,
+                            null
+                        );
+                        $extras->add($extra);
+                    }
+                }
+            }
+            $menuItem->setExtras($extras);
 
             $translations = [];
             foreach($languages as $language) {
@@ -103,6 +119,9 @@ final class UpdateMenuItem
             }
             $menuItem->setCustomFields($customFields);
 
+            
+            
+            
             $this->menuItemsRepository->persist($menuItem);
 
 			if (function_exists('apcu_clear_cache')) {
