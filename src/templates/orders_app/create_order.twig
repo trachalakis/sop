@@ -674,7 +674,7 @@
                             	extras: allExtras {
                             		id, name, price
                             	},
-                            	stations {id, name, printerAddress}
+                            	printers {id, name, printerAddress}
                             }
                         },
                         tables {
@@ -753,14 +753,6 @@
 	  					});
 		    	},
 		    	printOrder() {
-		    		/*if (this.order.employee != null) {
-			    		_.each(this.stations, station => {
-			    			station.printOk = true;
-			    		});
-
-			    		return;
-			    	}*/
-
 					_.each(this.printers, printer => {
 						let printer = new epson.ePOSBuilder();
 
@@ -857,7 +849,7 @@
 						printer.addCut(printer.CUT_FEED);
 						if (orderEntriesCount > 0) {
 							printer.printOk = false;
-							var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+							var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  							//Create an ePOS-Print object
  							var epos = new epson.ePOSPrint(address);
  							//Send the print document
