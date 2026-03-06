@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Domain\Entities\Extra;
 use Domain\Entities\MenuSection;
-use Domain\Entities\Station;
+use Domain\Entities\Printer;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemsRepository')]
@@ -54,9 +54,9 @@ class MenuItem
     #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
-    #[ORM\ManyToMany(targetEntity: Station::class)]
-    #[ORM\JoinTable(name: 'menu_items_stations', joinColumns: [new ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')], inverseJoinColumns: [new ORM\JoinColumn(name: 'station_id', referencedColumnName: 'id')])]
-    private $stations;
+    #[ORM\ManyToMany(targetEntity: Printer::class)]
+    #[ORM\JoinTable(name: 'menu_items_printers', joinColumns: [new ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')], inverseJoinColumns: [new ORM\JoinColumn(name: 'station_id', referencedColumnName: 'id')])]
+    private $printers;
 
     #[ORM\Column(type: 'boolean', name: 'track_available_quantity')]
     private bool $trackAvailableQuantity;
@@ -66,7 +66,7 @@ class MenuItem
 
     public function __construct() {
         $this->extras = new ArrayCollection;
-        $this->stations = new ArrayCollection;
+        $this->printers = new ArrayCollection;
         $this->translations = new ArrayCollection;
     }
 
@@ -164,9 +164,9 @@ class MenuItem
         return $this->price;
     }
 
-    public function getStations()
+    public function getPrinters()
     {
-        return $this->stations;
+        return $this->printers;
     }
 
     public function getTrackAvailableQuantity(): bool
@@ -245,9 +245,9 @@ class MenuItem
         $this->price = $price;
     }
 
-    public function setStations($stations): void
+    public function setPrinters($printers): void
     {
-        $this->stations = $stations;
+        $this->printers = $printers;
     }
 
     public function setTrackAvailableQuantity(bool $trackAvailableQuantity): void

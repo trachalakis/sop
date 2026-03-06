@@ -83,9 +83,9 @@ class Types
         return static::get(ReservationType::class);
     }
 
-    public static function station()
+    public static function printer()
     {
-        return static::get(StationType::class);
+        return static::get(PrinterType::class);
     }
 
     public static function supplier()

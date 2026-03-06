@@ -416,7 +416,7 @@
 		    		tables: [],
 		    		availableTables: [],
 		    		menuSections: [],
-		    		stations: [],
+		    		printers: [],
 		    		employees: [],
 		    		waiter: null,
 
@@ -441,10 +441,10 @@
 		    	}
 		    },
     		watch: {
-		        'stations' : {
+		        'printers' : {
 		        	handler: function ()  {
-			        	let isTrue = _.reduce(this.stations, function(result, station) {
-	  						return result && station.printOk;
+			        	let isTrue = _.reduce(this.printers, function(result, printer) {
+	  						return result && printer.printOk;
 						}, true);
 
 						if (isTrue) {

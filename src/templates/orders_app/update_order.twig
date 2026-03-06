@@ -863,7 +863,7 @@
 		    		},
 		    		initialOrder: {},
 
-		    		stations: [],
+		    		printers: [],
 
 		    		savingOrder: false,
 		    		showOptions: false,
@@ -875,10 +875,10 @@
 		    	}
 		    },
 		    watch: {
-		        'stations' : {
+		        'printers' : {
 		        	handler: function ()  {
-			        	let isTrue = _.reduce(this.stations, function(result, station) {
-	  						return result && station.printOk;
+			        	let isTrue = _.reduce(this.printers, function(result, printer) {
+	  						return result && printer.printOk;
 						}, true);
 
 						if (isTrue) {
@@ -915,13 +915,13 @@
                             	extras: allExtras {
                             		id, name, price
                             	},
-                            	stations {id, name, printerAddress}
+                            	printers {id, name, printerAddress}
                             }
                         },
                         tables {
                         	id, name
                         },
-                        stations {
+                        printers {
                         	id, name, printerAddress, hasReceiptPrinter
                         },
                         employees {
@@ -934,7 +934,7 @@
                 }).then(response => {
                     this.menuSections = response.data.data.menuSections
                     this.tables = response.data.data.tables
-                    this.stations = response.data.data.stations
+                    this.printers = response.data.data.printers
                     this.employees = response.data.data.employees;
 					this.activeOrders = response.data.data.activeOrders;
                 });
@@ -970,7 +970,7 @@
 		                        		extras: allExtras {
 											id, name, price
 										},
-	                            		stations {id, name, printerAddress}
+	                            		printers {id, name, printerAddress}
 		                        	},
 		                        	orderEntryExtras {
 		                        		name, price
@@ -1190,7 +1190,7 @@
 						return;
 					}
 
-					_.each(this.stations, station => {
+					_.each(this.printers, printer => {
 						let printer = new epson.ePOSBuilder();
 
 						printer.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
@@ -1224,8 +1224,8 @@
 						let orderEntriesCount = 0;
 						for (i = 0; i < 7; i++) {
 							_.each(this.filterGroupEntries(orderEntryGroup, i), orderEntry => {
-								let index = _.findIndex(orderEntry.menuItem.stations, s => s.id == station.id);
-								if (index != -1 || station.hasReceiptPrinter) {
+								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id);
+								if (index != -1 || printer.hasReceiptPrinter) {
 									orderEntriesCount++;
 
 									quantity = orderEntry.quantity;
@@ -1246,7 +1246,7 @@
 									}
 
 									let priceBlock = '';
-									if (station.hasReceiptPrinter) {
+									if (printer.hasReceiptPrinter) {
 										let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
 
 										printer.addText(`${quantity} x ${name} (${priceBlock}) ${weight}\n`);
@@ -1281,11 +1281,11 @@
 						printer.addFeedLine(10);
 						printer.addCut(printer.CUT_FEED);
 
-						var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+						var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
 						var epos = new epson.ePOSPrint(address);
 						epos.onreceive = (res) => {
 							if (!res.success) {
-								alert(`A print error occurred. Station ${station.name}`);
+								alert(`A print error occurred. Printer ${printer.name}`);
 							} else {
 								this.reprinting = false;
 							}
@@ -1295,12 +1295,12 @@
 		    	},
 		    	printOrder() {
 					if (this.newOrderEntryGroup.orderEntries.length == 0) {
-						_.each(this.stations, station => {
-							station.printOk = true;
+						_.each(this.printers, printer => {
+							printer.printOk = true;
 						});
 						return;
 					}
-					_.each(this.stations, station => {
+					_.each(this.printers, printer => {
 						let printer = new epson.ePOSBuilder();
 
 						printer.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
@@ -1334,9 +1334,9 @@
 						let orderEntriesCount = 0;
 						for (i = 0; i < 7; i++) {
 							_.each(this.filterGroupEntries(this.newOrderEntryGroup, i), orderEntry => {
-								let index = _.findIndex(orderEntry.menuItem.stations, s => s.id == station.id);
-								if (index != -1 || station.hasReceiptPrinter) {
-									if (station.hasReceiptPrinter && orderEntry.menuItemPrice == 0) {
+								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id);
+								if (index != -1 || printer.hasReceiptPrinter) {
+									if (printer.hasReceiptPrinter && orderEntry.menuItemPrice == 0) {
 										return ;
 									}
 									orderEntriesCount++;

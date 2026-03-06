@@ -13,7 +13,7 @@ use Domain\Entities\OrderEntryCancellation;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
-use Domain\Entities\Station;
+use Domain\Entities\Printer;
 use Domain\Entities\Scan;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
@@ -35,7 +35,7 @@ use Domain\Repositories\UsersRepository;
 use Domain\Repositories\OrderEntryCancellationsRepository;
 use Domain\Repositories\ReservationsRepository;
 use Domain\Repositories\TablesRepository;
-use Domain\Repositories\StationsRepository;
+use Domain\Repositories\PrintersRepository;
 use Domain\Repositories\OrderEntryGroupsRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use DI\ContainerBuilder;
@@ -177,10 +177,10 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(Reservation::class);
         },
-        StationsRepository::class => function (ContainerInterface $c) {
+        PrintersRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
-            return $em->getRepository(Station::class);
+            return $em->getRepository(Printer::class);
         },
         TablesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

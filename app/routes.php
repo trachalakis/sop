@@ -125,15 +125,6 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
 
-        /*$group->get('/suppliers', Suppliers::class);
-        $group->map(['GET', 'POST'], '/suppliers/update', UpdateSupplier::class);
-
-        $group->get('/shopping-lists', ShoppingLists::class);
-        $group->map(['GET', 'POST'], '/shopping-lists/create', CreateShoppingList::class);
-        $group->map(['GET', 'POST'], '/shopping-lists/update', UpdateShoppingList::class);
-
-        $group->map(['GET', 'POST'], '/shopping-list', MakeShoppingList::class);*/
-
         $group->get('/recipes', Recipes::class);
         $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);
         $group->map(['GET', 'POST'], '/recipes/update', UpdateRecipe::class);

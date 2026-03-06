@@ -28,7 +28,7 @@ class MenuItemType extends ObjectType
                     'translations' => Type::listOf(Types::menuItemTranslation()),
                     'extras' => Type::listOf(Types::extra()),
                     'allExtras' => Type::listOf(Types::extra()),
-                    'stations' => Type::listOf(Types::station()),
+                    'printers' => Type::listOf(Types::printer()),
                 ];
             },
             'resolveField' => function ($object, $args, $context, $info) {

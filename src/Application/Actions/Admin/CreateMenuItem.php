@@ -11,7 +11,7 @@ use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\MenuItemsRepository;
-use Domain\Repositories\StationsRepository;
+use Domain\Repositories\PrintersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -21,13 +21,12 @@ final class CreateMenuItem
     private LanguagesRepository $languagesRepository;
 
     private MenusRepository $menusRepository;
-    
+
     private MenuItemsRepository $menuItemsRepository;
 
     private MenuSectionsRepository $menuSectionsRepository;
 
-
-    private StationsRepository $stationsRepository;
+    private PrintersRepository $printersRepository;
 
     private Twig $twig;
 
@@ -36,14 +35,14 @@ final class CreateMenuItem
         MenusRepository $menusRepository,
         MenuSectionsRepository $menuSectionsRepository,
         MenuItemsRepository $menuItemsRepository,
-        StationsRepository $stationsRepository,
+        PrintersRepository $printersRepository,
         Twig $twig
     ) {
         $this->languagesRepository = $languagesRepository;
         $this->menusRepository = $menusRepository;
         $this->menuSectionsRepository = $menuSectionsRepository;
         $this->menuItemsRepository = $menuItemsRepository;
-        $this->stationsRepository = $stationsRepository;
+        $this->printersRepository = $printersRepository;
         $this->twig = $twig;
     }
 
@@ -71,9 +70,9 @@ final class CreateMenuItem
             $menuItem->setMenuSection($menuSection);
 
 
-            $menuItem->setStations([]);
-            if (isset($postData['stations'])) {
-                $menuItem->setStations($this->stationsRepository->findBy(['id' => $postData['stations']]));
+            $menuItem->setPrinters([]);
+            if (isset($postData['printers'])) {
+                $menuItem->setPrinters($this->printersRepository->findBy(['id' => $postData['printers']]));
             }
 
             $translations = [];
@@ -114,13 +113,13 @@ final class CreateMenuItem
 
         
     	$menuSections = $this->menuSectionsRepository->findBy(['menu' => $menu], ['position' => 'asc']);
-        $stations = $this->stationsRepository->findBy([], ['name' => 'asc']);
+        $printers = $this->printersRepository->findBy([], ['name' => 'asc']);
     	return $this->twig->render(
             $response,
             'admin/create_menu_item.twig',
             [
                 'menuSections' => $menuSections,
-                'stations' => $stations,
+                'printers' => $printers,
                 'languages' => $languages
             ]
         );

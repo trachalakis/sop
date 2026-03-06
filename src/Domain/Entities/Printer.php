@@ -6,9 +6,9 @@ namespace Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\StationsRepository')]
-#[ORM\Table(name: 'stations')]
-class Station
+#[ORM\Entity(repositoryClass: 'Domain\Repositories\PrintersRepository')]
+#[ORM\Table(name: 'printers')]
+class Printer
 {
     #[ORM\Id]
     #[ORM\Column(type: 'integer')]

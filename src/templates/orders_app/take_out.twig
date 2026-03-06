@@ -330,8 +330,8 @@
     		watch: {
 		        'stations' : {
 		        	handler: function ()  {
-			        	let isTrue = _.reduce(this.stations, function(result, station) {
-	  						return result && station.printOk;
+			        	let isTrue = _.reduce(this.printers, function(result, printer) {
+	  						return result && printer.printOk;
 						}, true);
 
 						if (isTrue) {
@@ -356,16 +356,16 @@
                             	extras: allExtras {
                             		id, name, price
                             	},
-                            	stations {id, name, printerAddress}
+                            	printers {id, name, printerAddress}
                             }
                         },
-                        stations {
+                        printers {
                         	id, name, printerAddress, hasReceiptPrinter
                         }
                     }`
                 }).then(response => {
                     this.menuSections = response.data.data.menuSections
-                    this.stations = response.data.data.stations
+                    this.printers = response.data.data.printers
                 });
                 
                 axios({
@@ -421,7 +421,7 @@
 	  					});
 		    	},
 		    	printOrder() {
-					_.each(this.stations, station => {
+					_.each(this.printers, printer => {
 						let printer = new epson.ePOSBuilder();
 
 						printer.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
@@ -442,7 +442,7 @@
 
 						let orderEntriesCount = 0;
 						_.each(this.order.orderEntries, orderEntry => {
-							let index = _.findIndex(orderEntry.menuItem.stations, s => s.id == station.id);
+							let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == station.id);
 
 							if (index != -1) {
 								orderEntriesCount++;

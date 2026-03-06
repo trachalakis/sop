@@ -79,7 +79,7 @@ final class CloneMenu
                 $clonedItem->setPhoto($menuItem->getPhoto());
                 $clonedItem->setPosition($menuItem->getPosition());
                 $clonedItem->setPrice($menuItem->getPrice());
-                $clonedItem->setStations($menuItem->getStations());
+                $clonedItem->setPrinters($menuItem->getPrinters());
                 $clonedItem->setTrackAvailableQuantity($menuItem->getTrackAvailableQuantity());
 
                 foreach($menuItem->getTranslations() as $translation) {

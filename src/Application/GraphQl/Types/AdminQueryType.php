@@ -9,7 +9,7 @@ use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\ReservationsRepository;
-use Domain\Repositories\StationsRepository;
+use Domain\Repositories\PrintersRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\UsersRepository;
@@ -90,11 +90,11 @@ class AdminQueryType extends ObjectType
                        	return $activeTables;
                     }
                 ],
-                'stations' => [
-                    'type' => Type::listOf(Types::station()),
+                'printers' => [
+                    'type' => Type::listOf(Types::printer()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
-                        	->get(StationsRepository::class)
+                        	->get(PrintersRepository::class)
                         	->findBy(['isActive' => true], ['name' => 'asc']);
                     }
                 ],

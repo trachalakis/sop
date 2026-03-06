@@ -37,7 +37,7 @@
 		    data() {
 		    	return {
 		    		menuItems: [],
-		    		stations: []
+		    		printers: []
 		    	}
 		    },
 		    mounted () {
@@ -50,13 +50,13 @@
                         menuItems {
                         	id, isPricePerKg, isDrink, price, translations { name, language },
                         },
-                        stations {
+                        printers {
                         	id, name, printerAddress, hasReceiptPrinter
                         }
                     }`
                 }).then(response => {
                     this.menuItems = response.data.data.menuItems;
-                    this.stations = response.data.data.stations;
+this.printers = response.data.data.printers;
 
                     this.print();
                 });
@@ -96,9 +96,9 @@
 					printer.addCut(printer.CUT_FEED);
 
 					var printerAddress = '';
-					_.each(this.stations, station => {
-						if (station.hasReceiptPrinter) {console.log(station);
-							printerAddress = station.printerAddress;
+				_.each(this.printers, printer => {
+					if (printer.hasReceiptPrinter) {console.log(printer);
+						printerAddress = printer.printerAddress;
 						}
 					});
 

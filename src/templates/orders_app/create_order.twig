@@ -621,10 +621,7 @@
 		    		tables: [],
 		    		availableTables: [],
 		    		menuSections: [],
-		    		stations: [],
-		    		waiter: null,
-
-		    		family: 1,
+				printers: [],
 		    		timing: 1,
 
 		    		newOrderEntry: {
@@ -647,10 +644,10 @@
 		    	}
 		    },
     		watch: {
-		        'stations' : {
+		        'printers' : {
 		        	handler: function ()  {
-			        	let isTrue = _.reduce(this.stations, function(result, station) {
-	  						return result && station.printOk;
+			        	let isTrue = _.reduce(this.printers, function(result, printer) {
+	  						return result && printer.printOk;
 						}, true);
 
 						if (isTrue) {
@@ -683,14 +680,14 @@
                         tables {
                         	id, name
                         },
-                        stations {
+                        printers {
                         	id, name, printerAddress, hasReceiptPrinter
                         }
                     }`
                 }).then(response => {
                     this.menuSections = response.data.data.menuSections
                     this.tables = response.data.data.tables
-                    this.stations = response.data.data.stations
+                    this.printers = response.data.data.printers
                 });
                 axios({
                     url: '/admin/graph-ql',
@@ -764,7 +761,7 @@
 			    		return;
 			    	}*/
 
-					_.each(this.stations, station => {
+					_.each(this.printers, printer => {
 						let printer = new epson.ePOSBuilder();
 
 						//var ctx = document.getElementById('canvas-test');
@@ -804,9 +801,9 @@
 						let orderEntriesCount = 0;
 						for (i = 0; i < 7; i++) {
 							_.each(this.orderedEntries(i), orderEntry => {
-								let index = _.findIndex(orderEntry.menuItem.stations, s => s.id == station.id);
+								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id);
 
-								if (index != -1 || station.hasReceiptPrinter) {
+								if (index != -1 || printer.hasReceiptPrinter) {
 									orderEntriesCount++;
 									let quantity = orderEntry.quantity;
 									let name = this.getTranslation(orderEntry.menuItem, 'el').name;
@@ -825,7 +822,7 @@
 									}
 
 									let priceBlock = '';
-									if (station.hasReceiptPrinter) {
+									if (printer.hasReceiptPrinter) {
 										let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
 
 										printer.addText(`${quantity} x ${name} (${priceBlock}) ${weight}\n`);
@@ -859,7 +856,7 @@
 						printer.addFeedLine(10);
 						printer.addCut(printer.CUT_FEED);
 						if (orderEntriesCount > 0) {
-							station.printOk = false;
+							printer.printOk = false;
 							var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  							//Create an ePOS-Print object
  							var epos = new epson.ePOSPrint(address);
@@ -867,14 +864,14 @@
  							epos.onreceive = function (res) {
  								//console.log(res);
  								if (!res.success) {
- 									alert(`A print error occurred. Station ${station.name}`);
+ 									alert(`A print error occurred. Printer ${printer.name}`);
  								} else {
- 									station.printOk = true;
+ 									printer.printOk = true;
  								}
  							}
  							epos.send(printer.toString());
 						} else {
-							station.printOk = true;
+							printer.printOk = true;
 						}
 					});
 		    	},
