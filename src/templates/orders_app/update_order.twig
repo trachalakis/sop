@@ -1362,7 +1362,7 @@
 									}
 
 									let priceBlock = '';
-									if (station.hasReceiptPrinter) {
+									if (printer.hasReceiptPrinter) {
 										let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
 
 										printer.addText(`${quantity} x ${name} (${priceBlock}) ${weight}\n`);
@@ -1401,16 +1401,16 @@
  						//printer.onerror = function (err) { alert(err.status); };
 
 						if (orderEntriesCount > 0) {
-							station.printOk = false;
-							var address = `https://${station.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
+							printer.printOk = false;
+							var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  							//Create an ePOS-Print object
  							var epos = new epson.ePOSPrint(address);
  							//Send the print document
  							epos.onreceive = function (res) {
  								if (!res.success) {
- 									alert(`Αδύνατη η εκτύπωση στον εκτυπωτή ${station.name}`);
+ 									alert(`Αδύνατη η εκτύπωση στον εκτυπωτή ${printer.name}`);
  								} else {
- 									station.printOk = true;
+ 									printer.printOk = true;
  								}
  							}
 
@@ -1418,11 +1418,11 @@
 							epos.onerror  = err => { 
 								this.savingOrder = false;
 								this.printerError = {};
-								this.printerError.errorText = `Αδύνατη η εκτύπωση στον εκτυπωτή ${station.name}`;
+								this.printerError.errorText = `Αδύνατη η εκτύπωση στον εκτυπωτή ${printer.name}`;
 							};
  							epos.send(printer.toString());
 						} else {
-							station.printOk = true;
+							printer.printOk = true;
 						}
 					});
 		    	},
