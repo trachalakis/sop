@@ -33,7 +33,7 @@ final class UpdateMenu
 
             $menu->setIsActive(boolval($requestData['isActive']));
             $menu->setName($requestData['name']);
-            $menu->setMenuType(MenuType::fromString($requestData['menuType']));
+            $menu->setMenuType(MenuType::from($requestData['menuType']));
 
 			$this->menusRepository->persist($menu);
 

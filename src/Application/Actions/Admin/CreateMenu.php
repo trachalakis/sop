@@ -36,7 +36,7 @@ final class CreateMenu
             $menu = new Menu;
             $menu->setIsActive(boolval($requestData['isActive']));
             $menu->setName($requestData['name']);
-            $menu->setMenuType(MenuType::fromString($requestData['menuType']));
+            $menu->setMenuType(MenuType::from($requestData['menuType']));
             $menu->setCreatedAt(new DateTimeImmutable);
 
 			$this->menusRepository->persist($menu);
