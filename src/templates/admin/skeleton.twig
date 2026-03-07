@@ -125,9 +125,15 @@
     </script>
     <script src="/assets/js/popper.min.js"></script>
 	<script>
-		$('.confirm').click(function() {
-    		return confirm("Are you sure?");
-		});
+		$('.confirm').on('click', function (e) {
+            e.preventDefault();
+            href = $(this).attr('href');
+            return bootbox.confirm('Είσαι σίγουρος', function(result) {
+                if (result) {
+                    window.location = href
+                }
+            });
+        });
 	</script>
 {%  endblock %}
 </body>

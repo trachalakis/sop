@@ -19,6 +19,7 @@ use Application\Actions\Admin\CreateUser;
 use Application\Actions\Admin\DeleteOrder;
 use Application\Actions\Admin\DeletePrinter;
 use Application\Actions\Admin\DeleteScan;
+use Application\Actions\Admin\DeleteSupply;
 use Application\Actions\Admin\GraphQl;
 use Application\Actions\Admin\Homepage as AdminHomepage;
 use Application\Actions\Admin\Menu as AdminMenu;
@@ -128,6 +129,7 @@ return function (App $app, $container) {
         $group->get('/supplies', Supplies::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
+        $group->map(['GET', 'POST'], '/supplies/delete', DeleteSupply::class);
 
         $group->get('/recipes', Recipes::class);
         $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);

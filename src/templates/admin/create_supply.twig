@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">New supply</h1>
+    <h1 class="h2">Δημιουργία</h1>
 </div>
 <form method="post" autocomplete="off" action="">
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Name</label>
+		<label class="col-sm-2 col-form-label">Όνομα</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" name="name"/>
 		</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Unit</label>
+		<label class="col-sm-2 col-form-label">Μονάδα</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="unit">
-  				<option value="item">item</option>
+  				<option value="item">τεμάχιο</option>
   				<option value="kg">kg</option>
   				<option value="lt">lt</option>
 			</select>
@@ -45,7 +45,7 @@
 			</select>
     	</div>
 	</div>
-	<div class="row mb-3">
+	{#<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Supplier</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="supplier">
@@ -55,7 +55,7 @@
   				{% endfor %}
 			</select>
     	</div>
-	</div>
+	</div>#}
 	<hr/>
 	<div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">

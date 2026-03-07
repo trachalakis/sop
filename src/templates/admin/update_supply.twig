@@ -4,7 +4,12 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Update supply</h1>
+    <h1 class="h2">Επεξεργασία</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/supplies/delete?id={{supply.getId}}" class="btn btn-danger confirm">
+            Διαγραφή
+        </a>
+    </div>
 </div>
 <form method="post" autocomplete="off" action="">
 	<div class="row mb-3">
