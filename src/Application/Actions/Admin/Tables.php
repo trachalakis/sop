@@ -25,7 +25,7 @@ final class Tables
 
     public function __invoke(Request $request, Response $response)
     {
-        $tables = $this->tablesRepository->findBy([], ['name' => 'asc']);
+        $tables = $this->tablesRepository->findBy([], ['isActive' => 'desc', 'name' => 'asc']);
 
         return $this->twig->render(
             $response, 

@@ -3,36 +3,38 @@
 {% set activeNavLink = 'tables' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Tables</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/tables" class="text-decoration-none">Τραπέζια</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Τραπέζια</h1>
     <div class="btn-toolbar">
-       	<a href="/admin/tables/create" class="btn btn-primary me-2">
-            <i class="fa-solid fa-plus"></i> New table
+       	<a href="/admin/tables/create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
         </a>
     </div>
 </div>
 <div class="table-responsive">
 	<table class="table table-striped">
-    	<thead>
-      		<tr>
-      			<th>Table</th>
-      			<th></th>
-      		</tr>
-    	</thead>
     	<tbody>
     		{% for table in tables %}
     			<tr>
     				<td>
-    					{{table.getName}}
+    					<a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
+                            {{table.getName}}
+                        </a>
     					{% if not table.getIsActive %}
     						<span class="badge rounded-pill text-bg-danger">Inactive</span>
     					{% endif %}
     				</td>
-    				<td class="text-end">
-						<a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
-							Update
-						</a>
-					</td>
+    				
     			</tr>
     		{% endfor %}
     	</tbody>

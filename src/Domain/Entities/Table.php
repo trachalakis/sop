@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Domain\Entities\Order;
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\TablesRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\TablesRepository')]
+#[ORM\Entity(repositoryClass: TablesRepository::class)]
 #[ORM\Table(name: 'tables')]
 class Table
 {

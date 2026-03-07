@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Domain\Entities\Table;
 use Domain\Repositories\TablesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -25,21 +26,29 @@ final class CreateTable
     public function __invoke(Request $request, Response $response)
 	{
 		if ($request->getMethod() == 'POST') {
-            $tableData = $request->getParsedBody();
+            try {
+                $tableData = $request->getParsedBody();
 
-            $table = new Table;
-            $table->setIsActive(boolval($tableData['isActive']));
-            $table->setName($tableData['name']);
+                $table = new Table;
+                $table->setIsActive(boolval($tableData['isActive']));
+                $table->setName($tableData['name']);
 
-            $this->tablesRepository->persist($table);
+                $this->tablesRepository->persist($table);
 
-            if (function_exists('apcu_clear_cache')) {
-                apcu_clear_cache();
+                if (function_exists('apcu_clear_cache')) {
+                    apcu_clear_cache();
+                }
+
+                return $response->withHeader('Location', '/admin/tables')->withStatus(302);
+            } catch (UniqueConstraintViolationException $e) {
+                $exception = $e;
             }
-
-            return $response->withHeader('Location', '/admin/tables')->withStatus(302);
         }
 
-        return $this->twig->render($response, 'admin/create_table.twig');
+        return $this->twig->render(
+            $response, 
+            'admin/create_table.twig',
+            ['exception' => $exception ?? null]
+        );
 	}
 }

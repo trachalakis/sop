@@ -3,17 +3,27 @@
 {% set activeNavLink = 'supplies' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/supplies" class="text-decoration-none">Προμήθειες</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
     <h1 class="h2">Επεξεργασία</h1>
     <div class="btn-toolbar">
        	<a href="/admin/supplies/delete?id={{supply.getId}}" class="btn btn-danger confirm">
-            Διαγραφή
+            <i class="bi bi-trash"></i>
         </a>
     </div>
 </div>
 <form method="post" autocomplete="off" action="">
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Name</label>
+		<label class="col-sm-2 col-form-label">Όνομα</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" name="name" value="{{supply.getName}}"/>
 		</div>
@@ -28,10 +38,10 @@
     	</div>
 	</div>-->
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Unit</label>
+		<label class="col-sm-2 col-form-label">Μονάδα</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="unit">
-  				<option value="item" {{supply.getUnit == 'item' ? 'selected' : ''}}>item</option>
+  				<option value="item" {{supply.getUnit == 'item' ? 'selected' : ''}}>τεμάχια</option>
   				<option value="kg" {{supply.getUnit == 'kg' ? 'selected' : ''}}>kg</option>
   				<option value="lt" {{supply.getUnit == 'lt' ? 'selected' : ''}}>lt</option>
 			</select>
@@ -44,7 +54,7 @@
 		</div>
 	</div>#}
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Supply group</label>
+		<label class="col-sm-2 col-form-label">Ομάδα</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="supplyGroup">
   				{% for supplyGroup in supplyGroups %}
@@ -55,7 +65,7 @@
 			</select>
     	</div>
 	</div>
-	<div class="row mb-3">
+	{#<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Supplier</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="supplier">
@@ -71,7 +81,7 @@
 		<div class="col-sm-10">
 			<textarea class="form-control" rows="3" name="description">{{supply.getDescription}}</textarea>
 		</div>
-	</div>-->
+	</div>-->#}
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Custom fields</label>
 		<div class="col-sm-10">
@@ -97,13 +107,13 @@
 		            </div>
 		            <div class="col-sm-2 mb-2">
 		                <a class="btn btn-sm btn-danger delete-custom-field">
-		                    <i class="bx bx-trash-alt"></i>
+		                    <i class="bi bi-trash"></i>
 		                </a>
 		            </div>
 		        </div>
 		    {% endfor %}
 			<a class="btn btn-sm btn-success add-custom-field">
-				<i class="bx bx-plus"></i>
+				<i class="bi bi-plus-lg"></i>
 			</a>
 		</div>
 	</div>

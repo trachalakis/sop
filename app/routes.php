@@ -18,6 +18,7 @@ use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
 use Application\Actions\Admin\DeleteOrder;
 use Application\Actions\Admin\DeletePrinter;
+use Application\Actions\Admin\DeleteTable;
 use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\DeleteSupply;
 use Application\Actions\Admin\GraphQl;
@@ -94,6 +95,7 @@ return function (App $app, $container) {
         $group->get('/tables', Tables::class);
         $group->map(['GET', 'POST'], '/tables/create', CreateTable::class);
         $group->map(['GET', 'POST'], '/tables/update', UpdateTable::class);
+        $group->get('/tables/delete', DeleteTable::class);
 
         $group->get('/menus', AdminMenus::class);
         $group->map(['GET', 'POST'], '/menus/create', CreateMenu::class);
