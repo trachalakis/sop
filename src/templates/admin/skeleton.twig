@@ -13,6 +13,7 @@
 	<link href="/assets/admin/css/dashboard.css" rel="stylesheet">
 	{% block pageCss %}{% endblock %}
 	<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 </head>
 <body>
 <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -128,9 +129,23 @@
 		$('.confirm').on('click', function (e) {
             e.preventDefault();
             href = $(this).attr('href');
-            return bootbox.confirm('Είσαι σίγουρος', function(result) {
-                if (result) {
-                    window.location = href
+            return bootbox.confirm({
+                title: 'Απαιτείται επιβεβαίωση',
+                message: 'Είσαι σίγουρος;', 
+                buttons: {
+                    confirm: {
+                        label: 'Ναί',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Όχι',
+                        className: 'btn-secondary'
+                    }
+                },
+                callback: function(result) {
+                    if (result) {
+                        window.location = href
+                    }
                 }
             });
         });
