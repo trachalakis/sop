@@ -10,12 +10,14 @@ use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
+use Application\Actions\Admin\CreatePrinter;
 use Application\Actions\Admin\CreateRecipe;
 use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
 use Application\Actions\Admin\DeleteOrder;
+use Application\Actions\Admin\DeletePrinter;
 use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\GraphQl;
 use Application\Actions\Admin\Homepage as AdminHomepage;
@@ -26,6 +28,7 @@ use Application\Actions\Admin\MenuItemStatistics;
 use Application\Actions\Admin\MenuSectionStatistics;
 use Application\Actions\Admin\OpenOrder;
 use Application\Actions\Admin\Predict;
+use Application\Actions\Admin\Printers;
 use Application\Actions\Admin\PrintMenu;
 use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\Report;
@@ -38,6 +41,7 @@ use Application\Actions\Admin\ToggleMenuItem;
 use Application\Actions\Admin\UpdateMenu;
 use Application\Actions\Admin\UpdateMenuItem;
 use Application\Actions\Admin\UpdateMenuSection;
+use Application\Actions\Admin\UpdatePrinter;
 use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateSupply;
@@ -132,6 +136,11 @@ return function (App $app, $container) {
         /*$group->get('/po-strings', PoStrings::class);
         $group->map(['GET', 'POST'], '/po-strings/update', UpdatePoString::class);
         $group->get('/po-strings/delete', DeletePoString::class);*/
+
+        $group->get('/printers', Printers::class);
+        $group->map(['GET', 'POST'], '/printers/create', CreatePrinter::class);
+        $group->map(['GET', 'POST'], '/printers/update', UpdatePrinter::class);
+        $group->get('/printers/delete', DeletePrinter::class);
 
         $group->get('/report', Report::class);
         $group->get('/predict', Predict::class);

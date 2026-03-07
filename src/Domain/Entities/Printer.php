@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Enums\PrinterType;
+use Domain\Repositories\PrintersRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\PrintersRepository')]
+#[ORM\Entity(repositoryClass: PrintersRepository::class)]
 #[ORM\Table(name: 'printers')]
 class Printer
 {
@@ -25,13 +27,10 @@ class Printer
     private string $name;
 
     #[ORM\Column(type: 'string', name: 'printer_address')]
-    private string $printerAddress;
-
-    public function __construct(string $name, string $printerAddress)
-    {
-        $this->setName($name);
-        $this->setPrinterAddress($printerAddress);
-    }
+    private ?string $printerAddress;
+    
+    #[ORM\Column(type: 'string', enumType: PrinterType::class, name: 'printer_type')]
+    private PrinterType $printerType;
 
     public function getId(): int
     {
@@ -53,12 +52,17 @@ class Printer
         return $this->name;
     }
 
+    public function getPrinterType(): string
+    {
+        return $this->printerType->value;
+    }
+
 	public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    public function getPrinterAddress(): string
+    public function getPrinterAddress(): ?string
     {
         return $this->printerAddress;
     }
@@ -73,8 +77,13 @@ class Printer
         $this->isActive = $isActive;
     }
 
-	public function setPrinterAddress(string $printerAddress): void
+	public function setPrinterAddress(?string $printerAddress): void
     {
         $this->printerAddress = $printerAddress;
+    }
+
+    public function setPrinterType(PrinterType $printerType): void
+    {
+        $this->printerType = $printerType;
     }
 }
