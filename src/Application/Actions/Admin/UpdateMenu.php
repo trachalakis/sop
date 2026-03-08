@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Domain\Enums\MenuType;
 use Domain\Repositories\MenusRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -29,19 +30,23 @@ final class UpdateMenu
 		$menu = $this->menusRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 
 		if ($request->getMethod() == 'POST') {
-			$requestData = $request->getParsedBody();
+			try {
+                $requestData = $request->getParsedBody();
 
-            $menu->setIsActive(boolval($requestData['isActive']));
-            $menu->setName($requestData['name']);
-            $menu->setMenuType(MenuType::from($requestData['menuType']));
+                $menu->setIsActive(boolval($requestData['isActive']));
+                $menu->setName($requestData['name']);
+                $menu->setMenuType(MenuType::from($requestData['menuType']));
 
-			$this->menusRepository->persist($menu);
+                $this->menusRepository->persist($menu);
 
-            if (function_exists('apcu_clear_cache')) {
-            	apcu_clear_cache();
+                if (function_exists('apcu_clear_cache')) {
+                    apcu_clear_cache();
+                }
+
+                return $response->withHeader('Location', '/admin/menus')->withStatus(302);
+            } catch (UniqueConstraintViolationException $e) {
+                $exception = $e;
             }
-
-            return $response->withHeader('Location', '/admin/menus')->withStatus(302);
     	}
 
 		return $this->twig->render(
@@ -49,7 +54,8 @@ final class UpdateMenu
             'admin/update_menu.twig', 
             [
                 'menu' => $menu,
-                'menuTypes' => MenuType::cases()
+                'menuTypes' => MenuType::cases(),
+                'exception' => $exception ?? null
             ]
         );
 	}

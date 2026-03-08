@@ -16,6 +16,11 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
     <h1 class="h2">Επεξεργασία</h1>
 </div>
+{% if not (exception is null) %}
+    <div class="alert alert-danger" role="alert">
+        {{exception.getMessage}}
+    </div>
+{% endif %}
 <form method="post" autocomplete="off">
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Ενεργό</label>

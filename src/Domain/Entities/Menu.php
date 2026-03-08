@@ -24,14 +24,14 @@ class Menu
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    #[ORM\Column(type: 'string', enumType: MenuType::class, name: 'menu_type')]
-    private MenuType $menuType;
-
     #[ORM\OneToMany(targetEntity: MenuSection::class, mappedBy: 'menu', cascade: ['persist'])]
     #[ORM\OrderBy(['isActive' => 'DESC', 'position' => 'ASC'])]
     private $menuSections;
 
-    #[ORM\Column(type: 'string', name: 'name')]
+    #[ORM\Column(type: 'string', enumType: MenuType::class, name: 'menu_type')]
+    private MenuType $menuType;
+
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
     public function __construct()
