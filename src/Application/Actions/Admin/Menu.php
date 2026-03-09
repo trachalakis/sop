@@ -37,7 +37,8 @@ final class Menu
             $response,
             'admin/menu.twig',
             [
-                'menu' => $menu
+                'menu' => $menu,
+                'showArchived' => isset($queryParams['showArchived'])
             ]
         );
     }

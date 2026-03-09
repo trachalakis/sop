@@ -1,17 +1,29 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menus' %}
+{% set activeNavLink = menuSection.getMenu.getName %}
 
 {% block content %}
-<!--<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Update {{menuSection.getTranslation('el').getName}}</h1>
-</div>-->
-<ul class="nav nav-tabs mb-4 mt-3">
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menuSection.getMenu.getId}}" class="text-decoration-none">{{menuSection.getMenu.getName}}</a>
+    </li>
+</ol>
+<ul class="nav nav-tabs mb-3 mt-3">
 	<li class="nav-item">
-    	<a class="nav-link active fs-4" href="">{{menuSection.getTranslation('el').getName}}</a>
+    	<a class="nav-link active fs-5" href="">{{menuSection.getTranslation('el').getName}}</a>
   	</li>
   	<li class="nav-item">
-    	<a class="nav-link fs-4" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">Στατιστικά</a>
+    	<a class="nav-link fs-5" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
+            <i class="bi bi-graph-up-arrow"></i> Στατιστικά
+        </a>
   	</li>
 </ul>
 <form method="post" autocomplete="off">
@@ -25,71 +37,19 @@
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Public</label>
+		<label class="col-sm-2 col-form-label">Θέση</label>
 		<div class="col-sm-10">
-			<select class="form-select" name="isPublic">
-  				<option vale="1" {{menuSection.getIsPublic ? 'selected' : ''}}>Yes</option>
-  				<option value="0" {{menuSection.getIsPublic ? '' : 'selected'}}>No</option>
-			</select>
-    	</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Position</label>
-		<div class="col-sm-10">
-			<input type="number" min="1" step="1" class="form-control" name="position" value="{{menuSection.getPosition}}" required/>
+			<input 
+                type="number" 
+                min="1" 
+                step="1" 
+                class="form-control" 
+                name="position" value="{{menuSection.getPosition}}" 
+                required
+            />
 		</div>
 	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Print menu page</label>
-		<div class="col-sm-10">
-			<input
-				type="number"
-				min="0"
-				step="1"
-				class="form-control"
-				name="printMenuPage"
-				value="{{menuSection.getPrintMenuPage}}"
-				required
-			>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Εξτρά</label>
-		<div class="col-sm-10">
-			{% for extra in menuSection.getExtras %}
-				<div class="row extra-entry mb-2">
-		            <div class="col-sm-5">
-		                <input
-		                	type="text"
-		                	class="form-control"
-		                	name="extra[{{loop.index}}][name]"
-		                	value="{{extra.getName}}"
-		                	required
-		                />
-		            </div>
-		            <div class="col-sm-5">
-		                <input
-		                	type="number"
-		                	step="0.5"
-		                	class="form-control"
-		                	name="extra[{{loop.index}}][price]"
-		                	value="{{extra.getPrice}}"
-		                	required
-		                />
-		            </div>
-		            <div class="col-sm-2">
-		                <a class="btn btn-sm btn-danger delete-extra">
-		                    <i class="bx bx-trash"></i>
-		                </a>
-		            </div>
-		        </div>
-		    {% endfor %}
-			<a class="btn btn-sm btn-success add-extra">
-				<i class="bx bx-plus"></i>
-			</a>
-		</div>
-	<h5 class="mb-3 pb-2 border-bottom text-muted">Μεταφράσεις</h5>
-	{% for language in languages %}
+    {% for language in languages %}
 		<div class="row mb-3">
 			<label class="col-sm-2 col-form-label">Όνομα [{{language.getIsoCode}}]</label>
 			<div class="col-sm-10">
@@ -102,6 +62,65 @@
 			</div>
 		</div>
 	{% endfor %}
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Εξτρά</label>
+		<div class="col-sm-10">
+			{% for extra in menuSection.getExtras %}
+				<div class="row mb-2">
+		            <div class="extra-entry input-group">
+                        <input type="text" class="form-control" name="extra[{{loop.index}}][name]" value="{{extra.getName}}" required/>
+                        <span class="input-group-text">€</span>
+                        <input
+		                	type="number"
+		                	step="0.5"
+		                	class="form-control"
+		                	name="extra[{{loop.index}}][price]"
+		                	value="{{extra.getPrice}}"
+		                	required
+		                />
+                        <button class="btn btn-outline-danger delete-extra confirm">
+		                    <i class="bx bx-trash"></i>
+		                </button>
+                    </div>
+		        </div>
+		    {% endfor %}
+			<a class="btn btn-success add-extra">
+				<i class="bx bx-plus"></i>
+			</a>
+		</div>
+    </div>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
+		<div class="col-sm-10">
+			{% for field, value in menuSection.getCustomFields %}
+				<div class="row mb-2">
+		            <div class="customFields-entry input-group">
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][field]"
+		                	value="{{field}}"
+		                	required
+		                />
+		                <span class="input-group-text">/</span>
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][value]"
+                            value="{{value}}"
+                            required
+                        />
+                        <button class="btn btn-outline-danger delete-customFields confirm">
+		                    <i class="bx bx-trash"></i>
+		                </button>
+		            </div>
+		        </div>
+		    {% endfor %}
+			<a class="btn btn-success add-customFields">
+				<i class="bx bx-plus"></i>
+			</a>
+		</div>
+    </div>
 	<hr/>
 	<div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">
@@ -113,46 +132,20 @@
 
 {% block javascript %}
 	{{parent()}}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script id="extra-template" type="text/x-handlebars-template">
-        <div class="row extra-entry mb-2">
-            <div class="col-sm-5">
-                <input
-                	type="text"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][name]"
-                	required
-                />
-            </div>
-            <div class="col-sm-5">
-                <input
-                	type="number"
-                	step="0.5"
-                	value="0"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][price]"
-                	required
-                />
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-danger delete-extra">
-                    <i class="bx bx-trash"></i>
-                </a>
-            </div>
-        </div>
-    </script>
-    <script>
-        $('.add-extra').click(function() {
-            var source   = $('#extra-template').html();
-            var template = Handlebars.compile(source);
-
-            $(this).before(template({
-                index: $('.extra-entry').length + 1
-            }));
-        });
-
-        $('form').on('click', '.delete-extra', function() {
-            $(this).parent().parent().remove();
-        });
-    </script>
+    {{ include (
+        'admin/handlebars.twig', 
+            {blocks: {
+                'extra': [
+                    {element: 'input', inputType: 'text', name: 'name'}, 
+                    {element: 'label', text: '€'}, 
+                    {element: 'input', inputType: 'number', name: 'price'}
+                ],
+                'customFields': [
+                    {element: 'input', inputType: 'text', name: 'field'}, 
+                    {element: 'label', text: '/'}, 
+                    {element: 'input', inputType: 'number', name: 'value'}
+                ],
+            }}
+        ) 
+    }}
 {% endblock %}

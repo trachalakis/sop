@@ -1,43 +1,60 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menus' %}
+{% set menu = menuItem.getMenuSection.getMenu %}
+{% set activeNavLink = menu.getName %}
 
 {% block content %}
-<!--<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{menuItem.getTranslation('el').getName}}</h1>
-    <div class="btn-toolbar">
-	    <a href="/admin/menu-items/clone?id={{menuItem.getId}}" class="btn btn-primary btn-lg me-2"><i class="bx bx-copy"></i></a>
-	</div>
-</div>-->
-<ul class="nav nav-tabs mb-3 mt-3">
-	<li class="nav-item">
-    	<a class="nav-link active fs-4" href="">{{menuItem.getTranslation('el').getName}}</a>
-  	</li>
-  	<li class="nav-item">
-    	<a class="nav-link fs-4" href="/admin/menu-items/statistics?id={{menuItem.getId}}">Στατιστικά</a>
-  	</li>
-</ul>
-<form method="post" autocomplete="off" enctype="multipart/form-data">
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-fill mb-3 mt-3">
+    <ul class="nav nav-tabs flex-grow-1 b-0">
+        <li class="nav-item">
+            <a class="nav-link active fs-5" href="">{{menuItem.getTranslation('el').getName}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fs-5" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
+                <i class="bi bi-graph-up-arrow"></i> Στατιστικά
+            </a>
+        </li>
+    </ul>
+    <div class="border-bottom ">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" >
+                <i class="bi bi-gear"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="/admin/menu-items/toggle-archive?id={{menu.getId}}">
+                        {{menuItem.getIsArchived ? 'Επαναφορά' : 'Αρχειοθέτηση'}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<form method="post" autocomplete="off">
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Archived</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="isArchived">
-  				<option value="1" {{menuItem.getIsArchived ? 'selected' : ''}}>Yes</option>
-  				<option value="0" {{menuItem.getIsArchived ? '' : 'selected'}}>No</option>
-			</select>
-    	</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Active</label>
+		<label class="col-sm-2 col-form-label">Ενεργό</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="isActive">
-  				<option value="1" {{menuItem.getIsActive ? 'selected' : ''}}>Yes</option>
-  				<option value="0" {{menuItem.getIsActive ? '' : 'selected'}}>No</option>
+  				<option value="1" {{menuItem.getIsActive ? 'selected' : ''}}>Ναί</option>
+  				<option value="0" {{menuItem.getIsActive ? '' : 'selected'}}>Όχι</option>
 			</select>
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Menu section</label>
+		<label class="col-sm-2 col-form-label">Κατηγορία</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="menuSection">
   				{% for menuSection in menuSections %}
@@ -50,7 +67,7 @@
 	</div>
 	{% for language in languages %}
 		<div class="row mb-3">
-			<label class="col-sm-2 col-form-label">Name [{{language.getIsoCode}}]</label>
+			<label class="col-sm-2 col-form-label">Όνομα [{{language.getIsoCode}}]</label>
 			<div class="col-sm-10">
 				<input
 					type="text"
@@ -63,32 +80,31 @@
 		</div>
 	{% endfor %}
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Position</label>
+		<label class="col-sm-2 col-form-label">Θέση</label>
 		<div class="col-sm-10">
 			<input type="number" min="1" step="1" class="form-control" name="position" value="{{menuItem.getPosition}}" required/>
 		</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Price</label>
+		<label class="col-sm-2 col-form-label">Τιμή</label>
 		<div class="col-sm-10">
-			<input type="number" min="0" step="0.5" class="form-control" name="price" value="{{menuItem.getPrice}}"/>
+            <div class="input-group">
+                <span class="input-group-text">€</span>
+                <input type="text" class="form-control" type="number" min="0" step="0.5" name="price" value="{{menuItem.getPrice}}">
+                <span class="input-group-text">/</span>
+                <select class="form-select" name="priceUnit">
+                    <option value="item" {{menuItem.getPriceUnit == 'item' ? 'selected' : ''}}>Τεμάχιο</option>
+                    <option value="kg" {{menuItem.getPriceUnit == 'kg' ? 'selected' : ''}}>Kg</option>
+                </select>
+            </div>
 		</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Unit</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="isPricePerKg">
-				<option value="0" {{menuItem.getIsPricePerKg ? '' : 'selected'}}>Item</option>
-				<option value="1" {{menuItem.getIsPricePerKg ? 'selected' : ''}}>Kg</option>
-			</select>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Is drink</label>
+		<label class="col-sm-2 col-form-label">Ποτό</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="isDrink">
-  				<option value="0" {{menuItem.getIsDrink ? '' : 'selected'}}>No</option>
-  				<option value="1" {{menuItem.getIsDrink ? 'selected' : ''}}>Yes</option>
+  				<option value="1" {{menuItem.getIsDrink ? 'selected' : ''}}>Ναί</option>
+  				<option value="0" {{menuItem.getIsDrink ? '' : 'selected'}}>Όχι</option>
 			</select>
     	</div>
 	</div>
@@ -102,7 +118,7 @@
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Printers</label>
+		<label class="col-sm-2 col-form-label">Εκτυπωτές</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="printers[]" multiple>
 				{% for printer in printers %}
@@ -113,65 +129,15 @@
 			</select>
 		</div>
 	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Description</label>
-		<div class="col-sm-10">
-			<textarea class="form-control" rows="3" name="description">
-				{{- menuItem.getDescription -}}
-			</textarea>
-		</div>
-	</div>
-	<div class="row mb-5">
-		<label class="col-sm-2 col-form-label">Custom fields</label>
-		<div class="col-sm-10">
-			{% for field, value in menuItem.getCustomFields %}
-				<div class="row custom-field-entry mb-2">
-		            <div class="col-sm-5">
-		                <input
-		                	type="text"
-		                	class="form-control"
-		                	name="customFields[{{loop.index}}][field]"
-		                	value="{{field}}"
-		                	required
-		                />
-		            </div>
-		            <div class="col-sm-5">
-		                <textarea
-		                	rows="3"
-		                	class="form-control"
-		                	name="customFields[{{loop.index}}][value]"
-		                >
-		                	{{- value -}}
-		                </textarea>
-		            </div>
-		            <div class="col-sm-2">
-		                <a class="btn btn-sm btn-danger delete-custom-field">
-		                    <i class="bx bx-trash"></i>
-		                </a>
-		            </div>
-		        </div>
-		    {% endfor %}
-			<a class="btn btn-sm btn-success add-custom-field">
-				<i class="bx bx-plus"></i>
-			</a>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Extras</label>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Εξτρά</label>
 		<div class="col-sm-10">
 			{% for extra in menuItem.getExtras %}
-				<div class="row extra-entry mb-2">
-		            <div class="col-sm-5">
-		                <input
-		                	type="text"
-		                	class="form-control"
-		                	name="extra[{{loop.index}}][name]"
-		                	value="{{extra.getName}}"
-		                	required
-		                />
-		            </div>
-		            <div class="col-sm-5">
-		                <input
+				<div class="row mb-2">
+		            <div class="extra-entry input-group">
+                        <input type="text" class="form-control" name="extra[{{loop.index}}][name]" value="{{extra.getName}}" required/>
+                        <span class="input-group-text">€</span>
+                        <input
 		                	type="number"
 		                	step="0.5"
 		                	class="form-control"
@@ -179,32 +145,53 @@
 		                	value="{{extra.getPrice}}"
 		                	required
 		                />
-		            </div>
-		            <div class="col-sm-2">
-		                <a class="btn btn-sm btn-danger delete-extra">
+                        <button class="btn btn-outline-danger delete-extra confirm">
 		                    <i class="bx bx-trash"></i>
-		                </a>
-		            </div>
+		                </button>
+                    </div>
 		        </div>
 		    {% endfor %}
-			<a class="btn btn-sm btn-success add-extra">
+			<a class="btn btn-success add-extra">
 				<i class="bx bx-plus"></i>
 			</a>
 		</div>
 	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Public</label>
+	<div class="row mb-5">
+		<label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
 		<div class="col-sm-10">
-			<select class="form-select" name="isPublic">
-  				<option value="1" {{menuItem.getIsPublic ? 'selected' : ''}}>Yes</option>
-  				<option value="0" {{menuItem.getIsPublic ? '' : 'selected'}}>No</option>
-			</select>
-    	</div>
+			{% for field, value in menuItem.getCustomFields %}
+				<div class="row mb-2">
+		            <div class="customFields-entry input-group">
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][field]"
+		                	value="{{field}}"
+		                	required
+		                />
+		                <span class="input-group-text">/</span>
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="customFields[{{loop.index}}][value]"
+                            value="{{value}}"
+                            required
+                        />
+                        <button class="btn btn-outline-danger delete-customFields confirm">
+		                    <i class="bx bx-trash"></i>
+		                </button>
+		            </div>
+		        </div>
+		    {% endfor %}
+			<a class="btn btn-success add-customFields">
+				<i class="bx bx-plus"></i>
+			</a>
+		</div>
 	</div>
 	<hr/>
 	<div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">
-			<button type="submit" class="btn btn-primary">Save</button>
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
 		</div>
 	</div>
 </form>
@@ -212,83 +199,26 @@
 
 {% block javascript %}
 	{{parent()}}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script id="extra-template" type="text/x-handlebars-template">
-        <div class="row extra-entry mb-2">
-            <div class="col-sm-5">
-                <input
-                	type="text"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][name]"
-                	required
-                />
-            </div>
-            <div class="col-sm-5">
-                <input
-                	type="number"
-                	step="0.5"
-                	value="0"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][price]"
-                	required
-                />
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-danger delete-extra">
-                    <i class="bx bx-trash"></i>
-                </a>
-            </div>
-        </div>
-    </script>
-    <script id="custom-field-template" type="text/x-handlebars-template">
-        <div class="row custom-field-entry mb-2">
-            <div class="col-sm-5">
-                <input
-                	type="text"
-                	class="form-control"
-                	name="customFields[{% verbatim %}{{index}}{% endverbatim %}][field]"
-                	required
-                />
-            </div>
-            <div class="col-sm-5">
-                <textarea
-                	rows="3"
-                	class="form-control"
-                	name="customFields[{% verbatim %}{{index}}{% endverbatim %}][value]"
-                ></textarea>
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-danger delete-custom-field">
-                    <i class="bx bx-trash"></i>
-                </a>
-            </div>
-        </div>
-    </script>
+    {{ include (
+        'admin/handlebars.twig', 
+            {blocks: {
+                'extra': [
+                    {element: 'input', inputType: 'text', name: 'name'}, 
+                    {element: 'label', text: '€'}, 
+                    {element: 'input', inputType: 'number', name: 'price'}
+                ],
+                'customFields': [
+                    {element: 'input', inputType: 'text', name: 'field'}, 
+                    {element: 'label', text: '/'}, 
+                    {element: 'input', inputType: 'number', name: 'value'}
+                ],
+            }}
+        ) 
+    }}
     <script>
-        $('.add-extra').click(function() {
-            var source   = $('#extra-template').html();
-            var template = Handlebars.compile(source);
-
-            $(this).before(template({
-                index: $('.extra-entry').length + 1
-            }));
-        });
-
-        $('form').on('click', '.delete-extra', function() {
-            $(this).parent().parent().remove();
-        });
-
-        $('.add-custom-field').click(function() {
-            var source   = $('#custom-field-template').html();
-            var template = Handlebars.compile(source);
-
-            $(this).before(template({
-                index: $('.custom-field-entry').length + 1
-            }));
-        });
-
-        $('form').on('click', '.delete-custom-field', function() {
-            $(this).parent().parent().remove();
-        });
+        $('#archive-switch').change(function () {
+            console.log('lala');
+            $(this).parents('form')[0].submit();
+        })
     </script>
 {% endblock %}

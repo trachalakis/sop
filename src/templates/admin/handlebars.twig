@@ -1,0 +1,65 @@
+<script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+    integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+</script>
+{% for block, fields in blocks %}
+    <script id="{{block}}-template" type="text/x-handlebars-template">
+        <div class="row mb-2">
+            <div class="{{block}}-entry input-group">
+                {% for field in fields %}
+                    {% if field.element == 'input' %}
+                        <input
+                            type="{{field.inputType}}"
+                            class="form-control"
+                            name="{{block}}[{% verbatim %}{{index}}{% endverbatim %}][{{field.name}}]"
+                            required
+                        />
+                    {% endif %}
+                    {% if field.element == 'label' %}
+                        <span class="input-group-text">{{field.text}}</span>
+                    {% endif %}
+                {% endfor %}
+                <button class="btn btn-outline-danger delete-extra confirm">
+                    <i class="bx bx-trash"></i>
+                </button>
+            </div>
+        </div>
+    </script>
+    <script>
+        $('.add-{{block}}').click(function() {
+            var source   = $('#{{block}}-template').html();
+            var template = Handlebars.compile(source);
+
+            $(this).before(template({
+                index: $('.{{block}}-entry').length + 1
+            }));
+        });
+
+        $('form').on('click', '.delete-{{block}}', function(e) {
+            e.preventDefault();
+            let self = $(this);
+
+            bootbox.confirm({
+                title: 'Απαιτείται επιβεβαίωση',
+                message: "Είστε σίγουρος ότι θέλετε να προχωρήσετε;",
+                buttons: {
+                    confirm: {
+                        label: 'Ναί',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Όχι',
+                        className: 'btn-secondary'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        self.parent().parent().remove();
+                    }
+                }
+            });
+        });
+    </script>
+{% endfor %}

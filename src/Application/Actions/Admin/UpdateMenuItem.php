@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Domain\Enums\PriceUnit;
 use Domain\Entities\Extra;
 use Domain\Entities\MenuItemTranslation;
 use Domain\Repositories\LanguagesRepository;
@@ -47,10 +48,10 @@ final class UpdateMenuItem
     	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
         //dd($menuItem->getExtras());
         if ($request->getMethod() == 'POST') {
-    		$postData = $request->getParsedBody();
+    		$requestData = $request->getParsedBody();
 
-            if (isset($postData['availableQuantity'])) {
-                $menuItem->setAvailableQuantity(intval($postData['availableQuantity']));
+            if (isset($requestData['availableQuantity'])) {
+                $menuItem->setAvailableQuantity(intval($requestData['availableQuantity']));
 
                 //TODO, duplicate code
                 $this->menuItemsRepository->persist($menuItem);
@@ -62,30 +63,29 @@ final class UpdateMenuItem
                 return $response->withHeader('Location', '/admin/menu')->withStatus(302);
             }
 
-            $menuItem->setPrice(floatval($postData['price']));
-            $menuItem->setIsPricePerKg(boolval($postData['isPricePerKg']));
+            $menuItem->setPrice(floatval($requestData['price']));
+            $menuItem->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
             
-            $menuItem->setIsActive(boolval($postData['isActive']));
-            $menuItem->setIsArchived(boolval($postData['isArchived']));
+            $menuItem->setIsActive(boolval($requestData['isActive']));
+            $menuItem->setIsArchived(boolval($requestData['isArchived']));
             if ($menuItem->getIsArchived()) {
                 $menuItem->setIsActive(false);
             }
-            $menuItem->setPosition(intval($postData['position']));
-            $menuItem->setIsPublic(boolval($postData['isPublic']));
-            $menuItem->setIsDrink(boolval($postData['isDrink']));
-            $menuItem->setTrackAvailableQuantity(boolval($postData['trackAvailableQuantity']));
+            $menuItem->setPosition(intval($requestData['position']));
+            $menuItem->setIsDrink(boolval($requestData['isDrink']));
+            $menuItem->setTrackAvailableQuantity(boolval($requestData['trackAvailableQuantity']));
 
-            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $postData['menuSection']]);
+            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $requestData['menuSection']]);
             $menuItem->setMenuSection($menuSection);
 
             $menuItem->setPrinters(new ArrayCollection);
-            if (isset($postData['printers'])) {
-                $menuItem->setPrinters($this->printersRepository->findBy(['id' => $postData['printers']]));
+            if (isset($requestData['printers'])) {
+                $menuItem->setPrinters($this->printersRepository->findBy(['id' => $requestData['printers']]));
             }
 
             $extras = new ArrayCollection;
-            if (isset($postData['extra'])) {
-                foreach ($postData['extra'] as $extra) {
+            if (isset($requestData['extra'])) {
+                foreach ($requestData['extra'] as $extra) {
                     $name = trim($extra['name']);
                     if (strlen($name) > 0) {
                         $extra = new Extra(
@@ -105,22 +105,19 @@ final class UpdateMenuItem
             	$menuItemTranslation = new MenuItemTranslation;
             	$menuItemTranslation->setLanguage($language);
             	$menuItemTranslation->setMenuItem($menuItem);
-            	$menuItemTranslation->setName(trim($postData['translations'][$language->getid()]['name']));
+            	$menuItemTranslation->setName(trim($requestData['translations'][$language->getid()]['name']));
 
             	$translations[] = $menuItemTranslation;
             }
             $menuItem->setTranslations($translations);
-
+            
             $customFields = [];
-            if (isset($postData['customFields'])) {
-                foreach ($postData['customFields'] as $customField) {
+            if (isset($requestData['customFields'])) {
+                foreach ($requestData['customFields'] as $customField) {
                 	$customFields[$customField['field']] = $customField['value'];
                 }
             }
             $menuItem->setCustomFields($customFields);
-
-            
-            
             
             $this->menuItemsRepository->persist($menuItem);
 
@@ -130,7 +127,7 @@ final class UpdateMenuItem
 
             return $response->withHeader('Location', '/admin/menu?id=' . $menuItem->getMenuSection()->getMenu()->getId())->withStatus(302);
     	}
-
+        
         $menuSections = $this->menuSectionsRepository->findBy(
             ['menu' => $menuItem->getMenuSection()->getMenu()],
             ['position' => 'asc']

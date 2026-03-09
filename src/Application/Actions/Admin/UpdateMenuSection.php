@@ -37,27 +37,25 @@ final class UpdateMenuSection
     	$menuSection = $this->menuSectionsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 
     	if ($request->getMethod() == 'POST') {
-    		$postData = $request->getParsedBody();
+    		$requestData = $request->getParsedBody();
 
-            $menuSection->setIsActive(boolval($postData['isActive']));
-            $menuSection->setIsPublic(boolval($postData['isPublic']));
-            $menuSection->setPosition(intval($postData['position']));
-            $menuSection->setPrintMenuPage(intval($postData['printMenuPage']));
+            $menuSection->setIsActive(boolval($requestData['isActive']));
+            $menuSection->setPosition(intval($requestData['position']));
 
             $translations = [];
             foreach($languages as $language) {
             	$menuSectionTranslation = new MenuSectionTranslation;
             	$menuSectionTranslation->setLanguage($language);
             	$menuSectionTranslation->setMenuSection($menuSection);
-            	$menuSectionTranslation->setName($postData['translations'][$language->getId()]['name']);
+            	$menuSectionTranslation->setName($requestData['translations'][$language->getId()]['name']);
 
             	$translations[] = $menuSectionTranslation;
             }
             $menuSection->setTranslations($translations);
 
             $extras = new ArrayCollection;
-            if (isset($postData['extra'])) {
-                foreach ($postData['extra'] as $extra) {
+            if (isset($requestData['extra'])) {
+                foreach ($requestData['extra'] as $extra) {
                     $name = trim($extra['name']);
                     if (strlen($name) > 0) {
                         $extra = new Extra(
@@ -72,6 +70,14 @@ final class UpdateMenuSection
             }
             $menuSection->setExtras($extras);
 
+            $customFields = [];
+            if (isset($requestData['customFields'])) {
+                foreach ($requestData['customFields'] as $customField) {
+                    $customFields[$customField['field']] = $customField['value'];
+                }
+            }
+            $menuSection->setCustomFields($customFields);
+            
             $this->menuSectionsRepository->persist($menuSection);
 
             if (function_exists('apcu_clear_cache')) {
@@ -80,8 +86,8 @@ final class UpdateMenuSection
 
             return $response->withHeader('Location', '/admin/menu?id=' . $menuSection->getMenu()->getId())->withStatus(302);
     	}
-
-    	return $this->twig->render(
+    	
+        return $this->twig->render(
             $response,
             'admin/update_menu_section.twig',
             [

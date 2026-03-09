@@ -39,9 +39,6 @@ final class CreateMenuSection
     public function __invoke(Request $request, Response $response)
 	{
 		$languages = $this->languagesRepository->findAll();
-        /*$menus = $this->menusRepository->findBy(
-            [], ['isActive' => 'desc', 'createdAt' => 'desc']
-        );*/
         $menu = $this->menusRepository->findOneBy([
             'id' => $request->getQueryParams()['menu']
         ]);
@@ -66,22 +63,6 @@ final class CreateMenuSection
             	$translations[] = $menuSectionTranslation;
             }
             $menuSection->setTranslations($translations);
-
-            if (isset($postData['extra'])) {
-                foreach ($postData['extra'] as $extra) {
-                    $name = trim($extra['name']);
-                    if (strlen($name) > 0) {
-                        $extra = new Extra(
-                            $name,
-                            floatval($extra['price']),
-                            null,
-                            $menuSection
-                        );
-
-                        $menuSection->addExtra($extra);
-                    }
-                }
-            }
 
             $this->menuSectionsRepository->persist($menuSection);
 

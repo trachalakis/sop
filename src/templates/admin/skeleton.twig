@@ -59,7 +59,11 @@
 								<ul class="nav flex-column">
 									{% for menu in menus|filter(m => m.getIsActive) %}
 										<li class="nav-item">
-											<a class="nav-link" style="padding-left:32px" href="/admin/menu?id={{menu.getId}}">
+											<a 
+                                                class="nav-link {{activeNavLink == menu.getName ? 'active' : ''}}"
+                                                style="padding-left:32px"
+                                                href="/admin/menu?id={{menu.getId}}"
+                                            >
 												{{menu.getName}}
 											</a>
 										</li>
@@ -126,12 +130,12 @@
     </script>
     <script src="/assets/js/popper.min.js"></script>
 	<script>
-		$('.confirm').on('click', function (e) {
+		$('a.confirm').on('click', function (e) {
             e.preventDefault();
             href = $(this).attr('href');
             return bootbox.confirm({
                 title: 'Απαιτείται επιβεβαίωση',
-                message: 'Είσαι σίγουρος;', 
+                message: "Είστε σίγουρος ότι θέλετε να προχωρήσετε;",
                 buttons: {
                     confirm: {
                         label: 'Ναί',
@@ -149,6 +153,9 @@
                 }
             });
         });
+        $('button.confirm').on('click', function() {
+        
+    });
 	</script>
 {%  endblock %}
 </body>

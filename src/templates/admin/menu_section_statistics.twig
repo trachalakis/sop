@@ -1,14 +1,29 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menus' %}
+{% set activeNavLink = menuSection.getMenu.getName %}
 
 {% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menuSection.getMenu.getId}}" class="text-decoration-none">{{menuSection.getMenu.getName}}</a>
+    </li>
+</ol>
 <ul class="nav nav-tabs mb-3 mt-3">
 	<li class="nav-item">
-    	<a class="nav-link fs-4" href="/admin/menu-sections/update?id={{menuSection.getId}}">{{menuSection.getTranslation('el').getName}}</a>
+    	<a class="nav-link fs-5" href="/admin/menu-sections/update?id={{menuSection.getId}}">{{menuSection.getTranslation('el').getName}}</a>
   	</li>
   	<li class="nav-item">
-    	<a class="nav-link active fs-4" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">Στατιστικά</a>
+    	<a class="nav-link active fs-5" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
+            <i class="bi bi-graph-up-arrow"></i> Στατιστικά
+        </a>
   	</li>
 </ul>
 <form method="get" autocomplete="off" action="">

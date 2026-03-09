@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
-use Domain\Entities\Extra;
 use Domain\Entities\MenuItem;
 use Domain\Entities\MenuItemTranslation;
+use Domain\Enums\PriceUnit;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -52,27 +52,24 @@ final class CreateMenuItem
         $menu = $this->menusRepository->findOneBy(['id' => $request->getQueryParams()['menu']]);
 
     	if ($request->getMethod() == 'POST') {
-    		$postData = $request->getParsedBody();
+    		$requestData = $request->getParsedBody();
 
             $menuItem = new MenuItem;
-            $menuItem->setPrice(floatval($postData['price']));
-            $menuItem->setIsPricePerKg(boolval($postData['isPricePerKg']));
-            
-            $menuItem->setIsActive(boolval($postData['isActive']));
+            $menuItem->setPrice(floatval($requestData['price']));
+            $menuItem->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
+            $menuItem->setIsActive(boolval($requestData['isActive']));
             $menuItem->setIsArchived(false);
-            $menuItem->setPosition(intval($postData['position']));
-            $menuItem->setIsPublic(boolval($postData['isPublic']));
-            
-            $menuItem->setIsDrink(boolval($postData['isDrink']));
+            $menuItem->setPosition(intval($requestData['position']));
+            $menuItem->setIsDrink(boolval($requestData['isDrink']));
             $menuItem->setTrackAvailableQuantity(false);
             $menuItem->setAvailableQuantity(60);
-            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $postData['menuSection']]);
+            
+            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $requestData['menuSection']]);
             $menuItem->setMenuSection($menuSection);
 
-
             $menuItem->setPrinters([]);
-            if (isset($postData['printers'])) {
-                $menuItem->setPrinters($this->printersRepository->findBy(['id' => $postData['printers']]));
+            if (isset($requestData['printers'])) {
+                $menuItem->setPrinters($this->printersRepository->findBy(['id' => $requestData['printers']]));
             }
 
             $translations = [];
@@ -80,27 +77,11 @@ final class CreateMenuItem
             	$menuItemTranslation = new MenuItemTranslation;
             	$menuItemTranslation->setLanguage($language);
             	$menuItemTranslation->setMenuItem($menuItem);
-            	$menuItemTranslation->setName(trim($postData['translations'][$language->getid()]['name']));
+            	$menuItemTranslation->setName(trim($requestData['translations'][$language->getid()]['name']));
 
             	$translations[] = $menuItemTranslation;
             }
             $menuItem->setTranslations($translations);
-
-            if (isset($postData['extra'])) {
-                foreach ($postData['extra'] as $extra) {
-                    $name = trim($extra['name']);
-                    if (strlen($name) > 0) {
-                        $extra = new Extra(
-                            $name,
-                            floatval($extra['price']),
-                            $menuItem,
-                            null
-                        );
-
-                        $menuItem->addExtra($extra);
-                    }
-                }
-            }
 
             $this->menuItemsRepository->persist($menuItem);
 
@@ -110,7 +91,6 @@ final class CreateMenuItem
 
             return $response->withHeader('Location', '/admin/menu?id=' . $menu->getId())->withStatus(302);
     	}
-
         
     	$menuSections = $this->menuSectionsRepository->findBy(['menu' => $menu], ['position' => 'asc']);
         $printers = $this->printersRepository->findBy([], ['name' => 'asc']);
@@ -118,6 +98,7 @@ final class CreateMenuItem
             $response,
             'admin/create_menu_item.twig',
             [
+                'menu' => $menu,
                 'menuSections' => $menuSections,
                 'printers' => $printers,
                 'languages' => $languages

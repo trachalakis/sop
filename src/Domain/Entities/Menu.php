@@ -25,7 +25,7 @@ class Menu
     private bool $isActive;
 
     #[ORM\OneToMany(targetEntity: MenuSection::class, mappedBy: 'menu', cascade: ['persist'])]
-    #[ORM\OrderBy(['isActive' => 'DESC', 'position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private $menuSections;
 
     #[ORM\Column(type: 'string', enumType: MenuType::class, name: 'menu_type')]

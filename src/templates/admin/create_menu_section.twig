@@ -1,10 +1,23 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menu' %}
+{% set activeNavLink = menu.getName %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Νέα ενότητα</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Νέα κατηγορία</h1>
 </div>
 <form method="post" autocomplete="off">
 	<input type="hidden" name="menu" value="{{menu.getId}}"/>
@@ -17,41 +30,17 @@
 			</select>
     	</div>
 	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Δημόσιο</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="isPublic">
-  				<option value="1">Ναί</option>
-  				<option value="0" selected>Όχι</option>
-			</select>
-    	</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">θέση</label>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Θέση</label>
 		<div class="col-sm-10">
 			<input type="number" min="1" step="1" class="form-control" name="position" required>
 		</div>
 	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Print menu page</label>
-		<div class="col-sm-10">
-			<input type="number" min="0" step="1" class="form-control" name="printMenuPage" value="0" required>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Εξτρά</label>
-		<div class="col-sm-10">
-			<a class="btn btn-sm btn-success add-extra">
-				<i class="bx bx-plus"></i>
-			</a>
-		</div>
-	</div>
-	<h5 class="mb-3 pb-2 border-bottom text-muted">Μεταφράσεις</h5>
-	{% for language in languages %}
+    {% for language in languages %}
 		<div class="row mb-3">
 			<label class="col-sm-2 col-form-label">Όνομα [{{language.getIsoCode}}]</label>
 			<div class="col-sm-10">
-				<input type="text" class="form-control" name="translations[{{language.getId}}][name]">
+				<input type="text" class="form-control" name="translations[{{language.getId}}][name]" required>
 			</div>
 		</div>
 	{% endfor %}
@@ -62,50 +51,4 @@
 		</div>
 	</div>
 </form>
-{% endblock %}
-
-{% block javascript %}
-	{{parent()}}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script id="extra-template" type="text/x-handlebars-template">
-        <div class="row extra-entry mb-2">
-            <div class="col-sm-5">
-                <input
-                	type="text"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][name]"
-                	required
-                />
-            </div>
-            <div class="col-sm-5">
-                <input
-                	type="number"
-                	step="0.5"
-                	value="0"
-                	class="form-control"
-                	name="extra[{% verbatim %}{{index}}{% endverbatim %}][price]"
-                	required
-                />
-            </div>
-            <div class="col-sm-2">
-                <a class="btn btn-sm btn-danger delete-extra">
-                    <i class="bx bx-trash"></i>
-                </a>
-            </div>
-        </div>
-    </script>
-    <script>
-        $('.add-extra').click(function() {
-            var source   = $('#extra-template').html();
-            var template = Handlebars.compile(source);
-
-            $(this).before(template({
-                index: $('.extra-entry').length + 1
-            }));
-        });
-
-        $('form').on('click', '.delete-extra', function() {
-            $(this).parent().parent().remove();
-        });
-    </script>
 {% endblock %}

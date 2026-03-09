@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Application\Actions\Homepage;
 use Application\Actions\Login;
 use Application\Actions\Logout;
+use Application\Actions\Admin\ToggleArchive;
 use Application\Actions\Admin\CloneMenu;
 use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\CloneMenuItem;
@@ -110,6 +111,7 @@ return function (App $app, $container) {
         
         $group->map(['GET', 'POST'], '/menu-items/create', CreateMenuItem::class);
         $group->map(['GET', 'POST'], '/menu-items/update', UpdateMenuItem::class);
+        $group->get('/menu-items/toggle-archive', ToggleArchive::class);
         $group->map(['GET', 'POST'], '/menu-items/recipe', MenuItemRecipe::class);
         $group->get('/menu-items/statistics', MenuItemStatistics::class);
         $group->get('/menu-items/toggle', ToggleMenuItem::class);

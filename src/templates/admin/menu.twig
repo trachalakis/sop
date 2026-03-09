@@ -1,6 +1,6 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menus' %}
+{% set activeNavLink = menu.getName %}
 
 {% block pageCss %}
 	<style>
@@ -11,27 +11,69 @@
 {% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>
 		{{menu.getName}}
 		{% if not menu.getIsActive %}
 			<span class="badge rounded-pill text-bg-danger">Ανενεργό</span>
 		{% endif %}
 	</h1>
     <div class="btn-toolbar">
-       	<a href="/admin/menu-sections/create?menu={{menu.getId}}" class="btn btn-primary me-2">
-            New section
-        </a>
-        <a href="/admin/menu-items/create?menu={{menu.getId}}" class="btn btn-primary">
-            New item
-        </a>
+       	<div class="btn-group me-2">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" >
+                <i class="bi bi-plus-lg"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="/admin/menu-items/create?menu={{menu.getId}}">
+                        Νέο είδος
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/admin/menu-sections/create?menu={{menu.getId}}">
+                        Νέα κατηγορία
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" >
+                <i class="bi bi-gear"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    {% if showArchived %}
+                        <a class="dropdown-item" href="/admin/menu?id={{menu.getId}}">
+                            Απόκρυψη αρχειοθετημένων
+                        </a>
+                    {% else %}
+                        <a class="dropdown-item" href="/admin/menu?id={{menu.getId}}&showArchived">
+                            Εμφάνιση αρχειοθετημένων
+                        </a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 <div class="row">
 	<div class="col-8">
 		<ul class="list-group menu-sections-list">
 		  	{% for menuSection in menu.getMenuSections %}
-		  		<li class="list-group-item border border-0" id="menu-section-{{menuSection.getId}}">
+		  		<li class="list-group-item border border-0 ps-0" id="menu-section-{{menuSection.getId}}">
 		  			<div class="d-flex justify-content-between align-items-start border-bottom w-100 menu-section" data-id="{{menuSection.getId}}">
 		  				<div class="text">
 		  					<a class="text-decoration-none fs-4" href="/admin/menu-sections/update?id={{menuSection.getId}}">
@@ -50,54 +92,53 @@
 		   						<span class="badge rounded-pill text-bg-danger">Inactive</span>
 		   					{% endif %}
 		  				</div>
-		  				<!--<div>
-			  				<a class="text-decoration-none" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
-								Statistics
-							</a> |
-			  				<a class="text-decoration-none" href="/admin/menu-sections/update?id={{menuSection.getId}}">
-								Update
-							</a>
-						</div>-->
 		  			</div>
 			  		<ul class="list-group list-group-flush menu-items-list">
-				  		{% for menuItem in menuSection.getMenuItems|filter(menuItem => not menuItem.getIsArchived) %}
-				  			<li class="list-group-item border-bottom d-flex justify-content-between align-items-start pe-0">
-				  				<span class="menu-item" data-id="{{menuItem.getId}}">
-				  					<div class="form-check form-check-inline form-switch">
-		  								<input class="form-check-input toggle-switch" type="checkbox" id="menu-item-{{menuItem.getId}}" data-id="{{menuItem.getId}}" {{menuItem.getIsActive ? 'checked' : ''}}>
-		  								<label class="form-check-label" for="menu-item-{{menuItem.getId}}"></label>
-									</div>
-				  					<a class="text-decoration-none" href="/admin/menu-items/update?id={{menuItem.getId}}">
-				  						{{menuItem.getTranslation('el').getName}}
-				  					</a>
-				  					{% if menuItem.getPrice > 0 %} / &euro;{{menuItem.getPrice}} {% endif %}
-				  					{#{% if not menuItem.getIsActive %}
-			    						<span class="badge rounded-pill text-bg-danger">Inactive</span>
-			    					{% endif %}#}
-			    					{% if menuItem.getPrinters|length == 0 %}
-			    						<i class="fa-solid fa-circle-exclamation"></i>
-			    					{% endif %}
-				  				</span>
-				  				<span>
-					  				<!-- <a class="text-decoration-none" href="/admin/menu-items/recipe?id={{menuItem.getId}}">
-										Recipe
-									</a> | -->
-									{% if menuItem.getTrackAvailableQuantity %}
-										<form action="/admin/menu-items/update?id={{menuItem.getId}}" method="post" style="display:inline-block">
-											<select class="form-select form-select-sm" name="availableQuantity" >
-								  				{% for i in 0..60 %}
-								  					<option value="{{i}}" {{i == menuItem.getAvailableQuantity ? 'selected' : ''}}>{{i}}</option>
-								  				{% endfor %}
-											</select>
-										</form>
-									{% endif %}
-									<!--
-										<a class="text-decoration-none" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
-											Statistics
-										</a> |
-									-->
-								</span>
-				  			</li>
+				  		{% for menuItem in menuSection.getMenuItems %}
+                            {% if not menuItem.getIsArchived or showArchived %}
+                                <li class="list-group-item border-bottom d-flex justify-content-between align-items-start pe-0">
+                                    <span 
+                                        class="menu-item" 
+                                        data-id="{{menuItem.getId}}"
+                                    >
+                                        <div class="form-check form-check-inline form-switch">
+                                            <input 
+                                                class="form-check-input toggle-switch" 
+                                                type="checkbox" id="menu-item-{{menuItem.getId}}" 
+                                                data-id="{{menuItem.getId}}" 
+                                                {{menuItem.getIsActive ? 'checked' : ''}}
+                                                {{menuItem.getIsArchived ? 'disabled' : ''}}
+                                            >
+                                            <label class="form-check-label" for="menu-item-{{menuItem.getId}}"></label>
+                                        </div>
+                                        <a 
+                                            class="text-decoration-none {{menuItem.getIsArchived ? 'text-body-tertiary' : ''}}" 
+                                            href="/admin/menu-items/update?id={{menuItem.getId}}"
+                                        >
+                                            {{menuItem.getTranslation('el').getName}}
+                                        </a>
+                                        {% if menuItem.getPrice > 0 %}
+                                            <span class="{{menuItem.getIsArchived ? 'text-body-tertiary' : ''}}">
+                                                / &euro;{{menuItem.getPrice}} 
+                                            </span>
+                                        {% endif %}
+                                        {% if menuItem.getPrinters|length == 0 %}
+                                            <i class="fa-solid fa-circle-exclamation"></i>
+                                        {% endif %}
+                                    </span>
+                                    <span>
+                                        {% if menuItem.getTrackAvailableQuantity %}
+                                            <form action="/admin/menu-items/update?id={{menuItem.getId}}" method="post" style="display:inline-block">
+                                                <select class="form-select form-select-sm" name="availableQuantity" >
+                                                    {% for i in 0..60 %}
+                                                        <option value="{{i}}" {{i == menuItem.getAvailableQuantity ? 'selected' : ''}}>{{i}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </form>
+                                        {% endif %}
+                                    </span>
+                                </li>
+                            {% endif %}
 				  		{% endfor %}
 				  	</ul>
 		  		</li>
@@ -114,42 +155,6 @@
 		</div>
 	</div>
 </div>
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Archived menu items</h1>
-</div>
-<ul class="list-group">
-  	{% for menuSection in  menu.menuSections %}
-  		<li class="list-group-item border border-0">
-  			<div class="d-flex justify-content-between align-items-start border-bottom w-100 menu-section" data-id="{{menuSection.getId}}">
-  				<div class="text">
-  					<span class="fs-4">{{menuSection.getTranslation('el').getName}}</span>
-  				</div>
-  				<div></div>
-  			</div>
-	  		<ul class="list-group list-group-flush menu-items-list">
-		  		{% for menuItem in menuSection.getMenuItems|filter(menuItem => menuItem.getIsArchived) %}
-		  			<li class="list-group-item border-bottom d-flex justify-content-between align-items-start pe-0">
-		  				<span class="menu-item" data-id="{{menuItem.getId}}">
-		  					<div class="form-check form-check-inline form-switch">
-  								<input class="form-check-input toggle-switch" type="checkbox" id="menu-item-{{menuItem.getId}}" data-id="{{menuItem.getId}}" {{menuItem.getIsActive ? 'checked' : ''}}>
-  								<label class="form-check-label" for="menu-item-{{menuItem.getId}}"></label>
-							</div>
-		  					{{menuItem.getTranslation('el').getName}} / &euro;{{menuItem.getPrice}}
-		  				</span>
-		  				<span>
-							<a class="text-decoration-none" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
-								Statistics
-							</a> |
-			  				<a class="text-decoration-none" href="/admin/menu-items/update?id={{menuItem.getId}}">
-								Update
-							</a>
-						</span>
-		  			</li>
-		  		{% endfor %}
-		  	</ul>
-  		</li>
-  	{% endfor %}
-</ul>
 {% endblock %}
 
 {% block javascript %}
@@ -158,9 +163,6 @@
 	<script>
 		switches = document.querySelectorAll('.toggle-switch');
 		switches.forEach(function (s) {
-			//id = ;
-			//console.log(id);
-			//s.addEventListener('click', event => {window.location.href = '/admin/menu-items/toggle?id=' + s.dataset.id});
 			s.addEventListener('click', function (evt) {
 				fetch(
 					'/admin/menu-items/toggle?id=' + s.dataset.id

@@ -6,11 +6,12 @@ namespace Domain\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Domain\Entities\Extra;
 use Domain\Entities\Menu;
-use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\MenuSectionsRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuSectionsRepository')]
+#[ORM\Entity(repositoryClass: MenuSectionsRepository::class)]
 #[ORM\Table(name: 'menu_sections')]
 class MenuSection
 {
@@ -18,6 +19,9 @@ class MenuSection
     #[ORM\Column(type: 'integer')]
     #[ORM\GeneratedValue]
     private int $id;
+
+    #[ORM\Column(type: 'json', name: 'custom_fields')]
+    private $customFields;
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
@@ -67,6 +71,20 @@ class MenuSection
     	return $this->getMenuItems()->filter(function ($menuItem) {
     		return $menuItem->getIsActive();
     	});
+    }
+
+    public function getCustomField(string $field)
+    {
+    	if (isset($this->customFields[$field])) {
+    		return $this->customFields[$field];
+    	} else {
+    		return null;
+    	}
+    }
+
+    public function getCustomFields()
+    {
+    	return $this->customFields;
     }
 
     public function getIsActive(): bool
@@ -130,6 +148,16 @@ class MenuSection
     public function getTranslations()
     {
     	return $this->translations;
+    }
+    
+    public function setCustomField($field, $value): void
+    {
+        $this->customFields[$field] = $value;
+    }
+    
+    public function setCustomFields($customFields): void
+    {
+    	$this->customFields = $customFields;
     }
 
     public function setIsActive(bool $isActive): void

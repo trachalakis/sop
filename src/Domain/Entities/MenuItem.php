@@ -6,12 +6,14 @@ namespace Domain\Entities;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Domain\Entities\Extra;
 use Domain\Entities\MenuSection;
 use Domain\Entities\Printer;
-use Doctrine\ORM\Mapping as ORM;
+use Domain\Enums\PriceUnit;
+use Domain\Repositories\MenuItemsRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenuItemsRepository')]
+#[ORM\Entity(repositoryClass: MenuItemsRepository::class)]
 #[ORM\Table(name: 'menu_items')]
 class MenuItem
 {
@@ -23,7 +25,7 @@ class MenuItem
     #[ORM\Column(type: 'integer', name: 'available_quantity')]
     private ?int $availableQuantity;
 
-    #[ORM\Column(type: 'simple_array', name: 'custom_fields')]
+    #[ORM\Column(type: 'json', name: 'custom_fields')]
     private ?array $customFields;
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
@@ -35,11 +37,8 @@ class MenuItem
     #[ORM\Column(type: 'boolean', name: 'is_drink')]
     private bool $isDrink;
 
-    #[ORM\Column(type: 'boolean', name: 'is_price_per_kg')]
-    private bool $isPricePerKg;
-
-    #[ORM\Column(type: 'boolean', name: 'is_public')]
-    private bool $isPublic;
+    #[ORM\Column(type: 'string', enumType: PriceUnit::class, name: 'price_unit')]
+    private PriceUnit $priceUnit;
 
     #[ORM\ManyToOne(targetEntity: MenuSection::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id')]
@@ -134,16 +133,6 @@ class MenuItem
     	return $this->isDrink;
     }
 
-    public function getIsPricePerKg(): bool
-    {
-    	return $this->isPricePerKg;
-    }
-
-    public function getIsPublic(): bool
-    {
-        return $this->isPublic;
-    }
-
     public function getMenuPosition(): int
     {
         return ($this->getMenuSection()->getPosition() * 100) + $this->getPosition();
@@ -162,6 +151,11 @@ class MenuItem
     public function getPrice(): float
     {
         return $this->price;
+    }
+
+    public function getPriceUnit(): string
+    {
+        return $this->priceUnit->value;
     }
 
     public function getPrinters()
@@ -220,16 +214,6 @@ class MenuItem
     	$this->isDrink = $isDrink;
     }
 
-    public function setIsPricePerKg(bool $isPricePerKg): void
-    {
-   		$this->isPricePerKg = $isPricePerKg;
-    }
-
-    public function setIsPublic(bool $isPublic): void
-    {
-        $this->isPublic = $isPublic;
-    }
-
     public function setMenuSection(MenuSection $menuSection): void
     {
         $this->menuSection = $menuSection;
@@ -243,6 +227,11 @@ class MenuItem
     public function setPrice(float $price): void
     {
         $this->price = $price;
+    }
+
+    public function setPriceUnit(PriceUnit $priceUnit): void
+    {
+        $this->priceUnit = $priceUnit;
     }
 
     public function setPrinters($printers): void
