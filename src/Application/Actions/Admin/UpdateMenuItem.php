@@ -46,7 +46,7 @@ final class UpdateMenuItem
     {
     	$languages = $this->languagesRepository->findAll();
     	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
-        //dd($menuItem->getExtras());
+        
         if ($request->getMethod() == 'POST') {
     		$requestData = $request->getParsedBody();
 
@@ -67,10 +67,6 @@ final class UpdateMenuItem
             $menuItem->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
             
             $menuItem->setIsActive(boolval($requestData['isActive']));
-            $menuItem->setIsArchived(boolval($requestData['isArchived']));
-            if ($menuItem->getIsArchived()) {
-                $menuItem->setIsActive(false);
-            }
             $menuItem->setPosition(intval($requestData['position']));
             $menuItem->setIsDrink(boolval($requestData['isDrink']));
             $menuItem->setTrackAvailableQuantity(boolval($requestData['trackAvailableQuantity']));
@@ -111,13 +107,12 @@ final class UpdateMenuItem
             }
             $menuItem->setTranslations($translations);
             
-            $customFields = [];
+            $menuItem->setCustomFields([]);
             if (isset($requestData['customFields'])) {
                 foreach ($requestData['customFields'] as $customField) {
-                	$customFields[$customField['field']] = $customField['value'];
+                    $menuItem->setCustomField($customField['field'], $customField['value']);
                 }
             }
-            $menuItem->setCustomFields($customFields);
             
             $this->menuItemsRepository->persist($menuItem);
 

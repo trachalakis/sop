@@ -189,6 +189,11 @@ class MenuItem
         $this->availableQuantity = $availableQuantity;
     }
 
+    public function setCustomField($field, $value): void
+    {
+        $this->customFields[$field] = $value;
+    }
+
     public function setCustomFields(?array $customFields): void
     {
     	$this->customFields = $customFields;

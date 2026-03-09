@@ -70,13 +70,12 @@ final class UpdateMenuSection
             }
             $menuSection->setExtras($extras);
 
-            $customFields = [];
+            $menuSection->setCustomFields([]);
             if (isset($requestData['customFields'])) {
                 foreach ($requestData['customFields'] as $customField) {
-                    $customFields[$customField['field']] = $customField['value'];
+                    $menuSection->setCustomField($customField['field'], $customField['value']);
                 }
             }
-            $menuSection->setCustomFields($customFields);
             
             $this->menuSectionsRepository->persist($menuSection);
 
