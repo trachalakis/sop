@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Domain\Entities\Supplier;
 use Domain\Entities\SupplyGroup;
+use Domain\Repositories\SuppliesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\SuppliesRepository')]
+#[ORM\Entity(repositoryClass: SuppliesRepository::class)]
 #[ORM\Table(name: 'supplies')]
 class Supply
 {
@@ -17,81 +17,33 @@ class Supply
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'simple_array', name: 'custom_fields')]
-    private ?array $customFields;
-
-    #[ORM\Column(type: 'text', name: 'description')]
-    private ?string $description;
-
-    #[ORM\Column(type: 'boolean', name: 'is_active')]
-    private bool $isActive;
+    #[ORM\Column(type: 'json', name: 'custom_fields')]
+    private $customFields;
 
     #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
-    #[ORM\OneToMany(targetEntity: InvoiceEntry::class, mappedBy: 'supply')]
-    private $invoiceEntries;
-
-    #[ORM\Column(type: 'float', name: 'price')]
-    private float $price;
-
-    #[ORM\ManyToOne(targetEntity: Supplier::class, cascade: ['persist'])]
-    #[ORM\JoinColumn(name: 'supplier_id', referencedColumnName: 'id')]
-    private ?Supplier $supplier;
-
     #[ORM\ManyToOne(targetEntity: SupplyGroup::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'supply_group_id', referencedColumnName: 'id')]
     private SupplyGroup $supplyGroup;
-
-    #[ORM\Column(type: 'string', name: 'unit')]
-    private string $unit;
-
-    #[ORM\Column(type: 'float', name: 'vat_percentage')]
-    private float $vatPercentage;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCustomField(string $field): ?string
+    public function getCustomField(string $field)
     {
     	if (isset($this->customFields[$field])) {
     		return $this->customFields[$field];
+    	} else {
+    		return null;
     	}
-
-    	return null;
     }
 
-    public function getCustomFields(): ?array
+    public function getCustomFields()
     {
-        return $this->customFields;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function getInvoiceEntries()
-    {
-        return $this->invoiceEntries;
-    }
-
-    public function getIsActive(): bool
-    {
-    	return $this->isActive;
-    }
-
-    public function getMinimumPrice(): ?float
-    {
-        $minimumPrice = PHP_FLOAT_MAX;
-
-        foreach($this->invoiceEntries as $invoiceEntry) {
-            $minimumPrice = min($minimumPrice, $invoiceEntry->getPrice() / $invoiceEntry->getQuantity());
-        }
-
-        return $minimumPrice == PHP_FLOAT_MAX ? null : round($minimumPrice, 2);
+    	return $this->customFields;
     }
 
     public function getName(): string
@@ -99,44 +51,19 @@ class Supply
         return $this->name;
     }
 
-    public function getPrice(): float
-    {
-    	return $this->price;
-    }
-
-    public function getSupplier(): ?Supplier
-    {
-    	return $this->supplier;
-    }
-
     public function getSupplyGroup(): SupplyGroup
     {
     	return $this->supplyGroup;
     }
 
-    public function getUnit(): string
+    public function setCustomField($field, $value): void
     {
-        return $this->unit;
+        $this->customFields[$field] = $value;
     }
-
-    public function getVatPercentage(): float
-    {
-        return $this->vatPercentage;
-    }
-
-    public function setCustomFields(array $customFields): void
+    
+    public function setCustomFields($customFields): void
     {
     	$this->customFields = $customFields;
-    }
-
-    public function setDescription(?string $description): void
-    {
-        $this->description = $description;
-    }
-
-    public function setIsActive(bool $isActive): void
-    {
-    	$this->isActive = $isActive;
     }
 
     public function setName(string $name): void
@@ -144,28 +71,8 @@ class Supply
         $this->name = $name;
     }
 
-    public function setPrice(float $price): void
-    {
-    	$this->price = $price;
-    }
-
-    public function setSupplier(?Supplier $supplier): void
-    {
-    	$this->supplier = $supplier;
-    }
-
     public function setSupplyGroup(SupplyGroup $supplyGroup): void
     {
     	$this->supplyGroup = $supplyGroup;
-    }
-
-    public function setUnit(string $unit): void
-    {
-        $this->unit = $unit;
-    }
-
-    public function setVatPercentage(float $vatPercentage): void
-    {
-        $this->vatPercentage = $vatPercentage;
     }
 }

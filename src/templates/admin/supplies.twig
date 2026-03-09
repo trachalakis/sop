@@ -33,16 +33,11 @@
     <h2 >{{supplyGroup.getName}}</h2>
 	<table class="table table-responsive">
 		<tbody>
-			{% for supply in supplyGroup.getSupplies|filter(s => s.isActive) %}
+			{% for supply in supplyGroup.getSupplies %}
 				<tr>
       			    <td class="ps-4">
 						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
 					</td>
-                    {#<td class="text-end">
-                        <a class="text-decoration-none text-danger confirm" href="/admin/supplies/delete?id={{supply.getId}}">
-                            Διαγραφή
-                        </a>
-                    </td>#}
     			</tr>
 			{% endfor %}
 		</tbody>

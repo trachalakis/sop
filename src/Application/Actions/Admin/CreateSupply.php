@@ -37,19 +37,13 @@ final class CreateSupply
 
 			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
 			$supply = new Supply;
-			$supply->setIsActive(true);
-			//$supply->setDescription($requestData['description']);
 			$supply->setName($requestData['name']);
-			$supply->setUnit($requestData['unit']);
-			//$supply->setVatPercentage(floatval($requestData['vatPercentage']));
-			$supply->setSupplier(null);
 			$supply->setSupplyGroup($supplyGroup);
 			$this->suppliesRepository->persist($supply);
 
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);
 		}
 
-		//$suppliers = $this->suppliersRepository->findBy([], ['name' => 'asc']);
 		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
 		return $this->twig->render(
 			$response,

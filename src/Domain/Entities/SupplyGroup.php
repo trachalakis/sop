@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Domain\Entities\Supply;
+use Domain\Repositories\SupplyGroupsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\SupplyGroupsRepository')]
+#[ORM\Entity(repositoryClass: SupplyGroupsRepository::class)]
 #[ORM\Table(name: 'supply_groups')]
 class SupplyGroup
 {
@@ -19,14 +20,9 @@ class SupplyGroup
     #[ORM\Column(type: 'string', unique: true)]
     private string $name;
 
-    #[ORM\Column(type: 'integer', name: 'position')]
-    private int $position;
-
-    #[ORM\Column(type: 'boolean', name: 'show_in_shopping_list')]
-    private string $showInShoppingList;
 
     #[ORM\OneToMany(targetEntity: Supply::class, mappedBy: 'supplyGroup', cascade: ['persist'])]
-    #[ORM\OrderBy(['isActive' => 'DESC', 'name' => 'ASC'])]
+    #[ORM\OrderBy(['name' => 'ASC'])]
     private $supplies;
 
     public function getId()
@@ -39,11 +35,6 @@ class SupplyGroup
         return $this->name;
     }
 
-    public function getShowInShoppingList()
-    {
-        return $this->showInShoppingList;
-    }
-
     public function getSupplies()
     {
     	return $this->supplies;
@@ -52,10 +43,5 @@ class SupplyGroup
     public function setName(string $name): void
     {
         $this->name = $name;
-    }
-
-    public function setShowInShoppingList(bool $showInShoppingList): void
-    {
-        $this->showInShoppingList = $showInShoppingList;
     }
 }

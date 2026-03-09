@@ -35,24 +35,16 @@ final class UpdateSupply
 
 		if ($request->getMethod() == 'POST') {
 			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
-			//$supplier = $this->suppliersRepository->findOneBy(['id' => $requestData['supplier']]);
-
-			//$supply->setDescription($requestData['description']);
-			//$supply->setIsActive(boolval($requestData['isActive']));
 			$supply->setName($requestData['name']);
-			//$supply->setSupplier($supplier);
 			$supply->setSupplyGroup($supplyGroup);
-			$supply->setUnit($requestData['unit']);
-			//$supply->setVatPercentage(floatval($requestData['vatPercentage']));
 
-			$customFields = [];
+			$supply->setCustomFields([]);
             if (isset($requestData['customFields'])) {
                 foreach ($requestData['customFields'] as $customField) {
-                	$customFields[$customField['field']] = $customField['value'];
+                    $supply->setCustomField($customField['field'], $customField['value']);
                 }
             }
-            $supply->setCustomFields($customFields);
-
+            
 			$this->suppliesRepository->persist($supply);
 
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);

@@ -16,16 +16,32 @@
         <a href="/admin/menu?id={{menuSection.getMenu.getId}}" class="text-decoration-none">{{menuSection.getMenu.getName}}</a>
     </li>
 </ol>
-<ul class="nav nav-tabs mb-3 mt-3">
-	<li class="nav-item">
-    	<a class="nav-link active fs-5" href="">{{menuSection.getTranslation('el').getName}}</a>
-  	</li>
-  	<li class="nav-item">
-    	<a class="nav-link fs-5" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
-            <i class="bi bi-graph-up-arrow"></i> Στατιστικά
-        </a>
-  	</li>
-</ul>
+<div class="d-flex justify-content-between flex-fill mb-3 mt-3">
+    <ul class="nav nav-tabs flex-grow-1 b-0">
+        <li class="nav-item">
+            <a class="nav-link active fs-5" href="">{{menuSection.getTranslation('el').getName}}</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fs-5" href="/admin/menu-sections/statistics?id={{menuSection.getId}}">
+                <i class="bi bi-graph-up-arrow"></i> Στατιστικά
+            </a>
+        </li>
+    </ul>
+    <div class="border-bottom ">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" >
+                <i class="bi bi-gear"></i>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <a class="dropdown-item" href="">
+                        <i class="bi bi-copy"></i> Αντιγραφή
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 <form method="post" autocomplete="off">
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Ενεργό</label>
