@@ -16,54 +16,74 @@
 {%  endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{user.getFullName}} / {{startOfMonth.format('M Y')}}</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/users" class="text-decoration-none">Χρήστες</a>
+    </li>
+</ol>
+<ul class="nav nav-tabs mb-4">
+	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/users/update?id={{user.getId}}">{{user.getFullName}}</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-5 active" href="/admin/scans/user?id={{user.getId}}">Ωράρια</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/users/orders?id={{user.getId}}">Αυτοπαραδόσεις</a>
+  	</li>
+</ul>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>{{startOfMonth.format('M Y')}}</h1>
     <div class="btn-toolbar">
 	    <a class="btn btn-primary me-2" href="/admin/scans/user?id={{user.getId}}&date={{prev.format('Y-m-d')}}">
-	        <i class="bx bxs-chevron-left"></i>
+	        <i class="bi bi-chevron-left"></i>
 	    </a>
 	    <a class="btn btn-primary me-4" href="/admin/scans/user?id={{user.getId}}&date={{next.format('Y-m-d')}}">
-	        <i class="bx bxs-chevron-right"></i>
+	        <i class="bi bi-chevron-right"></i>
 	    </a>
-	    <a href="/admin/scans/create" class="btn btn-primary">New scan</a>
+	    <a href="/admin/scans/create?userId={{user.getId}}" class="btn btn-primary"><i class="bi bi-plus-lg"></i></a>
     </div>
 </div>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>Ημ/νία</th>
+            <th>Αρχή &rarr; Τέλος</th>
+            <th>Διάρκεια</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set salary = 0 %}
+        {% for scan in scans %}
+            {% set salary = salary + scan.getSalary %}
             <tr>
-                <th>Date</th>
-                <th>In &rarr; Out</th>
-                <th>Duration</th>
-                <th class="actions">Actions</th>
+                <td>
+                    <a class="text-decoration-none" target="_blank" href="/admin/scans/update?id={{scan.getId}}">
+                        {{scan.getCheckIn.format('D j M Y')}}
+                    </a>
+                </td>
+                <td>{{scan.getCheckIn.format('H:i:s')}} &rarr; {{scan.getCheckOut.format('H:i:s')}}</td>
+                <td>
+                    {{scan.getInterval.format('%H:%I:%S')}}
+                    {% if (scan.getInterval is not null) and scan.getInterval.h == 0 %}
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                    {% endif %}
+                </td>
+                <!--<td class="actions">
+                    <a class="text-decoration-none confirm" target="_blank" href="/admin/scans/delete?id={{scan.getId}}">Διαγραφή</a>
+                </td>-->
             </tr>
-        </thead>
-        <tbody>
-            {%  set salary = 0 %}
-            {% for scan in scans %}
-                {% set salary = salary + scan.getSalary %}
-            	<tr>
-                    <td>{{scan.getCheckIn.format('D j M Y')}}</td>
-                    <td>{{scan.getCheckIn.format('H:i:s')}} &rarr; {{scan.getCheckOut.format('H:i:s')}}</td>
-                    <td>
-                    	{{scan.getInterval.format('%H:%I:%S')}}
-                    	{% if scan.getInterval is not null and scan.getInterval.h == 0 %}
-                            <i class="fa-solid fa-circle-exclamation"></i>
-                        {% endif %}
-                    </td>
-                    <td class="actions">
-                    	<a class="text-decoration-none" target="_blank" href="/admin/scans/update?id={{scan.getId}}">Edit</a> |
-                        <a class="text-decoration-none" target="_blank" href="/admin/scans/delete?id={{scan.getId}}">Delete</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td>{{hours}}h:{{minutes}}m:{{seconds}}s / <strong>{{salary|round(2)}}&euro;</strong></td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td>{{hours}}h:{{minutes}}m:{{seconds}}s / <strong>{{salary|round(2)}}&euro;</strong></td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

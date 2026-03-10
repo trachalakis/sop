@@ -62,7 +62,8 @@ class ScansRepository extends EntityRepository
             ->andWhere(
                 $qb->expr()->eq('DATE(s.checkIn)', ':checkIn')
             )
-            ->setParameter(':checkIn', $datetime->format('Y-m-d'));
+            ->setParameter(':checkIn', $datetime->format('Y-m-d'))
+            ->orderBy('s.checkIn', 'asc');
 
         return $qb->getQuery()->getResult();
     }

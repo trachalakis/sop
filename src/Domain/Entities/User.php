@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Enums\UserRole;
+use Domain\Repositories\UsersRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\UsersRepository')]
+#[ORM\Entity(repositoryClass: UsersRepository::class)]
 #[ORM\Table(name: 'users')]
 class User
 {
@@ -27,20 +29,14 @@ class User
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    #[ORM\Column(type: 'integer', name: 'monthly_credits')]
-    private int $monthlyCredits;
-
     #[ORM\Column(type: 'string', name: 'notes')]
     private ?string $notes;
 
     #[ORM\Column(type: 'string', name: 'password_hash')]
     private string $passwordHash;
 
-    #[ORM\Column(type: 'simple_array', name: 'roles')]
+    #[ORM\Column(type: 'simple_array',  name: 'roles')]
     private array $roles;
-
-    #[ORM\Column(type: 'simple_array', name: 'allowed_menus')]
-    private array $allowedMenus;
 
     public function __construct(
         bool $isActive,
@@ -63,11 +59,6 @@ class User
         return $this->id;
     }
 
-    public function getAllowedMenus(): array
-    {
-        return $this->allowedMenus;
-    }
-
     public function getEmailAddress(): string
     {
     	return $this->emailAddress;
@@ -86,11 +77,6 @@ class User
     public function getIsActive(): bool
     {
         return $this->isActive;
-    }
-
-    public function getMonthlyCredits(): int
-    {
-        return $this->monthlyCredits;
     }
 
     public function getNotes(): ?string
@@ -118,11 +104,6 @@ class User
         return in_array('waiter', $this->roles);
     }
 
-    public function setAllowedMenus(array $allowedMenus): void
-    {
-        $this->allowedMenus = $allowedMenus;
-    }
-
     public function setEmailAddress(string $emailAddress): void
     {
     	$this->emailAddress = $emailAddress;
@@ -148,11 +129,6 @@ class User
         $this->notes = $notes;
     }
     
-    public function setMonthlyCredits(int $monthlyCredits): void
-    {
-        $this->monthlyCredits = $monthlyCredits;
-    }
-
     public function setPassword(string $password): void
     {
         $this->passwordHash = password_hash($password, PASSWORD_BCRYPT);

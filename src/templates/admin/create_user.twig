@@ -3,21 +3,31 @@
 {% set activeNavLink = 'users' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Νέος χρήστης</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/users" class="text-decoration-none">Χρήστες</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Δημιουργία</h1>
 </div>
 <form method="post" autocomplete="off">
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Active</label>
+		<label class="col-sm-2 col-form-label">Ενεργός</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="isActive">
-  				<option value="1" selected>Yes</option>
-  				<option value="0">No</option>
+  				<option value="1" selected>Ναί</option>
+  				<option value="0">Όχι</option>
 			</select>
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Name</label>
+		<label class="col-sm-2 col-form-label">Όνομα</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" name="fullName" required/>
     	</div>
@@ -25,57 +35,28 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Email</label>
 		<div class="col-sm-10">
-			<input type="email" class="form-control" name="emailAddress"/>
+			<input type="email" class="form-control" name="emailAddress" required/>
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Password</label>
+		<label class="col-sm-2 col-form-label">Συνθηματικό</label>
 		<div class="col-sm-10">
 			<input type="text" class="form-control" name="password" required/>
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Hourly rate</label>
+		<label class="col-sm-2 col-form-label">Ωρομίσθιο</label>
 		<div class="col-sm-10">
 			<input type="number" step="0.5" min="0" class="form-control" name="hourlyRate"/>
     	</div>
 	</div>
 	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Monthly credits</label>
-		<div class="col-sm-10">
-			<input type="number" step="1" min="0" class="form-control" name="monthlyCredits" required/>
-    	</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Roles</label>
+		<label class="col-sm-2 col-form-label">Ρόλοι</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="roles[]" size="15" multiple>
-  				<option value="webmaster">webmaster</option>
-				<option value="employee">employee</option>
-				<optgroup label="B.O.H">
-					<option value="boh">boh</option>
-					<option value="warm_cuisine">warm_cuisine</option>
-					<option value="cold_cuisine">cold_cuisine</option>
-					<option value="prep">prep</option>
-				</optgroup>
-				<optgroup label="F.O.H">
-					<option value="foh">foh</option>
-					<option value="waiter">waiter</option>
-					<option value="reservations_manager">reservations manager</option>
-					<option value="assistant_waiter">assistant waiter</option>
-					<option value="bar">bar</option>
-					<option value="terminal">terminal</option>
-				</optgroup>
-			</select>
-    	</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Menu access</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="allowedMenus[]" multiple>
-  				{% for menu in menus %}
-					<option value="{{menu.getId}}">{{menu.getName}}</option>
-				{% endfor %}
+  				{% for userRole in userRoles %}
+                    <option value="{{userRole.value}}">{{userRole.value|replace({'_': ' '})|capitalize}}</option>
+                {% endfor %}
 			</select>
     	</div>
 	</div>
@@ -88,7 +69,7 @@
 	<hr/>
 	<div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">
-			<button type="submit" class="btn btn-primary">Save</button>
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
 		</div>
 	</div>
 </form>

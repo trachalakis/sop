@@ -3,28 +3,39 @@
 {% set activeNavLink = 'scans' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">New scan</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/scans" class="text-decoration-none">Ωράρια</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Δημιουργία</h1>
 </div>
 <form method="post" autocomplete="off">
     <div class="row mb-3">
-		<label class="col-md-2 col-form-label">User</label>
+		<label class="col-md-2 col-form-label">Χρήστης</label>
         <div class="col-sm-10">
-            <select class="form-select" name="user" tabindex="1">
+            <select class="form-select" name="user" tabindex="1" required>
+                <option value="">Επιλέξτε χρήστη</option>
             	{% for user in users %}
-            		<option name="user" value="{{user.getId}}">{{user.getFullName}}</option>
+            		<option name="user" value="{{user.getId}}" {{user == preSelectedUser ? 'selected' : ''}}>{{user.getFullName}}</option>
             	{% endfor %}
             </select>
         </div>
     </div>
 	<div class="row mb-3">
-        <label class="col-md-2 col-form-label">Check in</label>
+        <label class="col-md-2 col-form-label">Έναρξη</label>
         <div class="col-md-10">
-            <input type="datetime-local" name="checkIn" class="form-control" tabindex="2"/>
+            <input type="datetime-local" name="checkIn" class="form-control" tabindex="2" required/>
         </div>
     </div>
     <div class="row mb-3">
-        <label class="col-md-2 control-label">Check out</label>
+        <label class="col-md-2 control-label">Τέλος</label>
         <div class="col-md-10">
             <input type="datetime-local" name="checkOut" class="form-control" tabindex="3"/>
         </div>
@@ -32,7 +43,7 @@
     <hr/>
     <div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">
-			<button type="submit" class="btn btn-primary" tabindex="4">Save</button>
+			<button type="submit" class="btn btn-primary" tabindex="4">Αποθήκευση</button>
 		</div>
 	</div>
 </form>

@@ -3,17 +3,27 @@
 {% set activeNavLink = 'scans' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Scans for {{date.format('D j M Y')}}</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/scans" class="text-decoration-none">Ωράρια</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>{{date.format('D j M Y')}}</h1>
     <div class="btn-toolbar">
 	    <a class="btn btn-primary me-2" href="/admin/scans?date={{prev.format('Y-m-d')}}">
-	        <i class="bx bxs-chevron-left"></i>
+	        <i class="bi bi-chevron-left"></i>
 	    </a>
 	    <a class="btn btn-primary me-4" href="/admin/scans?date={{next.format('Y-m-d')}}">
-	        <i class="bx bxs-chevron-right"></i>
+	        <i class="bi bi-chevron-right"></i>
 	    </a>
        	<a href="/admin/scans/create" class="btn btn-primary">
-            <i class="fa-solid fa-plus"></i> <strong>N</strong>ew scan
+            <i class="bi bi-plus-lg"></i>
         </a>
     </div>
 </div>
@@ -21,10 +31,10 @@
 	<table class="table table-striped">
     	<thead>
             <tr>
-                <th>Name</th>
-                <th>In &rarr; Out</th>
-                <th>Duration</th>
-                <th>Salary</th>
+                <th>Όνομα</th>
+                <th>Αρχή &rarr; Τέλος</th>
+                <th>Διάρκεια</th>
+                <th>Μισθός</th>
                 <th></th>
             </tr>
         </thead>
@@ -40,17 +50,19 @@
                     <td>{{scan.getInterval.format('%H:%I:%S')}}</td>
                     <td>{{scan.getSalary|round(1)}}&euro;</td>
                     <td>
-                        <a class="text-decoration-none" href="/admin/scans/update?id={{scan.getId}}">Update</a>
+                        <a class="text-decoration-none" href="/admin/scans/update?id={{scan.getId}}">Επεξεργασία</a>
                     </td>
                 </tr>
             {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td>{{hours}}h:{{minutes}}m:{{seconds}}s</td>
-                <td>{{salariesTotal|round(1)}}</td>
-                <td></td>
-            </tr>
+            {% if scans|length > 0 %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>{{hours}}h:{{minutes}}m:{{seconds}}s</td>
+                    <td>{{salariesTotal|round(1)}}</td>
+                    <td></td>
+                </tr>
+            {% endif %}
 		</tbody>
 	</table>
 </div>

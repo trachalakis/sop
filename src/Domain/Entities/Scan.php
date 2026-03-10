@@ -7,9 +7,10 @@ namespace Domain\Entities;
 use DateInterval;
 use Datetime;
 use Domain\Entities\User;
+use Domain\Repositories\ScansRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\ScansRepository')]
+#[ORM\Entity(repositoryClass: ScansRepository::class)]
 #[ORM\Table(name: 'scans')]
 class Scan
 {

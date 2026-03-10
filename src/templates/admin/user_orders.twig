@@ -16,19 +16,26 @@
 {%  endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">{{user.getFullName}}</h1>
-</div>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/users" class="text-decoration-none">Χρήστες</a>
+    </li>
+</ol>
 <ul class="nav nav-tabs mb-4">
-    <li class="nav-item">
-        <a class="nav-link " href="/admin/users/update?id={{user.getId}}">Γενικά</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="/admin/users/qr-code?id={{user.getId}}">Qr code</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link active" href="/admin/users/orders?id={{user.getId}}">Αυτόπαράδοση</a>
-    </li>
+	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/users/update?id={{user.getId}}">{{user.getFullName}}</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/scans/user?id={{user.getId}}">Ωράρια</a>
+  	</li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-5 active" href="/admin/users/orders?id={{user.getId}}">Αυτοπαραδόσεις</a>
+  	</li>
 </ul>
 <div class="table-responsive">
     <table class="table table-striped">
@@ -60,12 +67,14 @@
                     </td>
                 </tr>
             {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td>{{total}}&euro; / <strong>{{total / 2}}&euro;</strong></td>
-                <td></td>
-            </tr>
+            {% if orders|length > 0 %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>{{total}}&euro; / <strong>{{total / 2}}&euro;</strong></td>
+                    <td></td>
+                </tr>
+            {% endif %}
         </tbody>
     </table>
 </div>

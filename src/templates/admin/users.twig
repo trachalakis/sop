@@ -3,11 +3,21 @@
 {% set activeNavLink = 'users' %}
 
 {%  block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Χρήστες</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/users" class="text-decoration-none">Χρήστες</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Χρήστες</h1>
     <div class="btn-toolbar">
        	<a href="/admin/users/create" class="btn btn-primary">
-        	Νέος χρήστης
+        	<i class="bi bi-plus-lg"></i>
         </a>
     </div>
 </div>
@@ -16,7 +26,6 @@
     	<thead>
             <tr>
                 <th>Όνομα</th>
-                <!--<th></th>-->
             </tr>
         </thead>
 		<tbody>
@@ -30,20 +39,6 @@
 							<span class="badge rounded-pill text-bg-danger">Ανενεργός</span>
 						{% endif %}
 					</td>
-					<!--<td class="text-end">
-						<a class="text-decoration-none" href="/admin/users/qr-code?id={{user.getId}}">
-							Qr code
-						</a> |
-						<a class="text-decoration-none" href="/admin/scans/user?id={{user.getId}}">
-							Scans
-						</a> |
-						<a class="text-decoration-none" href="/admin/users/orders?id={{user.getId}}">
-							Orders
-						</a> |
-						
-							Update
-						</a>
-					</td>-->
 				</tr>
 			{% endfor %}
 		</tbody>

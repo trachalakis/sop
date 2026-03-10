@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Repositories\UsersRepository;
+use Domain\Enums\UserRole;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -44,6 +45,13 @@ final class UpdateUser
             return $response->withHeader('Location', '/admin/users')->withStatus(302);
         }
 
-        return $this->twig->render($response, 'admin/update_user.twig',['user' => $user]);
+        return $this->twig->render(
+            $response, 
+            'admin/update_user.twig',
+            [
+                'user' => $user,
+                'userRoles' => UserRole::cases()
+            ]
+        );
 	}
 }

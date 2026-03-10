@@ -13,11 +13,11 @@ use Slim\Views\Twig;
 
 final class CreateScan
 {
-	private $twig;
+	private ScansRepository $scansRepository;
 
-    private $usersRepository;
+    private Twig $twig;
 
-    private $scansRepository;
+    private UsersRepository $usersRepository;
 
     public function __construct(
         ScansRepository $scansRepository,
@@ -49,11 +49,19 @@ final class CreateScan
             return $response->withHeader('Location', '/admin/scans')->withStatus(302);
         }
 
+        $queryParams = $request->getQueryParams();
+        if (isset($queryParams['userId'])) {
+            $user = $this->usersRepository->findOneBy(['id' => $queryParams['userId']]);
+        }
+
         $users = $this->usersRepository->findBy(['isActive' => true], ['fullName' => 'asc']);
         return $this->twig->render(
             $response,
             'admin/create_scan.twig',
-            ['users' => $users]
+            [
+                'users' => $users,
+                'preSelectedUser' => $user ?? null
+            ]
         );
 	}
 }

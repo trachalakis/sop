@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\User;
+use Domain\Enums\UserRole;
 use Domain\Repositories\UsersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -35,14 +36,16 @@ final class CreateUser
                 floatval($requestData['hourlyRate']),
                 $requestData['roles']
             );
-            $user->setMonthlyCredits(intval($requestData['monthlyCredits']));
-            $user->setAllowedMenus($requestData['allowedMenus']);
             $user->setNotes($requestData['notes']);
             $this->usersRepository->persist($user);
 
             return $response->withHeader('Location', '/admin/users')->withStatus(302);
         }
 
-        return $this->twig->render($response, 'admin/create_user.twig');
+        return $this->twig->render(
+            $response, 
+            'admin/create_user.twig',
+            ['userRoles' => UserRole::cases()]
+        );
 	}
 }
