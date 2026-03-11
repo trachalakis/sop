@@ -7,8 +7,9 @@ namespace Domain\Entities;
 use Datetime;
 use Domain\Entities\Order;
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\OrderEntryGroupsRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntryGroupsRepository')]
+#[ORM\Entity(repositoryClass: OrderEntryGroupsRepository::class)]
 #[ORM\Table(name: 'order_entry_groups')]
 class OrderEntryGroup
 {

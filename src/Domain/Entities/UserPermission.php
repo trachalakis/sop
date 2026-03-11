@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\UserPermissionsRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\UserPermissionsRepository')]
+#[ORM\Entity(repositoryClass: UserPermissionsRepository::class)]
 #[ORM\Table(name: 'user_permissions')]
 class UserPermission
 {

@@ -6,8 +6,9 @@ namespace Domain\Entities;
 
 use Datetime;
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\ReservationsRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\ReservationsRepository')]
+#[ORM\Entity(repositoryClass: ReservationsRepository::class)]
 #[ORM\Table(name: 'reservations')]
 class Reservation
 {
