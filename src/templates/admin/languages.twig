@@ -1,0 +1,54 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'languages' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/languages" class="text-decoration-none">Γλώσσες</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Γλώσσες</h1>
+</div>
+<table class="table table-responsive table-striped">
+    <tbody>
+        {% for language in languages %}
+            <tr>
+                <td>
+                    <div class="form-check form-check-inline form-switch">
+                        <input 
+                            class="form-check-input toggle-switch" 
+                            type="checkbox"
+                            id="language-{{language.getId}}" 
+                            data-id="{{language.getId}}" 
+                            {{language.getIsActive ? 'checked' : ''}}
+                        >
+                        <label class="form-check-label" for="language-{{language.getId}}"></label>
+                    </div>
+                    {{language.getName}}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script>
+		switches = document.querySelectorAll('.toggle-switch');
+		switches.forEach(function (s) {
+			s.addEventListener('click', function (evt) {
+				fetch(
+					'/admin/languages/toggle?id=' + s.dataset.id
+				);
+			});
+		});
+    </script>
+{% endblock %}

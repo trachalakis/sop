@@ -5,14 +5,11 @@ declare(strict_types=1);
 use Application\Actions\Homepage;
 use Application\Actions\Login;
 use Application\Actions\Logout;
-use Application\Actions\Admin\ToggleArchive;
-use Application\Actions\Admin\CloneMenu;
 use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
 use Application\Actions\Admin\CreatePrinter;
-use Application\Actions\Admin\CreateRecipe;
 use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
@@ -24,6 +21,7 @@ use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\DeleteSupply;
 use Application\Actions\Admin\GraphQl;
 use Application\Actions\Admin\Homepage as AdminHomepage;
+use Application\Actions\Admin\Languages;
 use Application\Actions\Admin\Menu as AdminMenu;
 use Application\Actions\Admin\Menus as AdminMenus;
 use Application\Actions\Admin\MenuItemRecipe;
@@ -33,19 +31,19 @@ use Application\Actions\Admin\OpenOrder;
 use Application\Actions\Admin\Predict;
 use Application\Actions\Admin\Printers;
 use Application\Actions\Admin\PrintMenu;
-use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\Report;
 use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\Supplies;
 use Application\Actions\Admin\SortMenuItems;
 use Application\Actions\Admin\SortMenuSections;
 use Application\Actions\Admin\Tables;
+use Application\Actions\Admin\ToggleArchive;
 use Application\Actions\Admin\ToggleMenuItem;
+use Application\Actions\Admin\ToggleLanguage;
 use Application\Actions\Admin\UpdateMenu;
 use Application\Actions\Admin\UpdateMenuItem;
 use Application\Actions\Admin\UpdateMenuSection;
 use Application\Actions\Admin\UpdatePrinter;
-use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateSupply;
 use Application\Actions\Admin\UpdateTable;
@@ -128,20 +126,14 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/scans/update', UpdateScan::class);
         $group->get('/scans/delete', DeleteScan::class);
         $group->get('/scans/user', UserScans::class);
-        
 
         $group->get('/supplies', Supplies::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/delete', DeleteSupply::class);
 
-        $group->get('/recipes', Recipes::class);
-        $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);
-        $group->map(['GET', 'POST'], '/recipes/update', UpdateRecipe::class);
-
-        /*$group->get('/po-strings', PoStrings::class);
-        $group->map(['GET', 'POST'], '/po-strings/update', UpdatePoString::class);
-        $group->get('/po-strings/delete', DeletePoString::class);*/
+        $group->get('/languages', Languages::class);
+        $group->get('/languages/toggle', ToggleLanguage::class);
 
         $group->get('/printers', Printers::class);
         $group->map(['GET', 'POST'], '/printers/create', CreatePrinter::class);

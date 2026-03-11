@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Repositories\LanguagesRepository;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\LanguagesRepository')]
+#[ORM\Entity(repositoryClass: LanguagesRepository::class)]
 #[ORM\Table(name: 'languages')]
 class Language
 {
