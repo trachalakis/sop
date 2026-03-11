@@ -1,7 +1,7 @@
 {% extends 'users_app/skeleton.twig' %}
 
 {% block breadcrumbs %}
-	<a href="/users-app/"><i class="bx bxs-home"></i></a>
+	<a href="/users-app/"><i class="bi bi-house"></i></a>
     / #{{order.getUuid|slice(0, 8)}} / &euro;{{order.getPrice}}
 {% endblock %}
 

@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Domain\Entities;
 
 use Datetime;
-use Domain\Entities\Order;
-use Domain\Entities\OrderEntryGroup;
-use Domain\Entities\MenuItem;
+use Domain\Entities\OrderEntry;
+use Domain\Repositories\OrderEntryCancellationsRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntryCancellationsRepository')]
+#[ORM\Entity(repositoryClass: OrderEntryCancellationsRepository::class)]
 #[ORM\Table(name: 'order_entry_cancellations')]
 class OrderEntryCancellation
 {

@@ -8,9 +8,10 @@ use Datetime;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\MenuItem;
+use Domain\Repositories\OrderEntriesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrderEntriesRepository')]
+#[ORM\Entity(repositoryClass: OrderEntriesRepository::class)]
 #[ORM\Table(name: 'order_entries')]
 class OrderEntry
 {

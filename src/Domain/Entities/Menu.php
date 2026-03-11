@@ -6,10 +6,11 @@ namespace Domain\Entities;
 
 use DateTimeImmutable;
 use Domain\Enums\MenuType;
+use Domain\Repositories\MenusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\MenusRepository')]
+#[ORM\Entity(repositoryClass: MenusRepository::class)]
 #[ORM\Table(name: 'menus')]
 class Menu
 {

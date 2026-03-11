@@ -8,9 +8,10 @@ use Datetime;
 use Domain\Entities\Reservation;
 use Domain\Entities\Table;
 use Domain\Entities\User;
+use Domain\Repositories\OrdersRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: 'Domain\Repositories\OrdersRepository')]
+#[ORM\Entity(repositoryClass: OrdersRepository::class)]
 #[ORM\Table(name: 'orders')]
 class Order
 {
