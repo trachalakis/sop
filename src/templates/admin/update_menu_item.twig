@@ -20,7 +20,14 @@
 <div class="d-flex justify-content-between flex-fill mb-3 mt-3">
     <ul class="nav nav-tabs flex-grow-1 b-0">
         <li class="nav-item">
-            <a class="nav-link active fs-5" href="">{{menuItem.getTranslation('el').getName}}</a>
+            <a class="nav-link active fs-5" href="">
+                {{menuItem.getTranslation('el').getName}}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fs-5" href="/admin/menu-items/recipe?id={{menuItem.getId}}">
+                <i class="bi bi-fork-knife"></i> Συνταγή
+            </a>
         </li>
         <li class="nav-item">
             <a class="nav-link fs-5" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
@@ -156,7 +163,7 @@
 			</a>
 		</div>
 	</div>
-	<div class="row mb-5">
+	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
 		<div class="col-sm-10">
 			{% for field, value in menuItem.getCustomFields %}

@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Domain\Entities\SupplyGroup;
-use Domain\Repositories\SuppliesRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Domain\Entities\SupplyGroup;
+use Domain\Enums\PriceUnit;
+use Domain\Repositories\SuppliesRepository;
 
 #[ORM\Entity(repositoryClass: SuppliesRepository::class)]
 #[ORM\Table(name: 'supplies')]
@@ -22,6 +23,12 @@ class Supply
 
     #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
+
+    #[ORM\Column(type: 'float', name: 'price')]
+    private float $price;
+
+    #[ORM\Column(type: 'string', enumType: PriceUnit::class, name: 'price_unit')]
+    private PriceUnit $priceUnit;
 
     #[ORM\ManyToOne(targetEntity: SupplyGroup::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'supply_group_id', referencedColumnName: 'id')]
@@ -51,6 +58,16 @@ class Supply
         return $this->name;
     }
 
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function getPriceUnit(): string
+    {
+        return $this->priceUnit->value;
+    }
+
     public function getSupplyGroup(): SupplyGroup
     {
     	return $this->supplyGroup;
@@ -69,6 +86,16 @@ class Supply
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this->price = $price;
+    }
+
+    public function setPriceUnit(PriceUnit $priceUnit): void
+    {
+        $this->priceUnit = $priceUnit;
     }
 
     public function setSupplyGroup(SupplyGroup $supplyGroup): void

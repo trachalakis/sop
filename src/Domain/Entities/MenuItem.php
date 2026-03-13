@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Domain\Entities\Extra;
+use Domain\Entities\MenuItemIngredient;
 use Domain\Entities\MenuSection;
 use Domain\Entities\Printer;
 use Domain\Enums\PriceUnit;
@@ -28,6 +29,12 @@ class MenuItem
     #[ORM\Column(type: 'json', name: 'custom_fields')]
     private ?array $customFields;
 
+    #[ORM\OneToMany(targetEntity: Extra::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $extras;
+
+    #[ORM\OneToMany(targetEntity: MenuItemIngredient::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
+    private Collection $ingredients;
+
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
@@ -37,25 +44,25 @@ class MenuItem
     #[ORM\Column(type: 'boolean', name: 'is_drink')]
     private bool $isDrink;
 
-    #[ORM\Column(type: 'string', enumType: PriceUnit::class, name: 'price_unit')]
-    private PriceUnit $priceUnit;
-
     #[ORM\ManyToOne(targetEntity: MenuSection::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'menu_section_id', referencedColumnName: 'id')]
     private MenuSection $menuSection;
-
-    #[ORM\OneToMany(targetEntity: Extra::class, mappedBy: 'menuItem', cascade: ['persist'], orphanRemoval: true)]
-    private Collection $extras;
-
+    
     #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
 
     #[ORM\Column(type: 'float', name: 'price')]
     private float $price;
 
+    #[ORM\Column(type: 'string', enumType: PriceUnit::class, name: 'price_unit')]
+    private PriceUnit $priceUnit;
+
     #[ORM\ManyToMany(targetEntity: Printer::class)]
     #[ORM\JoinTable(name: 'menu_items_printers', joinColumns: [new ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')], inverseJoinColumns: [new ORM\JoinColumn(name: 'station_id', referencedColumnName: 'id')])]
     private $printers;
+
+    #[ORM\Column(type: 'json', name: 'recipe')]
+    private ?array $recipe;
 
     #[ORM\Column(type: 'boolean', name: 'track_available_quantity')]
     private bool $trackAvailableQuantity;
@@ -118,6 +125,11 @@ class MenuItem
         return $this->extras;
     }
 
+    public function getIngredients()
+    {
+        return $this->ingredients;
+    }
+
     public function getIsActive(): bool
     {
         return $this->isActive;
@@ -163,6 +175,11 @@ class MenuItem
         return $this->printers;
     }
 
+    public function getRecipe(): ?array
+    {
+        return $this->recipe;
+    }
+
     public function getTrackAvailableQuantity(): bool
     {
         return $this->trackAvailableQuantity;
@@ -204,6 +221,11 @@ class MenuItem
         $this->extras = $extras;
     }
 
+    public function setIngredients($ingredients): void //TODO add arg type
+    {
+        $this->ingredients = $ingredients;
+    }
+
     public function setIsActive(bool $isActive): void
     {
         $this->isActive = $isActive;
@@ -242,6 +264,11 @@ class MenuItem
     public function setPrinters($printers): void
     {
         $this->printers = $printers;
+    }
+
+    public function setRecipe(?array $recipe): void
+    {
+        $this->recipe = $recipe;
     }
 
     public function setTrackAvailableQuantity(bool $trackAvailableQuantity): void

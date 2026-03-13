@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Domain\Enums\PriceUnit;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -37,6 +38,8 @@ final class UpdateSupply
 			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);
+            $supply->setPrice(floatval($requestData['price']));
+            $supply->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
 
 			$supply->setCustomFields([]);
             if (isset($requestData['customFields'])) {
@@ -56,7 +59,8 @@ final class UpdateSupply
 			'admin/update_supply.twig',
 			[
 				'supply' => $supply,
-				'supplyGroups' => $supplyGroups
+				'supplyGroups' => $supplyGroups,
+                'priceUnits' => PriceUnit::cases()
 			]
 		);
 	}

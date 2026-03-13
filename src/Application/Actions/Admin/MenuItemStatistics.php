@@ -9,7 +9,6 @@ use DatePeriod;
 use DateInterval;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\OrderEntriesRepository;
-use Domain\Repositories\RecipesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -22,18 +21,14 @@ final class MenuItemStatistics
 
 	private OrderEntriesRepository $orderEntriesRepository;
 
-	private RecipesRepository $recipesRepository;
-
 	public function __construct(
 		Twig $twig,
 		MenuItemsRepository $menuItemsRepository,
 		OrderEntriesRepository $orderEntriesRepository,
-		RecipesRepository $recipesRepository
 	) {
 		$this->twig = $twig;
 		$this->menuItemsRepository = $menuItemsRepository;
 		$this->orderEntriesRepository = $orderEntriesRepository;
-		$this->recipesRepository = $recipesRepository;
 	}
 
 	public function __invoke(Request $request, Response $response)
@@ -83,24 +78,6 @@ final class MenuItemStatistics
 			}
         }
 
-        //$chartLabels = array_keys($coversPerHourData);
-
-        //$maxCount = max($days);
-        //$minCount = min($days);
-
-        //$suppliesMatrix = [];
-        //$recipe = $this->recipesRepository->findOneBy(['menuItem' => $menuItem]);
-        //if ($recipe != null) {
-        	//foreach ($recipe->getIngredients() as $ingredient) {
-        		//$this->extractSupplies($recipe, $suppliesMatrix);
-        		/*if ($ingredient->getSupply() != null) {
-        			$consumptions[] = [
-        				'ingredient' => $ingredient, 'total' => $count * $ingredient->getQuantity()
-        			];
-        		}*/
-        	//}
-        //}
-
         return $this->twig->render(
             $response,
             'admin/menu_item_statistics.twig',
@@ -120,17 +97,4 @@ final class MenuItemStatistics
             ]
         );
 	}
-
-	/*private function extractSupplies($recipe, &$suppliesMatrix) {
-		foreach ($recipe->getIngredients() as $ingredient) {
-			if ($ingredient->getSupply() != null) {
-				$suppliesMatrix[] = [
-					'ingredient' => $ingredient, 'total' => 0
-				];
-			}
-			if ($ingredient->getPreparation() != null) {
-				$this->extractSupplies($ingredient->getPreparation(), $suppliesMatrix);
-			}
-		}
-	}*/
 }

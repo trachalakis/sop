@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Domain\Entities\Supply;
+use Domain\Enums\PriceUnit;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -39,6 +40,8 @@ final class CreateSupply
 			$supply = new Supply;
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);
+            $supply->setPrice(floatval($requestData['price']));
+            $supply->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
 			$this->suppliesRepository->persist($supply);
 
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);
@@ -49,7 +52,8 @@ final class CreateSupply
 			$response,
 			'admin/create_supply.twig',
 			[
-				'supplyGroups' => $supplyGroups
+				'supplyGroups' => $supplyGroups,
+                'priceUnits' => PriceUnit::cases()
 			]
 		);
 	}

@@ -40,6 +40,21 @@
 			</select>
     	</div>
 	</div>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Τιμή</label>
+		<div class="col-sm-10">
+            <div class="input-group">
+                <span class="input-group-text">€</span>
+                <input type="text" class="form-control" type="number" min="0" step="0.5" name="price" value="{{supply.getPrice}}">
+                <span class="input-group-text">/</span>
+                <select class="form-select" name="priceUnit">
+                    {% for priceUnit in priceUnits %}
+                        <option value="{{priceUnit.value}}" {{supply.getPriceUnit == priceUnit.value ? 'selected' : ''}}>{{priceUnit.value}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+		</div>
+	</div>
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
 		<div class="col-sm-10">

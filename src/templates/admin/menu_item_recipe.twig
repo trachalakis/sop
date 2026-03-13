@@ -1,13 +1,86 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set activeNavLink = 'menu' %}
+{% set menu = menuItem.getMenuSection.getMenu %}
+{% set activeNavLink = menu.getName %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Recipe for {{menuItem.getTranslation('en').getName}}</h1>
-</div>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
+    </li>
+</ol>
+<ul class="nav nav-tabs mb-3 mt-3">
+	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/menu-items/update?id={{menuItem.getId}}">{{menuItem.getTranslation('el').getName}}</a>
+  	</li>
+    <li class="nav-item">
+        <a class="nav-link active fs-5" href="/admin/menu-items/recipe?id={{menuItem.getId}}">
+            <i class="bi bi-fork-knife"></i> Συνταγή
+        </a>
+    </li>
+  	<li class="nav-item">
+    	<a class="nav-link fs-5" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
+            <i class="bi bi-graph-up-arrow"></i> Στατιστικά
+        </a>
+  	</li>
+</ul>
 <form method="post" autocomplete="off">
 	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Συστατικά</label>
+		<div class="col-sm-10">
+			{% for ingredient in menuItem.getIngredients %}
+				{% set index = loop.index %}
+                <div class="row mb-2">
+		            <div class="ingredient-entry input-group">
+		                <input
+		                	type="text"
+		                	class="form-control"
+		                	name="ingredients[{{loop.index}}][quantity]"
+		                	value="{{ingredient.getQuantity}}"
+		                	required
+		                />
+		                <span class="input-group-text">/</span>
+		                <select name="ingredients[{{loop.index}}][supply]">
+                            {% for supplyGroup in supplyGroups %}
+                                <optgroup label="{{supplyGroup.getName}}">
+                                    {% for supply in supplyGroup.getSupplies %}
+                                        <option
+                                            value="{{supply.getId}}"
+                                            
+                                            {{ingredient.getSupply == supply ? 'selected' : ''}}
+                                        >
+                                            {{supply.getName}} ({{supply.getPriceUnit}})
+                                        </option>
+                                    {% endfor %}
+                                </optgoup>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-outline-danger delete-ingredient confirm">
+		                    <i class="bi bi-trash"></i>
+		                </button>
+		            </div>
+		        </div>
+		    {% endfor %}
+			<a class="btn btn-success add-ingredient">
+				<i class="bi bi-plus-lg"></i>
+			</a>
+		</div>
+    </div>
+	<hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+    {#<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Comments</label>
 		<div class="col-sm-10">
 			<textarea class="form-control" name="comments">{{- recipe.getComments -}}</textarea>
@@ -74,48 +147,70 @@
 			<button type="submit" class="btn btn-primary">Save</button>
 		</div>
 	</div>
-</form>
+</form>#}
 <datalist id="supplies">
 	{% for supply in supplies %}
-		<option value="{{supply.getName}}"/>
+		<option value="{{supply.getId}}" label="{{supply.getName}} ({{supply.getPriceUnit}})"/>
 	{% endfor %}
 </datalist>
 {% endblock %}
+{#
+{% block javascript %}
+	{{parent()}}
+    {{ include (
+        'admin/handlebars.twig', 
+            {blocks: {
+                'supplies': [
+                    {element: 'input', inputType: 'number', name: 'quantity'},
+                    {element: 'input', inputType: 'text', name: 'supply'}, 
+                ]
+            }}
+        ) 
+    }}
+    <script>
+        $('input[name*="supply"]').attr('list', 'supplies');
+    </script>
+{% endblock %}#}
 
 {% block javascript %}
-	{{ parent() }}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script id="ingredient-template" type="text/x-handlebars-template">
-        <div class="row mb-3 gx-1 ingredient">
-			<div class="col">
-				<input
-					class="form-control"
-					list="supplies"
-					name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][supply]"
-				/>
-			</div>
-			<div class="col">
-				<input
-					type="number"
-					min="0"
-					step="0.1"
-					class="form-control"
-					name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
-				/>
-			</div>
-			<div class="col">
-				<select class="form-select" name="ingredient[{% verbatim %}{{index}}{% endverbatim %}][unit]">
-					<option value="item">Tεμ</option>
-            		<option value="kg">Kg</option>
-            		<option value="lt">Lt</option>
-				</select>
-			</div>
-			<div class="col">
-                <a class="btn btn-sm btn-danger delete-ingredient">
-                    <i class="fa fa-trash-alt"></i>
-                </a>
+	{{parent()}}
+<script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js"
+    integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer">
+</script>
+
+    <script id="ingredient-template" type="text/x-handlebars-template">
+        <div class="row mb-2">
+            <div class="ingredient-entry input-group">
+                <input
+                    type="text"
+                    class="form-control"
+                    name="ingredients[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
+                    required
+                />
+                <span class="input-group-text">/</span>
+                <select name="ingredients[{% verbatim %}{{index}}{% endverbatim %}][supply]">
+                    {% for supplyGroup in supplyGroups %}
+                        <optgroup label="{{supplyGroup.getName}}">
+                            {% for supply in supplyGroup.getSupplies %}
+                                <option
+                                    value="{{supply.getId}}"
+                                    
+                                    {{ingredient.getSupply == supply ? 'selected' : ''}}
+                                >
+                                    {{supply.getName}}
+                                </option>
+                            {% endfor %}
+                        </optgoup>
+                    {% endfor %}
+                </select>
+                <button class="btn btn-outline-danger delete-ingredient confirm">
+                    <i class="bi bi-trash"></i>
+                </button>
             </div>
-		</div>
+        </div>
     </script>
     <script>
         $('.add-ingredient').click(function() {
@@ -123,12 +218,33 @@
             var template = Handlebars.compile(source);
 
             $(this).before(template({
-                index: $('.ingredient').length + 1
+                index: $('.ingredient-entry').length + 1
             }));
         });
 
-        $('form').on('click', '.delete-ingredient', function() {
-            $(this).parent().parent().remove();
+        $('form').on('click', '.delete-ingredient', function(e) {
+            e.preventDefault();
+            let self = $(this);
+
+            bootbox.confirm({
+                title: 'Απαιτείται επιβεβαίωση',
+                message: "Είστε σίγουρος ότι θέλετε να προχωρήσετε;",
+                buttons: {
+                    confirm: {
+                        label: 'Ναί',
+                        className: 'btn-primary'
+                    },
+                    cancel: {
+                        label: 'Όχι',
+                        className: 'btn-secondary'
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        self.parent().parent().remove();
+                    }
+                }
+            });
         });
     </script>
 {% endblock %}
