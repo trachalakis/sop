@@ -61,9 +61,6 @@ class MenuItem
     #[ORM\JoinTable(name: 'menu_items_printers', joinColumns: [new ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')], inverseJoinColumns: [new ORM\JoinColumn(name: 'station_id', referencedColumnName: 'id')])]
     private $printers;
 
-    #[ORM\Column(type: 'json', name: 'recipe')]
-    private ?array $recipe;
-
     #[ORM\Column(type: 'boolean', name: 'track_available_quantity')]
     private bool $trackAvailableQuantity;
 
@@ -125,6 +122,17 @@ class MenuItem
         return $this->extras;
     }
 
+    public function getFoodCost(): float
+    {
+        $foodCost = 0;
+        
+        foreach($this->getIngredients() as $ingredient) {
+            $foodCost += $ingredient->getQuantity() * $ingredient->getSupply()->getPrice();
+        }
+        
+        return $foodCost;
+    }
+
     public function getIngredients()
     {
         return $this->ingredients;
@@ -173,11 +181,6 @@ class MenuItem
     public function getPrinters()
     {
         return $this->printers;
-    }
-
-    public function getRecipe(): ?array
-    {
-        return $this->recipe;
     }
 
     public function getTrackAvailableQuantity(): bool
@@ -264,11 +267,6 @@ class MenuItem
     public function setPrinters($printers): void
     {
         $this->printers = $printers;
-    }
-
-    public function setRecipe(?array $recipe): void
-    {
-        $this->recipe = $recipe;
     }
 
     public function setTrackAvailableQuantity(bool $trackAvailableQuantity): void
