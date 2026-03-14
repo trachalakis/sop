@@ -621,8 +621,9 @@
 		    		tables: [],
 		    		availableTables: [],
 		    		menuSections: [],
-				printers: [],
+				    printers: [],
 		    		timing: 1,
+                    family: 1,
 
 		    		newOrderEntry: {
 		    			orderEntryExtras: [],
@@ -754,48 +755,48 @@
 		    	},
 		    	printOrder() {
 					_.each(this.printers, printer => {
-						let printer = new epson.ePOSBuilder();
+						let pr = new epson.ePOSBuilder();
 
 						//var ctx = document.getElementById('canvas-test');
         				//ctx = ctx.getContext('2d');
 
-						printer.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
-						printer.addFeedLine(2);
-						printer.addTextAlign(printer.ALIGN_CENTER);
-						printer.addTextSmooth(true);
+						pr.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
+						pr.addFeedLine(2);
+						pr.addTextAlign(pr.ALIGN_CENTER);
+						pr.addTextSmooth(true);
 						//printer.addImage(ctx, 0, 0, 257, 212, printer.COLOR_1 , printer.MODE_MONO);
 						//printer.addFeedLine(1);
 
 						//printer.addSymbol('1234', printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_0, 3);
-						printer.addText(`${this.waiter.fullName} / `);
-						printer.addText(this.getHm());
-						printer.addTextFont(printer.FONT_B);
-						printer.addTextAlign(printer.ALIGN_CENTER);
-						printer.addFeedLine(1);
-						printer.addTextSize(2, 2);
-						printer.addText('--- ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ ---');
-						printer.addFeedLine(3);
-						printer.addTextSize(3, 3);
-						printer.addText(`Τραπέζι ${this.order.table.name}`);
-						printer.addFeedLine(2);
-						printer.addTextSize(2, 2);
-						printer.addText(`Άτομα ${this.order.adults} / ${this.order.minors}`);
+						pr.addText(`${this.waiter.fullName} / `);
+						pr.addText(this.getHm());
+						pr.addTextFont(pr.FONT_B);
+						pr.addTextAlign(pr.ALIGN_CENTER);
+						pr.addFeedLine(1);
+						pr.addTextSize(2, 2);
+						pr.addText('--- ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ ---');
+						pr.addFeedLine(3);
+						pr.addTextSize(3, 3);
+						pr.addText(`Τραπέζι ${this.order.table.name}`);
+						pr.addFeedLine(2);
+						pr.addTextSize(2, 2);
+						pr.addText(`Άτομα ${this.order.adults} / ${this.order.minors}`);
 						if (this.order.notes.length > 0) {
-							printer.addFeedLine(2);
-							printer.addText(`***\n${this.order.notes}\n***`);
+							pr.addFeedLine(2);
+							pr.addText(`***\n${this.order.notes}\n***`);
 						}
-						printer.addFeedLine(2);
-						printer.addCommand(_.repeat('-', 32));
-						printer.addFeedLine(1);
-						printer.addTextAlign(printer.ALIGN_LEFT);
-						printer.addTextLineSpace(40);
+						pr.addFeedLine(2);
+						pr.addCommand(_.repeat('-', 32));
+						pr.addFeedLine(1);
+						pr.addTextAlign(pr.ALIGN_LEFT);
+						pr.addTextLineSpace(40);
 
 						let orderEntriesCount = 0;
 						for (i = 0; i < 7; i++) {
 							_.each(this.orderedEntries(i), orderEntry => {
-								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id);
+								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == pr.id);
 
-								if (index != -1 || printer.hasReceiptPrinter) {
+								if (index != -1 || pr.hasReceiptPrinter) {
 									orderEntriesCount++;
 									let quantity = orderEntry.quantity;
 									let name = this.getTranslation(orderEntry.menuItem, 'el').name;
@@ -814,41 +815,41 @@
 									}
 
 									let priceBlock = '';
-									if (printer.hasReceiptPrinter) {
+									if (pr.hasReceiptPrinter) {
 										let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
 
-										printer.addText(`${quantity} x ${name} (${priceBlock}) ${weight}\n`);
+										pr.addText(`${quantity} x ${name} (${priceBlock}) ${weight}\n`);
 									} else {
 										if (quantity > 6) {
-											printer.addText(`${quantity} \xd7 ${name} ${weight} \n\t${tickboxes}\n`);
+											pr.addText(`${quantity} \xd7 ${name} ${weight} \n\t${tickboxes}\n`);
 										} else {
-											printer.addText(`${quantity} \xd7 ${name} ${weight} ${tickboxes}\n`);
+											pr.addText(`${quantity} \xd7 ${name} ${weight} ${tickboxes}\n`);
 										}
 									}
 
 									if (this.orderHasManyFamilies()) {
-										printer.addText(`\t(F${orderEntry.family})\n`);
+										pr.addText(`\t(F${orderEntry.family})\n`);
 									}
 
 									_.each(orderEntry.orderEntryExtras, orderEntryExtra => {
-										printer.addText(`\t${orderEntryExtra.name}\n`);
+										pr.addText(`\t${orderEntryExtra.name}\n`);
 									});
 
 									if (orderEntry.notes.length > 0) {
-										printer.addText(`\t${orderEntry.notes}\n`);
+										pr.addText(`\t${orderEntry.notes}\n`);
 									}
 								}
 							});
 							if (this.filteredEntries(i + 1).length > 0 && orderEntriesCount > 0) {
-								printer.addCommand(_.repeat('-', 32));
-								printer.addFeedLine(1);
+								pr.addCommand(_.repeat('-', 32));
+								pr.addFeedLine(1);
 							}
 						}
 
-						printer.addFeedLine(10);
-						printer.addCut(printer.CUT_FEED);
+						pr.addFeedLine(10);
+						pr.addCut(printer.CUT_FEED);
 						if (orderEntriesCount > 0) {
-							printer.printOk = false;
+							pr.printOk = false;
 							var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  							//Create an ePOS-Print object
  							var epos = new epson.ePOSPrint(address);
@@ -861,7 +862,7 @@
  									printer.printOk = true;
  								}
  							}
- 							epos.send(printer.toString());
+ 							epos.send(pr.toString());
 						} else {
 							printer.printOk = true;
 						}
