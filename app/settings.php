@@ -19,8 +19,10 @@ return function (ContainerBuilder $containerBuilder) {
             'slim.logError' => $_ENV['APP_MODE'] == 'development',
             'slim.logErrorDetails' => $_ENV['APP_MODE'] == 'development',
 
-            'logger.name' => 'sopApp',
-            'logger.filename' => __DIR__ . '/../logs/app.log',
+            'logger' => [
+                'name' => 'sopApp',
+                'file' => __DIR__ . '/../logs/app.log'
+            ],
             'twig' => [
                 // Template paths
                 'paths' => [

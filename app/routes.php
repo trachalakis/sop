@@ -5,6 +5,8 @@ declare(strict_types=1);
 use Application\Actions\Homepage;
 use Application\Actions\Login;
 use Application\Actions\Logout;
+use Application\Actions\Sdp;
+use Application\Actions\PrinterStatus;
 use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateMenuItem;
@@ -83,6 +85,9 @@ return function (App $app, $container) {
 
     $app->map(['GET', 'POST'], '/login', Login::class);
     $app->get('/logout', Logout::class);
+
+    $app->map(['GET', 'POST'], '/printers/sdp', Sdp::class);
+    $app->map(['GET', 'POST'], '/printers/status', PrinterStatus::class);
 
     $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->get('/', AdminHomepage::class);

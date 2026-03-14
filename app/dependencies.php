@@ -46,6 +46,10 @@ use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
 
+use Monolog\Logger;
+use Monolog\Handler\RotatingFileHandler;
+
+
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         /*Mailer::class => function (ContainerInterface $c) {
@@ -60,25 +64,26 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $mailer = new Mailer($transport);
 
-        },
-        LoggerInterface::class => function (ContainerInterface $c) {
+        },*/
+        Logger::class => function (ContainerInterface $c) {
             //TODO get logger settings from settings file
-            $settings = $c->get('settings');
-
+            $settings = $c->get('settings')['logger'];
+            //dd($settings);
             //$loggerSettings = $settings->get('logger');
 
-            $logger = new Logger($c->get('logger.name'));
+            $logger = new Logger($settings['name']);
+            //$logger = new Logger('log');
 
             //$processor = new UidProcessor();
             //$logger->pushProcessor($processor);
 
-            $logger->pushHandler(RotatingFileHandler($c->get('logger.fileName')));
+            $logger->pushHandler(new RotatingFileHandler($settings['file']));
 
             //$handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
             //$logger->pushHandler($handler);
 
             return $logger;
-        },*/
+        },
         Twig::class => function (ContainerInterface $c) {
             $settings = $c->get('settings')['twig'];
 
