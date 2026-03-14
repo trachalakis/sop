@@ -59,7 +59,6 @@ final class MenuItemRecipe
                     $ingredient->setMenuItem($menuItem);
                     
                     $ingredients->add($ingredient);
-                    
                 }
             }
             $menuItem->setIngredients($ingredients);
