@@ -36,7 +36,7 @@ final class Sdp
 
 
         if ($requestParams['ConnectionType'] == 'SetResponse') {
-            $xml = new SimpleXMLElement($requestParams['ResponseFile']);
+            $xml = new \SimpleXMLElement($requestParams['ResponseFile']);
 
             $printJob = $this->printJobsRepository->find(
                 $xml->PrintResponseInfo->ePOSPrint->Parameter->printjobid
@@ -56,19 +56,23 @@ final class Sdp
             if ($printJob != null) {
                 $response->getBody()->write(
                     '<?xml version="1.0" encoding="utf-8"?>
-<PrintRequestInfo Version="2.00">
+                        <PrintRequestInfo Version="2.00">
 
-  <ePOSPrint>
-    <Parameter>
-      <devid>local_printer</devid>
-      <timeout>10000</timeout>
-      <printjobid>' . $printJob->getId() . '</printjobid>
-    </Parameter>
-    <PrintData>' . $printJob->getXml() . '</PrintData>
-  </ePOSPrint>
+                        <ePOSPrint>
+                            <Parameter>
+                            <devid>local_printer</devid>
+                            <timeout>10000</timeout>
+                            <printjobid>' . $printJob->getId() . '</printjobid>
+                            </Parameter>
+                            <PrintData>' . $printJob->getXml() . '</PrintData>
+                        </ePOSPrint>
 
-</PrintRequestInfo>'
+                        </PrintRequestInfo>'
                 );
+               
+            }
+        }
+         return $response;
             /*$response->getBody()->write(
             '<?xml version="1.0" encoding="utf-8"?>
 <PrintRequestInfo Version="2.00">
@@ -114,8 +118,8 @@ final class Sdp
     </PrintData>
   </ePOSPrint>
 
-</PrintRequestInfo>');*/
-        }
+</PrintRequestInfo>');
+        }*/
 
   //      ob_start();
         //$connector = new DummyPrintConnector();
@@ -129,6 +133,6 @@ final class Sdp
 
 		/*
         );*/
-		return $response;
+		//return $response;
 	}
 }
