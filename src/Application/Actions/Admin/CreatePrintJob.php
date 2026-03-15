@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Application\Actions\Admin;
+
+use Domain\Entities\PrintJob;
+use Domain\Repositories\PrintJobsRepository;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Domain\Enums\PrintJobStatus;
+
+final class CreatePrintJob
+{
+    private PrintJobsRepository $printJobsRepository;
+
+    public function __construct(PrintJobsRepository $printJobsRepository)
+    {
+        $this->printJobsRepository = $printJobsRepository;
+    }
+
+    public function __invoke(Request $request, Response $response)
+	{
+		if ($request->getMethod() == 'POST') {
+            $requestData = json_decode(file_get_contents("php://input"), true);
+
+            $printJob = new PrintJob;
+            $printJob->setPrinter($requestData['printer']);
+            $printJob->setXml($requestData['xml']);
+            $printJob->setStatus(PrintJobStatus::pending);
+
+            $this->printJobsRepository->persist($printJob);
+
+            $response->getBody()->write('ok');
+			return $response;
+        }
+
+        /*return $this->twig->render(
+            $response, 
+            'admin/create_table.twig',
+            ['exception' => $exception ?? null]
+        );*/
+	}
+}

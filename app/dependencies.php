@@ -6,14 +6,13 @@ use Domain\Entities\Language;
 use Domain\Entities\Menu;
 use Domain\Entities\MenuSection;
 use Domain\Entities\MenuItem;
-use Domain\Entities\MenuItemExtra;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryCancellation;
 use Domain\Entities\OrderEntryGroup;
-use Domain\Entities\Recipe;
 use Domain\Entities\Reservation;
 use Domain\Entities\Printer;
+use Domain\Entities\PrintJob;
 use Domain\Entities\Scan;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
@@ -25,10 +24,9 @@ use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\OrderEntriesRepository;
-use Domain\Repositories\MenuItemExtrasRepository;
 use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\PrintJobsRepository;
 use Domain\Repositories\UserPermissionsRepository;
-use Domain\Repositories\RecipesRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\UsersRepository;
@@ -45,7 +43,6 @@ use Application\Settings\Settings;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-
 use Monolog\Logger;
 use Monolog\Handler\RotatingFileHandler;
 
@@ -152,11 +149,6 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(MenuItem::class);
         },
-        MenuItemExtrasRepository::class => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(MenuItemExtra::class);
-        },
         OrdersRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
@@ -212,10 +204,10 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $em->getRepository(SupplyGroup::class);
         },
-        RecipesRepository::class => function (ContainerInterface $c) {
+        PrintJobsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
 
-            return $em->getRepository(Recipe::class);
+            return $em->getRepository(PrintJob::class);
         },
         /*'Domain\Repositories\PoStringsRepository' => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

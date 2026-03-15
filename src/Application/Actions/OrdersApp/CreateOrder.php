@@ -118,10 +118,10 @@ final class CreateOrder
             	$orderEntry->setTiming(intval($entry['timing']));
             	$orderEntry->setNotes($entry['notes']);
             	//$orderEntry->setPaymentMethod(null);
-            	$orderEntry->setIsPaid($orderIsPaid);
+            	$orderEntry->setIsPaid(false);
                 $orderEntry->setOrderEntryGroup($orderEntryGroup);
 
-            	if ($menuItem->getIsPricePerKg()) {
+            	if ($menuItem->getPriceUnit() == 'kg') {
             		$orderEntry->setWeight(intval($entry['weight']));
             		//$orderEntry->setMaxWeight(intval($entry['weight']));
             	} else {

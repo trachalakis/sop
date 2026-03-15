@@ -142,7 +142,7 @@
 						<div class="row gx-1">
 			        		<div class="col-sm-6 mb-2" v-for="menuItem in activeMenuSection.menuItems">
 			        			<div class="btn-group w-100">
-	  								<button v-if="menuItem.isPricePerKg"
+	  								<button v-if="menuItem.priceUnit == 'kg'"
 	  									type="button"
 	  									class="btn btn-lg btn-outline-primary w-75"
 	  									@click="showMenuItemOptionsModal(menuItem)"
@@ -211,7 +211,7 @@
 	        			></button>
 	      			</div>
 	      			<div class="modal-body">
-						<div class="mb-3" v-if="newMenuItem.isPricePerKg">
+						<div class="mb-3" v-if="newMenuItem.priceUnit == 'kg'">
 							<label class="form-label">Βάρος (γρ)</label>
 							<input class="form-control" type="number" min="50" step="1" v-model="newOrderEntry.weight"/>
 						</div>
@@ -288,7 +288,7 @@
 	        			></button>
 	      			</div>
 	      			<div class="modal-body">
-						<div class="mb-3" v-if="activeOrderEntry.menuItem.isPricePerKg">
+						<div class="mb-3" v-if="activeOrderEntry.menuItem.priceUnit == 'kg'">
 							<label class="form-label">Βάρος (γρ)</label>
 							<input
 								class="form-control"
@@ -671,7 +671,17 @@
                         menuSections (menu: "${this.menuName}") {
                             id, translations { name, language } ,
                             menuItems: activeMenuItems {
-                            	id, trackAvailableQuantity, availableQuantity, isPricePerKg, isDrink, price, translations { name, language }, menuPosition,
+                            	id, 
+                                trackAvailableQuantity, 
+                                availableQuantity, 
+                                isDrink, 
+                                price,
+                                priceUnit, 
+                                translations {
+                                    name,
+                                    language
+                                }, 
+                                menuPosition,
                             	extras: allExtras {
                             		id, name, price
                             	},
@@ -794,9 +804,10 @@
 						let orderEntriesCount = 0;
 						for (i = 0; i < 7; i++) {
 							_.each(this.orderedEntries(i), orderEntry => {
-								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == pr.id);
+								let index = _.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id);
 
-								if (index != -1 || pr.hasReceiptPrinter) {
+								//if (index != -1 || printer.hasReceiptPrinter) {
+                                if (index != -1) {
 									orderEntriesCount++;
 									let quantity = orderEntry.quantity;
 									let name = this.getTranslation(orderEntry.menuItem, 'el').name;
@@ -849,7 +860,7 @@
 						pr.addFeedLine(10);
 						pr.addCut(printer.CUT_FEED);
 						if (orderEntriesCount > 0) {
-							pr.printOk = false;
+							/*pr.printOk = false;
 							var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
  							//Create an ePOS-Print object
  							var epos = new epson.ePOSPrint(address);
@@ -862,7 +873,21 @@
  									printer.printOk = true;
  								}
  							}
- 							epos.send(pr.toString());
+ 							epos.send(pr.toString());*/
+                            //console.log(pr.toString());
+                            axios.post(
+                                    '/admin/print-jobs/create',
+                                    {
+                                        printer: printer.name,
+                                        xml: pr.toString()
+                                    }
+                                ).then(response => {
+                                    if (response.data == 'ok') {
+                                        printer.printOk = true;
+                                    }
+                                }).catch(function (error) {
+                                    alert(error);
+                                });
 						} else {
 							printer.printOk = true;
 						}
@@ -874,7 +899,7 @@
 					this.newOrderEntry.family = this.family;
 					this.newOrderEntry.notes = '';
 
-		    		if (menuItem.isPricePerKg) {
+		    		if (menuItem.priceUnit == 'kg') {
 	  					this.newOrderEntry.weight = '';
 		    		}
 		    	},
@@ -963,7 +988,7 @@
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItem.price;
 
-		    		if (orderEntry.menuItem.isPricePerKg) {
+		    		if (orderEntry.menuItem.priceUnit == 'kg') {
 		    			let weight = orderEntry.weight;
 
 		    			if (weight < 1000) {

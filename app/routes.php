@@ -12,6 +12,7 @@ use Application\Actions\Admin\CloneMenuItem;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
 use Application\Actions\Admin\CreatePrinter;
+use Application\Actions\Admin\CreatePrintJob;
 use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
@@ -144,6 +145,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/printers/create', CreatePrinter::class);
         $group->map(['GET', 'POST'], '/printers/update', UpdatePrinter::class);
         $group->get('/printers/delete', DeletePrinter::class);
+        $group->post('/print-jobs/create', CreatePrintJob::class);
 
         $group->get('/report', Report::class);
         $group->get('/predict', Predict::class);

@@ -22,12 +22,11 @@ final class PrinterStatus
 	{
 		//$language = isset($args['language']) ? $args['language'] : 'en';
 		
-        $this->logger->debug(
-            json_encode($request->getParsedBody())
+        /*$this->logger->debug(
+            'Status: ' . $request->getBody()
+        );*/
            
-        );
-
-		$response->getBody()->write('ok');
+		//$response->getBody()->write('ok');
 		return $response;
 	}
 }
