@@ -18,10 +18,18 @@
 </div>
 <div id="app">
 	<table class="table table-responsive table-striped">
-    	<tbody>
+    	<thead>
+            <tr>
+                <th>#</th>
+                <th>Εκτυπωτής</th>
+                <th>Κατάσταση</th>
+                <th>Ημ/νία</th>
+            </tr>
+        </thead>
+        <tbody>
             <tr v-for="(printJob, index) in printJobs">
                 <td>
-                    <a class="text-decoration-none" href="#">
+                    <a class="text-decoration-none" :href="'/admin/print-jobs/update?id=' + printJob.id">
                         #{{printJob.id}}
                     </a>
                 </td>
@@ -30,7 +38,7 @@
                     <span v-if="printJob.status == 'pending'" class="badge rounded-pill text-bg-warning">Αναμονή</span>
                     <span v-if="printJob.status == 'completed'" class="badge rounded-pill text-bg-success">Ολοκληρώθηκε</span>
                 </td>
-                
+                <td>{{printJob.createdAt}}</td>
             </tr>
     	</tbody>
     </table>

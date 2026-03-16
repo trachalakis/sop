@@ -1,0 +1,79 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'printJobs' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/print-jobs" class="text-decoration-none">Εκτυπώσεις</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Επεξεργασία</h1>
+    <div class="btn-toolbar">
+       	<a href="/admin/print-jobs/delete?id={{printJob.getId}}" class="btn btn-danger confirm">
+            <i class="bi bi-trash"></i>
+        </a>
+    </div>
+</div>
+<form method="post" autocomplete="off">
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Εκτυπωτής</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="printer">
+  				{% for printer in printers %}
+                    <option
+                        value="{{printer.getName}}"
+                        {{printJob.getPrinter == printer.getName ? 'selected' :''}}
+                    >
+                        {{printer.getName}}
+                    </option>
+                {% endfor %}
+			</select>
+    	</div>
+	</div>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Κατάσταση</label>
+		<div class="col-sm-10">
+			<select class="form-select" name="status">
+  				{% for status in statuses %}
+                    <option
+                        value="{{status.value}}"
+                        {{printJob.getStatus == status.value ? 'selected' :''}}
+                    >
+                        {{status.value}}
+                    </option>
+                {% endfor %}
+			</select>
+    	</div>
+	</div>
+    <div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Ημ/νία</label>
+		<div class="col-sm-10">
+			<input 
+                type="text"
+                class="form-control"
+                value="{{printJob.getCreatedAt.format('Y-m-d H:i:s')}}"
+                disabled
+            />
+    	</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Xml</label>
+		<div class="col-sm-10">
+			<textarea class="form-control" rows="12" disabled>{{printJob.getXml|nl2br}}</textarea>
+    	</div>
+	</div>
+    <hr/>
+	<div class="row mb-3">
+		<div class="col-sm-10 offset-sm-2">
+			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
+		</div>
+	</div>
+</form>
+{% endblock %}

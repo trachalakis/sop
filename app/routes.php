@@ -19,6 +19,7 @@ use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
 use Application\Actions\Admin\DeleteOrder;
 use Application\Actions\Admin\DeletePrinter;
+use Application\Actions\Admin\DeletePrintJob;
 use Application\Actions\Admin\DeleteTable;
 use Application\Actions\Admin\DeleteScan;
 use Application\Actions\Admin\DeleteSupply;
@@ -48,6 +49,7 @@ use Application\Actions\Admin\UpdateMenu;
 use Application\Actions\Admin\UpdateMenuItem;
 use Application\Actions\Admin\UpdateMenuSection;
 use Application\Actions\Admin\UpdatePrinter;
+use Application\Actions\Admin\UpdatePrintJob;
 use Application\Actions\Admin\UpdateScan;
 use Application\Actions\Admin\UpdateSupply;
 use Application\Actions\Admin\UpdateTable;
@@ -148,6 +150,8 @@ return function (App $app, $container) {
         $group->get('/printers/delete', DeletePrinter::class);
         $group->get('/print-jobs', PrintJobs::class);
         $group->post('/print-jobs/create', CreatePrintJob::class);
+        $group->map(['GET', 'POST'], '/print-jobs/update', UpdatePrintJob::class);
+        $group->map(['GET', 'POST'], '/print-jobs/delete', DeletePrintJob::class);
 
         $group->get('/report', Report::class);
         $group->get('/predict', Predict::class);
