@@ -1429,7 +1429,7 @@
                                 '/admin/print-jobs/create',
                                 {
                                     printer: printer.name,
-                                    xml: pr.toString()
+                                    xml: ePOSBuilder.toString()
                                 }
                             ).then(response => {
                                 if (response.data == 'ok') {
