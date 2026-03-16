@@ -17,8 +17,8 @@ class Printer
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'boolean', name: 'has_receipt_printer')]
-    private bool $hasReceiptPrinter;
+    #[ORM\Column(type: 'boolean', name: 'is_receipt_printer')]
+    private bool $isReceiptPrinter;
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
@@ -37,9 +37,9 @@ class Printer
         return $this->id;
     }
 
-    public function getHasReceiptPrinter(): bool
+    public function getIsReceiptPrinter(): bool
     {
-    	return $this->hasReceiptPrinter;
+    	return $this->isReceiptPrinter;
     }
 
     public function getIsActive(): bool

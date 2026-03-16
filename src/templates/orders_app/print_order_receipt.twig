@@ -22,16 +22,27 @@
 	    				</li>
 	  				</ul>
 				</div>
-				<button
-					type="button"
-					class="btn btn-primary btn-lg me-2"
-					v-for="printer in printers"
-					@click="print(printer);"
-				>
-					<span class="spinner-border spinner-border-sm" v-if="printingOrder"></span>
-					<span v-else><i class="fa-solid fa-print"></i></span>
-					<span class="d-none d-sm-none d-md-inline"> Print @{{printer.name}}</span>
-				</button>
+                <template v-if="receiptPrinters.length == 1">
+                    <button
+                        type="button"
+                        class="btn btn-primary btn-lg me-2"
+                        @click="print(receiptPrinters[0]);"
+                    >
+                        <span class="d-none d-sm-none d-md-inline"> <i class="bi bi-printer"></i> @{{receiptPrinters[0].name}}</span>
+                    </button>
+                </template>
+                <template v-else>
+                    <div class="btn-group">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-printer"></i>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li v-for="printer in receiptPrinters"><a class="dropdown-item" @click="print(printer);">{{printer.name}}</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </template>
 			</div>
 	    </div>
 	</div>
@@ -255,7 +266,7 @@
                         	id, name, isoCode
                         },
                         printers {
-                        	id, name, printerAddress, hasReceiptPrinter
+                        	id, name, printerAddress, isReceiptPrinter
                         }
                     }`
                 }).then(response => {
@@ -265,7 +276,12 @@
                 });
 		    },
 		    computed: {
-		    	allOrdeEntries() {
+		    	receiptPrinters () {
+                    return _.filter(this.printers, printer => {
+		    			return printer.isReceiptPrinter;
+		    		});
+                },
+                allOrdeEntries() {
 		    		let allOrdeEntries = []
 
 		    		_.each(this.order.orderEntryGroups , orderEntryGroup => {
@@ -435,7 +451,7 @@
                         }
                     ).then(response => {
                         if (response.data == 'ok') {
-                            printer.printOk = true;
+                            window.location.href = '/orders-app/';
                         }
                     }).catch(function (error) {
                         alert(error);

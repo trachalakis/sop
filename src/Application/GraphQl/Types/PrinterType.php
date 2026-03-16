@@ -21,7 +21,7 @@ class PrinterType extends ObjectType
                     'name' => Type::string(),
                     'printerAddress' => Type::string(),
                     'isActive' => Type::boolean(),
-                    'hasReceiptPrinter' => Type::boolean()
+                    'isReceiptPrinter' => Type::boolean()
                 ];
             },
             'resolveField' => function ($object, $args, $context, $info) {
@@ -29,10 +29,5 @@ class PrinterType extends ObjectType
             }
         ];
         parent::__construct($config);
-    }
-
-    public function resolveType($rootValue, $args, $context, $info)
-    {
-        return $context->get(PrintersRepository::class)->findOneBy(['id' => $args['id']]);
     }
 }
