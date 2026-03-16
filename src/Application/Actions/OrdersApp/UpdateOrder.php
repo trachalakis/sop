@@ -103,21 +103,14 @@ final class UpdateOrder
                     $orderEntry->setMenuItem($menuItem);
                     $orderEntry->setMenuItemPrice($menuItem->getPrice());
                     $orderEntry->setQuantity(intval($entry['quantity']));
-                    //$orderEntry->setMaxQuantity(intval($entry['quantity']));
                     $orderEntry->setIsPaid(false);
-                    //$orderEntry->setPaymentMethod(null);
-                    //$orderEntry->setCreatedAt($datetime);
-                    if ($menuItem->getIsPricePerKg()) {
+                    if ($menuItem->getPriceUnit() == 'kg') {
                         $orderEntry->setWeight(intval($entry['weight']));
                     } else {
                         $orderEntry->setWeight(null);
                     }
                     $orderEntry->setDiscount(intval($entry['discount']));
                     $orderEntry->setOrder($order);
-                    //if ($orderEntry->getQuantity() == 0) {
-                    //    $orderEntry->setIsPaid(true);
-                    //}
-                    //$orderEntry->setPrice(floatval($entry['price']));
                     $orderEntry->setFamily(intval($entry['family']));
                     $orderEntry->setTiming(intval($entry['timing']));
                     $orderEntry->setNotes($entry['notes']);
@@ -134,7 +127,6 @@ final class UpdateOrder
                     $orderEntry->setOrderEntryExtras($orderEntryExtras);
                     $orderEntry->setOrderEntryGroup($orderEntryGroup);
 
-                    //$orderEntries[] = $orderEntry;
                     $this->orderEntriesRepository->persist($orderEntry);
                 }
             }
