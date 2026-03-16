@@ -415,17 +415,17 @@
 					//printer.addTextAlign(printer.ALIGN_RIGHT);
 					ePOSBuilder.addText(_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice))
 					ePOSBuilder.addFeedLine(3);
-					ePOSBuilder.addTextAlign(printer.ALIGN_CENTER);
+					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
 					ePOSBuilder.addTextSize(3, 3);
 					ePOSBuilder.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
 					ePOSBuilder.addFeedLine(3);
 					if (this.activeLanguage.isoCode == 'en') {
-						printer.addTextSize(1, 1);
-						printer.addText('Tips not required but greatly appreciated.\n');
+						ePOSBuilder.addTextSize(1, 1);
+						ePOSBuilder.addText('Tips not required but greatly appreciated.\n');
 					}
 					ePOSBuilder.addText(this.getHm());
 					ePOSBuilder.addFeedLine(2);
-					ePOSBuilder.addCut(printer.CUT_FEED);
+					ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
 
                     axios.post(
                         '/admin/print-jobs/create',
