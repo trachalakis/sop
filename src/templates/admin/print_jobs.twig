@@ -1,0 +1,103 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'printJobs' %}
+
+{% block content %}{% verbatim %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/print-jobs" class="text-decoration-none">Εκτυπώσεις</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Εκτυπώσεις</h1>
+</div>
+<div id="app">
+	<table class="table table-responsive table-striped">
+    	<tbody>
+            <tr v-for="(printJob, index) in printJobs">
+                <td>
+                    <a class="text-decoration-none" href="#">
+                        #{{printJob.id}}
+                    </a>
+                </td>
+                <td>{{printJob.printer}}</td>
+                <td>
+                    <span class="badge rounded-pill text-bg-danger">Inactive</span>
+                </td>
+                
+            </tr>
+    	</tbody>
+    </table>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<script src="/assets/js/lodash.min.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		printJobs: [],
+					//menus: [],
+					//takeAwayTables: 0
+		    	}
+		    },
+		    mounted () {
+		    	setInterval(() => {
+					this.fetchPrintJobs()
+				}, 5000)
+                this.fetchPrintJobs();
+		    },
+		    methods: {
+		    	fetchPrintJobs () {
+                    axios({
+                        url: '/admin/graph-ql',
+                        method: 'post',
+                        data: `{
+                            printJobs {
+                                id, createdAt, printer, status, xml
+                            }
+                        }`
+                    }).then(response => {
+                        this.printJobs = response.data.data.printJobs
+                    });
+		    		/*axios({
+	                    url: '/admin/graph-ql',
+	                    method: 'post',
+	                    data: `{
+	                        activeOrders {
+	                        	id, uuid, table {id, name}, price, createdAt
+	                        }
+	                    }`
+	                }).then(response => {
+	                    this.orders = response.data.data.activeOrders
+	                });*/
+		    	},
+		    	getTime(date) {
+		    		return date.substr(date.length - 8, 5);
+		    	}
+		    },
+			/*computed: {
+				hasTakeOut () {
+					let ret = false;
+					
+					_.each(this.menus, menu => {
+						if (menu.name == 'Take Out') {
+							ret = true;
+						}
+					});
+
+					return ret;
+				}
+			}*/
+		}).mount('#app');
+	</script>
+{% endblock %}

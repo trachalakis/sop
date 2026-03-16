@@ -33,6 +33,7 @@ use Application\Actions\Admin\MenuSectionStatistics;
 use Application\Actions\Admin\OpenOrder;
 use Application\Actions\Admin\Predict;
 use Application\Actions\Admin\Printers;
+use Application\Actions\Admin\PrintJobs;
 use Application\Actions\Admin\PrintMenu;
 use Application\Actions\Admin\Report;
 use Application\Actions\Admin\Scans;
@@ -145,6 +146,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/printers/create', CreatePrinter::class);
         $group->map(['GET', 'POST'], '/printers/update', UpdatePrinter::class);
         $group->get('/printers/delete', DeletePrinter::class);
+        $group->get('/print-jobs', PrintJobs::class);
         $group->post('/print-jobs/create', CreatePrintJob::class);
 
         $group->get('/report', Report::class);

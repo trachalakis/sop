@@ -84,6 +84,17 @@
 							<a class="nav-link {{activeNavLink == 'printers' ? 'active' : ''}}" href="/admin/printers">
 								Εκτυπωτές
 							</a>
+                            <ul class="nav">
+                                <li class="nav-item">
+                                    <a 
+                                        class="nav-link {{activeNavLink == 'printJobs' ? 'active' : ''}}"
+                                        style="padding-left:32px"
+                                        href="/admin/print-jobs"
+                                    >
+                                        Εκτυπώσεις
+                                    </a>
+                                </li>
+                            </ul>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link {{activeNavLink == 'scans' ? 'active' : ''}}" href="/admin/scans">

@@ -76,7 +76,8 @@
 					this.fetchOrders()
 				}, 5000)
                 this.fetchOrders();
-				axios({
+				//TODO deprecate this
+                axios({
 					url: '/admin/graph-ql',
 					method: 'post',
 					data: `{

@@ -73,6 +73,7 @@ class Types
         return static::get(OrderEntryCancellationType::class);
     }
 
+    //TODO
     public static function orderEntryExtra()
     {
         return static::get(OrderEntryExtraType::class);
@@ -86,6 +87,11 @@ class Types
     public static function printer()
     {
         return static::get(PrinterType::class);
+    }
+
+    public static function printJob()
+    {
+        return static::get(PrintJobType::class);
     }
 
     public static function supplier()

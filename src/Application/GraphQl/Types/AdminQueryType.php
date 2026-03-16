@@ -10,6 +10,7 @@ use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\ReservationsRepository;
 use Domain\Repositories\PrintersRepository;
+use Domain\Repositories\PrintJobsRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\UsersRepository;
@@ -61,14 +62,7 @@ class AdminQueryType extends ObjectType
                         	->findBy(['isActive' => true]);
                     }
                 ],
-                'tables' => [
-                    'type' => Type::listOf(Types::table()),
-                    'resolve' => function ($rootValue, $args, $context, $info) {
-                        return $context
-                        	->get(TablesRepository::class)
-                        	->findBy(['isActive' => true], ['name' => 'asc']);
-                    }
-                ],
+                
                 'availableTables' => [
                     'type' => Type::listOf(Types::table()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
@@ -98,6 +92,14 @@ class AdminQueryType extends ObjectType
                         	->findBy(['isActive' => true], ['name' => 'asc']);
                     }
                 ],
+                'printJobs' => [
+                    'type' => Type::listOf(Types::printJob()),
+                    'resolve' => function ($rootValue, $args, $context, $info) {
+                        return $context
+                        	->get(PrintJobsRepository::class)
+                        	->findBy([], ['createdAt' => 'desc']);
+                    }
+                ],
                 'order' => [
                 	'type' => Types::order(),
                 	'args' => [
@@ -112,14 +114,7 @@ class AdminQueryType extends ObjectType
                         	->findAll();
                     }
                 ],
-                'supplies' => [
-                	'type' => Type::listOf(Types::supply()),
-                	'resolve' => function ($rootValue, $args, $context, $info) {
-                        return $context
-                        	->get(SuppliesRepository::class)
-                        	->findBy([], ['name' => 'asc']);
-                    }
-                ],
+                
                 'employees' => [
                     'type' => Type::listOf(Types::user()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
@@ -154,7 +149,24 @@ class AdminQueryType extends ObjectType
 
                         return $todaysReservations;
                     }
-                ]
+                ],
+                //TODO do we need this here?
+                'supplies' => [
+                	'type' => Type::listOf(Types::supply()),
+                	'resolve' => function ($rootValue, $args, $context, $info) {
+                        return $context
+                        	->get(SuppliesRepository::class)
+                        	->findBy([], ['name' => 'asc']);
+                    }
+                ],
+                'tables' => [
+                    'type' => Type::listOf(Types::table()),
+                    'resolve' => function ($rootValue, $args, $context, $info) {
+                        return $context
+                        	->get(TablesRepository::class)
+                        	->findBy(['isActive' => true], ['name' => 'asc']);
+                    }
+                ],
             ],
             'resolveField' => function ($rootValue, $args, $context, $info) {
                 $type = sprintf("\\Application\\GraphQl\\Types\\%sType", ucfirst($info->fieldName));
