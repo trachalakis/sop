@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use DateTimeImmutable;
 use Domain\Entities\PrintJob;
 use Domain\Repositories\PrintJobsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -28,6 +29,7 @@ final class CreatePrintJob
             $printJob->setPrinter($requestData['printer']);
             $printJob->setXml($requestData['xml']);
             $printJob->setStatus(PrintJobStatus::pending);
+            $printJob->setCreatedAt(new DateTimeImmutable);
 
             $this->printJobsRepository->persist($printJob);
 

@@ -20,13 +20,31 @@ final class PrinterStatus
 
 	public function __invoke(Request $request, Response $response, $args)
 	{
-		//$language = isset($args['language']) ? $args['language'] : 'en';
+		$requestParams = $request->getParsedBody();
 		
-        /*$this->logger->debug(
-            'Status: ' . $request->getBody()
-        );*/
+        //$this->logger->debug('STATUS: ' . $request->getBody());
+
+        if ($requestParams['ConnectionType'] == 'SetStatus') {
+            
+            $xml = simplexml_load_string($requestParams['Status']);
+            
+            foreach ($xml->servicestatus as $status) {
+                if ((string)$status['severity'] != 'INFO') {
+                    //Do something with the error
+                    //sort it out in the future
+                    /*$this->logger->debug(
+                        sprintf(
+                            "Printer: %s | Service: %s | Message: %s",
+                            $requestParams['ID'],
+                            (string)$status['servicename'],
+                            (string)$status['message'],
+                        )
+                    );*/           
+                }
+            }
+        }
            
-		//$response->getBody()->write('ok');
+		$response->getBody()->write('');
 		return $response;
 	}
 }
