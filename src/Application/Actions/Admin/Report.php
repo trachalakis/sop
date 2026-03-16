@@ -198,7 +198,7 @@ final class Report
 
         /*** Statistics ***/
         $standardDeviation = 0;
-        if (count($orders) > 0) {
+        if (count($orders) > 10) {
             $salesMean = $sales / count($orders);
             $squaresSum = 0;
             foreach($orders as $order) {
