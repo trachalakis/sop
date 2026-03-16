@@ -5,34 +5,32 @@
 {% endblock %}
 
 {% block users_app_content %}
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>#Order</th>
+            <th>Date</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set total = 0 %}
+        {% for order in orders %}
+            {% set total = total + order.getPrice %}
             <tr>
-                <th>#Order</th>
-                <th>Date</th>
-                <th>Total</th>
+                <td><a class="text-decoration-none" href="/users-app/view-order?uuid={{order.getUuid}}" target="_blank">#{{order.getUuid|slice(0, 8)}}</a></td>
+                <td>{{order.getCreatedAt.format('D j M Y')}}</td>
+                <td>
+                    &euro;{{order.getPrice}}
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            {% set total = 0 %}
-            {% for order in orders %}
-                {% set total = total + order.getPrice %}
-            	<tr>
-                    <td><a class="text-decoration-none" href="/users-app/view-order?uuid={{order.getUuid}}" target="_blank">#{{order.getUuid|slice(0, 8)}}</a></td>
-                    <td>{{order.getCreatedAt.format('D j M Y')}}</td>
-                    <td>
-                        &euro;{{order.getPrice}}
-                    </td>
-                </tr>
-            {% endfor %}
-            <tr>
-                <td></td>
-                <td></td>
-                <td>{{total}}&euro;</strong></td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td>{{total}}&euro;</strong></td>
+            <td></td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

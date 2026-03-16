@@ -27,45 +27,43 @@
         </a>
     </div>
 </div>
-<div class="table-responsive">
-	<table class="table table-striped">
-    	<thead>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>Όνομα</th>
+            <th>Αρχή &rarr; Τέλος</th>
+            <th>Διάρκεια</th>
+            <th>Μισθός</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for scan in scans %}
             <tr>
-                <th>Όνομα</th>
-                <th>Αρχή &rarr; Τέλος</th>
-                <th>Διάρκεια</th>
-                <th>Μισθός</th>
-                <th></th>
+                <td>
+                    <a class="text-decoration-none" href="/admin/scans/user?id={{scan.getUser.getId}}">
+                        {{scan.getUser.getFullName}}
+                    </a>
+                </td>
+                <td>{{scan.getCheckIn.format('H:i:s')}} &rarr; {{scan.getCheckOut.format('H:i:s')}}</td>
+                <td>{{scan.getInterval.format('%H:%I:%S')}}</td>
+                <td>{{scan.getSalary|round(1)}}&euro;</td>
+                <td>
+                    <a class="text-decoration-none" href="/admin/scans/update?id={{scan.getId}}">Επεξεργασία</a>
+                </td>
             </tr>
-        </thead>
-		<tbody>
-            {% for scan in scans %}
-            	<tr>
-                    <td>
-                        <a class="text-decoration-none" href="/admin/scans/user?id={{scan.getUser.getId}}">
-                        	{{scan.getUser.getFullName}}
-                        </a>
-                    </td>
-                    <td>{{scan.getCheckIn.format('H:i:s')}} &rarr; {{scan.getCheckOut.format('H:i:s')}}</td>
-                    <td>{{scan.getInterval.format('%H:%I:%S')}}</td>
-                    <td>{{scan.getSalary|round(1)}}&euro;</td>
-                    <td>
-                        <a class="text-decoration-none" href="/admin/scans/update?id={{scan.getId}}">Επεξεργασία</a>
-                    </td>
-                </tr>
-            {% endfor %}
-            {% if scans|length > 0 %}
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>{{hours}}h:{{minutes}}m:{{seconds}}s</td>
-                    <td>{{salariesTotal|round(1)}}</td>
-                    <td></td>
-                </tr>
-            {% endif %}
-		</tbody>
-	</table>
-</div>
+        {% endfor %}
+        {% if scans|length > 0 %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>{{hours}}h:{{minutes}}m:{{seconds}}s</td>
+                <td>{{salariesTotal|round(1)}}</td>
+                <td></td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
 {% endblock %}
 
 {% block javascript %}

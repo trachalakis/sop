@@ -132,88 +132,84 @@
 </div>
 <hr/>
 {% if end.diff(start).days <= 2 %}
-    <div class="table-responsive">
-    	<table class="table table-striped">
-        	<thead>
-          		<tr>
-          			<th></th>
-          			<th>Τραπέζι</th>
-          			<th>Σύνολο</th>
-          			<th>Δημιουργήθηκε</th>
-                    <th>Πληρώθηκε</th>
-                    <th>Σερβιτόρος</th>
-          			<th></th>
-          		</tr>
-        	</thead>
-        	<tbody>
-        		{% for order in orders %}
-        			<tr>
-        				<td>
-        					<a class="text-decoration-none" href="/admin/orders/view?id={{order.getId}}" target="_blank">
-        						#{{order.getId}}
-        						{% if order.hasCancelledEntries %}
-        							<i class="fa-solid fa-trash-can"></i>
-        						{% endif %}
-                                {% if order.hasDiscountedEntries %}
-                                    <i class="fa-solid fa-percent"></i>
-                                {% endif %}
-        					</a>
-        				</td>
-        				<td>T{{order.getTable.getName}}</td>
-        				<td>
-        					&euro;{{order.getPrice}}
-        				</td>
-        				<td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
-                        <td>{{order.getPaidAt.format('Y-m-d H:i A')}}</td>
-                        <td>{{order.getWaiter.getFullName}}</td>
-        				<td class="text-end">
-                            <a class="btn btn-primary confirm me-2" href="/admin/orders/open?id={{order.getId}}">
-                                Open
-                            </a>
-                            <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
-                                Delete
-                            </a>
-    					</td>
-        			</tr>
-        		{% endfor %}
-        	</tbody>
-        </table>
-    </div>
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Τραπέζι</th>
+                <th>Σύνολο</th>
+                <th>Δημιουργήθηκε</th>
+                <th>Πληρώθηκε</th>
+                <th>Σερβιτόρος</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>
+                        <a class="text-decoration-none" href="/admin/orders/view?id={{order.getId}}" target="_blank">
+                            #{{order.getId}}
+                            {% if order.hasCancelledEntries %}
+                                <i class="fa-solid fa-trash-can"></i>
+                            {% endif %}
+                            {% if order.hasDiscountedEntries %}
+                                <i class="fa-solid fa-percent"></i>
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>T{{order.getTable.getName}}</td>
+                    <td>
+                        &euro;{{order.getPrice}}
+                    </td>
+                    <td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
+                    <td>{{order.getPaidAt.format('Y-m-d H:i A')}}</td>
+                    <td>{{order.getWaiter.getFullName}}</td>
+                    <td class="text-end">
+                        <a class="btn btn-primary confirm me-2" href="/admin/orders/open?id={{order.getId}}">
+                            Open
+                        </a>
+                        <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <h3 class="mb-2">Αυτοπαράδοση</h3>
-    <div class="table-responsive">
-    	<table class="table table-striped">
-        	<thead>
-          		<tr>
-          			<th></th>
-          			<th>Εργαζόμενος</th>
-          			<th>Price</th>
-          			<th>Created</th>
-          			<th></th>
-          		</tr>
-        	</thead>
-        	<tbody>
-        		{% for order in employeeOrders %}
-        			<tr>
-        				<td>
-        					<a class="text-decoration-none" href="/admin/orders/update?id={{order.getId}}" target="_blank">
-        						#{{order.getId}}
-        					</a>
-        				</td>
-        				<td>{{order.getEmployee.getFullName}}</td>
-        				<td>
-        					{{order.getPrice}}&euro;
-        				</td>
-        				<td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
-        				<td class="text-end">
-                            <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
-                                Delete
-                            </a>
-    					</td>
-        			</tr>
-        		{% endfor %}
-        	</tbody>
-        </table>
-    </div>
+    <table class="table table-responsive table-striped">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Εργαζόμενος</th>
+                <th>Price</th>
+                <th>Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in employeeOrders %}
+                <tr>
+                    <td>
+                        <a class="text-decoration-none" href="/admin/orders/update?id={{order.getId}}" target="_blank">
+                            #{{order.getId}}
+                        </a>
+                    </td>
+                    <td>{{order.getEmployee.getFullName}}</td>
+                    <td>
+                        {{order.getPrice}}&euro;
+                    </td>
+                    <td>{{order.getCreatedAt.format('Y-m-d H:i A')}}</td>
+                    <td class="text-end">
+                        <a class="btn btn-danger confirm" href="/admin/orders/delete?id={{order.getId}}">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endif %}
 {% endblock %}
 

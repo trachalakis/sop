@@ -37,45 +37,43 @@
     	<a class="nav-link fs-5 active" href="/admin/users/orders?id={{user.getId}}">Αυτοπαραδόσεις</a>
   	</li>
 </ul>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Ημ/νία</th>
-                <th>Παραγγελεία</th>
-                <th>Σύνολο</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% set total = 0 %}
-            {% for order in orders %}
-                {% if order.getPrice > 3 %}
-                    {% set total = total + order.getPrice %}
-                {% endif %}
-            	<tr>
-                    <td>{{order.getCreatedAt.format('Y-m-d H:i')}}</td>
-                    <td>
-                        {% for orderEntry in order.getOrderEntries %}
-                            {% if orderEntry.getQuantity > 1 %}
-                                {{ orderEntry.getQuantity }} <strong>&times;</strong>
-                            {% endif %}
-                            {{ orderEntry.getMenuItem.getTranslation('el').getName }}{% if not loop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                    <td>
-                        <span class="{{order.getPrice > 3 ? 'fw-bold' : ''}}">{{order.getPrice}}</span>
-                    </td>
-                </tr>
-            {% endfor %}
-            {% if orders|length > 0 %}
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>{{total}}&euro; / <strong>{{total / 2}}&euro;</strong></td>
-                    <td></td>
-                </tr>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>Ημ/νία</th>
+            <th>Παραγγελεία</th>
+            <th>Σύνολο</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set total = 0 %}
+        {% for order in orders %}
+            {% if order.getPrice > 3 %}
+                {% set total = total + order.getPrice %}
             {% endif %}
-        </tbody>
-    </table>
-</div>
+            <tr>
+                <td>{{order.getCreatedAt.format('Y-m-d H:i')}}</td>
+                <td>
+                    {% for orderEntry in order.getOrderEntries %}
+                        {% if orderEntry.getQuantity > 1 %}
+                            {{ orderEntry.getQuantity }} <strong>&times;</strong>
+                        {% endif %}
+                        {{ orderEntry.getMenuItem.getTranslation('el').getName }}{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    <span class="{{order.getPrice > 3 ? 'fw-bold' : ''}}">{{order.getPrice}}</span>
+                </td>
+            </tr>
+        {% endfor %}
+        {% if orders|length > 0 %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td>{{total}}&euro; / <strong>{{total / 2}}&euro;</strong></td>
+                <td></td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
 {% endblock %}

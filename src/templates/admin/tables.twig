@@ -21,24 +21,21 @@
         </a>
     </div>
 </div>
-<!-- TODO -->
-<div class="table-responsive">
-	<table class="table table-striped">
-    	<tbody>
-    		{% for table in tables %}
-    			<tr>
-    				<td>
-    					<a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
-                            {{table.getName}}
-                        </a>
-    					{% if not table.getIsActive %}
-    						<span class="badge rounded-pill text-bg-danger">Inactive</span>
-    					{% endif %}
-    				</td>
-    				
-    			</tr>
-    		{% endfor %}
-    	</tbody>
-    </table>
-</div>
+<table class="table table-responsive table-striped">
+    <tbody>
+        {% for table in tables %}
+            <tr>
+                <td>
+                    <a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
+                        {{table.getName}}
+                    </a>
+                    {% if not table.getIsActive %}
+                        <span class="badge rounded-pill text-bg-danger">Inactive</span>
+                    {% endif %}
+                </td>
+                
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
