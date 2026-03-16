@@ -18,7 +18,7 @@ class PrintJob
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'datetime', name: 'created_at')]
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'string', name: 'printer')]

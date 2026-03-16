@@ -13,24 +13,17 @@ final class PrintJobs
 {
 	private Twig $twig;
 
-    //private PrintJobsRepository $printJobsRepository;
-
     public function __construct(
         Twig $twig,
-        //PrintJobsRepository $printJobsRepository
     ) {
         $this->twig = $twig;
-        //$this->printJobsRepository = $printJobsRepository;
     }
 
     public function __invoke(Request $request, Response $response)
     {
-        //$tables = $this->tablesRepository->findBy([], ['isActive' => 'desc', 'name' => 'asc']);
-
         return $this->twig->render(
             $response, 
             'admin/print_jobs.twig' 
-            //['tables' => $tables]
         );
     }
 }
