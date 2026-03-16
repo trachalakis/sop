@@ -27,7 +27,8 @@
                 </td>
                 <td>{{printJob.printer}}</td>
                 <td>
-                    <span class="badge rounded-pill text-bg-danger">Inactive</span>
+                    <span v-if="printJob.status == 'pending'" class="badge rounded-pill text-bg-warning">Αναμονή</span>
+                    <span v-if="printJob.status == 'completed'" class="badge rounded-pill text-bg-danger">Ολοκληρώθηκε</span>
                 </td>
                 
             </tr>
