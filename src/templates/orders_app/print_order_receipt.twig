@@ -25,7 +25,7 @@
 				<button
 					type="button"
 					class="btn btn-primary btn-lg me-2"
-					v-for="printer in printersWithReceipt"
+					v-for="printer in printers"
 					@click="print(printer);"
 				>
 					<span class="spinner-border spinner-border-sm" v-if="printingOrder"></span>
@@ -323,11 +323,6 @@
 			    	});
 
 		    		return _.round(totalPrice, 1);
-		    	},
-		    	printersWithReceipt () {
-		    		return _.filter(this.printers, printer => {
-		    			return printer.hasReceiptPrinter
-		    		});
 		    	}
 		    },
 		    methods: {
