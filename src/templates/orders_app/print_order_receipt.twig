@@ -368,30 +368,30 @@
 		    		}
 		    		this.printingOrder = true;
 
-					let printer = new epson.ePOSBuilder();
+					let ePOSBuilder = new epson.ePOSBuilder();
 					//printer.addCommand('\x1B\x40\x1B\x74\x13');
 					//printer.addText(('\xC4'))
-					printer.addTextAlign(printer.ALIGN_CENTER);
+					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
 					var ctx = document.getElementById('almyriki-logo');
         			ctx = ctx.getContext('2d');
 
-					printer.addImage(ctx, 0, 0, 590, 286, printer.COLOR_1, printer.MODE_MONO);
-					printer.addFeedLine(1);
-					printer.addTextFont(printer.FONT_B);
-					printer.addTextSmooth(true);
-					printer.addFeedLine(3);
-					printer.addTextAlign(printer.ALIGN_CENTER);
-					printer.addTextSize(3, 3);
-					printer.addText(_.replace(i18n._("Table %s\n", this.activeLanguage.isoCode), '%s', this.order.table.name))
-					printer.addTextSize(2, 2);
+					ePOSBuilder.addImage(ctx, 0, 0, 590, 286, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
+					ePOSBuilder.addFeedLine(1);
+					ePOSBuilder.addTextFont(ePOSBuilder.FONT_B);
+					ePOSBuilder.addTextSmooth(true);
+					ePOSBuilder.addFeedLine(3);
+					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
+					ePOSBuilder.addTextSize(3, 3);
+					ePOSBuilder.addText(_.replace(i18n._("Table %s\n", this.activeLanguage.isoCode), '%s', this.order.table.name))
+					ePOSBuilder.addTextSize(2, 2);
 					if (this.selectedFamilies.length == 1 && this.orderFamilies.length > 1) {
-						printer.addText(_.replace(i18n._("Family %s\n", this.activeLanguage.isoCode), '%s', this.selectedFamilies[0]))
+						ePOSBuilder.addText(_.replace(i18n._("Family %s\n", this.activeLanguage.isoCode), '%s', this.selectedFamilies[0]))
 					}
-					printer.addFeedLine(1);
-					printer.addText(_.repeat('-', 32));
-					printer.addFeedLine(1);
-					printer.addTextAlign(printer.ALIGN_LEFT);
-					printer.addTextLineSpace(40);
+					ePOSBuilder.addFeedLine(1);
+					ePOSBuilder.addText(_.repeat('-', 32));
+					ePOSBuilder.addFeedLine(1);
+					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_LEFT);
+					ePOSBuilder.addTextLineSpace(40);
 
 					_.each(this.groupedOrderEntries, orderEntry => {
 						let quantity = orderEntry.quantity;
@@ -412,67 +412,39 @@
 						if ((menuItemBlock.length + priceBlock.length) <= 32) {
 							dotsBlock = '.'.repeat(32 - (menuItemBlock.length + priceBlock.length));
 						}
-						printer.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
+						ePOSBuilder.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
 					});
-					/*_.each(this.selectedOrderEntries, orderEntry => {
-						if (orderEntry.quantity > 0 && orderEntry.menuItemPrice > 0) {
-							let quantity = orderEntry.quantity;
 
-							let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name
-
-							let menuItemBlock = '';
-							menuItemBlock = `${quantity} x ${name}`;
-							if (menuItemBlock.length >= 32) {
-								name = name.substring(
-									0, name.indexOf('/') - (quantity.toString().length - 1)
-								); //minus 1 is for times symbol
-								menuItemBlock = `${quantity} x ${name}`;
-							}
-
-							let dotsBlock = '';
-							let priceBlock = '€' + this.calculateOrderEntryPrice(orderEntry);
-							if ((menuItemBlock.length + priceBlock.length) <= 32) {
-								dotsBlock = '.'.repeat(32 - (menuItemBlock.length + priceBlock.length));
-							}
-							printer.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
-
-							if (orderEntry.weight != null) {
-								printer.addText(`\t${orderEntry.weight / 1000}Kg\n`);
-							}
-						}
-					});*/
-
-					printer.addText(_.repeat('-', 32));
-					printer.addFeedLine(1);
+					ePOSBuilder.addText(_.repeat('-', 32));
+					ePOSBuilder.addFeedLine(1);
 					//printer.addTextAlign(printer.ALIGN_RIGHT);
-					printer.addText(_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice))
-					printer.addFeedLine(3);
-					printer.addTextAlign(printer.ALIGN_CENTER);
-					printer.addTextSize(3, 3);
-					printer.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
-					printer.addFeedLine(3);
-					/*if (this.activeLanguage.isoCode == 'en') {
+					ePOSBuilder.addText(_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice))
+					ePOSBuilder.addFeedLine(3);
+					ePOSBuilder.addTextAlign(printer.ALIGN_CENTER);
+					ePOSBuilder.addTextSize(3, 3);
+					ePOSBuilder.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
+					ePOSBuilder.addFeedLine(3);
+					if (this.activeLanguage.isoCode == 'en') {
 						printer.addTextSize(1, 1);
 						printer.addText('Tips not required but greatly appreciated.\n');
-					}*/
-					printer.addText(this.getHm());
-					printer.addFeedLine(2);
-					printer.addCut(printer.CUT_FEED);
-
-		            if (printer.printerAddress == '192.168.1.10') {
-		            	var address = `http://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
-		            } else {
-		            	var address = `https://${printer.printerAddress}/cgi-bin/epos/service.cgi?devid=local_printer&timeout=10000`;
-		            }
- 					var epos = new epson.ePOSPrint(address);
-					epos.onreceive = function (res) {
-						if (!res.success) {
-							alert(`A print error occurred. Printer ${printer.name}`);
-						} else {
-							window.location.href = '/orders-app/';
-						}
 					}
-					epos.send(printer.toString());
+					ePOSBuilder.addText(this.getHm());
+					ePOSBuilder.addFeedLine(2);
+					ePOSBuilder.addCut(printer.CUT_FEED);
+
+                    axios.post(
+                        '/admin/print-jobs/create',
+                        {
+                            printer: printer.name,
+                            xml: ePOSBuilder.toString()
+                        }
+                    ).then(response => {
+                        if (response.data == 'ok') {
+                            printer.printOk = true;
+                        }
+                    }).catch(function (error) {
+                        alert(error);
+                    });
 		    	},
 		    	getTranslation(object, language) {
 		    		return _.find(object.translations, translation => {
