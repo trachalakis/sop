@@ -31,8 +31,6 @@ final class DeleteSupply
 
             $this->suppliesRepository->delete($supply);
         } catch(ForeignKeyConstraintViolationException $e) {
-            
-
             return $this->twig->render(
                 $response,
                 'admin/update_supply.twig',
