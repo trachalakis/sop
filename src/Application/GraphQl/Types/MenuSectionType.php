@@ -36,6 +36,6 @@ class MenuSectionType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(MenuSectionsRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(MenuSectionsRepository::class)->find($args['id']);
     }
 }

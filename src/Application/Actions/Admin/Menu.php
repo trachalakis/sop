@@ -30,7 +30,7 @@ final class Menu
         if (empty($queryParams['id'])) {
             $menu = $this->menusRepository->findOneBy(['isActive' => true]);
         } else {
-            $menu = $this->menusRepository->findOneBy(['id' => $queryParams['id']]);
+            $menu = $this->menusRepository->find($queryParams['id']);
         }
 
         return $this->twig->render(

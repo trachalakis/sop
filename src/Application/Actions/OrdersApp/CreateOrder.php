@@ -80,7 +80,7 @@ final class CreateOrder
 
             $orderEntries = [];
             foreach($requestData['orderEntries'] as $entry) {
-            	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $entry['menuItem']['id']]);
+            	$menuItem = $this->menuItemsRepository->find($entry['menuItem']['id']);
 
             	if ($menuItem->getTrackAvailableQuantity()) {
                     $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));

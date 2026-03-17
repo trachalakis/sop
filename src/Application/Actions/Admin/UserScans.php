@@ -31,7 +31,7 @@ final class UserScans
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$user = $this->usersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$user = $this->usersRepository->find($request->getQueryParams()['id']);
 
 		$queryParams = $request->getQueryParams();
         if (empty($queryParams['date'])) {

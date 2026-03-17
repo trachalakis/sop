@@ -19,7 +19,7 @@ final class DeletePrinter
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$printer = $this->printersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$printer = $this->printersRepository->find($request->getQueryParams()['id']);
 
 		$this->printersRepository->delete($printer);
 

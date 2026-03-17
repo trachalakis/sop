@@ -33,7 +33,7 @@ final class MenuSectionStatistics
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$menuSection = $this->menuSectionsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$menuSection = $this->menuSectionsRepository->find($request->getQueryParams()['id']);
 
 		$filter = $request->getQueryParams()['filter'] ?? [];
 		if (!empty($filter)) {

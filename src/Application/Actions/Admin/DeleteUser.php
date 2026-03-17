@@ -23,7 +23,7 @@ final class DeleteUser
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$user = $this->usersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$user = $this->usersRepository->find($request->getQueryParams()['id']);
 
 		$this->usersRepository->delete($user);
 

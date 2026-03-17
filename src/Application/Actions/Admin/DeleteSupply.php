@@ -27,7 +27,7 @@ final class DeleteSupply
 	public function __invoke(Request $request, Response $response)
 	{
 		try {
-            $supply = $this->suppliesRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+            $supply = $this->suppliesRepository->find($request->getQueryParams()['id']);
 
             $this->suppliesRepository->delete($supply);
         } catch (ForeignKeyConstraintViolationException $e) {

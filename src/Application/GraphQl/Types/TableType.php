@@ -30,6 +30,6 @@ class TableType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(TablesRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(TablesRepository::class)->find($args['id']);
     }
 }

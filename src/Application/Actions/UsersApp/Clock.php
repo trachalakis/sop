@@ -34,7 +34,7 @@ final class Clock
 	{
 		try {
 			$now = new Datetime;
-			$user = $this->usersRepository->findOneBy(['id' => $_SESSION['user']->getId()]);
+			$user = $this->usersRepository->find($_SESSION['user']->getId());
 			$scan = $this->scansRepository->findLastUserCheckIn($user);
 			if ($scan == null) {
 				$scan = new Scan(

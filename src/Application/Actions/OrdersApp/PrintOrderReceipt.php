@@ -25,7 +25,7 @@ final class PrintOrderReceipt
 
     public function __invoke(Request $request, Response $response)
     {
-    	$order = $this->ordersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+    	$order = $this->ordersRepository->find($request->getQueryParams()['id']);
 
     	if ($order->getStatus() != 'OPEN') {
     		return $response->withHeader('Location', '/orders-app/')->withStatus(302);

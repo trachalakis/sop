@@ -24,7 +24,7 @@ final class SortMenuItems
 		$position = 1;
 
 		foreach($menuItemIds as $menuItemId) {
-			$menuItem = $this->menuItemsRepository->findOneBy(['id' => $menuItemId]);
+			$menuItem = $this->menuItemsRepository->find($menuItemId);
 			$menuItem->setPosition($position++);
 			$this->menuItemsRepository->persist($menuItem);
 		}

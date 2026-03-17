@@ -37,6 +37,6 @@ class ReservationType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(ReservationsRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(ReservationsRepository::class)->find($args['id']);
     }
 }

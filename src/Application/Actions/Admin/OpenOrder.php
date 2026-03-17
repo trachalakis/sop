@@ -22,7 +22,7 @@ final class OpenOrder
     public function __invoke(Request $request, Response $response)
     {
     	$id = $request->getQueryParams()['id'];
-    	$order = $this->ordersRepository->findOneBy(['id' => $id]);
+    	$order = $this->ordersRepository->find($id);
 
     	$order->setStatus('OPEN');
     	$order->setPaidAt(null);

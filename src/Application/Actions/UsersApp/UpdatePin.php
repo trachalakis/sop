@@ -25,7 +25,7 @@ final class UpdatePin
 
     public function __invoke(Request $request, Response $response)
     {
-        $user = $this->usersRepository->findOneBy(['id' => ($_SESSION['user'])->getId()]);
+        $user = $this->usersRepository->find(($_SESSION['user'])->getId());
 
         
 

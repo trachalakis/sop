@@ -49,7 +49,7 @@ final class CreateMenuItem
     public function __invoke(Request $request, Response $response)
     {
     	$languages = $this->languagesRepository->findAll();
-        $menu = $this->menusRepository->findOneBy(['id' => $request->getQueryParams()['menu']]);
+        $menu = $this->menusRepository->find($request->getQueryParams()['menu']);
 
     	if ($request->getMethod() == 'POST') {
     		$requestData = $request->getParsedBody();
@@ -64,7 +64,7 @@ final class CreateMenuItem
             $menuItem->setTrackAvailableQuantity(false);
             $menuItem->setAvailableQuantity(60);
             
-            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $requestData['menuSection']]);
+            $menuSection = $this->menuSectionsRepository->find($requestData['menuSection']);
             $menuItem->setMenuSection($menuSection);
 
             $menuItem->setPrinters([]);

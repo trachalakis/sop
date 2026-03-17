@@ -54,7 +54,7 @@ final class TakeOut
     	if ($request->getMethod() == 'POST') {
     		$requestData = json_decode(file_get_contents("php://input"), true);
 
-    		$waiter = $this->usersRepository->findOneBy(['id' => $_SESSION['user']->getId()]);
+    		$waiter = $this->usersRepository->find($_SESSION['user']->getId());
             $datetime = new Datetime;
 
             $order = new Order;
@@ -77,7 +77,7 @@ final class TakeOut
 
             $orderEntries = [];
             foreach($requestData['orderEntries'] as $entry) {
-            	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $entry['menuItem']['id']]);
+            	$menuItem = $this->menuItemsRepository->find($entry['menuItem']['id']);
 
             	if ($menuItem->getTrackAvailableQuantity()) {
                     $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));

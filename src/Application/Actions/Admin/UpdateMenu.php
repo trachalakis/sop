@@ -27,7 +27,7 @@ final class UpdateMenu
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$menu = $this->menusRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$menu = $this->menusRepository->find($request->getQueryParams()['id']);
 
 		if ($request->getMethod() == 'POST') {
 			try {

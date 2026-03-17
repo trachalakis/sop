@@ -23,7 +23,7 @@ final class DeleteScan
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$scan = $this->scansRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$scan = $this->scansRepository->find($request->getQueryParams()['id']);
 
 		$this->scansRepository->delete($scan);
 

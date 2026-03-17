@@ -32,7 +32,7 @@ final class UpdateRecipe
     public function __invoke(Request $request, Response $response)
 	{
 		$requestData = $request->getParsedBody();
-		$recipe = $this->recipesRepository->findOneBy(['id' => $request->getQueryparams()['id']]);
+		$recipe = $this->recipesRepository->find($request->getQueryparams()['id']);
 
 		if ($request->getMethod() == 'POST') {
 			$recipe->setName($requestData['name'] ?? null);
@@ -44,7 +44,7 @@ final class UpdateRecipe
             $ingredients = [];
             if (isset($requestData['supply'])) {
 	            foreach($requestData['supply'] as $s) {
-	            	$supply = $this->suppliesRepository->findOneBy(['id' => $s['id']]);
+	            	$supply = $this->suppliesRepository->find($s['id']);
 
 	            	$ingredient = new Ingredient;
 	            	$ingredient->setSupply($supply);
@@ -58,7 +58,7 @@ final class UpdateRecipe
 
             if (isset($requestData['preparation'])) {
 	            foreach($requestData['preparation'] as $p) {
-	            	$preparation = $this->recipesRepository->findOneBy(['id' => $p['id']]);
+	            	$preparation = $this->recipesRepository->find($p['id']);
 
 	            	$ingredient = new Ingredient;
 	            	$ingredient->setPreparation($preparation);

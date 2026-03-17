@@ -32,7 +32,7 @@ final class OrderPayment
     public function __invoke(Request $request, Response $response)
 	{
 		if ($request->getMethod() == 'GET') {
-			$order = $this->ordersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+			$order = $this->ordersRepository->find($request->getQueryParams()['id']);
 
 	    	if ($order->getStatus() != 'OPEN') {
 	    		return $response->withHeader('Location', '/orders-app/')->withStatus(302);
@@ -42,10 +42,10 @@ final class OrderPayment
 		if ($request->getMethod() == 'POST') {
     		$requestData = json_decode(file_get_contents("php://input"), true);
 
-    		$order = $this->ordersRepository->findOneBy(['id' => $requestData['orderId']]);
+    		$order = $this->ordersRepository->find($requestData['orderId']);
 
     		foreach($requestData['orderEntries'] as $orderEntry) {
-    			$orderEntry = $this->orderEntriesRepository->findOneBy(['id' => $orderEntry['id']]);
+    			$orderEntry = $this->orderEntriesRepository->find($orderEntry['id']);
 
     			$orderEntry->setIsPaid(true);
     			//$orderEntry->setPaymentMethod(null);

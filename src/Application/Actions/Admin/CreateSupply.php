@@ -36,7 +36,7 @@ final class CreateSupply
 		if ($request->getMethod() == 'POST') {
 			$requestData = $request->getParsedBody();
 
-			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
+			$supplyGroup = $this->supplyGroupsRepository->find($requestData['supplyGroup']);
 			$supply = new Supply;
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);

@@ -26,7 +26,7 @@ final class UpdateTable
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$table = $this->tablesRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$table = $this->tablesRepository->find($request->getQueryParams()['id']);
 
 		if ($request->getMethod() == 'POST') {
 			try {

@@ -209,13 +209,7 @@ return function (ContainerBuilder $containerBuilder) {
             return $em->getRepository(UserPermission::class);
         },
         'SessionUser' => function (ContainerInterface $c) {
-            //$em = $c->get(EntityManager::class);
-
-            //if (isset($_SESSION['user'])) {
-
-            //}
             return $_SESSION['user'] ?? null;
-            //return $em->getRepository(User::class)->findOneBy(['id' => $_SESSION['user']->getId()]);
         },
     ]);
 };

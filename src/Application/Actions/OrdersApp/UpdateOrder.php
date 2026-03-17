@@ -59,7 +59,7 @@ final class UpdateOrder
     	$id = $request->getQueryParams()['id'];
 
     	if ($request->getMethod() == 'GET') {
-	    	$order = $this->ordersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+	    	$order = $this->ordersRepository->find($request->getQueryParams()['id']);
 
 	    	if ($order->getStatus() != 'OPEN') {
 	    		return $response->withHeader('Location', '/orders-app/')->withStatus(302);
@@ -69,8 +69,8 @@ final class UpdateOrder
     	if ($request->getMethod() == 'POST') {
     		$requestData = json_decode(file_get_contents("php://input"), true);
 
-    		$table = $this->tablesRepository->findOneBy(['id' => $requestData['order']['table']['id']]);
-    		$order = $this->ordersRepository->findOneBy(['id' => $requestData['order']['id']]);
+    		$table = $this->tablesRepository->find($requestData['order']['table']['id']);
+    		$order = $this->ordersRepository->find($requestData['order']['id']);
 
             $order->setTable($table);
             $order->setAdults(intval($requestData['order']['adults']));
@@ -86,7 +86,7 @@ final class UpdateOrder
                 $this->orderEntryGroupsRepository->persist($orderEntryGroup);
 
                 foreach($requestData['newOrderEntryGroup']['orderEntries'] as $entry) {
-                    $menuItem = $this->menuItemsRepository->findOneBy(['id' => $entry['menuItem']['id']]);
+                    $menuItem = $this->menuItemsRepository->find($entry['menuItem']['id']);
 
                     if ($menuItem->getTrackAvailableQuantity()) {
                         $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));
@@ -132,7 +132,7 @@ final class UpdateOrder
 
             foreach($requestData['order']['orderEntryGroups'] as $orderEntryGroup) {
                 foreach($orderEntryGroup['orderEntries'] as $entry) {
-                    $orderEntry = $this->orderEntriesRepository->findOneBy(['id' => $entry['id']]);
+                    $orderEntry = $this->orderEntriesRepository->find($entry['id']);
                     $orderEntry->setQuantity(intval($entry['quantity']));
                     $orderEntry->setDiscount(floatval($entry['discount']));
                     $orderEntry->setDiscountReason($entry['discountReason']);

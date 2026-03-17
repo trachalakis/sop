@@ -19,7 +19,7 @@ final class DeleteOrder
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$order = $this->ordersRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$order = $this->ordersRepository->find($request->getQueryParams()['id']);
 
 		$this->ordersRepository->delete($order);
 

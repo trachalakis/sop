@@ -45,7 +45,7 @@ final class UpdateMenuItem
     public function __invoke(Request $request, Response $response)
     {
     	$languages = $this->languagesRepository->findAll();
-    	$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+    	$menuItem = $this->menuItemsRepository->find($request->getQueryParams()['id']);
         
         if ($request->getMethod() == 'POST') {
     		$requestData = $request->getParsedBody();
@@ -71,7 +71,7 @@ final class UpdateMenuItem
             $menuItem->setIsDrink(boolval($requestData['isDrink']));
             $menuItem->setTrackAvailableQuantity(boolval($requestData['trackAvailableQuantity']));
 
-            $menuSection = $this->menuSectionsRepository->findOneBy(['id' => $requestData['menuSection']]);
+            $menuSection = $this->menuSectionsRepository->find($requestData['menuSection']);
             $menuItem->setMenuSection($menuSection);
 
             $menuItem->setPrinters(new ArrayCollection);

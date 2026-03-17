@@ -34,7 +34,7 @@ final class UpdateMenuSection
     public function __invoke(Request $request, Response $response)
     {
     	$languages = $this->languagesRepository->findAll();
-    	$menuSection = $this->menuSectionsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+    	$menuSection = $this->menuSectionsRepository->find($request->getQueryParams()['id']);
 
     	if ($request->getMethod() == 'POST') {
     		$requestData = $request->getParsedBody();

@@ -39,9 +39,7 @@ final class CreateMenuSection
     public function __invoke(Request $request, Response $response)
 	{
 		$languages = $this->languagesRepository->findAll();
-        $menu = $this->menusRepository->findOneBy([
-            'id' => $request->getQueryParams()['menu']
-        ]);
+        $menu = $this->menusRepository->find($request->getQueryParams()['menu']);
 
 		if ($request->getMethod() == 'POST') {
             $postData = $request->getParsedBody();

@@ -40,6 +40,6 @@ class MenuItemType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(MenuItemsRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(MenuItemsRepository::class)->find($args['id']);
     }
 }

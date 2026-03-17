@@ -32,10 +32,10 @@ final class UpdateSupply
     public function __invoke(Request $request, Response $response)
 	{
 		$requestData = $request->getParsedBody();
-		$supply = $this->suppliesRepository->findOneBy(['id' => $request->getQueryparams()['id']]);
+		$supply = $this->suppliesRepository->find($request->getQueryparams()['id']);
 
 		if ($request->getMethod() == 'POST') {
-			$supplyGroup = $this->supplyGroupsRepository->findOneBy(['id' => $requestData['supplyGroup']]);
+			$supplyGroup = $this->supplyGroupsRepository->find($requestData['supplyGroup']);
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);
             $supply->setPrice(floatval($requestData['price']));

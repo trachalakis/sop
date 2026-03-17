@@ -31,6 +31,6 @@ class OrderEntryCancellationType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(OrderEntryCancellationsRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(OrderEntryCancellationsRepository::class)->find($args['id']);
     }
 }

@@ -25,7 +25,7 @@ final class UpdateUser
     public function __invoke(Request $request, Response $response)
 	{
 		$requestData = $request->getParsedBody();
-		$user = $this->usersRepository->findOneBy(['id' => $request->getQueryparams()['id']]);
+		$user = $this->usersRepository->find($request->getQueryparams()['id']);
 
 		if ($request->getMethod() == 'POST') {
             $user->setIsActive(boolval($requestData['isActive']));

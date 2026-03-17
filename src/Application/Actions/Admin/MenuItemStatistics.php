@@ -33,7 +33,7 @@ final class MenuItemStatistics
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$menuItem = $this->menuItemsRepository->find($request->getQueryParams()['id']);
 		
 		$filter = $request->getQueryParams()['filter'] ?? [];
 		if (!empty($filter)) {

@@ -30,7 +30,7 @@ final class UpdateReservation
 
     public function __invoke(Request $request, Response $response)
     {
-        $reservation = $this->reservationsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+        $reservation = $this->reservationsRepository->find($request->getQueryParams()['id']);
 
         if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();

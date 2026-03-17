@@ -20,7 +20,7 @@ final class ToggleLanguage
 
     public function __invoke(Request $request, Response $response)
     {
-        $language = $this->languagesRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+        $language = $this->languagesRepository->find($request->getQueryParams()['id']);
 
         $language->setIsActive(!$language->getIsActive());
 

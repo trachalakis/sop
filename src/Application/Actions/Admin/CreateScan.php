@@ -37,7 +37,7 @@ final class CreateScan
             $scanData['checkIn'] = strlen($scanData['checkIn']) > 0 ? new \Datetime($scanData['checkIn']) : null;
             $scanData['checkOut'] = strlen($scanData['checkOut']) > 0 ? new \Datetime($scanData['checkOut']) : null;
 
-            $user = $this->usersRepository->findOneBy(['id' => $scanData['user']]);
+            $user = $this->usersRepository->find($scanData['user']);
             $scan = new Scan(
                 $user->getHourlyRate() ?? 0,
                 $scanData['checkIn'],
@@ -51,7 +51,7 @@ final class CreateScan
 
         $queryParams = $request->getQueryParams();
         if (isset($queryParams['userId'])) {
-            $user = $this->usersRepository->findOneBy(['id' => $queryParams['userId']]);
+            $user = $this->usersRepository->find($queryParams['userId']);
         }
 
         $users = $this->usersRepository->findBy(['isActive' => true], ['fullName' => 'asc']);

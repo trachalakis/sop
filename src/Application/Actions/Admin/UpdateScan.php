@@ -24,7 +24,7 @@ final class UpdateScan
 
 	public function __invoke(Request $request, Response $response)
 	{
-		$scan = $this->scansRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+		$scan = $this->scansRepository->find($request->getQueryParams()['id']);
 
 		if ($request->getMethod() == 'POST') {
 			$scanData = $request->getParsedBody();

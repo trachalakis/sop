@@ -39,6 +39,6 @@ class OrderType extends ObjectType
 
     public function resolveType($rootValue, $args, $context, $info)
     {
-        return $context->get(OrdersRepository::class)->findOneBy(['id' => $args['id']]);
+        return $context->get(OrdersRepository::class)->find($args['id']);
     }
 }

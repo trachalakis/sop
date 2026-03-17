@@ -30,9 +30,4 @@ class PrintJobType extends ObjectType
         ];
         parent::__construct($config);
     }
-
-    /*public function resolveType($rootValue, $args, $context, $info)
-    {
-        return $context->get(PrintJobsRepository::class)->findOneBy(['id' => $args['id']]);
-    }*/
 }
