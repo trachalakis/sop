@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\MenuItem;
@@ -20,8 +20,8 @@ class OrderEntry
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'datetime', name: 'created_at')]
-    private ?Datetime $createdAt;
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'float', name: 'discount')]
     private float $discount;
@@ -34,12 +34,6 @@ class OrderEntry
 
     #[ORM\Column(type: 'boolean', name: 'is_paid')]
     private bool $isPaid;
-
-    #[ORM\Column(type: 'integer', name: 'max_quantity')]
-    private ?int $maxQuantity;
-
-    #[ORM\Column(type: 'integer', name: 'max_weight')]
-    private ?int $maxWeight;
 
     #[ORM\OneToOne(targetEntity: MenuItem::class)]
     #[ORM\JoinColumn(name: 'menu_item_id', referencedColumnName: 'id')]
@@ -82,7 +76,7 @@ class OrderEntry
         return $this->id;
     }
 
-    public function getCreatedAt(): ?Datetime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -102,25 +96,9 @@ class OrderEntry
         return $this->family;
     }
 
-    //alias for graph-ql
-    public function getIsDeleted(): bool
-    {
-    	return $this->isDeleted();
-    }
-
     public function getIsPaid(): bool
     {
     	return $this->isPaid || $this->getPrice() == 0;
-    }
-
-    public function getMaxQuantity(): ?int
-    {
-    	return $this->maxQuantity;
-    }
-
-    public function getMaxWeight(): ?int
-    {
-    	return $this->maxWeight;
     }
 
     public function getMenuItem(): MenuItem
@@ -197,12 +175,7 @@ class OrderEntry
     	return $this->weight;
     }
 
-    /*public function isDeleted(): bool
-    {
-    	return $this->quantity <= 0;
-    }*/
-
-    public function setCreatedAt(?Datetime $createdAt): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
     }
@@ -225,16 +198,6 @@ class OrderEntry
     public function setIsPaid(bool $isPaid): void
     {
     	$this->isPaid = $isPaid;
-    }
-
-    public function setMaxQuantity(int $maxQuantity): void
-    {
-    	$this->maxQuantity = $maxQuantity;
-    }
-
-    public function setMaxWeight(?int $maxWeight): void
-    {
-    	$this->maxWeight = $maxWeight;
     }
 
     public function setMenuItem(MenuItem $menuItem): void

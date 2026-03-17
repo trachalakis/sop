@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\Reservation;
 use Domain\Entities\Table;
 use Domain\Entities\User;
@@ -23,8 +23,8 @@ class Order
     #[ORM\Column(type: 'integer', name: 'adults')]
     private int $adults;
 
-    #[ORM\Column(type: 'datetime', name: 'created_at')]
-    private Datetime $createdAt;
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
+    private DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'employee_id', referencedColumnName: 'id')]
@@ -43,13 +43,8 @@ class Order
     #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private $orderEntryGroups;
 
-    #[ORM\Column(type: 'datetime', name: 'paid_at')]
-    private ?Datetime $paidAt;
-
-    /*
-     * @Column(type="string", name="payment_method")
-     *
-    private string $paymentMethod;*/
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'paid_at')]
+    private ?DateTimeImmutable $paidAt;
 
     #[ORM\Column(type: 'string', name: 'status')]
     private string $status;
@@ -79,7 +74,7 @@ class Order
         return $this->adults;
     }
 
-    public function getCreatedAt(): Datetime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -120,7 +115,7 @@ class Order
         return $this->orderEntryGroups;
     }
 
-    public function getPaidAt(): ?Datetime
+    public function getPaidAt(): ?DateTimeImmutable
     {
     	return $this->paidAt;
     }
@@ -220,7 +215,7 @@ class Order
     	$this->adults = $adults;
     }
 
-    public function setCreatedAt(Datetime $createdAt): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
     	$this->createdAt = $createdAt;
     }
@@ -250,7 +245,7 @@ class Order
         $this->orderEntryGroups = $orderEntryGroups;
     }
 
-    public function setPaidAt(?Datetime $paidAt): void
+    public function setPaidAt(?DateTimeImmutable $paidAt): void
     {
     	$this->paidAt = $paidAt;
     }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\OrdersApp;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\OrderEntry;
@@ -54,40 +54,27 @@ final class CreateOrder
     	if ($request->getMethod() == 'POST') {
     		$requestData = json_decode(file_get_contents("php://input"), true);
 
-    		$waiter = $this->usersRepository->findOneBy(['id' => $_SESSION['user']->getId()]);
-
-    		$table = null;
-    		if ($requestData['table'] != null) {
-    			$table = $this->tablesRepository->findOneBy(['id' => $requestData['table']['id']]);
-    		}
-    		$employee = null;
-    		if ($requestData['employee'] != null) {
-    			$employee = $this->usersRepository->findOneBy(['id' => $requestData['employee']['id']]);
-    		}
+    		$waiter = $this->usersRepository->find($_SESSION['user']->getId());
+    		$table = $this->tablesRepository->find($requestData['table']['id']);
             $reservation = null;
             if ($requestData['reservationId'] != null) {
-                $reservation = $this->reservationsRepository->findOneBy(['id' => $requestData['reservationId']]);
+                $reservation = $this->reservationsRepository->find($requestData['reservationId']);
             }
-
-            $datetime = new Datetime;
-
-            //$orderIsPaid = $employee != null || $table->getName() == 'Take away';
 
             $order = new Order;
             $order->setUuid(Uuid::uuid4()->toString());
-            $order->setStatus($employee != null ? 'PAID' : 'OPEN'); //todo create separate action for user orders
+            $order->setStatus('OPEN'); //todo create separate action for user orders
             $order->setTable($table);
             $order->setAdults(intval($requestData['adults']));
             $order->setMinors(intval($requestData['minors']));
-            //$order->setNotes($requestData['notes']);
-            $order->setCreatedAt($datetime);
+            $order->setCreatedAt(new DateTimeImmutable);
             $order->setWaiter($waiter);
-            $order->setEmployee($employee);
+            $order->setEmployee(null);
             $order->setReservation($reservation);
-            $order->setPaidAt($employee == null ? null : $datetime);
+            $order->setPaidAt(null);
 
             $orderEntryGroup = new OrderEntryGroup;
-            $orderEntryGroup->setCreatedAt($datetime);
+            $orderEntryGroup->setCreatedAt(new DateTimeImmutable);
             $orderEntryGroup->setNotes($requestData['notes']);
             $orderEntryGroup->setOrder($order);
 
@@ -106,27 +93,21 @@ final class CreateOrder
                 }
 
                 $orderEntry = new OrderEntry;
-                //$orderEntry->setCreatedAt($datetime);
             	$orderEntry->setDiscount(0); //TODO revisit this
             	$orderEntry->setOrder($order);
             	$orderEntry->setMenuItem($menuItem);
                 $orderEntry->setMenuItemPrice($menuItem->getPrice());
             	$orderEntry->setQuantity(intval($entry['quantity']));
-            	//$orderEntry->setMaxQuantity(intval($entry['quantity']));
-            	//$orderEntry->setPrice(floatval($entry['price']));
             	$orderEntry->setFamily(intval($entry['family']));
             	$orderEntry->setTiming(intval($entry['timing']));
             	$orderEntry->setNotes($entry['notes']);
-            	//$orderEntry->setPaymentMethod(null);
             	$orderEntry->setIsPaid(false);
                 $orderEntry->setOrderEntryGroup($orderEntryGroup);
 
             	if ($menuItem->getPriceUnit() == 'kg') {
             		$orderEntry->setWeight(intval($entry['weight']));
-            		//$orderEntry->setMaxWeight(intval($entry['weight']));
             	} else {
             		$orderEntry->setWeight(null);
-            		//$orderEntry->setMaxWeight(null);
             	}
 
             	$orderEntryExtras = [];

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\OrdersApp;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\Order;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryCancellation;
@@ -77,10 +77,9 @@ final class UpdateOrder
             $order->setMinors(intval($requestData['order']['minors']));
             //$order->setNotes($requestData['notes']);
 
-            $datetime = new Datetime;
             if (count($requestData['newOrderEntryGroup']['orderEntries']) > 0) {
                 $orderEntryGroup = new OrderEntryGroup;
-                $orderEntryGroup->setCreatedAt($datetime);
+                $orderEntryGroup->setCreatedAt(new DateTimeImmutable);
                 $orderEntryGroup->setNotes($requestData['newOrderEntryGroup']['notes']);
                 $orderEntryGroup->setOrder($order);
 
@@ -143,7 +142,7 @@ final class UpdateOrder
                     foreach($entry['orderEntryCancellations'] as $entryCancellation) {
                         if (!isset($entryCancellation['id'])) {
                             $cancellation = new OrderEntryCancellation();
-                            $cancellation->setCreatedAt($datetime);
+                            $cancellation->setCreatedAt(new DateTimeImmutable);
                             $cancellation->setCancellationReason($entryCancellation['cancellationReason']);
                             $cancellation->setOrderEntry($orderEntry);
 

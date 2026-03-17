@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\OrderEntry;
 use Domain\Repositories\OrderEntryCancellationsRepository;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,8 +21,8 @@ class OrderEntryCancellation
     #[ORM\Column(type: 'text', name: 'cancellation_reason')]
     private string $cancellationReason;
 
-    #[ORM\Column(type: 'datetime', name: 'created_at')]
-    private ?Datetime $createdAt;
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
+    private DateTimeImmutable $createdAt;
 
     #[ORM\OneToOne(targetEntity: OrderEntry::class)]
     #[ORM\JoinColumn(name: 'order_entry_id', referencedColumnName: 'id')]
@@ -38,7 +38,7 @@ class OrderEntryCancellation
         return $this->cancellationReason;
     }
 
-    public function getCreatedAt(): ?Datetime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -53,7 +53,7 @@ class OrderEntryCancellation
         $this->cancellationReason = $cancellationReason;
     }
 
-    public function setCreatedAt(?Datetime $createdAt): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
         $this->createdAt = $createdAt;
     }

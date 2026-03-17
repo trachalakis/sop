@@ -137,7 +137,6 @@ class AdminQueryType extends ObjectType
                 	'type' => Type::listOf(Types::order()),
                 	'resolve' => function ($rootValue, $args, $context, $info) {
                         $orders = $context->get(OrdersRepository::class)->findBy(['status' => 'OPEN'], ['createdAt' => 'desc']);
-                        //$employees = array_filter($users, fn($user) => $user->isEmployee());
 
                         return $orders;
                     }

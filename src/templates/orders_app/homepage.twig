@@ -66,9 +66,7 @@
 		vueApp = Vue.createApp({
 		    data() {
 		    	return {
-		    		orders: [],
-					menus: [],
-					//takeAwayTables: 0
+		    		orders: []
 		    	}
 		    },
 		    mounted () {
@@ -76,18 +74,7 @@
 					this.fetchOrders()
 				}, 5000)
                 this.fetchOrders();
-				//TODO deprecate this
-                axios({
-					url: '/admin/graph-ql',
-					method: 'post',
-					data: `{
-						activeMenus {
-							id, name
-						}
-					}`
-				}).then(response => {
-					this.menus = response.data.data.activeMenus
-				});
+				
 		    },
 		    methods: {
 		    	fetchOrders () {
@@ -106,20 +93,7 @@
 		    	getTime(date) {
 		    		return date.substr(date.length - 8, 5);
 		    	}
-		    },
-			computed: {
-				hasTakeOut () {
-					let ret = false;
-					
-					_.each(this.menus, menu => {
-						if (menu.name == 'Take Out') {
-							ret = true;
-						}
-					});
-
-					return ret;
-				}
-			}
+		    }
 		}).mount('#app');
 	</script>
 {% endblock %}

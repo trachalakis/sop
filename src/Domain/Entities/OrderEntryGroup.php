@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Entities\Order;
 use Doctrine\ORM\Mapping as ORM;
 use Domain\Repositories\OrderEntryGroupsRepository;
@@ -18,8 +18,8 @@ class OrderEntryGroup
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'datetime', name: 'created_at')]
-    private Datetime $createdAt;
+    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
+    private DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'string', name: 'notes')]
     private string $notes;
@@ -36,7 +36,7 @@ class OrderEntryGroup
         return $this->id;
     }
 
-    public function getCreatedAt(): Datetime
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -56,7 +56,7 @@ class OrderEntryGroup
         return $this->order;
     }
 
-    public function setCreatedAt(Datetime $createdAt): void
+    public function setCreatedAt(DateTimeImmutable $createdAt): void
     {
     	$this->createdAt = $createdAt;
     }
