@@ -69,6 +69,7 @@ class MenuItem
 
     public function __construct() {
         $this->extras = new ArrayCollection;
+        $this->ingredients = new ArrayCollection;
         $this->printers = new ArrayCollection;
         $this->translations = new ArrayCollection;
     }
@@ -117,7 +118,7 @@ class MenuItem
     	return $this->customFields;
     }
 
-    public function getExtras()
+    public function getExtras(): Collection
     {
         return $this->extras;
     }
@@ -219,12 +220,12 @@ class MenuItem
     	$this->customFields = $customFields;
     }
 
-    public function setExtras($extras): void //TODO add arg type
+    public function setExtras(Collection $extras): void 
     {
         $this->extras = $extras;
     }
 
-    public function setIngredients($ingredients): void //TODO add arg type
+    public function setIngredients(Collection $ingredients): void
     {
         $this->ingredients = $ingredients;
     }

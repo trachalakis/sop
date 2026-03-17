@@ -21,7 +21,7 @@ class MenuSection
     private int $id;
 
     #[ORM\Column(type: 'json', name: 'custom_fields')]
-    private $customFields;
+    private ?array $customFields;
 
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
@@ -35,7 +35,7 @@ class MenuSection
 
     #[ORM\OneToMany(targetEntity: MenuItem::class, mappedBy: 'menuSection', cascade: ['persist'])]
     #[ORM\OrderBy(['position' => 'ASC'])]
-    private $menuItems;
+    private Collection $menuItems;
 
     #[ORM\OneToMany(targetEntity: Extra::class, mappedBy: 'menuSection', cascade: ['persist'], orphanRemoval: true)]
     private Collection $extras;
@@ -47,7 +47,7 @@ class MenuSection
     private int $printMenuPage;
 
     #[ORM\OneToMany(targetEntity: MenuSectionTranslation::class, mappedBy: 'menuSection', cascade: ['persist'], orphanRemoval: true)]
-    private $translations;
+    private Collection $translations;
 
     public function __construct()
     {
@@ -82,7 +82,7 @@ class MenuSection
     	}
     }
 
-    public function getCustomFields()
+    public function getCustomFields(): ?array
     {
     	return $this->customFields;
     }
@@ -107,12 +107,12 @@ class MenuSection
         $this->menu = $menu;
     }
 
-    public function getMenuItems()
+    public function getMenuItems(): Collection
     {
         return $this->menuItems;
     }
 
-    public function getExtras()
+    public function getExtras(): Collection
     {
         return $this->extras;
     }
@@ -145,7 +145,7 @@ class MenuSection
     	return null;
     }
 
-    public function getTranslations()
+    public function getTranslations(): Collection
     {
     	return $this->translations;
     }
@@ -155,7 +155,7 @@ class MenuSection
         $this->customFields[$field] = $value;
     }
     
-    public function setCustomFields($customFields): void
+    public function setCustomFields(?array $customFields): void
     {
     	$this->customFields = $customFields;
     }
@@ -173,6 +173,11 @@ class MenuSection
     public function setExtras($extras): void //TODO add arg type
     {
         $this->extras = $extras;
+    }
+
+    public function setMenuItems(Collection $menuItems): void
+    {
+        $this->menuItems = $menuItems;
     }
 
     public function setPosition(?int $position): void

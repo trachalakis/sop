@@ -34,8 +34,11 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
-                    <a class="dropdown-item" href="">
+                    <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#select-menu-modal">
                         <i class="bi bi-copy"></i> Αντιγραφή
+                    </a>
+                    <a class="dropdown-item confirm" href="/admin/menu-sections/delete?id={{menuSection.getId}}">
+                        <i class="bi bi-trash"></i> Διαγραφή
                     </a>
                 </li>
             </ul>
@@ -144,6 +147,33 @@
 		</div>
 	</div>
 </form>
+<div class="modal fade" id="select-menu-modal" aria-hidden="true" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Επιλογή menu</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                {% for menu in menus %}
+                    <div class="row gx-1">
+                        <div class="col mb-2">
+                            <a 
+                                class="btn btn-primary w-100" 
+                                href="/admin/menu-sections/copy?id={{menuSection.getId}}&target={{menu.getId}}"
+                            >
+                                {{menu.getName}}
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Άκυρο</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
@@ -159,7 +189,7 @@
                 'customFields': [
                     {element: 'input', inputType: 'text', name: 'field'}, 
                     {element: 'label', text: '/'}, 
-                    {element: 'input', inputType: 'number', name: 'value'}
+                    {element: 'input', inputType: 'text', name: 'value'}
                 ],
             }}
         ) 

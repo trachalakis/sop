@@ -10,15 +10,17 @@ use Domain\Entities\MenuItemPrice;
 use Domain\Entities\MenuItemTranslation;
 use Domain\Entities\MenuSection;
 use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\MenuItemsRepository;
-use Domain\Repositories\PriceListsRepository;
 use Domain\Repositories\PrintersRepository;
+use Domain\Services\CloneMenuSection;
+use Domain\Services\CloneMenuItem;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
-final class CloneMenuItem
+final class CopyMenuSection
 {
     private LanguagesRepository $languagesRepository;
 
@@ -26,7 +28,7 @@ final class CloneMenuItem
 
     private MenuSectionsRepository $menuSectionsRepository;
 
-    private PriceListsRepository $priceListsRepository;
+    private MenusRepository $menusRepository;
 
     private PrintersRepository $printersRepository;
 
@@ -35,29 +37,30 @@ final class CloneMenuItem
     public function __construct(
         LanguagesRepository $languagesRepository,
         MenuSectionsRepository $menuSectionsRepository,
-        MenuItemsRepository $menuItemsRepository,
-        PriceListsRepository $priceListsRepository,
+        MenusRepository $menusRepository,
+        //MenuItemsRepository $menuItemsRepository,
         PrintersRepository $printersRepository,
         Twig $twig
     ) {
         $this->languagesRepository = $languagesRepository;
         $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->priceListsRepository = $priceListsRepository;
+        //$this->menuItemsRepository = $menuItemsRepository;
+        $this->menusRepository = $menusRepository;
         $this->printersRepository = $printersRepository;
         $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)
     {
-    	$languages = $this->languagesRepository->findAll();
-        $menuItem = $this->menuItemsRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
+        $menuSection = $this->menuSectionsRepository->find($request->getQueryParams()['id']);
+        $targetMenu = $this->menusRepository->find($request->getQueryParams()['target']);
+        $clone = (new CloneMenuSection(new CloneMenuItem))($menuSection, $targetMenu);
 
-        $clone = clone $menuItem;
+        $this->menuSectionsRepository->persist($clone);
 
-        $translations = [];
+        /*$translations = [];
         foreach($languages as $language) {
-            $menuItemTranslation = new MenuItemTranslation;
+            $menuSectionTranslation = new MenuItemTranslation;
             $menuItemTranslation->setLanguage($language);
             $menuItemTranslation->setMenuItem($clone);
             $menuItemTranslation->setName($menuItem->getTranslation($language->getIsoCode())->getName());
@@ -65,15 +68,15 @@ final class CloneMenuItem
 
             $translations[] = $menuItemTranslation;
         }
-        $clone->setTranslations($translations);
+        $clone->setTranslations($translations);*/
 
-        $this->menuItemsRepository->persist($clone);
+        //
 
         if (function_exists('apcu_clear_cache')) {
             apcu_clear_cache();
         }
 
-        return $response->withHeader('Location', '/admin/menu')->withStatus(302);
+        return $response->withHeader('Location', '/admin/menu-sections/update?id=' . $clone->getId())->withStatus(302);
 
         /*$languages = $this->languagesRepository->findAll();
 
@@ -159,18 +162,14 @@ final class CloneMenuItem
             return $response->withHeader('Location', '/admin/menu')->withStatus(302);*/
     	//}
 
-    	$menuSections = $this->menuSectionsRepository->findBy([], ['position' => 'asc']);
-        $printers = $this->printersRepository->findBy([], ['name' => 'asc']);
-        $priceLists = $this->priceListsRepository->findBy([], ['name' => 'asc']);
-    	return $this->twig->render(
+    	/*return $this->twig->render(
             $response,
             'admin/create_menu_item.twig',
             [
                 'menuSections' => $menuSections,
                 'printers' => $printers,
                 'languages' => $languages,
-                'priceLists' => $priceLists
             ]
-        );
+        );*/
     }
 }

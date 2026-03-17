@@ -8,7 +8,7 @@ use Application\Actions\Logout;
 use Application\Actions\Sdp;
 use Application\Actions\PrinterStatus;
 use Application\Actions\Admin\CreateMenu;
-use Application\Actions\Admin\CloneMenuItem;
+use Application\Actions\Admin\CopyMenuSection;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
 use Application\Actions\Admin\CreatePrinter;
@@ -17,6 +17,7 @@ use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
+use Application\Actions\Admin\DeleteMenuSection;
 use Application\Actions\Admin\DeleteOrder;
 use Application\Actions\Admin\DeletePrinter;
 use Application\Actions\Admin\DeletePrintJob;
@@ -115,6 +116,8 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/menu-sections/update', UpdateMenuSection::class);
         $group->get('/menu-sections/statistics', MenuSectionStatistics::class);
         $group->post('/menu-sections/sort', SortMenuSections::class);
+        $group->get('/menu-sections/copy', CopyMenuSection::class);
+        $group->get('/menu-sections/delete', DeleteMenuSection::class);
         
         $group->map(['GET', 'POST'], '/menu-items/create', CreateMenuItem::class);
         $group->map(['GET', 'POST'], '/menu-items/update', UpdateMenuItem::class);
@@ -122,7 +125,6 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/menu-items/recipe', MenuItemRecipe::class);
         $group->get('/menu-items/statistics', MenuItemStatistics::class);
         $group->get('/menu-items/toggle', ToggleMenuItem::class);
-        $group->get('/menu-items/clone', CloneMenuItem::class);
         $group->post('/menu-items/sort', SortMenuItems::class);
         
         $group->get('/users', Users::class);

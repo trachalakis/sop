@@ -42,7 +42,7 @@ final class UpdateMenuSection
             $menuSection->setIsActive(boolval($requestData['isActive']));
             $menuSection->setPosition(intval($requestData['position']));
 
-            $translations = [];
+            $translations = new ArrayCollection;
             foreach($languages as $language) {
             	$menuSectionTranslation = new MenuSectionTranslation;
             	$menuSectionTranslation->setLanguage($language);
@@ -64,7 +64,7 @@ final class UpdateMenuSection
                             null,
                             $menuSection
                         );
-                        $extras->add($extra);
+                        $extras[] = $extra;
                     }
                 }
             }
