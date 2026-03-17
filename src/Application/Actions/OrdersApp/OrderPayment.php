@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\OrdersApp;
 
-use Datetime;
+use DateTimeImmutable;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\OrderEntriesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -48,14 +48,13 @@ final class OrderPayment
     			$orderEntry = $this->orderEntriesRepository->find($orderEntry['id']);
 
     			$orderEntry->setIsPaid(true);
-    			//$orderEntry->setPaymentMethod(null);
 
     			$this->orderEntriesRepository->persist($orderEntry);
     		}
 
 	    	if ($order->IsPaid()) {
     			$order->setStatus('PAID');
-    			$order->setPaidAt(new Datetime);
+    			$order->setPaidAt(new DateTimeImmutable);
     			$this->ordersRepository->persist($order);
     		}
 
