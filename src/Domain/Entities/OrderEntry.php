@@ -20,9 +20,6 @@ class OrderEntry
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
-    private DateTimeImmutable $createdAt;
-
     #[ORM\Column(type: 'float', name: 'discount')]
     private float $discount;
 
@@ -74,11 +71,6 @@ class OrderEntry
     public function getId(): int
     {
         return $this->id;
-    }
-
-    public function getCreatedAt(): DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 
     public function getDiscount(): float
@@ -138,10 +130,10 @@ class OrderEntry
 
     public function getPrice(): float
     {
-        //hack for 2023 order entry format
+        /*hack for 2023 order entry format
         if ($this->getCreatedAt() != null && $this->getCreatedAt()->format('Y') == 2023) {
             return $this->price;
-        }
+        }*/
 
         $price = $this->menuItemPrice;
 
@@ -173,11 +165,6 @@ class OrderEntry
     public function getWeight(): ?int
     {
     	return $this->weight;
-    }
-
-    public function setCreatedAt(DateTimeImmutable $createdAt): void
-    {
-        $this->createdAt = $createdAt;
     }
 
     public function setDiscount(float $discount): void

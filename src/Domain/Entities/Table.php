@@ -19,11 +19,11 @@ class Table
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    #[ORM\Column(type: 'string', unique: true)]
+    #[ORM\Column(type: 'string', name: 'name', unique: true)]
     private string $name;
 
-    #[ORM\OneToMany(targetEntity: 'Order', mappedBy: 'table', cascade: ['persist'])]
-    private $orders;
+    #[ORM\Column(type: 'integer', name: 'position')]
+    private int $position;
 
     public function getId()
     {
@@ -40,6 +40,11 @@ class Table
         return $this->name;
     }
 
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
 	public function setIsActive(bool $isActive)
     {
         $this->isActive = $isActive;
@@ -48,5 +53,10 @@ class Table
     public function setName(string $name)
     {
         $this->name = $name;
+    }
+
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
     }
 }

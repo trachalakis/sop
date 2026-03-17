@@ -63,21 +63,10 @@ return function (ContainerBuilder $containerBuilder) {
 
         },*/
         Logger::class => function (ContainerInterface $c) {
-            //TODO get logger settings from settings file
-            $settings = $c->get('settings')['logger'];
-            //dd($settings);
-            //$loggerSettings = $settings->get('logger');
+            $loggerSettings = $c->get('settings')['logger'];
 
-            $logger = new Logger($settings['name']);
-            //$logger = new Logger('log');
-
-            //$processor = new UidProcessor();
-            //$logger->pushProcessor($processor);
-
-            $logger->pushHandler(new RotatingFileHandler($settings['file']));
-
-            //$handler = new StreamHandler($loggerSettings['path'], $loggerSettings['level']);
-            //$logger->pushHandler($handler);
+            $logger = new Logger($loggerSettings['name']);
+            $logger->pushHandler(new RotatingFileHandler($loggerSettings['file']));
 
             return $logger;
         },
@@ -228,11 +217,5 @@ return function (ContainerBuilder $containerBuilder) {
             return $_SESSION['user'] ?? null;
             //return $em->getRepository(User::class)->findOneBy(['id' => $_SESSION['user']->getId()]);
         },
-        /*
-        'Domain\Repositories\SupplyGroupsRepository' => function (ContainerInterface $c) {
-            $em = $c->get(EntityManager::class);
-
-            return $em->getRepository(SupplyGroup::class);
-        }*/
     ]);
 };

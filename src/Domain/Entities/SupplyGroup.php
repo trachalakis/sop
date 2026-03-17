@@ -20,7 +20,6 @@ class SupplyGroup
     #[ORM\Column(type: 'string', unique: true)]
     private string $name;
 
-
     #[ORM\OneToMany(targetEntity: Supply::class, mappedBy: 'supplyGroup', cascade: ['persist'])]
     #[ORM\OrderBy(['name' => 'ASC'])]
     private $supplies;

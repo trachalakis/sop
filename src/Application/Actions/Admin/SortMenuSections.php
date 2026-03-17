@@ -25,10 +25,8 @@ final class SortMenuSections
 
 		foreach($menuSectionsIds as $menuSectionId) {
 			$menuSection = $this->menuSectionsRepository->findOneBy(['id' => $menuSectionId]);
-			$menuSection->setPosition($position);
+			$menuSection->setPosition($position++);
 			$this->menuSectionsRepository->persist($menuSection);
-
-			$position++;
 		}
 
 		$response->getBody()->write('ok');

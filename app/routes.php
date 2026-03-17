@@ -44,6 +44,7 @@ use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\Supplies;
 use Application\Actions\Admin\SortMenuItems;
 use Application\Actions\Admin\SortMenuSections;
+use Application\Actions\Admin\SortTables;
 use Application\Actions\Admin\Tables;
 use Application\Actions\Admin\ToggleArchive;
 use Application\Actions\Admin\ToggleMenuItem;
@@ -107,6 +108,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/tables/create', CreateTable::class);
         $group->map(['GET', 'POST'], '/tables/update', UpdateTable::class);
         $group->get('/tables/delete', DeleteTable::class);
+        $group->post('/tables/sort', SortTables::class);
 
         $group->get('/menus', AdminMenus::class);
         $group->map(['GET', 'POST'], '/menus/create', CreateMenu::class);

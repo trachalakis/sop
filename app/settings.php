@@ -10,30 +10,26 @@ return function (ContainerBuilder $containerBuilder) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../app');
     $dotenv->load();
 
-    
-
     // Global Settings Object
     $containerBuilder->addDefinitions([
         'settings' => [
-            'slim.displayErrorDetails' => $_ENV['APP_MODE'] == 'development', // Should be set to false in production'
-            'slim.logError' => $_ENV['APP_MODE'] == 'development',
-            'slim.logErrorDetails' => $_ENV['APP_MODE'] == 'development',
-
+            /*'slim' => [
+                'displayErrorDetails' => $_ENV['APP_MODE'] == 'development',
+                'logErrors' => true,
+                'logErrorDetails' => true
+            ],*/
             'logger' => [
                 'name' => 'sopApp',
                 'file' => __DIR__ . '/../logs/app.log'
             ],
             'twig' => [
-                // Template paths
                 'paths' => [
                     __DIR__ . '/../src/templates',
                 ],
-                // Twig environment options
                 'options' => [
-                    // Should be set to true in production
-                    'cacheEnabled' => true,
-		    'cachePath' => '/tmp',
-		    'auto_reload' => true
+                    'cacheEnabled' => $_ENV['APP_MODE'] == 'production',
+		            'cachePath' => '/tmp',
+		            'auto_reload' => true
                 ],
             ],
             'db' => [
@@ -42,7 +38,8 @@ return function (ContainerBuilder $containerBuilder) {
                 'password' => $_ENV['DB_PASSWORD'],
                 'databaseName' => $_ENV['DB_DATABASE_NAME']
             ],
-            'siteName' => $_ENV['SITE_NAME']
+            'siteName' => $_ENV['SITE_NAME'],
+            'appMode' => $_ENV['APP_MODE']
             /*,
             'mailer' => [
             	'username' => '',

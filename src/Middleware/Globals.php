@@ -28,6 +28,7 @@ final class Globals implements MiddlewareInterface
     public function process(Request $request, RequestHandler $handler): Response
     {
         $this->twig->offsetSet('siteName', $this->settings->get('siteName'));
+        $this->twig->offsetSet('appMode', $this->settings->get('appMode'));
         
         $response = $handler->handle($request);
         return $response;

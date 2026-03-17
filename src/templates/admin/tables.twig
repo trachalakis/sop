@@ -24,7 +24,7 @@
 <table class="table table-responsive table-striped">
     <tbody>
         {% for table in tables %}
-            <tr>
+            <tr data-id="{{table.getId}}">
                 <td>
                     <a class="text-decoration-none" href="/admin/tables/update?id={{table.getId}}">
                         {{table.getName}}
@@ -38,4 +38,32 @@
         {% endfor %}
     </tbody>
 </table>
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+	<script>
+		if (window.innerWidth >= 1024) {
+			var sortable = new Sortable(document.querySelector('tbody'), {
+				onSort: function (evt) {
+					ids = [];
+					evt.srcElement.querySelectorAll('tr').forEach(tr => {
+						ids.push(tr.dataset.id);
+					})
+					//post
+					fetch(
+						'/admin/tables/sort',
+						{
+							method: 'POST',
+							body: JSON.stringify(ids),
+							headers: {
+								'Content-Type': 'application/json'
+							}
+						}
+					);
+				}
+			});
+		}
+	</script>
 {% endblock %}

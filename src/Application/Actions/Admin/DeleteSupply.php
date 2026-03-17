@@ -30,7 +30,7 @@ final class DeleteSupply
             $supply = $this->suppliesRepository->findOneBy(['id' => $request->getQueryParams()['id']]);
 
             $this->suppliesRepository->delete($supply);
-        } catch(ForeignKeyConstraintViolationException $e) {
+        } catch (ForeignKeyConstraintViolationException $e) {
             return $this->twig->render(
                 $response,
                 'admin/update_supply.twig',

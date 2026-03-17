@@ -62,13 +62,12 @@ class AdminQueryType extends ObjectType
                         	->findBy(['isActive' => true]);
                     }
                 ],
-                
                 'availableTables' => [
                     'type' => Type::listOf(Types::table()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         $activeTables = $context
                         	->get(TablesRepository::class)
-                        	->findBy(['isActive' => true], ['name' => 'asc']);
+                        	->findBy(['isActive' => true], ['position' => 'asc']);
 
                        	$orders = $context
                        		->get(OrdersRepository::class)

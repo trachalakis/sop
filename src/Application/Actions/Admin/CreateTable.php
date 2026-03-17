@@ -27,11 +27,12 @@ final class CreateTable
 	{
 		if ($request->getMethod() == 'POST') {
             try {
-                $tableData = $request->getParsedBody();
+                $requestData = $request->getParsedBody();
 
                 $table = new Table;
-                $table->setIsActive(boolval($tableData['isActive']));
-                $table->setName($tableData['name']);
+                $table->setIsActive(boolval($requestData['isActive']));
+                $table->setName($requestData['name']);
+                $table->setPosition(intval($requestData['position']));
 
                 $this->tablesRepository->persist($table);
 
