@@ -15,6 +15,11 @@
 </ol>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
     <h1 class="h2">Επεξεργασία</h1>
+    <div class="btn-group">
+        <a class="btn btn-danger confirm" href="/admin/menus/delete?id={{menu.getId}}">
+            <i class="bi bi-trash"></i> Διαγραφή
+        </a>
+    </div>
 </div>
 {% if not (exception is null) %}
     <div class="alert alert-danger" role="alert">

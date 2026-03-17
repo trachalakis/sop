@@ -8,6 +8,7 @@ use Application\Actions\Logout;
 use Application\Actions\Sdp;
 use Application\Actions\PrinterStatus;
 use Application\Actions\Admin\CreateMenu;
+use Application\Actions\Admin\DeleteMenu;
 use Application\Actions\Admin\CopyMenuSection;
 use Application\Actions\Admin\CreateMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
@@ -17,6 +18,7 @@ use Application\Actions\Admin\CreateScan;
 use Application\Actions\Admin\CreateSupply;
 use Application\Actions\Admin\CreateTable;
 use Application\Actions\Admin\CreateUser;
+use Application\Actions\Admin\DeleteMenuItem;
 use Application\Actions\Admin\DeleteMenuSection;
 use Application\Actions\Admin\DeleteOrder;
 use Application\Actions\Admin\DeletePrinter;
@@ -109,6 +111,7 @@ return function (App $app, $container) {
         $group->get('/menus', AdminMenus::class);
         $group->map(['GET', 'POST'], '/menus/create', CreateMenu::class);
         $group->map(['GET', 'POST'], '/menus/update', UpdateMenu::class);
+        $group->get('/menus/delete', DeleteMenu::class);
         $group->get('/menu', AdminMenu::class);
         $group->get('/menu/print', PrintMenu::class);
         
@@ -126,6 +129,7 @@ return function (App $app, $container) {
         $group->get('/menu-items/statistics', MenuItemStatistics::class);
         $group->get('/menu-items/toggle', ToggleMenuItem::class);
         $group->post('/menu-items/sort', SortMenuItems::class);
+        $group->get('/menu-items/delete', DeleteMenuItem::class);
         
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
