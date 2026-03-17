@@ -21,6 +21,11 @@
         </a>
     </div>
 </div>
+{% if not (exception is null) %}
+    <div class="alert alert-danger" role="alert">
+        {{exception.getMessage}}
+    </div>
+{% endif %}
 <form method="post" autocomplete="off" action="">
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Όνομα</label>
