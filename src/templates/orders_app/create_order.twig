@@ -406,8 +406,8 @@
 	        			<h5 class="modal-title">Τραπέζι</h5>
 	      			</div>
 	      			<div class="modal-body">
-						<div class="row gx-1" v-for="(n, i) in 7">
-							<div class="col mb-2" v-for="table in filteredTables(i)">
+						<div class="row gx-1">
+							<div class="col-xs-6 col-sm-3 col-lg-4 mb-2" v-for="table in tables">
 								<button
 									type="button"
 									class="btn btn-outline-primary btn-lg w-100"
@@ -568,30 +568,6 @@
 	<script src="/assets/js/axios.min.js"></script>
 	<script src="/assets/js/lodash.min.js"></script>
 	<script src="/assets/js/epos-2.24.0.js"></script>
-	<script>
-
-    var ctx = document.getElementById('canvas-test');
-    if (ctx.getContext) {
-
-        ctx = ctx.getContext('2d');
-
-        //Loading of the home test image - img1
-        var img1 = new Image();
-
-        //drawing of the test image - img1
-        img1.onload = function () {
-            //draw background image
-            ctx.drawImage(img1, 0, 0);
-            //draw a box over the top
-            //ctx.fillStyle = "rgba(200, 0, 0, 0.5)";
-            //ctx.fillRect(0, 0, 500, 500);
-
-        };
-
-        img1.src = '/assets/img/epson_logo.png';
-    }
-
-	</script>
 	<script>
 		vueApp = Vue.createApp({
 		    data() {
@@ -754,24 +730,18 @@
 					_.each(this.printers, printer => {
 						let pr = new epson.ePOSBuilder();
 
-						//var ctx = document.getElementById('canvas-test');
-        				//ctx = ctx.getContext('2d');
-
-						pr.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
+						//pr.addCommand('\x1b\x74\x26'); //ESC t 16 (1252 code table)
 						pr.addFeedLine(2);
 						pr.addTextAlign(pr.ALIGN_CENTER);
 						pr.addTextSmooth(true);
-						//printer.addImage(ctx, 0, 0, 257, 212, printer.COLOR_1 , printer.MODE_MONO);
-						//printer.addFeedLine(1);
 
 						//printer.addSymbol('1234', printer.SYMBOL_QRCODE_MODEL_2, printer.LEVEL_0, 3);
-						pr.addText(`${this.waiter.fullName} / `);
-						pr.addText(this.getHm());
+						pr.addText(`${this.waiter.fullName} / ` + this.getHm());
 						pr.addTextFont(pr.FONT_B);
 						pr.addTextAlign(pr.ALIGN_CENTER);
 						pr.addFeedLine(1);
 						pr.addTextSize(2, 2);
-						pr.addText('--- ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ ---');
+						pr.addReverseText('--- ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ ---');
 						pr.addFeedLine(3);
 						pr.addTextSize(3, 3);
 						pr.addText(`Τραπέζι ${this.order.table.name}`);
@@ -975,12 +945,7 @@
 		    		})
 
 		    		return _.round(price * orderEntry.quantity, 1);
-		    	},
-		    	filteredTables(row) {
-		    		return this.tables.filter(table =>
-		    			table.name[0] == row
-		    		);
-		    	},
+		    	}
 		    }
 		}).mount('#app');
 	</script>
