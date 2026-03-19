@@ -35,9 +35,7 @@ final class UpdateUser
             }
             $user->setFullName($requestData['fullName']);
             $user->setHourlyRate(floatval($requestData['hourlyRate']));
-            $user->setMonthlyCredits(intval($requestData['monthlyCredits']));
-            $user->setRoles($requestData['roles']);
-            $user->setAllowedMenus($requestData['allowedMenus']);
+            $user->setRoles($requestData['roles'] ?? []);
             $user->setNotes($requestData['notes']);
 
             $this->usersRepository->persist($user);
