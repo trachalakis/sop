@@ -182,7 +182,7 @@
   	</div>
   	<div class="offcanvas-backdrop fade show" v-if="showOptions"></div>
 </div>
-<canvas id="logo" width="286" height="238" class="d-none"></canvas>
+<canvas width="576" height="5000" class="d-none"></canvas>
 {% endverbatim %}{% endblock %}
 
 {% block javascript %}
@@ -193,18 +193,59 @@
 	<script src="/assets/js/epos-2.24.0.js"></script>
 	<script src="/assets/js/translations.js"></script>
 	<script>
-	    
-
-	    var ctxLogo = document.getElementById('logo');
-	    if (ctxLogo.getContext) {
-	        ctxLogo = ctxLogo.getContext('2d');
-	        var imgLogo = new Image();
-	        imgLogo.onload = function () {
-	            ctxLogo.drawImage(imgLogo, 0, 0);
-	        };
-	        imgLogo.src = '/assets/img/logo.jpg';
-	    }
+        const img = new Image();
+        img.onload = () => {
+            //the assumption is that the logo will be loaded
+            //by the time the waiter presses to print button...
+        };
+        img.src = '/assets/logo.webp';
 	</script>
+    <script>
+        const W = 576;
+        const PAD = 3;
+        const INDENT = 40;
+        let y = 0;
+
+        const centerText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'center';
+            y += fontSize;
+            ctx.fillText(text, W / 2, y);
+            y += 8;
+        };
+
+        const leftText = (ctx, text, fontSize, bold = false, indent = 0) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            y += fontSize;
+            ctx.fillText(text, PAD + indent, y);
+            y += 8;
+        };
+
+        const rightText = (ctx, text, fontSize, bold = false, indent = 0) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'right';
+            y += fontSize;
+            ctx.fillText(text, W - PAD - indent, y);
+            y += 8;
+        };
+
+        const separator = (ctx) => {
+            y += 8;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+            y += 12;
+        };
+
+        const addImage = (ctx, img, imgWidth, imgHeight, centered = true) => {
+            const x = centered ? (W - imgWidth) / 2 : PAD;
+            ctx.drawImage(img, x, y, imgWidth, imgHeight);
+            y += imgHeight + 8;
+        };
+    </script>
 	<script>
 		vueApp = Vue.createApp({
 		    data() {
@@ -221,11 +262,14 @@
 		    		printers: [],
 
 		    		printingOrder: false,
-		    		showOptions: false
+		    		showOptions: false,
+
+                    canvasCtx: null
 		    	}
 		    },
 		    mounted () {
 		    	let id = new URLSearchParams(window.location.search).get('id');
+                this.canvasCtx = document.querySelector('canvas').getContext('2d');
 
 		    	axios({
                     url: '/admin/graph-ql',
@@ -383,39 +427,29 @@
 		    		}
 		    		this.printingOrder = true;
 
-					let ePOSBuilder = new epson.ePOSBuilder();
-					//printer.addCommand('\x1B\x40\x1B\x74\x13');
-					//printer.addText(('\xC4'))
-					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
-					var ctx = document.getElementById('almyriki-logo');
-        			ctx = ctx.getContext('2d');
+                    this.canvasCtx.clearRect(0, 0, W, 5000);
+		    		this.canvasCtx.fillStyle = 'white';
+		    		this.canvasCtx.fillRect(0, 0, W, 5000);
+		    		this.canvasCtx.fillStyle = 'black';
 
-					ePOSBuilder.addImage(ctx, 0, 0, 590, 286, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
-					ePOSBuilder.addFeedLine(1);
-					ePOSBuilder.addTextFont(ePOSBuilder.FONT_B);
-					ePOSBuilder.addTextSmooth(true);
-					ePOSBuilder.addFeedLine(3);
-					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
-					ePOSBuilder.addTextSize(3, 3);
-					ePOSBuilder.addText(_.replace(i18n._("Table %s\n", this.activeLanguage.isoCode), '%s', this.order.table.name))
-					ePOSBuilder.addTextSize(2, 2);
-					if (this.selectedFamilies.length == 1 && this.orderFamilies.length > 1) {
-						ePOSBuilder.addText(_.replace(i18n._("Family %s\n", this.activeLanguage.isoCode), '%s', this.selectedFamilies[0]))
-					}
-					ePOSBuilder.addFeedLine(1);
-					ePOSBuilder.addText(_.repeat('-', 32));
-					ePOSBuilder.addFeedLine(1);
-					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_LEFT);
-					ePOSBuilder.addTextLineSpace(40);
+                    centerText(
+                        this.canvasCtx,
+                        this.order.table.name + '/' + this.getHm(),
+                        18
+                    );
+                    y+= 16;
+                    
+                    addImage(this.canvasCtx, img, 500, 417, centered = true);
 
-					_.each(this.groupedOrderEntries, orderEntry => {
+                    separator(this.canvasCtx);
+                    _.each(this.groupedOrderEntries, orderEntry => {
 						let quantity = orderEntry.quantity;
 
 						let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name
 
 						let menuItemBlock = '';
 						menuItemBlock = `${quantity} x ${name}`;
-						if (menuItemBlock.length >= 32) {
+						if (menuItemBlock.length >= 31) {
 							name = name.substring(
 								0, name.indexOf('/') - (quantity.toString().length - 1)
 							); //minus 1 is for times symbol
@@ -424,29 +458,38 @@
 
 						let dotsBlock = '';
 						let priceBlock = '€' + orderEntry.price;
-						if ((menuItemBlock.length + priceBlock.length) <= 32) {
-							dotsBlock = '.'.repeat(32 - (menuItemBlock.length + priceBlock.length));
+						if ((menuItemBlock.length + priceBlock.length) <= 31) {
+							dotsBlock = '.'.repeat(31 - (menuItemBlock.length + priceBlock.length));
 						}
-						ePOSBuilder.addText(`${menuItemBlock}${dotsBlock}${priceBlock}\n`);
+						leftText(this.canvasCtx, `${menuItemBlock}${dotsBlock}${priceBlock}\n`, 30, true);
 					});
+                    separator(this.canvasCtx);
+                    rightText(
+                        this.canvasCtx, 
+                        _.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice),
+                        32, false
+                    );
+                    y+=48;
 
-					ePOSBuilder.addText(_.repeat('-', 32));
-					ePOSBuilder.addFeedLine(1);
-					//printer.addTextAlign(printer.ALIGN_RIGHT);
-					ePOSBuilder.addText(_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice))
-					ePOSBuilder.addFeedLine(3);
-					ePOSBuilder.addTextAlign(ePOSBuilder.ALIGN_CENTER);
-					ePOSBuilder.addTextSize(3, 3);
-					ePOSBuilder.addText(i18n._("Thank you!", this.activeLanguage.isoCode));
-					ePOSBuilder.addFeedLine(3);
+                    centerText(
+                        this.canvasCtx, 
+                        i18n._("Thank you!", this.activeLanguage.isoCode),
+                        44
+                    );
+					y+=16;
 					if (this.activeLanguage.isoCode == 'en') {
-						ePOSBuilder.addTextSize(1, 1);
-						ePOSBuilder.addText('Tips not required but greatly appreciated.\n');
+						centerText(
+                            this.canvasCtx, 
+                            'Tips not required but greatly appreciated.',
+                            20
+                        );
 					}
-					ePOSBuilder.addText(this.getHm());
-					ePOSBuilder.addFeedLine(2);
-					ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
-
+                    
+                    let ePOSBuilder = new epson.ePOSBuilder();
+                    ePOSBuilder.addImage(this.canvasCtx, 0, 0, 576, y, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
+                    ePOSBuilder.addFeedLine(3);
+                    ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
+					
                     axios.post(
                         '/admin/print-jobs/create',
                         {
@@ -476,13 +519,6 @@
 
 		    		return true;
 		    	}
-		    	/*orderHasManyFamilies() {
-		    		let index = this.selectedOrderEntries.findIndex(
-		    			orderEntry => orderEntry.family != 1
-		    		)
-
-		    		return index != -1;
-		    	}*/
 		    }
 		}).mount('#app')
 	</script>
