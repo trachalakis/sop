@@ -166,7 +166,6 @@ return function (App $app, $container) {
 
         $group->post('/graph-ql', GraphQl::class);
     })
-    ->add(\Middleware\Globals::class)
     ->add(\Middleware\Authentication::class)
     ->add(\Middleware\Authorization::class)
     ->add(\Middleware\Menus::class);
@@ -203,4 +202,6 @@ return function (App $app, $container) {
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
+
+    $app->add(\Middleware\Globals::class);
 };
