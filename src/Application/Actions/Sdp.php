@@ -28,13 +28,10 @@ final class Sdp
 	{
         $requestParams = $request->getParsedBody();
 
-        //$this->logger->debug('SDP: ' . $request->getBody());
-
         if ($requestParams['ConnectionType'] == 'SetResponse') {
             $xml = simplexml_load_string($requestParams['ResponseFile']);
  
-            $success = boolval($xml->ePOSPrint->PrintResponse->response['success']);
-            if ($success) {
+            if ($xml->ePOSPrint->PrintResponse->response['success'] == 'true') {
                 $printJob = $this->printJobsRepository->find(
                     (int)$xml->ePOSPrint->Parameter->printjobid
                 );
