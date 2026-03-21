@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Application\Actions\Admin;
 
 use Datetime;
+use DateTimeImmutable;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -55,9 +56,12 @@ final class Report
             $end = (clone $start)->add(new \DateInterval('PT21H'));
         }
 
+        $start = DateTimeImmutable::createFromMutable($start);
+        $end = DateTimeImmutable::createFromMutable($end);
+
 	    $criteria = new Criteria;
-        $criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
-	    $criteria->andWhere(Criteria::expr()->lte('createdAt', $end));
+        //$criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
+	    //$criteria->andWhere(Criteria::expr()->lte('createdAt', $end));
         $orders = $ordersRepository->matching($criteria->orderBy(['createdAt' => 'asc']));
 
         $sales = 0;

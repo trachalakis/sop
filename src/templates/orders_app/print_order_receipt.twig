@@ -25,17 +25,29 @@
                 <template v-if="receiptPrinters.length == 1">
                     <button
                         type="button"
-                        class="btn btn-primary btn-lg me-2"
+                        class="btn btn-lg me-2"
+                        :class="selectedFamilies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                        :disabled="selectedFamilies.length == 0"
                         @click="print(receiptPrinters[0]);"
                     >
-                        <i class="bi bi-printer"></i> @{{receiptPrinters[0].name}}
+                        <i class="bi bi-printer"></i>
+                        <span v-if="selectedFamilies.length > 1"> ({{selectedFamilies.length}})</span>
+                        @{{receiptPrinters[0].name}}
                     </button>
                 </template>
                 <template v-else>
                     <div class="btn-group">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button
+                                type="button"
+                                class="btn dropdown-toggle"
+                                :class="selectedFamilies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                                :disabled="selectedFamilies.length == 0"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
                                 <i class="bi bi-printer"></i>
+                                <span v-if="selectedFamilies.length > 1"> ({{selectedFamilies.length}})</span>
                             </button>
                             <ul class="dropdown-menu">
                                 <li v-for="printer in receiptPrinters"><a class="dropdown-item" @click="print(printer);">{{printer.name}}</a></li>
@@ -52,19 +64,19 @@
         		type="button"
         		class="btn btn-outline-primary btn-lg w-100"
         		:class="{active: isEqual(selectedFamilies, orderFamilies)}"
-        		@click="selectedFamilies = orderFamilies"
+        		@click="toggleAll()"
         	>
-				All families
+				Όλες
 			</button>
         </div>
 		<div class="col" v-for="family in orderFamilies">
         	<button
         		type="button"
         		class="btn btn-outline-primary btn-lg w-100"
-        		:class="{active: isEqual(selectedFamilies, [family])}"
-        		@click="selectedFamilies = [family]"
+        		:class="{active: selectedFamilies.includes(family)}"
+        		@click="toggleFamily(family)"
         	>
-				Family [{{family}}]
+				Οικογένεια [{{family}}]
 			</button>
         </div>
 	</div>
@@ -83,35 +95,35 @@
 					class="mb-2"
 					v-for="(orderEntry, index) in filterGroupEntries(orderEntryGroup, i)"
 				>
-	      			<div class="d-flex w-100 justify-content-between">
-			      		<span class="fs-4">
-		      				{{orderEntry.quantity}} &times; {{getTranslation(orderEntry.menuItem, 'el').name}}
-			      		</span>
-		      			<div></div>
-		      		</div>
-		    		<div class="mb-0 ps-3">
-		    			<div v-if="orderEntry.weight > 0 || orderHasManyFamilies">
-		    				<span v-if="orderEntry.weight > 0">
-		    					βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
-		    				</span>
-		    				<span v-if="orderEntry.weight > 0 && orderHasManyFamilies"> / </span>
-		    				<span v-if="orderHasManyFamilies">οικογένεια <span class="fw-bold">{{orderEntry.family}}</span></span>
-		    			</div>
-		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
-		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
-			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
-			    			</span>
-		    			</div>
-		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
-		    		</div>
-		    		<div class="mb-0 ps-3">
-		    			<div v-for="orderEntryCancellation in orderEntry.orderEntryCancellations">
-		    				<span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt}}</span>
-		    			</div>
-		    		</div>
-		  		</div>
-			</div>
-			<hr v-if="filterGroupEntries(orderEntryGroup, i).length > 0" class="m-1"/>
+      			<div class="d-flex w-100 justify-content-between">
+		      		<span class="fs-4">
+	      				{{orderEntry.quantity}} &times; {{getTranslation(orderEntry.menuItem, 'el').name}}
+		      		</span>
+	      			<div></div>
+	      		</div>
+	    		<div class="mb-0 ps-3">
+	    			<div v-if="orderEntry.weight > 0 || orderHasManyFamilies">
+	    				<span v-if="orderEntry.weight > 0">
+	    					βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
+	    				</span>
+	    				<span v-if="orderEntry.weight > 0 && orderHasManyFamilies"> / </span>
+	    				<span v-if="orderHasManyFamilies">οικογένεια <span class="fw-bold">{{orderEntry.family}}</span></span>
+	    			</div>
+	    			<div v-if="orderEntry.orderEntryExtras.length > 0">
+	    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
+		    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+		    			</span>
+	    			</div>
+	    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+	    		</div>
+	    		<div class="mb-0 ps-3">
+	    			<div v-for="orderEntryCancellation in orderEntry.orderEntryCancellations">
+	    				<span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt}}</span>
+	    			</div>
+	    		</div>
+	  		</div>
+		</div>
+		<hr v-if="filterGroupEntries(orderEntryGroup, i).length > 0" class="m-1"/>
 		</div>
 	</div>
 
@@ -125,20 +137,32 @@
   				<template v-if="receiptPrinters.length == 1">
                     <button
                         type="button"
-                        class="btn btn-primary btn-lg me-2"
-                        @click="print(receiptPrinters[0]);"
+                        class="btn btn-lg me-2"
+                        :class="selectedFamilies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                        :disabled="selectedFamilies.length == 0"
+                        @click="print(receiptPrinters[0]); showOptions = false"
                     >
-                        <i class="bi bi-printer"></i> @{{receiptPrinters[0].name}}
+                        <i class="bi bi-printer"></i>
+                        <span v-if="selectedFamilies.length > 1"> ({{selectedFamilies.length}})</span>
+                        @{{receiptPrinters[0].name}}
                     </button>
                 </template>
                 <template v-else>
                     <div class="btn-group">
                         <div class="btn-group">
-                            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <button
+                                type="button"
+                                class="btn dropdown-toggle"
+                                :class="selectedFamilies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                                :disabled="selectedFamilies.length == 0"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
                                 <i class="bi bi-printer"></i>
+                                <span v-if="selectedFamilies.length > 1"> ({{selectedFamilies.length}})</span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li v-for="printer in receiptPrinters"><a class="dropdown-item" @click="print(printer);">{{printer.name}}</a></li>
+                                <li v-for="printer in receiptPrinters"><a class="dropdown-item" @click="print(printer); showOptions = false">{{printer.name}}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -161,18 +185,18 @@
 		        	<button
 		        		type="button"
 		        		class="btn btn-outline-primary btn-lg w-100"
-		        		:class="{active: selectedOrderEntries.length == unpaidOrderEntries.length}"
-		        		@click.stop="toggleAll();showOptions = false"
+		        		:class="{active: isEqual(selectedFamilies, orderFamilies)}"
+		        		@click.stop="toggleAll()"
 		        	>
-						Όλα
+						Όλες
 					</button>
 		        </div>
 				<div class="col-xs-12 mb-2" v-for="family in orderFamilies">
 					<button
 		        		type="button"
 		        		class="btn btn-outline-primary btn-lg w-100"
-		        		:class="{active: entriesBelongTo(family)}"
-		        		@click="selectFamily(family);showOptions = false"
+		        		:class="{active: selectedFamilies.includes(family)}"
+		        		@click="toggleFamily(family)"
 		        	>
 						Οικογένεια {{family}}
 					</button>
@@ -303,7 +327,7 @@
                     this.order = response.data.data.order;
                     this.initialOrder = JSON.parse(JSON.stringify(response.data.data.order));
 
-                    this.selectedFamilies = this.orderFamilies;
+                    this.selectedFamilies = [...this.orderFamilies];
                 });
 
                 axios({
@@ -346,15 +370,29 @@
 		    	orderHasManyFamilies () {
 		    		return this.orderFamilies.length > 1;
 		    	},
-		    	selectedOrderEntries () {
+		    	totalPrice () {
+		    		let total = 0;
+		    		_.each(this.allOrdeEntries, orderEntry => {
+		    			total += this.calculateOrderEntryPrice(orderEntry);
+		    		});
+		    		return _.round(total, 1);
+		    	},
+		    	unpaidOrderEntries () {
 		    		return _.filter(this.allOrdeEntries, entry => {
-		    			return this.selectedFamilies.includes(entry.family);
+		    			return entry.isPaid == false;
 		    		});
 		    	},
-				groupedOrderEntries () {
+		    },
+		    methods: {
+                familyOrderEntries (orderEntries, family) {
+		    		return _.filter(orderEntries, entry => {
+		    			return family == entry.family;
+		    		});
+		    	},
+                groupedOrderEntries (orderEntries) {
 					let entries = [];
 
-					_.each(this.selectedOrderEntries, orderEntry => {
+					_.each(orderEntries, orderEntry => {
 						if (orderEntry.quantity > 0 && orderEntry.menuItemPrice > 0) {
 							let x = _.find(entries, function(e) { return e.id == orderEntry.menuItem.id; });
 
@@ -374,22 +412,6 @@
 
 					return entries;
 				},
-		    	unpaidOrderEntries () {
-		    		return _.filter(this.allOrdeEntries, entry => {
-		    			return entry.isPaid == false;
-		    		});
-		    	},
-		    	totalPrice () {
-		    		let totalPrice = 0;
-
-		    		_.each(this.selectedOrderEntries, orderEntry => {
-			    		totalPrice += this.calculateOrderEntryPrice(orderEntry)
-			    	});
-
-		    		return _.round(totalPrice, 1);
-		    	}
-		    },
-		    methods: {
 		    	getHm() {
 		    		var today = new Date();
 		    		return `${today.getHours()}:${today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()}\n`
@@ -421,88 +443,110 @@
 		    	isDeleted(orderEntry) {
 		    		return orderEntry.quantity == 0;
 		    	},
-		    	print(printer) {
-		    		if (this.printingOrder) {
-		    			return
+		    	toggleFamily(family) {
+		    		const idx = this.selectedFamilies.indexOf(family);
+		    		if (idx === -1) {
+		    			this.selectedFamilies.push(family);
+                        this.selectedFamilies.sort();
+		    		} else {
+		    			this.selectedFamilies.splice(idx, 1);
 		    		}
-		    		this.printingOrder = true;
-
-                    this.canvasCtx.clearRect(0, 0, W, 5000);
+		    	},
+		    	toggleAll() {
+		    		if (_.isEqual(this.selectedFamilies, this.orderFamilies)) {
+		    			this.selectedFamilies = [];
+		    		} else {
+		    			this.selectedFamilies = [...this.orderFamilies];
+		    		}
+		    	},
+		    	buildReceiptXml(family) {
+		    		y = 0;
+		    		this.canvasCtx.clearRect(0, 0, W, 5000);
 		    		this.canvasCtx.fillStyle = 'white';
 		    		this.canvasCtx.fillRect(0, 0, W, 5000);
 		    		this.canvasCtx.fillStyle = 'black';
 
-                    centerText(
-                        this.canvasCtx,
-                        this.order.table.name + '/' + this.getHm(),
-                        18
-                    );
-                    y+= 16;
-                    
-                    addImage(this.canvasCtx, img, 500, 417, centered = true);
+		    		const familyBlock = this.orderHasManyFamilies ? family + '/' : '';
+		    		centerText(
+		    			this.canvasCtx,
+		    			this.order.table.name + '/' + familyBlock + this.getHm(),
+		    			18
+		    		);
+		    		y += 16;
 
-                    separator(this.canvasCtx);
-                    _.each(this.groupedOrderEntries, orderEntry => {
-						let quantity = orderEntry.quantity;
+		    		addImage(this.canvasCtx, img, 500, 417, true);
+		    		separator(this.canvasCtx);
 
-						let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name
+		    		const entries = this.familyOrderEntries(this.allOrdeEntries, family);
+		    		const grouped = this.groupedOrderEntries(entries);
+		    		const familyTotal = _.round(_.sum(_.map(grouped, 'price')), 1);
 
-						let menuItemBlock = '';
-						menuItemBlock = `${quantity} x ${name}`;
-						if (menuItemBlock.length >= 31) {
-							name = name.substring(
-								0, name.indexOf('/') - (quantity.toString().length - 1)
-							); //minus 1 is for times symbol
-							menuItemBlock = `${quantity} x ${name}`;
-						}
+		    		_.each(grouped, orderEntry => {
+		    			let quantity = orderEntry.quantity;
+		    			let name = this.getTranslation(orderEntry.menuItem, this.activeLanguage.isoCode).name;
+		    			let menuItemBlock = `${quantity} x ${name}`;
+		    			if (menuItemBlock.length >= 31) {
+		    				name = name.substring(
+		    					0, name.indexOf('/') - (quantity.toString().length - 1)
+		    				);
+		    				menuItemBlock = `${quantity} x ${name}`;
+		    			}
+		    			let priceBlock = '€' + orderEntry.price;
+		    			let dotsBlock = '';
+		    			if ((menuItemBlock.length + priceBlock.length) <= 31) {
+		    				dotsBlock = '.'.repeat(31 - (menuItemBlock.length + priceBlock.length));
+		    			}
+		    			leftText(this.canvasCtx, `${menuItemBlock}${dotsBlock}${priceBlock}\n`, 30, true);
+		    		});
 
-						let dotsBlock = '';
-						let priceBlock = '€' + orderEntry.price;
-						if ((menuItemBlock.length + priceBlock.length) <= 31) {
-							dotsBlock = '.'.repeat(31 - (menuItemBlock.length + priceBlock.length));
-						}
-						leftText(this.canvasCtx, `${menuItemBlock}${dotsBlock}${priceBlock}\n`, 30, true);
-					});
-                    separator(this.canvasCtx);
-                    rightText(
-                        this.canvasCtx, 
-                        _.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', this.totalPrice),
-                        32, false
-                    );
-                    y+=48;
+		    		separator(this.canvasCtx);
+		    		rightText(
+		    			this.canvasCtx,
+		    			_.replace(i18n._("Total %s€\n", this.activeLanguage.isoCode), '%s', familyTotal),
+		    			32, false
+		    		);
+		    		y += 48;
+		    		centerText(
+		    			this.canvasCtx,
+		    			i18n._("Thank you!", this.activeLanguage.isoCode),
+		    			44
+		    		);
+		    		y += 16;
+		    		if (this.activeLanguage.isoCode == 'en') {
+		    			centerText(
+		    				this.canvasCtx,
+		    				'Tips not required but greatly appreciated.',
+		    				20
+		    			);
+		    		}
 
-                    centerText(
-                        this.canvasCtx, 
-                        i18n._("Thank you!", this.activeLanguage.isoCode),
-                        44
-                    );
-					y+=16;
-					if (this.activeLanguage.isoCode == 'en') {
-						centerText(
-                            this.canvasCtx, 
-                            'Tips not required but greatly appreciated.',
-                            20
-                        );
-					}
-                    
-                    let ePOSBuilder = new epson.ePOSBuilder();
-                    ePOSBuilder.addImage(this.canvasCtx, 0, 0, 576, y, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
-                    ePOSBuilder.addFeedLine(3);
-                    ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
-					
-                    axios.post(
-                        '/admin/print-jobs/create',
-                        {
-                            printer: printer.name,
-                            xml: ePOSBuilder.toString()
-                        }
-                    ).then(response => {
-                        if (response.data == 'ok') {
-                            window.location.href = '/orders-app/';
-                        }
-                    }).catch(function (error) {
-                        alert(error);
-                    });
+		    		let ePOSBuilder = new epson.ePOSBuilder();
+		    		ePOSBuilder.addImage(this.canvasCtx, 0, 0, 576, y, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
+		    		ePOSBuilder.addFeedLine(3);
+		    		ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
+		    		return ePOSBuilder.toString();
+		    	},
+		    	async print(printer) {
+		    		if (this.printingOrder) {
+		    			return;
+		    		}
+		    		this.printingOrder = true;
+
+		    		// Build XMLs sequentially (shared canvas), then fire all jobs in parallel
+		    		const xmls = this.selectedFamilies.map(family => this.buildReceiptXml(family));
+
+		    		try {
+		    			await Promise.all(xmls.map(xml =>
+		    				axios.post('/admin/print-jobs/create', {
+		    					printer: printer.name,
+		    					xml
+		    				})
+		    			));
+		    			window.location.href = '/orders-app/';
+		    		} catch (error) {
+		    			alert(error);
+		    			this.printingOrder = false;
+		    		}
 		    	},
 		    	getTranslation(object, language) {
 		    		return _.find(object.translations, translation => {
@@ -511,13 +555,6 @@
 		    	},
 		    	isEqual (value, other) {
 		    		return _.isEqual(value, other);
-		    	},
-		    	entriesBelongTo(family) {
-		    		_.each(this.selectedOrderEntries, orderEntry => {
-		    			orderEntry.family != family
-		    		});
-
-		    		return true;
 		    	}
 		    }
 		}).mount('#app')
