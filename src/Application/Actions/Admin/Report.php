@@ -60,8 +60,8 @@ final class Report
         $end = DateTimeImmutable::createFromMutable($end);
 
 	    $criteria = new Criteria;
-        //$criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
-	    //$criteria->andWhere(Criteria::expr()->lte('createdAt', $end));
+        $criteria->andWhere(Criteria::expr()->gte('createdAt', $start));
+	    $criteria->andWhere(Criteria::expr()->lte('createdAt', $end));
         $orders = $ordersRepository->matching($criteria->orderBy(['createdAt' => 'asc']));
 
         $sales = 0;
@@ -75,13 +75,15 @@ final class Report
         $ordersPerHourData = [];
         $salesPerHourData = [];
 
-        if (!is_null($filter) && $filter['service'] == 'lunch') {
+        //dd($filter);
+
+        if (isset($filter['service']) && $filter['service'] == 'lunch') {
             $orders = $orders->filter(function ($order) {
                 return $order->getCreatedAt()->format('G') < 18;
             });
         }
 
-        if (!is_null($filter) && $filter['service'] == 'dinner') {
+        if (isset($filter['service']) && $filter['service'] == 'dinner') {
             $orders = $orders->filter(function ($order) {
                 return $order->getCreatedAt()->format('G') >= 18;
             });
@@ -104,6 +106,9 @@ final class Report
 
             foreach($order->getOrderEntries() as $orderEntry) {
                 $menuItem = $orderEntry->getMenuItem();
+                if ($menuItem == null) {
+                    continue;
+                }
                 $menuSection = $menuItem->getMenuSection();
 
                 $menuSectionIndex = $menuSection->getId();
@@ -157,6 +162,9 @@ final class Report
         		return 0;
         	}
         });
+
+        $start = DateTime::createFromImmutable($start);
+        $end = DateTime::createFromImmutable($end);
 
         $criteria = new Criteria;
         $criteria->andWhere(Criteria::expr()->gte('checkIn', $start));

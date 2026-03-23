@@ -24,7 +24,7 @@ class OrderEntryCancellation
     #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
-    #[ORM\OneToOne(targetEntity: OrderEntry::class)]
+    #[ORM\ManyToOne(targetEntity: OrderEntry::class, inversedBy: 'orderEntryCancellations')]
     #[ORM\JoinColumn(name: 'order_entry_id', referencedColumnName: 'id')]
     private OrderEntry $orderEntry;
 
