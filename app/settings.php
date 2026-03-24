@@ -13,11 +13,6 @@ return function (ContainerBuilder $containerBuilder) {
     // Global Settings Object
     $containerBuilder->addDefinitions([
         'settings' => [
-            /*'slim' => [
-                'displayErrorDetails' => $_ENV['APP_MODE'] == 'development',
-                'logErrors' => true,
-                'logErrorDetails' => true
-            ],*/
             'logger' => [
                 'name' => 'sopApp',
                 'file' => __DIR__ . '/../logs/app.log'
@@ -36,17 +31,10 @@ return function (ContainerBuilder $containerBuilder) {
                 'host' => $_ENV['DB_HOST'],
                 'username' => $_ENV['DB_USERNAME'],
                 'password' => $_ENV['DB_PASSWORD'],
-                'databaseName' => $_ENV['DB_DATABASE_NAME']
+                'databaseName' => $_ENV['DB_NAME']
             ],
             'siteName' => $_ENV['SITE_NAME'],
             'appMode' => $_ENV['APP_MODE']
-            /*,
-            'mailer' => [
-            	'username' => '',
-            	'password' => '',
-            	'host' => '',
-            	'port' => ''
-            ]*/
         ]
     ]);
 };
