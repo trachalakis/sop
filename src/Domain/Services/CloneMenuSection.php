@@ -25,10 +25,8 @@ final class CloneMenuSection
 
         $clone->setCustomFields($menuSection->getCustomFields());
         $clone->setIsActive($menuSection->getIsActive());
-        $clone->setIsPublic($menuSection->getIsPublic());
         $clone->setMenu($targetMenu);
         $clone->setPosition($menuSection->getPosition());
-        $clone->setPrintMenuPage($menuSection->getPrintMenuPage());
 
         // Clone translations
         $translations = new ArrayCollection;
