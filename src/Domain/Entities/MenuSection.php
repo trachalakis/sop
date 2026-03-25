@@ -26,9 +26,6 @@ class MenuSection
     #[ORM\Column(type: 'boolean', name: 'is_active')]
     private bool $isActive;
 
-    #[ORM\Column(type: 'boolean', name: 'is_public')]
-    private bool $isPublic;
-
     #[ORM\ManyToOne(targetEntity: Menu::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'menu_id', referencedColumnName: 'id')]
     private Menu $menu;
@@ -42,9 +39,6 @@ class MenuSection
 
     #[ORM\Column(type: 'integer', name: 'position')]
     private int $position;
-
-    #[ORM\Column(type: 'integer', name: 'print_menu_page')]
-    private int $printMenuPage;
 
     #[ORM\OneToMany(targetEntity: MenuSectionTranslation::class, mappedBy: 'menuSection', cascade: ['persist'], orphanRemoval: true)]
     private Collection $translations;
@@ -92,11 +86,6 @@ class MenuSection
         return $this->isActive;
     }
 
-    public function getIsPublic(): bool
-    {
-        return $this->isPublic;
-    }
-
     public function getMenu(): Menu
     {
         return $this->menu;
@@ -120,18 +109,6 @@ class MenuSection
 	public function getPosition(): int
     {
         return $this->position;
-    }
-
-    public function getPrintMenuPage(): int
-    {
-    	return $this->printMenuPage;
-    }
-
-    public function getPublicMenuItems()
-    {
-    	return $this->getActiveMenuItems()->filter(function ($menuItem) {
-    		return $menuItem->getIsPublic();
-    	});
     }
 
     public function getTranslation(string $language): ?MenuSectionTranslation
@@ -165,12 +142,7 @@ class MenuSection
         $this->isActive = $isActive;
     }
 
-    public function setIsPublic(bool $isPublic): void
-    {
-        $this->isPublic = $isPublic;
-    }
-
-    public function setExtras($extras): void //TODO add arg type
+    public function setExtras(Collection $extras): void
     {
         $this->extras = $extras;
     }
@@ -183,11 +155,6 @@ class MenuSection
     public function setPosition(?int $position): void
     {
         $this->position = $position;
-    }
-
-    public function setPrintMenuPage(int $printMenuPage): void
-    {
-    	$this->printMenuPage = $printMenuPage;
     }
 
     public function setTranslations($translations): void

@@ -79,15 +79,6 @@
 		  					<a class="text-decoration-none fs-4" href="/admin/menu-sections/update?id={{menuSection.getId}}">
 		  						{{menuSection.getTranslation('el').getName}}
 		  					</a>
-		  					{% if menuSection.getPrintMenuPage > 0 %}
-		  						<a
-		  							class="text-decoration-none ms-2"
-		  							href="/admin/menu/print?page={{menuSection.getPrintMenuPage}}"
-		  							target="_blank"
-		  						>
-		  							<span class="badge text-bg-info">{{menuSection.getPrintMenuPage}}</span>
-		  						</a>
-		  					{% endif %}
 		  					{% if not menuSection.getIsActive %}
 		   						<span class="badge rounded-pill text-bg-danger">Inactive</span>
 		   					{% endif %}
