@@ -28,7 +28,7 @@
 	<div class="container-fluid text-center">
 		<div class="row mb-3">
 			<div class="col-12 text-center">
-				<img src="/assets/img/logo_no_name.png" height="100"/>
+				<!--<img src="/assets/img/logo_no_name.png" height="100"/>-->
 			</div>
 		</div>
 		<div class="row mb-2">
@@ -43,14 +43,14 @@
 			</div>
 		</div>
 		{% for menuSection in menuSections %}
-			{% for menuItem in menuSection.getActiveMenuItems|filter(menuItem => menuItem.getIsPublic) %}
+			{% for menuItem in menuSection.getActiveMenuItems %}
 				<div class="row mb-2">
 					<div class="col text-end me-n">
 						<h5 class="mb-0">
 							{{(menuItem.getTranslation('el').getName|split('/'))[0]}}
 						</h5>
 						<p class="mb-1">
-							{{menuItem.getCustomField('print_description_el')|nl2br}}
+							{{menuItem.getCustomField('print_menu_description_el')|nl2br}}
 						</p>
 					</div>
 					<div class="col-1">&euro;{{menuItem.getPrice}}</div>
@@ -59,7 +59,7 @@
 							{{(menuItem.getTranslation('en').getName|split('/'))[0]}}
 						</h5>
 						<p class="mb-1">
-							{{menuItem.getCustomField('print_description_en')|nl2br}}
+							{{menuItem.getCustomField('print_menu_description_el')|nl2br}}
 						</p>
 					</div>
 				</div>
@@ -68,9 +68,9 @@
 		<div class="row mb-3">
 			<div class="col-12 text-center">
 				<p class="mb-1">
-					{% for i in 1..10 %}
+					{#{% for i in 1..10 %}
 						<img width="50" src="/assets/img/fish_color.png"/>
-					{% endfor %}
+					{% endfor %}#}
 				</p>
 				<p class="mb-1">
 					Παρακαλούμε ενημερώστε το προσωπικό της επιχείρησης μας για τυχόν αλλεργίες ή δυσανεξίες που μπορεί να έχετε.<br/>
