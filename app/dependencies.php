@@ -14,6 +14,7 @@ use Domain\Entities\Reservation;
 use Domain\Entities\Printer;
 use Domain\Entities\PrintJob;
 use Domain\Entities\Scan;
+use Domain\Entities\ShoppingList;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
 use Domain\Entities\Table;
@@ -27,6 +28,7 @@ use Domain\Repositories\OrderEntriesRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\PrintJobsRepository;
 use Domain\Repositories\UserPermissionsRepository;
+use Domain\Repositories\ShoppingListsRepository;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\UsersRepository;
@@ -192,6 +194,11 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
+        },
+        ShoppingListsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(ShoppingList::class);
         },
         PrintJobsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

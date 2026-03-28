@@ -6,9 +6,25 @@
 {% verbatim %}
 <div id="app">
 
-    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h4 mb-0">Εκτύπωση Προμηθειών</h1>
-        <div class="d-flex gap-2">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-2 border-bottom">
+        <div>
+            <h1 class="h4 mb-0">Εκτύπωση Προμηθειών</h1>
+            <small class="text-muted">για @{{formatDate(targetDate)}}</small>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+
+            <button
+                type="button"
+                class="btn btn-lg"
+                :class="saveStatus === 'saved' ? 'btn-success' : (saveStatus === 'error' ? 'btn-danger' : 'btn-outline-success')"
+                :disabled="selectedSupplies.length === 0 || saving"
+                @click="save"
+                title="Αποθήκευση λίστας"
+            >
+                <i v-if="!saving" class="bi" :class="saveStatus === 'saved' ? 'bi-check-lg' : 'bi-floppy'"></i>
+                <span v-if="saving" class="spinner-border spinner-border-sm"></span>
+            </button>
+
             <template v-if="receiptPrinters.length === 1">
                 <button
                     type="button"
@@ -43,15 +59,28 @@
                     </ul>
                 </div>
             </template>
+
             <button
                 v-if="selectedSupplies.length > 0"
                 type="button"
                 class="btn btn-lg btn-outline-secondary"
                 @click="clearSelection"
+                title="Εκκαθάριση"
             >
                 <i class="bi bi-x-lg"></i>
             </button>
+
         </div>
+    </div>
+
+    <div
+        v-if="saveStatus === 'saved'"
+        class="alert alert-success alert-dismissible py-2 mb-3"
+        role="alert"
+    >
+        <i class="bi bi-check-circle me-1"></i>
+        Η λίστα αποθηκεύτηκε για @{{formatDate(targetDate)}}.
+        <button type="button" class="btn-close" @click="saveStatus = null"></button>
     </div>
 
     <div v-for="group in supplyGroups" :key="group.name" class="mb-4">
@@ -109,6 +138,8 @@
     <script>
         const supplyGroupsData = {{ supplyGroupsJson|raw }};
         const printersData = {{ printersJson|raw }};
+        const existingEntriesData = {{ existingEntriesJson|raw }};
+        const targetDateStr = "{{ targetDate }}";
     </script>
     <script src="/assets/js/vue.global.prod.js"></script>
     <script src="/assets/js/axios.min.js"></script>
@@ -133,14 +164,6 @@
             y += 6;
         };
 
-        const rightText = (ctx, text, fontSize, bold = false) => {
-            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
-            ctx.textAlign = 'right';
-            y += fontSize;
-            ctx.fillText(text, W - PAD, y);
-            y += 6;
-        };
-
         const separator = (ctx) => {
             y += 6;
             ctx.lineWidth = 2;
@@ -158,13 +181,26 @@
                 return {
                     supplyGroups: supplyGroupsData,
                     printers: printersData,
+                    targetDate: targetDateStr,
                     selectedSupplies: [],
                     printing: false,
+                    saving: false,
+                    saveStatus: null,
                     canvasCtx: null,
                 };
             },
             mounted() {
                 this.canvasCtx = document.querySelector('canvas').getContext('2d');
+
+                existingEntriesData.forEach(entry => {
+                    for (const group of this.supplyGroups) {
+                        const supply = group.supplies.find(s => s.id === entry.supplyId);
+                        if (supply) {
+                            this.selectedSupplies.push({ ...supply, quantity: entry.quantity });
+                            break;
+                        }
+                    }
+                });
             },
             computed: {
                 receiptPrinters() {
@@ -172,6 +208,11 @@
                 },
             },
             methods: {
+                formatDate(dateStr) {
+                    if (!dateStr) return '';
+                    const [y, m, d] = dateStr.split('-');
+                    return `${d}/${m}/${y}`;
+                },
                 isSelected(supply) {
                     return this.selectedSupplies.some(s => s.id === supply.id);
                 },
@@ -194,6 +235,26 @@
                 },
                 clearSelection() {
                     this.selectedSupplies = [];
+                    this.saveStatus = null;
+                },
+                async save() {
+                    if (this.saving || this.selectedSupplies.length === 0) return;
+                    this.saving = true;
+                    this.saveStatus = null;
+                    try {
+                        await axios.post('/admin/shopping-lists/save', {
+                            entries: this.selectedSupplies.map(s => ({
+                                supplyId: s.id,
+                                quantity: s.quantity,
+                            })),
+                        });
+                        this.saveStatus = 'saved';
+                    } catch (error) {
+                        this.saveStatus = 'error';
+                        alert('Σφάλμα αποθήκευσης: ' + error);
+                    } finally {
+                        this.saving = false;
+                    }
                 },
                 getHm() {
                     const now = new Date();
@@ -208,11 +269,11 @@
                     this.canvasCtx.fillRect(0, 0, W, 5000);
                     this.canvasCtx.fillStyle = 'black';
 
-                    const now = new Date();
-                    const dateStr = now.toLocaleDateString('el-GR') + '  ' + this.getHm();
+                    const [yr, mo, da] = this.targetDate.split('-');
+                    const dateLabel = `${da}/${mo}/${yr}  ${this.getHm()}`;
 
                     centerText(this.canvasCtx, 'ΛΙΣΤΑ ΠΡΟΜΗΘΕΙΩΝ', 32, true);
-                    centerText(this.canvasCtx, dateStr, 24);
+                    centerText(this.canvasCtx, dateLabel, 24);
                     separator(this.canvasCtx);
 
                     const LINE_SIZE = 28;
@@ -220,14 +281,12 @@
 
                     this.selectedSupplies.forEach(supply => {
                         if (supply.quantity <= 0) return;
-
                         const qty = supply.quantity % 1 === 0
                             ? supply.quantity.toString()
                             : supply.quantity.toFixed(1);
                         const unitBlock = `${qty} ${supply.priceUnit}`;
                         const name = supply.name;
                         const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length));
-
                         leftText(this.canvasCtx, `${name}${dots}${unitBlock}`, LINE_SIZE, true);
                     });
 

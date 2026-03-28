@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use DateTimeImmutable;
 use Domain\Repositories\PrintersRepository;
+use Domain\Repositories\ShoppingListsRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,6 +17,7 @@ final class PrintSupplies
     public function __construct(
         private SupplyGroupsRepository $supplyGroupsRepository,
         private PrintersRepository $printersRepository,
+        private ShoppingListsRepository $shoppingListsRepository,
         private Twig $twig
     ) {}
 
@@ -51,13 +54,37 @@ final class PrintSupplies
             ];
         }, $printers));
 
+        $targetDate = $this->getTargetDate();
+        $shoppingList = $this->shoppingListsRepository->findByDate($targetDate);
+
+        $existingEntries = [];
+        if ($shoppingList !== null) {
+            foreach ($shoppingList->getEntries() as $entry) {
+                $existingEntries[] = [
+                    'supplyId' => $entry->getSupply()->getId(),
+                    'quantity' => $entry->getQuantity(),
+                ];
+            }
+        }
+
         return $this->twig->render(
             $response,
             'admin/print_supplies.twig',
             [
                 'supplyGroupsJson' => json_encode($supplyGroupsData),
                 'printersJson' => json_encode($printersData),
+                'existingEntriesJson' => json_encode($existingEntries),
+                'targetDate' => $targetDate->format('Y-m-d'),
             ]
         );
+    }
+
+    private function getTargetDate(): DateTimeImmutable
+    {
+        $now = new DateTimeImmutable();
+        if ((int) $now->format('H') < 5) {
+            return $now;
+        }
+        return $now->modify('+1 day');
     }
 }
