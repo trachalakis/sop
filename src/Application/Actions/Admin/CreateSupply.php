@@ -42,6 +42,7 @@ final class CreateSupply
 			$supply->setSupplyGroup($supplyGroup);
             $supply->setPrice(floatval($requestData['price']));
             $supply->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
+            $supply->setVatRate(isset($requestData['vatRate']) && $requestData['vatRate'] !== '' ? floatval($requestData['vatRate']) : null);
 			$this->suppliesRepository->persist($supply);
 
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);

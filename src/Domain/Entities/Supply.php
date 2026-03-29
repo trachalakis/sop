@@ -30,6 +30,9 @@ class Supply
     #[ORM\Column(type: 'string', enumType: PriceUnit::class, name: 'price_unit')]
     private PriceUnit $priceUnit;
 
+    #[ORM\Column(type: 'float', name: 'vat_rate', nullable: true)]
+    private ?float $vatRate = null;
+
     #[ORM\ManyToOne(targetEntity: SupplyGroup::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'supply_group_id', referencedColumnName: 'id')]
     private SupplyGroup $supplyGroup;
@@ -68,6 +71,11 @@ class Supply
         return $this->priceUnit->value;
     }
 
+    public function getVatRate(): ?float
+    {
+        return $this->vatRate;
+    }
+
     public function getSupplyGroup(): SupplyGroup
     {
     	return $this->supplyGroup;
@@ -96,6 +104,11 @@ class Supply
     public function setPriceUnit(PriceUnit $priceUnit): void
     {
         $this->priceUnit = $priceUnit;
+    }
+
+    public function setVatRate(?float $vatRate): void
+    {
+        $this->vatRate = $vatRate;
     }
 
     public function setSupplyGroup(SupplyGroup $supplyGroup): void

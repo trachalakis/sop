@@ -40,6 +40,7 @@ final class UpdateSupply
 			$supply->setSupplyGroup($supplyGroup);
             $supply->setPrice(floatval($requestData['price']));
             $supply->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
+            $supply->setVatRate(isset($requestData['vatRate']) && $requestData['vatRate'] !== '' ? floatval($requestData['vatRate']) : null);
 
 			$supply->setCustomFields([]);
             if (isset($requestData['customFields'])) {

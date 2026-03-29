@@ -16,9 +16,6 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-1 border-bottom">
     <h1>Προμήθειες</h1>
     <div class="btn-toolbar gap-2">
-        <a href="/admin/supplies/print" class="btn btn-outline-secondary">
-            <i class="bi bi-printer"></i>
-        </a>
        	<a href="/admin/supplies/create" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i>
         </a>
@@ -40,6 +37,11 @@
 				<tr>
       			    <td class="ps-4">
 						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
+					</td>
+					<td class="text-muted text-end">
+						{% if supply.getVatRate is not null %}
+							{{supply.getVatRate}}%
+						{% endif %}
 					</td>
     			</tr>
 			{% endfor %}
