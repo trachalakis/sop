@@ -43,6 +43,7 @@ use Application\Actions\Admin\Report;
 use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\PrintSupplies;
 use Application\Actions\Admin\SaveShoppingList;
+use Application\Actions\Admin\SortSupplyGroups;
 use Application\Actions\Admin\Supplies;
 use Application\Actions\Admin\SortMenuItems;
 use Application\Actions\Admin\SortMenuSections;
@@ -149,6 +150,7 @@ return function (App $app, $container) {
         $group->get('/scans/user', UserScans::class);
 
         $group->get('/supplies', Supplies::class);
+        $group->post('/supply-groups/sort', SortSupplyGroups::class);
         $group->get('/supplies/print', PrintSupplies::class);
         $group->post('/shopping-lists/save', SaveShoppingList::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);

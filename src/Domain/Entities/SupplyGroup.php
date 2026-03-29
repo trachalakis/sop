@@ -20,6 +20,9 @@ class SupplyGroup
     #[ORM\Column(type: 'string', unique: true)]
     private string $name;
 
+    #[ORM\Column(type: 'integer', name: 'position')]
+    private int $position = 0;
+
     #[ORM\OneToMany(targetEntity: Supply::class, mappedBy: 'supplyGroup', cascade: ['persist'])]
     #[ORM\OrderBy(['name' => 'ASC'])]
     private $supplies;
@@ -39,8 +42,18 @@ class SupplyGroup
     	return $this->supplies;
     }
 
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function setPosition(int $position): void
+    {
+        $this->position = $position;
     }
 }

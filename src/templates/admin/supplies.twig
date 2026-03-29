@@ -28,9 +28,10 @@
         </li>
     {% endfor %}
 </ul>
+<div id="supply-groups-sortable">
 {% for supplyGroup in supplyGroups|filter(sg => sg.getSupplies|length > 0) %}
-	<div id="supply-group-{{supplyGroup.getId}}"> 
-    <h2 >{{supplyGroup.getName}}</h2>
+	<div id="supply-group-{{supplyGroup.getId}}" data-id="{{supplyGroup.getId}}">
+    <h2 style="cursor: grab;">{{supplyGroup.getName}}</h2>
 	<table class="table table-responsive">
 		<tbody>
 			{% for supply in supplyGroup.getSupplies %}
@@ -46,6 +47,27 @@
     			</tr>
 			{% endfor %}
 		</tbody>
-	</table></div>
+	</table>
+    </div>
 {% endfor %}
+</div>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script>
+        new Sortable(document.getElementById('supply-groups-sortable'), {
+            handle: 'h2',
+            animation: 150,
+            onSort: function (evt) {
+                const ids = [...evt.srcElement.querySelectorAll('[data-id]')].map(el => el.dataset.id);
+                fetch('/admin/supply-groups/sort', {
+                    method: 'POST',
+                    body: JSON.stringify(ids),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+        });
+    </script>
 {% endblock %}

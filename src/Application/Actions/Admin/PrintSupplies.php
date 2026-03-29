@@ -23,7 +23,7 @@ final class PrintSupplies
 
     public function __invoke(Request $request, Response $response)
     {
-        $supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
+        $supplyGroups = $this->supplyGroupsRepository->findBy([], ['position' => 'asc', 'name' => 'asc']);
         $printers = $this->printersRepository->findBy(['isActive' => true], ['name' => 'asc']);
 
         $supplyGroupsData = array_values(array_filter(array_map(function ($group) {
