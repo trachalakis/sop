@@ -8,15 +8,15 @@
 
     <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-2 border-bottom">
         <div>
-            <h1 class="h4 mb-0">Εκτύπωση Προμηθειών</h1>
-            <small class="text-muted">για @{{formatDate(targetDate)}}</small>
+            <h1 class="h4 mb-0">Ψώνια</h1>
+            <small class="text-muted">για {{formatDate(targetDate)}}</small>
         </div>
         <div class="d-flex gap-2 align-items-center">
 
             <button
                 type="button"
                 class="btn btn-lg"
-                :class="saveStatus === 'saved' ? 'btn-success' : (saveStatus === 'error' ? 'btn-danger' : 'btn-outline-success')"
+                :class="saveStatus === 'saved' ? 'btn-primary' : (saveStatus === 'error' ? 'btn-danger' : 'btn-outline-primary')"
                 :disabled="selectedSupplies.length === 0 || saving"
                 @click="save"
                 title="Αποθήκευση λίστας"
@@ -29,13 +29,13 @@
                 <button
                     type="button"
                     class="btn btn-lg"
-                    :class="selectedSupplies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                    :class="selectedSupplies.length > 0 ? 'btn-outline-primary' : 'btn-secondary'"
                     :disabled="selectedSupplies.length === 0 || printing"
                     @click="print(receiptPrinters[0])"
                 >
                     <i class="bi bi-printer"></i>
-                    <span class="d-none d-sm-inline ms-1">@{{receiptPrinters[0].name}}</span>
-                    <span v-if="selectedSupplies.length > 0" class="badge bg-light text-dark ms-1">@{{selectedSupplies.length}}</span>
+                    <span class="d-none d-sm-inline ms-1">{{receiptPrinters[0].name}}</span>
+                    <!--<span v-if="selectedSupplies.length > 0" class="badge bg-light text-dark ms-1">@{{selectedSupplies.length}}</span>-->
                 </button>
             </template>
             <template v-else-if="receiptPrinters.length > 1">
@@ -79,12 +79,12 @@
         role="alert"
     >
         <i class="bi bi-check-circle me-1"></i>
-        Η λίστα αποθηκεύτηκε για @{{formatDate(targetDate)}}.
+        Η λίστα αποθηκεύτηκε για {{formatDate(targetDate)}}.
         <button type="button" class="btn-close" @click="saveStatus = null"></button>
     </div>
 
     <div v-for="group in supplyGroups" :key="group.name" class="mb-4">
-        <h5 class="text-muted fw-semibold mb-2 text-uppercase" style="font-size: 0.8rem; letter-spacing: 0.05em;">@{{group.name}}</h5>
+        <h5 class="text-muted fw-semibold mb-2 text-uppercase">{{group.name}}</h5>
         <div class="row g-2">
             <div
                 v-for="supply in group.supplies"
@@ -94,20 +94,31 @@
                 <div
                     class="card h-100 user-select-none"
                     :class="isSelected(supply) ? 'border-primary shadow-sm' : 'border'"
-                    style="cursor: pointer; transition: all 0.15s ease;"
+                    style="cursor: pointer;"
                     @click="toggleSupply(supply)"
                 >
                     <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center text-center" style="min-height: 72px;">
                         <div
                             class="fw-medium"
                             :class="isSelected(supply) ? 'text-primary' : ''"
-                            style="font-size: 0.9rem; line-height: 1.2;"
                         >
-                            @{{supply.name}}
+                            {{supply.name}}
                         </div>
-                        <div class="text-muted" style="font-size: 0.75rem;">@{{supply.priceUnit}}</div>
-                        <div v-if="isSelected(supply)" @click.stop class="mt-2 w-100">
-                            <input
+                        <!--<div class="text-muted" style="font-size: 0.75rem;">{{supply.priceUnit}}</div>-->
+                        
+                            <div class="input-group mt-2" v-if="isSelected(supply)" @click.stop>
+                                <input
+                                    type="number"
+                                    class="form-control form-control-sm text-center"
+                                    :value="getSelection(supply).quantity"
+                                    @input="setQuantity(supply, $event.target.value)"
+                                    min="0.1"
+                                    step="0.5"
+                                    
+                                />
+                                <span class="input-group-text">{{supply.priceUnit}}</span>
+                            </div>
+                            <!--<input
                                 type="number"
                                 class="form-control form-control-sm text-center"
                                 :value="getSelection(supply).quantity"
@@ -115,8 +126,8 @@
                                 min="0.1"
                                 step="0.5"
                                 style="font-size: 1rem; font-weight: 600;"
-                            />
-                        </div>
+                            />-->
+                        
                     </div>
                 </div>
             </div>
