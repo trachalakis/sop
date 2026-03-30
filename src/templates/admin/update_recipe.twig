@@ -3,252 +3,244 @@
 {% set activeNavLink = 'recipes' %}
 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Update recipe</h1>
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    {% if recipe.getMenuItem is not null %}
+        {% set menu = recipe.getMenuItem.getMenuSection.getMenu %}
+        <li class="breadcrumb-item">
+            <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/admin/menu-items/update?id={{recipe.getMenuItem.getId}}" class="text-decoration-none">
+                {{recipe.getMenuItem.getTranslation('el').getName}}
+            </a>
+        </li>
+        <li class="breadcrumb-item">Συνταγή</li>
+    {% else %}
+        <li class="breadcrumb-item">
+            <a href="/admin/recipes" class="text-decoration-none">Συνταγές</a>
+        </li>
+        <li class="breadcrumb-item">Επεξεργασία</li>
+    {% endif %}
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">
+        {% if recipe.getMenuItem is not null %}
+            {{recipe.getMenuItem.getTranslation('en').getName}}
+        {% else %}
+            {{recipe.getName}}
+        {% endif %}
+    </h1>
+    <div class="btn-toolbar">
+        <a href="/admin/recipes/delete?id={{recipe.getId}}" class="btn btn-outline-danger confirm">
+            <i class="bi bi-trash"></i>
+        </a>
+    </div>
 </div>
 <form method="post" autocomplete="off">
-	{% if not (recipe.getMenuItem is null) %}
-		<div class="row mb-3">
-			<label class="col-sm-2 col-form-label">Menu Item</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" value="{{recipe.getMenuItem.getTranslation('en').getName}}" disabled/>
-			</div>
-		</div>
-	{% endif %}
-	{% if recipe.getMenuItem is null %}
-		<div class="row mb-3">
-			<label class="col-sm-2 col-form-label">Name</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" name="name" value="{{recipe.getName}}"/>
-			</div>
-		</div>
-	{% endif %}
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Duration (minutes)</label>
-		<div class="col-sm-10">
-			<input type="number" min="0" step="1" class="form-control" name="duration" value="{{recipe.getDuration}}"/>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Yield</label>
-		<div class="col-sm-10">
-			<input type="text" class="form-control" name="yield" value="{{recipe.getYield}}"/>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Yield unit</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="yieldUnit">
-				<option value="item" {{recipe.getYieldUnit == 'item' ? 'selected' : ''}}>item</option>
-            	<option value="kg" {{recipe.getYieldUnit == 'kg' ? 'selected' : ''}}>kg</option>
-            	<option value="lt" {{recipe.getYieldUnit == 'lt' ? 'selected' : ''}}>lt</option>
-			</select>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Comments</label>
-		<div class="col-sm-10">
-			<textarea class="form-control" name="comments">{{- recipe.getComments -}}</textarea>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label"></label>
-		<div class="col-sm-10">
-			<div class="row mb-2">
-				<div class="col"><label>Supply</label></div>
-				<div class="col"><label>Quantity</label></div>
-				<div class="col"><label>Unit</label></div>
-				<div class="col"></div>
-			</div>
-			{% for ingredient in recipe.getSupplies %}
-				<div class="row mb-3 gx-1 supply">
-					<div class="col">
-						<select class="form-select" name="supply[{{loop.index}}][id]">
-							{% for supply in supplies %}
-								<option
-									value="{{supply.getId}}"
-									{{ingredient.getSupply.getId == supply.getId ? 'selected' :''}}
-								>
-									{{supply.getName}}
-								</option>
-							{% endfor %}
-						</select>
-					</div>
-					<div class="col">
-						<input
-							type="number"
-							min="0"
-							step="0.1"
-							class="form-control"
-							name="supply[{{loop.index}}][quantity]"
-							value="{{ingredient.getQuantity}}"
-						/>
-					</div>
-					<div class="col">
-						<select class="form-select" name="supply[{{loop.index}}][unit]">
-							<option value="item" {{ingredient.getUnit == 'item' ? 'selected' : ''}}>item</option>
-		            		<option value="kg" {{ingredient.getUnit == 'kg' ? 'selected' : ''}}>kg</option>
-		            		<option value="lt" {{ingredient.getUnit == 'lt' ? 'selected' : ''}}>lt</option>
-						</select>
-					</div>
-					<div class="col">
-		                <a class="btn btn-sm btn-danger delete">
-		                    <i class="fa fa-trash-alt"></i>
-		                </a>
-		            </div>
-				</div>
-			{% endfor %}
-    		<a class="btn btn-sm btn-success add-supply">
-				<i class="fa fa-plus"></i>
-			</a>
-    	</div>
+    {% if recipe.getMenuItem is null %}
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Όνομα</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" name="name" value="{{recipe.getName}}"/>
+            </div>
+        </div>
+    {% endif %}
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Διάρκεια</label>
+        <div class="col-sm-10 ">
+            <div class="input-group">
+                <input type="number" min="0" step="1" class="form-control" name="duration" value="{{recipe.getDuration}}"/>
+                <span class="input-group-text">λεπτά</span>
+            </div>
+        </div>
     </div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label"></label>
-		<div class="col-sm-10">
-			<div class="row mb-2">
-				<div class="col"><label>Recipe</label></div>
-				<div class="col"><label>Quantity</label></div>
-				<div class="col"><label>Unit</label></div>
-				<div class="col"></div>
-			</div>
-    		{% for ingredient in recipe.getPreparations %}
-    			<div class="row mb-3 gx-1 preparation">
-					<div class="col">
-						<select class="form-select" name="preparation[{{loop.index}}][id]">
-							{% for preparation in preparations %}
-								<option
-									value="{{preparation.getId}}"
-									{{ingredient.getPreparation.getId == preparation.getId ? 'selected' :''}}
-								>
-									{{preparation.getName}}
-								</option>
-							{% endfor %}
-						</select>
-					</div>
-					<div class="col">
-						<input
-							type="number"
-							min="0"
-							step="0.1"
-							class="form-control"
-							name="preparation[{{loop.index}}][quantity]"
-							value="{{ingredient.getQuantity}}"
-						/>
-					</div>
-					<div class="col">
-						<select class="form-select" name="preparation[{{loop.index}}][unit]">
-							<option value="item" {{ingredient.getUnit == 'item' ? 'selected' : ''}}>item</option>
-		            		<option value="kg" {{ingredient.getUnit == 'kg' ? 'selected' : ''}}>kg</option>
-		            		<option value="lt" {{ingredient.getUnit == 'lt' ? 'selected' : ''}}>lt</option>
-						</select>
-					</div>
-					<div class="col">
-		                <a class="btn btn-sm btn-danger delete">
-		                    <i class="fa fa-trash-alt"></i>
-		                </a>
-		            </div>
-				</div>
-    		{% endfor %}
-    		<a class="btn btn-sm btn-success add-preparation">
-				<i class="fa fa-plus"></i>
-			</a>
-    	</div>
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Απόδοση</label>
+        <div class="col-sm-10">
+            <div class="input-group">
+                <input type="number" min="0" step="0.1" class="form-control" name="yield" value="{{recipe.getYield}}"/>
+                <select class="form-select" name="yieldUnit">
+                    <option value="item" {{recipe.getYieldUnit == 'item' ? 'selected' : ''}}>item</option>
+                    <option value="kg" {{recipe.getYieldUnit == 'kg' ? 'selected' : ''}}>kg</option>
+                    <option value="lt" {{recipe.getYieldUnit == 'lt' ? 'selected' : ''}}>lt</option>
+                </select>
+            </div>
+        </div>
     </div>
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Οδηγίες</label>
+        <div class="col-sm-10">
+            <textarea class="form-control" name="comments" rows="4">{{- recipe.getComments -}}</textarea>
+        </div>
+    </div>
+
+    <div id="recipe-app">
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Πρώτες ύλες</label>
+            <div class="col-sm-10">
+                <div class="row mb-2">
+                    <div class="col"><label class="fw-semibold">Προμήθεια</label></div>
+                    <div class="col"><label class="fw-semibold">Ποσότητα</label></div>
+                    <div class="col"><label class="fw-semibold">Μονάδα</label></div>
+                    <div class="col"></div>
+                </div>
+                <div v-for="(row, index) in supplyRows" :key="index" class="row mb-3 gx-1">
+                    <div class="row ps-0">
+                        <div class="input-group">
+                            <select class="form-select" :name="'supply[' + index + '][id]'" v-model="row.supplyId" @change="onSupplyChange(row)">
+                                <optgroup v-for="group in groupedSupplies" :label="group.name" :key="group.name">
+                                    <option v-for="supply in group.supplies" :value="supply.id" :key="supply.id">[[ supply.name ]]</option>
+                                </optgroup>
+                            </select>
+                            <input type="number" min="0" step="0.1" class="form-control" :name="'supply[' + index + '][quantity]'" v-model="row.quantity"/>
+                            <select class="form-select" :name="'supply[' + index + '][unit]'" v-model="row.unit">
+                                <option value="item">item</option>
+                                <option value="kg">kg</option>
+                                <option value="lt">lt</option>
+                            </select>
+                            <a class="btn btn-sm btn-outline-danger" @click="removeSupply(index)"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-sm btn-success" @click="addSupply"><i class="bi bi-plus-lg"></i></a>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label">Υπο-συνταγές</label>
+            <div class="col-sm-10">
+                <div class="row mb-2">
+                    <div class="col"><label class="fw-semibold">Συνταγή</label></div>
+                    <div class="col"><label class="fw-semibold">Ποσότητα</label></div>
+                    <div class="col"><label class="fw-semibold">Μονάδα</label></div>
+                    <div class="col"></div>
+                </div>
+                <div v-for="(row, index) in preparationRows" :key="index" class="row mb-3 gx-1">
+                    <div class="row ps-0">
+                        <div class="input-group">
+                            <select class="form-select" :name="'preparation[' + index + '][id]'" v-model="row.preparationId" @change="onPreparationChange(row)">
+                                <option v-for="prep in preparations" :value="prep.id" :key="prep.id">[[ prep.name ]]</option>
+                            </select>
+                            <input type="number" min="0" step="0.1" class="form-control" :name="'preparation[' + index + '][quantity]'" v-model="row.quantity"/>
+                            <select class="form-select" :name="'preparation[' + index + '][unit]'" v-model="row.unit">
+                                <option value="item">item</option>
+                                <option value="kg">kg</option>
+                                <option value="lt">lt</option>
+                            </select>
+                            <a class="btn btn-sm btn-outline-danger" @click="removePreparation(index)"><i class="bi bi-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <a class="btn btn-sm btn-success" @click="addPreparation"><i class="bi bi-plus-lg"></i></a>
+            </div>
+        </div>
+    </div>
+
     <hr/>
-	<div class="row mb-3">
-		<div class="col-sm-10 offset-sm-2">
-			<button type="submit" class="btn btn-primary">Save</button>
-		</div>
-	</div>
+    <div class="row mb-3">
+        <div class="col-sm-10 offset-sm-2">
+            <button type="submit" class="btn btn-primary">Αποθήκευση</button>
+        </div>
+    </div>
 </form>
 {% endblock %}
 
 {% block javascript %}
-	{{ parent() }}
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.7.7/handlebars.min.js" integrity="sha512-RNLkV3d+aLtfcpEyFG8jRbnWHxUqVZozacROI4J2F1sTaDqo1dPQYs01OMi1t1w9Y2FdbSCDSQ2ZVdAC8bzgAg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script id="supply-template" type="text/x-handlebars-template">
-        <div class="row mb-3 gx-1 supply">
-			<div class="col">
-				<select class="form-select" name="supply[{% verbatim %}{{index}}{% endverbatim %}][id]">
-					{% for supply in supplies %}
-						<option value="{{supply.getId}}">{{supply.getName}}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<div class="col">
-				<input
-					type="number"
-					min="0"
-					step="0.1"
-					class="form-control"
-					name="supply[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
-				/>
-			</div>
-			<div class="col">
-				<select class="form-select" name="supply[{% verbatim %}{{index}}{% endverbatim %}][unit]">
-					<option value="item">item</option>
-            		<option value="kg">kg</option>
-            		<option value="lt">lt</option>
-				</select>
-			</div>
-			<div class="col">
-                <a class="btn btn-sm btn-danger delete">
-                    <i class="fa fa-trash-alt"></i>
-                </a>
-            </div>
-		</div>
-    </script>
-    <script id="preparation-template" type="text/x-handlebars-template">
-        <div class="row mb-3 gx-1 preparation">
-			<div class="col">
-				<select class="form-select" name="preparation[{% verbatim %}{{index}}{% endverbatim %}][id]">
-					{% for preparation in preparations %}
-						<option value="{{preparation.getId}}">{{preparation.getName}}</option>
-					{% endfor %}
-				</select>
-			</div>
-			<div class="col">
-				<input
-					type="number"
-					min="0"
-					step="0.1"
-					class="form-control"
-					name="preparation[{% verbatim %}{{index}}{% endverbatim %}][quantity]"
-				/>
-			</div>
-			<div class="col">
-				<select class="form-select" name="preparation[{% verbatim %}{{index}}{% endverbatim %}][unit]">
-					<option value="item">item</option>
-            		<option value="kg">kg</option>
-            		<option value="lt">lt</option>
-				</select>
-			</div>
-			<div class="col">
-                <a class="btn btn-sm btn-danger delete">
-                    <i class="fa fa-trash-alt"></i>
-                </a>
-            </div>
-		</div>
-    </script>
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
     <script>
-        let supplyTemplate = Handlebars.compile($('#supply-template').html());
-        let recipeTemplate = Handlebars.compile($('#preparation-template').html());
+        const suppliesData = [
+            {% for supply in supplies %}
+            {"id": {{supply.getId}}, "name": {{supply.getName|json_encode|raw}}, "priceUnit": {{supply.getPriceUnit|json_encode|raw}}, "groupId": {{supply.getSupplyGroup.getId}}, "groupName": {{supply.getSupplyGroup.getName|json_encode|raw}}, "groupPosition": {{supply.getSupplyGroup.getPosition}}}{% if not loop.last %},{% endif %}
 
-        $('.add-supply').click(function() {
-            $(this).before(supplyTemplate({
-                index: $('.supply').length + 1
-            }));
-        });
+            {% endfor %}
+        ];
 
-        $('.add-preparation').click(function() {
-            $(this).before(recipeTemplate({
-                index: $('.preparation').length + 1
-            }));
-        });
+        const preparationsData = [
+            {% for prep in preparations %}
+            {"id": {{prep.getId}}, "name": {{(prep.getName ?? '')|json_encode|raw}}, "yieldUnit": {{prep.getYieldUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
 
-        $('form').on('click', '.delete', function() {
-            $(this).parent().parent().remove();
-        });
+            {% endfor %}
+        ];
+
+        const supplyIngredients = [
+            {% for ing in recipe.getSupplies %}
+            {"supplyId": {{ing.getSupply.getId}}, "quantity": {{ing.getQuantity}}, "unit": {{ing.getUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
+
+            {% endfor %}
+        ];
+
+        const preparationIngredients = [
+            {% for ing in recipe.getPreparations %}
+            {"preparationId": {{ing.getPreparation.getId}}, "quantity": {{ing.getQuantity}}, "unit": {{ing.getUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
+
+            {% endfor %}
+        ];
+
+        Vue.createApp({
+            delimiters: ['[[', ']]'],
+            data() {
+                return {
+                    supplies: suppliesData,
+                    preparations: preparationsData,
+                    supplyRows: supplyIngredients,
+                    preparationRows: preparationIngredients,
+                };
+            },
+            computed: {
+                groupedSupplies() {
+                    const groups = {};
+                    for (const supply of this.supplies) {
+                        if (!groups[supply.groupId]) {
+                            groups[supply.groupId] = { name: supply.groupName, position: supply.groupPosition, supplies: [] };
+                        }
+                        groups[supply.groupId].supplies.push(supply);
+                    }
+                    return Object.values(groups).sort((a, b) => a.position - b.position);
+                },
+            },
+            methods: {
+                mapPriceUnit(priceUnit) {
+                    const map = { 'kg': 'kg', 'item': 'item', 'carton': 'item', 'liters': 'lt' };
+                    return map[priceUnit] ?? 'item';
+                },
+                onSupplyChange(row) {
+                    const supply = this.supplies.find(s => s.id === row.supplyId);
+                    if (supply) row.unit = this.mapPriceUnit(supply.priceUnit);
+                },
+                onPreparationChange(row) {
+                    const prep = this.preparations.find(p => p.id === row.preparationId);
+                    if (prep) row.unit = prep.yieldUnit;
+                },
+                addSupply() {
+                    const first = this.supplies[0];
+                    this.supplyRows.push({
+                        supplyId: first ? first.id : null,
+                        quantity: '',
+                        unit: first ? this.mapPriceUnit(first.priceUnit) : 'item',
+                    });
+                },
+                addPreparation() {
+                    const first = this.preparations[0];
+                    this.preparationRows.push({
+                        preparationId: first ? first.id : null,
+                        quantity: '',
+                        unit: first ? first.yieldUnit : 'item',
+                    });
+                },
+                removeSupply(index) {
+                    this.supplyRows.splice(index, 1);
+                },
+                removePreparation(index) {
+                    this.preparationRows.splice(index, 1);
+                },
+            },
+        }).mount('#recipe-app');
     </script>
 {% endblock %}

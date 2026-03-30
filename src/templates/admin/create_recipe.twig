@@ -1,43 +1,32 @@
 {% extends 'admin/skeleton.twig' %}
 
-{% set menu = menuItem.getMenuSection.getMenu %}
-{% set activeNavLink = menu.getName %}
+{% set activeNavLink = 'recipes' %}
 
 {% block content %}
 <ol class="breadcrumb pt-3">
     <li class="breadcrumb-item">
-        <a href="/admin/" class="text-decoration-none">
-            <i class="bi bi-house"></i>
-        </a>
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
     </li>
     <li class="breadcrumb-item">
-        <a href="/admin/menus" class="text-decoration-none">Μενού</a>
+        <a href="/admin/recipes" class="text-decoration-none">Συνταγές</a>
     </li>
-    <li class="breadcrumb-item">
-        <a href="/admin/menu?id={{menu.getId}}" class="text-decoration-none">{{menu.getName}}</a>
-    </li>
+    <li class="breadcrumb-item">Δημιουργία</li>
 </ol>
-<ul class="nav nav-tabs mb-3 mt-3">
-    <li class="nav-item">
-        <a class="nav-link fs-5" href="/admin/menu-items/update?id={{menuItem.getId}}">{{menuItem.getTranslation('el').getName}}</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link active fs-5" href="/admin/menu-items/recipe?id={{menuItem.getId}}">
-            <i class="bi bi-fork-knife"></i> Συνταγή
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link fs-5" href="/admin/menu-items/statistics?id={{menuItem.getId}}">
-            <i class="bi bi-graph-up-arrow"></i> Στατιστικά
-        </a>
-    </li>
-</ul>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">Νέα Συνταγή</h1>
+</div>
 <form method="post" autocomplete="off">
+    <div class="row mb-3">
+        <label class="col-sm-2 col-form-label">Όνομα</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="name"/>
+        </div>
+    </div>
     <div class="row mb-3">
         <label class="col-sm-2 col-form-label">Διάρκεια</label>
         <div class="col-sm-10">
             <div class="input-group">
-                <input type="number" min="0" step="1" class="form-control" name="duration" value="{{recipe.getDuration}}"/>
+                <input type="number" min="0" step="1" class="form-control" name="duration" value="0"/>
                 <span class="input-group-text">λεπτά</span>
             </div>
         </div>
@@ -46,11 +35,11 @@
         <label class="col-sm-2 col-form-label">Απόδοση</label>
         <div class="col-sm-10">
             <div class="input-group">
-                <input type="number" min="0" step="0.1" class="form-control" name="yield" value="{{recipe.getYield}}"/>
+                <input type="number" min="0" step="0.1" class="form-control" name="yield" value="0"/>
                 <select class="form-select" name="yieldUnit">
-                    <option value="item" {{recipe.getYieldUnit == 'item' ? 'selected' : ''}}>item</option>
-                    <option value="kg" {{recipe.getYieldUnit == 'kg' ? 'selected' : ''}}>kg</option>
-                    <option value="lt" {{recipe.getYieldUnit == 'lt' ? 'selected' : ''}}>lt</option>
+                    <option value="item">item</option>
+                    <option value="kg">kg</option>
+                    <option value="lt">lt</option>
                 </select>
             </div>
         </div>
@@ -58,7 +47,7 @@
     <div class="row mb-3">
         <label class="col-sm-2 col-form-label">Οδηγίες</label>
         <div class="col-sm-10">
-            <textarea class="form-control" name="comments" rows="4">{{- recipe.getComments -}}</textarea>
+            <textarea class="form-control" name="comments" rows="4"></textarea>
         </div>
     </div>
 
@@ -93,6 +82,7 @@
                 <a class="btn btn-sm btn-success" @click="addSupply"><i class="bi bi-plus-lg"></i></a>
             </div>
         </div>
+
         <div class="row mb-3">
             <label class="col-sm-2 col-form-label">Υπο-συνταγές</label>
             <div class="col-sm-10">
@@ -121,15 +111,6 @@
                 <a class="btn btn-sm btn-success" @click="addPreparation"><i class="bi bi-plus-lg"></i></a>
             </div>
         </div>
-        <div class="row mb-3">
-            <label class="col-sm-2 col-form-label">Κόστος</label>
-            <div class="col-sm-10">
-                <div class="input-group">
-                    <input type="text" class="form-control" disabled :value="foodCost.toFixed(2)"/>
-                    <span class="input-group-text">€</span>
-                </div>
-            </div>
-        </div>
     </div>
 
     <hr/>
@@ -147,28 +128,14 @@
     <script>
         const suppliesData = [
             {% for supply in supplies %}
-            {"id": {{supply.getId}}, "name": {{supply.getName|json_encode|raw}}, "price": {{supply.getPrice}}, "priceUnit": {{supply.getPriceUnit|json_encode|raw}}, "groupId": {{supply.getSupplyGroup.getId}}, "groupName": {{supply.getSupplyGroup.getName|json_encode|raw}}, "groupPosition": {{supply.getSupplyGroup.getPosition}}}{% if not loop.last %},{% endif %}
+            {"id": {{supply.getId}}, "name": {{supply.getName|json_encode|raw}}, "priceUnit": {{supply.getPriceUnit|json_encode|raw}}, "groupId": {{supply.getSupplyGroup.getId}}, "groupName": {{supply.getSupplyGroup.getName|json_encode|raw}}, "groupPosition": {{supply.getSupplyGroup.getPosition}}}{% if not loop.last %},{% endif %}
 
             {% endfor %}
         ];
 
         const preparationsData = [
             {% for prep in preparations %}
-            {"id": {{prep.getId}}, "name": {{(prep.getName ?? '')|json_encode|raw}}, "yieldUnit": {{prep.getYieldUnit|json_encode|raw}}, "costPerUnit": {{prep.getYield > 0 ? (prep.getFoodCost / prep.getYield) : 0}}}{% if not loop.last %},{% endif %}
-
-            {% endfor %}
-        ];
-
-        const supplyIngredients = [
-            {% for ing in recipe.getSupplies %}
-            {"supplyId": {{ing.getSupply.getId}}, "quantity": {{ing.getQuantity}}, "unit": {{ing.getUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
-
-            {% endfor %}
-        ];
-
-        const preparationIngredients = [
-            {% for ing in recipe.getPreparations %}
-            {"preparationId": {{ing.getPreparation.getId}}, "quantity": {{ing.getQuantity}}, "unit": {{ing.getUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
+            {"id": {{prep.getId}}, "name": {{(prep.getName ?? '')|json_encode|raw}}, "yieldUnit": {{prep.getYieldUnit|json_encode|raw}}}{% if not loop.last %},{% endif %}
 
             {% endfor %}
         ];
@@ -179,8 +146,8 @@
                 return {
                     supplies: suppliesData,
                     preparations: preparationsData,
-                    supplyRows: supplyIngredients,
-                    preparationRows: preparationIngredients,
+                    supplyRows: [],
+                    preparationRows: [],
                 };
             },
             computed: {
@@ -193,22 +160,6 @@
                         groups[supply.groupId].supplies.push(supply);
                     }
                     return Object.values(groups).sort((a, b) => a.position - b.position);
-                },
-                foodCost() {
-                    let total = 0;
-                    for (const row of this.supplyRows) {
-                        const supply = this.supplies.find(s => s.id === row.supplyId);
-                        if (supply && row.quantity) {
-                            total += parseFloat(row.quantity) * supply.price;
-                        }
-                    }
-                    for (const row of this.preparationRows) {
-                        const prep = this.preparations.find(p => p.id === row.preparationId);
-                        if (prep && row.quantity) {
-                            total += parseFloat(row.quantity) * prep.costPerUnit;
-                        }
-                    }
-                    return total;
                 },
             },
             methods: {

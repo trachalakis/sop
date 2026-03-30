@@ -6,6 +6,7 @@ namespace Application\Actions\Admin;
 
 use Datetime;
 use DateTimeImmutable;
+use Domain\Repositories\RecipesRepository;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -20,6 +21,8 @@ final class Report
 
     private OrdersRepository $ordersRepository;
 
+    private RecipesRepository $recipesRepository;
+
     private ScansRepository $scansRepository;
 
     private Twig $twig;
@@ -27,11 +30,13 @@ final class Report
     public function __construct(
     	MenuSectionsRepository $menuSectionsRepository,
     	OrdersRepository $ordersRepository,
+    	RecipesRepository $recipesRepository,
     	ScansRepository $scansRepository,
     	Twig $twig
     ) {
     	$this->menuSectionsRepository = $menuSectionsRepository;
         $this->ordersRepository = $ordersRepository;
+        $this->recipesRepository = $recipesRepository;
         $this->scansRepository = $scansRepository;
         $this->twig = $twig;
     }
@@ -64,11 +69,17 @@ final class Report
 	    $criteria->andWhere(Criteria::expr()->lte('createdAt', $end));
         $orders = $ordersRepository->matching($criteria->orderBy(['createdAt' => 'asc']));
 
+        $recipesByMenuItemId = [];
+        foreach ($this->recipesRepository->findMenuItemRecipes() as $recipe) {
+            $recipesByMenuItemId[$recipe->getMenuItem()->getId()] = $recipe;
+        }
+
         $sales = 0;
         $salesTakeAway = 0;
         $coversAdults = 0;
         $coversMinors = 0;
         $totalWeight = 0;
+        $foodCost = 0;
         $menuSections = [];
 
         $coversPerHourData = [];
@@ -133,6 +144,11 @@ final class Report
                 $menuSections[$menuSectionIndex]['menuItems'][$menuItemIndex]['sales'] += $orderEntry->getPrice();
 
                 $totalWeight += ($orderEntry->getWeight() * $orderEntry->getQuantity());
+
+                $recipe = $recipesByMenuItemId[$menuItem->getId()] ?? null;
+                if ($recipe !== null && $recipe->getYield() > 0) {
+                    $foodCost += $orderEntry->getQuantity() * ($recipe->getFoodCost() / $recipe->getYield());
+                }
             }
 
             if(isset($coversPerHourData[$order->getCreatedAt()->format('G')])) {
@@ -298,6 +314,8 @@ final class Report
                 'oneYearAgo' => $oneYearAgo,
 
                 'standardDeviation' => $standardDeviation,
+
+                'foodCost' => $foodCost,
 
                 'servedMenuItems' => $servedMenuItems,
                 'servedPlates' => $servedPlates,

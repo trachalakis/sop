@@ -38,12 +38,11 @@
 				<tr>
       			    <td class="ps-4">
 						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
+                        <span class="ms-2 text-muted">
+                            &euro;{{supply.getPrice}} / {{supply.getPriceUnit}}
+                        </span>
 					</td>
-					<td class="text-muted text-end">
-						{% if supply.getVatRate is not null %}
-							{{supply.getVatRate}}%
-						{% endif %}
-					</td>
+					
     			</tr>
 			{% endfor %}
 		</tbody>

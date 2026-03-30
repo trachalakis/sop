@@ -12,6 +12,7 @@ use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\PrintersRepository;
+use Domain\Repositories\RecipesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -26,6 +27,8 @@ final class UpdateMenuItem
 
     private PrintersRepository $printersRepository;
 
+    private RecipesRepository $recipesRepository;
+
     private Twig $twig;
 
     public function __construct(
@@ -33,12 +36,14 @@ final class UpdateMenuItem
         MenuSectionsRepository $menuSectionsRepository,
         MenuItemsRepository $menuItemsRepository,
         PrintersRepository $printersRepository,
+        RecipesRepository $recipesRepository,
         Twig $twig
     ) {
         $this->languagesRepository = $languagesRepository;
         $this->menuSectionsRepository = $menuSectionsRepository;
         $this->menuItemsRepository = $menuItemsRepository;
         $this->printersRepository = $printersRepository;
+        $this->recipesRepository = $recipesRepository;
         $this->twig = $twig;
     }
 
@@ -128,6 +133,7 @@ final class UpdateMenuItem
             ['position' => 'asc']
         );
         $printers = $this->printersRepository->findBy([], ['name' => 'asc']);
+        $recipe = $this->recipesRepository->findOneBy(['menuItem' => $menuItem]);
     	return $this->twig->render(
             $response,
             'admin/update_menu_item.twig',
@@ -135,7 +141,8 @@ final class UpdateMenuItem
             	'languages' => $languages,
             	'menuItem' => $menuItem,
             	'menuSections' => $menuSections,
-            	'printers' => $printers
+            	'printers' => $printers,
+                'recipe' => $recipe,
             ]
         );
     }

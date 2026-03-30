@@ -41,7 +41,11 @@ use Application\Actions\Admin\PrintJobs;
 use Application\Actions\Admin\PrintMenu;
 use Application\Actions\Admin\Report;
 use Application\Actions\Admin\Scans;
+use Application\Actions\Admin\CreateRecipe;
+use Application\Actions\Admin\DeleteRecipe;
+use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\PrintSupplies;
+use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\SaveShoppingList;
 use Application\Actions\Admin\SortSupplyGroups;
 use Application\Actions\Admin\Supplies;
@@ -133,6 +137,11 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/menu-items/update', UpdateMenuItem::class);
         $group->get('/menu-items/toggle-archive', ToggleArchive::class);
         $group->map(['GET', 'POST'], '/menu-items/recipe', MenuItemRecipe::class);
+
+        $group->get('/recipes', Recipes::class);
+        $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);
+        $group->map(['GET', 'POST'], '/recipes/update', UpdateRecipe::class);
+        $group->get('/recipes/delete', DeleteRecipe::class);
         $group->get('/menu-items/statistics', MenuItemStatistics::class);
         $group->get('/menu-items/toggle', ToggleMenuItem::class);
         $group->post('/menu-items/sort', SortMenuItems::class);

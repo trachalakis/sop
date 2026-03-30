@@ -6,45 +6,29 @@ namespace Application\Actions\Admin;
 
 use Domain\Entities\MenuItem;
 use Domain\Entities\MenuItemTranslation;
+use Domain\Entities\Recipe;
 use Domain\Enums\PriceUnit;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\PrintersRepository;
+use Domain\Repositories\RecipesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class CreateMenuItem
 {
-    private LanguagesRepository $languagesRepository;
-
-    private MenusRepository $menusRepository;
-
-    private MenuItemsRepository $menuItemsRepository;
-
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private PrintersRepository $printersRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        LanguagesRepository $languagesRepository,
-        MenusRepository $menusRepository,
-        MenuSectionsRepository $menuSectionsRepository,
-        MenuItemsRepository $menuItemsRepository,
-        PrintersRepository $printersRepository,
-        Twig $twig
-    ) {
-        $this->languagesRepository = $languagesRepository;
-        $this->menusRepository = $menusRepository;
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->printersRepository = $printersRepository;
-        $this->twig = $twig;
-    }
+        private LanguagesRepository $languagesRepository,
+        private MenusRepository $menusRepository,
+        private MenuSectionsRepository $menuSectionsRepository,
+        private MenuItemsRepository $menuItemsRepository,
+        private PrintersRepository $printersRepository,
+        private RecipesRepository $recipesRepository,
+        private Twig $twig
+    ) {}
 
     public function __invoke(Request $request, Response $response)
     {
@@ -84,6 +68,14 @@ final class CreateMenuItem
             $menuItem->setTranslations($translations);
 
             $this->menuItemsRepository->persist($menuItem);
+
+            //create recipe for menu item
+            $recipe = new Recipe;
+            $recipe->setMenuItem($menuItem);
+            $recipe->setDuration(0);
+            $recipe->setYield(1);
+            $recipe->setYieldUnit('item');
+            $this->recipesRepository->persist($recipe);
 
 			if (function_exists('apcu_clear_cache')) {
             	apcu_clear_cache();

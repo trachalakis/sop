@@ -25,7 +25,7 @@ final class Recipes
 
     public function __invoke(Request $request, Response $response)
     {
-        $recipes = $this->recipesRepository->findBy([], ['name' => 'asc']);
+        $recipes = $this->recipesRepository->findBy(['menuItem' => null], ['name' => 'asc']);
 
         return $this->twig->render($response, 'admin/recipes.twig', ['recipes' => $recipes]);
     }

@@ -1,0 +1,48 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'recipes' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item">Συνταγές</li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Συνταγές</h1>
+    <div class="btn-toolbar">
+        <a href="/admin/recipes/create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+        </a>
+    </div>
+</div>
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Όνομα</th>
+            <th>Απόδοση</th>
+            <th>Διάρκεια</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recipe in recipes %}
+            <tr>
+                <td>
+                    <a class="text-decoration-none" href="/admin/recipes/update?id={{recipe.getId}}">
+                        {{recipe.getName ?? '—'}}
+                    </a>
+                </td>
+                <td class="text-muted">{{recipe.getYield}} {{recipe.getYieldUnit}}</td>
+                <td class="text-muted">{{recipe.getDuration}} λεπτά</td>
+                <td class="text-end">
+                    <a href="/admin/recipes/delete?id={{recipe.getId}}" class="btn btn-sm btn-outline-danger confirm">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

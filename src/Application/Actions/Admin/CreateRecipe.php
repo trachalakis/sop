@@ -6,17 +6,15 @@ namespace Application\Actions\Admin;
 
 use Domain\Entities\Ingredient;
 use Domain\Entities\Recipe;
-use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\RecipesRepository;
 use Domain\Repositories\SuppliesRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
-final class MenuItemRecipe
+final class CreateRecipe
 {
     public function __construct(
-        private MenuItemsRepository $menuItemsRepository,
         private RecipesRepository $recipesRepository,
         private SuppliesRepository $suppliesRepository,
         private Twig $twig
@@ -24,22 +22,11 @@ final class MenuItemRecipe
 
     public function __invoke(Request $request, Response $response)
     {
-        $menuItem = $this->menuItemsRepository->find($request->getQueryParams()['id']);
-
-        $recipe = $this->recipesRepository->findOneBy(['menuItem' => $menuItem]);
-
-        if ($recipe === null) {
-            $recipe = new Recipe();
-            $recipe->setMenuItem($menuItem);
-            $recipe->setDuration(0);
-            $recipe->setYield(1);
-            $recipe->setYieldUnit('item');
-            $this->recipesRepository->persist($recipe);
-        }
-
-        if ($request->getMethod() === 'POST') {
+        if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();
 
+            $recipe = new Recipe();
+            $recipe->setName($requestData['name'] ?? null);
             $recipe->setDuration(intval($requestData['duration']));
             $recipe->setYield(floatval($requestData['yield']));
             $recipe->setYieldUnit($requestData['yieldUnit']);
@@ -72,23 +59,15 @@ final class MenuItemRecipe
 
             $this->recipesRepository->persist($recipe);
 
-            return $response
-                ->withHeader('Location', '/admin/menu-items/recipe?id=' . $menuItem->getId())
-                ->withStatus(302);
+            return $response->withHeader('Location', '/admin/recipes')->withStatus(302);
         }
 
         $preparations = $this->recipesRepository->findBy(['menuItem' => null], ['name' => 'asc']);
         $supplies = $this->suppliesRepository->findBy([], ['name' => 'asc']);
 
-        return $this->twig->render(
-            $response,
-            'admin/menu_item_recipe.twig',
-            [
-                'recipe' => $recipe,
-                'menuItem' => $menuItem,
-                'supplies' => $supplies,
-                'preparations' => $preparations,
-            ]
-        );
+        return $this->twig->render($response, 'admin/create_recipe.twig', [
+            'preparations' => $preparations,
+            'supplies' => $supplies,
+        ]);
     }
 }

@@ -69,6 +69,11 @@
     adults: <strong>{{coversAdults}}</strong> &bull;
     minors: <strong>{{coversMinors}}</strong>
     <br/>
+    food cost: <strong>&euro;{{foodCost|round(2)}}</strong>
+    {% if sales > 0 %}
+        &bull; <strong>{{((foodCost / sales) * 100)|round(1)}}%</strong>
+    {% endif %}
+    <br/>
     man-hours: <strong>{{manHours}}h:{{manMinutes}}m:{{manSeconds}}s</strong> &bull;
     salaries: <strong>&euro;{{salaries|round}}</strong> &bull;
 	BOH Salaries: <strong>&euro;{{bohSalaries|round}}</strong> &bull;
