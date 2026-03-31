@@ -1,0 +1,155 @@
+{% extends 'orders_app/skeleton.twig' %}
+
+
+
+{% block content %}
+<div class="header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1>
+	    <a class="text-decoration-none" href="/orders-app/"><i class="bi bi-fork-knife"></i></a>
+	    / <i class="bi bi-telephone"></i>
+	</h1>
+    <div class="btn-toolbar">
+       	<a href="/reservations-app/create" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i></a>
+    </div>
+</div>
+<div class="row gx-1 mb-2">
+	<div class="col">
+		<div class="header d-flex justify-content-between">
+			<a class="btn btn-primary btn-lg " href="?all&date={{prev.format('Y-m-d')}}">
+	            <i class="bi bi-chevron-left"></i>
+	        </a>
+	        <h2 class="mb-0 display-6">
+				{{date.format('D j M')}} / 
+				<span class="{{coverCount >= 100 ? 'text-danger' : ''}}">{{coverCount}}</span>
+			</h2>
+	        <a class="btn btn-primary btn-lg" href="?all&date={{next.format('Y-m-d')}}">
+	            <i class="bi bi-chevron-right"></i>
+	        </a>
+		</div>
+	</div>
+</div>
+<table class="table table-striped fs-4 mt-4">
+	<tbody>
+		{% for reservation in reservations %}
+			<tr>
+				<td>
+					<a class="text-decoration-none" href="/reservations-app/update?id={{reservation.getId}}">
+						{{reservation.getDateTime.format('H:i')}} /
+						{{reservation.getAdults}} / {{reservation.getMinors}} /
+						{{reservation.getName}}
+
+					</a>
+					<div>
+						{% for table in reservation.getTables %}
+							<a
+								href="/reservations-app/toggle-table-lock?reservationId={{reservation.getId}}"
+								class="badge text-bg-info text-decoration-none"
+							>
+								{{table}}{% if reservation.getIsTableLocked %}!{% endif %}
+							</a>
+						{% endfor %}
+					</div>
+					<div>
+						<small class="text-body-secondary">
+						{% if reservation.getcomments|trim|length > 0 %}
+							{{reservation.getComments|nl2br}}
+						{% endif %}
+						</small>
+					</div>
+				</td>
+				<td class="text-end">
+					<div class="dropdown">
+						<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							{% if reservation.getStatus == 'PENDING' %}
+								ΑΝΑΜΕΝΕΤΑΙ
+							{% elseif reservation.getStatus == 'ARRIVED' %}
+								ΗΡΘΕ
+							{% elseif  reservation.getStatus == 'CANCELLED' %}
+								ΑΚΥΡΩΘΗΚΕ
+							{% endif %}
+						</button>
+						<ul class="dropdown-menu">
+							<li><a class="dropdown-item" href="#">ΗΡΘΕ</a></li>
+							<li><a class="dropdown-item" href="#">ΑΚΥΡΩΘΗΚΕ</a></li>
+							<li><a class="dropdown-item" href="#">ΑΝΑΜΕΝΕΤΑΙ</a></li>
+						</ul>
+					</div>
+
+
+					<!--<a class="btn btn-lg btn-outline-secondary me-1" href="/orders-app/create?reservationId={{reservation.getId}}">
+						Νέα παραγγελία
+					</a>
+						<a class="btn btn-lg btn-outline-danger" aclick="reservationF" @click="reservationForDeletion = reservation.id">
+							Διαγραφή
+						</a>-->
+					<!--<div class="btn-group d-block d-sm-block d-md-none">
+						<button class="btn btn-outline-secondary btn-lg dropdown-toggle" data-bs-toggle="dropdown">
+								&ctdot;
+						</button>
+						<ul class="dropdown-menu">
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/payment?id=' + order.id">
+									Πληρωμή
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item" :href="'/orders-app/print-receipt?id=' + order.id">
+									Εκτύπωση
+								</a>
+							</li>
+						</ul>
+					</div>-->
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+<!--<div class="modal modal-lg d-block" v-if="reservationForDeletion != null">
+		<div class="modal-dialog">
+		<div class="modal-content">
+  			<div class="modal-header">
+    			<h5 class="modal-title">Διαγραφή κράτησης</h5>
+    			<button type="button" class="btn-close" @click="reservationForDeletion = null"></button>
+  			</div>
+  			<div class="modal-body">
+    			<p>Είσαι σίγουρος;</p>
+  			</div>
+  			<div class="modal-footer">
+  				<button type="button" class="btn btn-secondary" @click="reservationForDeletion = null">Cancel</button>
+    			<a class="btn btn-primary" :href="'/reservations-app/delete?id=' + reservationForDeletion">Οκ</a>
+  			</div>
+		</div>
+		</div>
+</div>-->
+
+{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script>
+		/*$(document).ready(function () {
+			$('.event').on("dragstart", function (event) {
+				var dt = event.originalEvent.dataTransfer;
+				dt.setData('Text', $(this).attr('id'));
+			});
+			$('table td').on("dragenter dragover drop", function (event) {
+				event.preventDefault();
+				if (event.type === 'drop') {
+					var data = event.originalEvent.dataTransfer.getData('Text', $(this).attr('id'));
+					
+					de = $('#' + data).detach();
+					if (event.originalEvent.target.tagName === "SPAN") {
+						de.insertBefore($(event.originalEvent.target));
+					}
+					else {
+						de.appendTo($(this));
+					}
+				};
+			});
+		})*/
+	</script>
+	<!--<script src="https://unpkg.com/vue@3"></script>
+	<script src="https://unpkg.com/axios"></script>
+	<script src="https://unpkg.com/lodash"></script>-->
+{% endblock %}

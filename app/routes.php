@@ -79,7 +79,7 @@ use Application\Actions\OrdersApp\TakeOut;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\CreateReservation;
 use Application\Actions\ReservationsApp\UpdateReservation;
-use Application\Actions\ReservationsApp\HomepageAlt as ReservationsAppHomepageAlt;
+use Application\Actions\ReservationsApp\HomepageList as ReservationsAppHomepageList;
 use Application\Actions\ReservationsApp\AssignReservationTables;
 use Application\Actions\ReservationsApp\TabularView;
 use Application\Actions\UsersApp\Homepage as UsersAppHomepage;
@@ -204,7 +204,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/create', CreateReservation::class);
         $group->map(['GET', 'POST'], '/update', UpdateReservation::class);
         $group->get('/tabular-view', TabularView::class);
-        $group->get('/homepage-alt', ReservationsAppHomepageAlt::class);
+        $group->get('/homepage-list', ReservationsAppHomepageList::class);
         $group->post('/assign-tables', AssignReservationTables::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
