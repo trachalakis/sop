@@ -97,16 +97,19 @@ class Recipe
         return $this->ingredients->filter(fn(Ingredient $i) => $i->getPreparation() !== null);
     }
 
-    public function getFoodCost(): float
+    public function getFoodCost(?\DateTimeInterface $date = null): float
     {
         $cost = 0.0;
         foreach ($this->getSupplies() as $ingredient) {
-            $cost += $ingredient->getQuantity() * $ingredient->getSupply()->getPrice();
+            $price = $date !== null
+                ? $ingredient->getSupply()->getPriceAt($date)
+                : $ingredient->getSupply()->getPrice();
+            $cost += $ingredient->getQuantity() * $price;
         }
         foreach ($this->getPreparations() as $ingredient) {
             $prep = $ingredient->getPreparation();
             if ($prep->getYield() > 0) {
-                $cost += $ingredient->getQuantity() * ($prep->getFoodCost() / $prep->getYield());
+                $cost += $ingredient->getQuantity() * ($prep->getFoodCost($date) / $prep->getYield());
             }
         }
         return $cost;

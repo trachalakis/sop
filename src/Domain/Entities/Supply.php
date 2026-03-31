@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
+use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Domain\Entities\SupplyGroup;
 use Domain\Enums\PriceUnit;
@@ -36,6 +39,14 @@ class Supply
     #[ORM\ManyToOne(targetEntity: SupplyGroup::class, cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'supply_group_id', referencedColumnName: 'id')]
     private SupplyGroup $supplyGroup;
+
+    #[ORM\OneToMany(targetEntity: SupplyPriceHistory::class, mappedBy: 'supply')]
+    private Collection $priceHistory;
+
+    public function __construct()
+    {
+        $this->priceHistory = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -114,5 +125,25 @@ class Supply
     public function setSupplyGroup(SupplyGroup $supplyGroup): void
     {
     	$this->supplyGroup = $supplyGroup;
+    }
+
+    public function getPriceHistory(): Collection
+    {
+        return $this->priceHistory;
+    }
+
+    public function getPriceAt(DateTimeInterface $date): float
+    {
+        $matching = $this->priceHistory
+            ->filter(fn(SupplyPriceHistory $h) => $h->getValidFrom() <= $date)
+            ->toArray();
+
+        if (empty($matching)) {
+            return $this->price;
+        }
+
+        usort($matching, fn($a, $b) => $b->getValidFrom() <=> $a->getValidFrom());
+
+        return $matching[0]->getPrice();
     }
 }

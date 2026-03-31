@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use DateTimeImmutable;
+use Domain\Entities\SupplyPriceHistory;
 use Domain\Enums\PriceUnit;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\SupplyGroupsRepository;
+use Domain\Repositories\SupplyPriceHistoryRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -17,15 +20,19 @@ final class UpdateSupply
 
     private SupplyGroupsRepository $supplyGroupsRepository;
 
+    private SupplyPriceHistoryRepository $supplyPriceHistoryRepository;
+
     private Twig $twig;
 
     public function __construct(
     	SuppliesRepository $suppliesRepository,
     	SupplyGroupsRepository $supplyGroupsRepository,
+    	SupplyPriceHistoryRepository $supplyPriceHistoryRepository,
     	Twig $twig
     ) {
         $this->suppliesRepository = $suppliesRepository;
         $this->supplyGroupsRepository = $supplyGroupsRepository;
+        $this->supplyPriceHistoryRepository = $supplyPriceHistoryRepository;
         $this->twig = $twig;
     }
 
@@ -38,7 +45,17 @@ final class UpdateSupply
 			$supplyGroup = $this->supplyGroupsRepository->find($requestData['supplyGroup']);
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);
-            $supply->setPrice(floatval($requestData['price']));
+
+            $newPrice = floatval($requestData['price']);
+            if ($supply->getPrice() !== $newPrice) {
+                $history = new SupplyPriceHistory;
+                $history->setSupply($supply);
+                $history->setPrice($newPrice);
+                $history->setValidFrom(new DateTimeImmutable);
+                $this->supplyPriceHistoryRepository->record($history);
+            }
+
+            $supply->setPrice($newPrice);
             $supply->setPriceUnit(PriceUnit::from($requestData['priceUnit']));
             $supply->setVatRate(isset($requestData['vatRate']) && $requestData['vatRate'] !== '' ? floatval($requestData['vatRate']) : null);
 
@@ -55,13 +72,18 @@ final class UpdateSupply
 		}
 
 		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
+
+        $priceHistory = $supply->getPriceHistory()->toArray();
+        usort($priceHistory, fn($a, $b) => $a->getValidFrom() <=> $b->getValidFrom());
+
 		return $this->twig->render(
 			$response,
 			'admin/update_supply.twig',
 			[
 				'supply' => $supply,
 				'supplyGroups' => $supplyGroups,
-                'priceUnits' => PriceUnit::cases()
+                'priceUnits' => PriceUnit::cases(),
+                'priceHistory' => $priceHistory,
 			]
 		);
 	}

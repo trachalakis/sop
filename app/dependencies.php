@@ -18,6 +18,7 @@ use Domain\Entities\Recipe;
 use Domain\Entities\ShoppingList;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
+use Domain\Entities\SupplyPriceHistory;
 use Domain\Entities\Table;
 use Domain\Entities\User;
 use Domain\Entities\UserPermission;
@@ -32,6 +33,7 @@ use Domain\Repositories\UserPermissionsRepository;
 use Domain\Repositories\RecipesRepository;
 use Domain\Repositories\ShoppingListsRepository;
 use Domain\Repositories\SuppliesRepository;
+use Domain\Repositories\SupplyPriceHistoryRepository;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\UsersRepository;
 use Domain\Repositories\OrderEntryCancellationsRepository;
@@ -196,6 +198,11 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
+        },
+        SupplyPriceHistoryRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(SupplyPriceHistory::class);
         },
         RecipesRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

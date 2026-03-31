@@ -15,6 +15,10 @@ class RecipesRepository extends EntityRepository
             ->where('r.menuItem IS NOT NULL')
             ->leftJoin('r.ingredients', 'i')
             ->addSelect('i')
+            ->leftJoin('i.supply', 's')
+            ->addSelect('s')
+            ->leftJoin('s.priceHistory', 'ph')
+            ->addSelect('ph')
             ->getQuery()
             ->getResult();
     }

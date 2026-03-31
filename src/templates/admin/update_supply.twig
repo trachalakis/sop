@@ -14,7 +14,7 @@
     </li>
 </ol>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
-    <h1 class="h2">Επεξεργασία</h1>
+    <h1 class="h2">{{supply.getName}}</h1>
     <div class="btn-toolbar">
        	<a href="/admin/supplies/delete?id={{supply.getId}}" class="btn btn-danger confirm">
             <i class="bi bi-trash"></i>
@@ -26,101 +26,145 @@
         {{exception.getMessage}}
     </div>
 {% endif %}
-<form method="post" autocomplete="off" action="">
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Όνομα</label>
-		<div class="col-sm-10">
-			<input type="text" class="form-control" name="name" value="{{supply.getName}}"/>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Ομάδα</label>
-		<div class="col-sm-10">
-			<select class="form-select" name="supplyGroup">
-  				{% for supplyGroup in supplyGroups %}
-  					<option value="{{supplyGroup.getId}}" {{supply.getSupplyGroup.getId == supplyGroup.getId ? 'selected' : ''}}>
-  						{{supplyGroup.getName}}
-  					</option>
-  				{% endfor %}
-			</select>
-    	</div>
-	</div>
-    <div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Τιμή</label>
-		<div class="col-sm-10">
-            <div class="input-group">
-                <span class="input-group-text">€</span>
-                <input type="text" class="form-control" type="number" min="0" step="0.5" name="price" value="{{supply.getPrice}}">
-                <span class="input-group-text">/</span>
-                <select class="form-select" name="priceUnit">
-                    {% for priceUnit in priceUnits %}
-                        <option value="{{priceUnit.value}}" {{supply.getPriceUnit == priceUnit.value ? 'selected' : ''}}>{{priceUnit.value}}</option>
+
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link active" data-bs-toggle="tab" href="#tab-form">Επεξεργασία</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#tab-history">Ιστορικό τιμής</a>
+    </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-form">
+        <form method="post" autocomplete="off" action="">
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Όνομα</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" name="name" value="{{supply.getName}}"/>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Ομάδα</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="supplyGroup">
+                        {% for supplyGroup in supplyGroups %}
+                            <option value="{{supplyGroup.getId}}" {{supply.getSupplyGroup.getId == supplyGroup.getId ? 'selected' : ''}}>
+                                {{supplyGroup.getName}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Τιμή</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <span class="input-group-text">€</span>
+                        <input type="text" class="form-control" type="number" min="0" step="0.5" name="price" value="{{supply.getPrice}}">
+                        <span class="input-group-text">/</span>
+                        <select class="form-select" name="priceUnit">
+                            {% for priceUnit in priceUnits %}
+                                <option value="{{priceUnit.value}}" {{supply.getPriceUnit == priceUnit.value ? 'selected' : ''}}>{{priceUnit.value}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">ΦΠΑ</label>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input type="number" class="form-control" name="vatRate" min="0" max="100" step="1" value="{{supply.getVatRate}}">
+                        <span class="input-group-text">%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
+                <div class="col-sm-10">
+                    {% for field, value in supply.getCustomFields %}
+                        <div class="row mb-2">
+                            <div class="customFields-entry input-group">
+                                <input type="text" class="form-control" name="customFields[{{loop.index}}][field]" value="{{field}}" required/>
+                                <span class="input-group-text">/</span>
+                                <input type="text" class="form-control" name="customFields[{{loop.index}}][value]" value="{{value}}" required/>
+                                <button class="btn btn-outline-danger delete-customFields confirm">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
                     {% endfor %}
-                </select>
+                    <a class="btn btn-success add-customFields">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                </div>
             </div>
-		</div>
-	</div>
-    <div class="row mb-3">
-		<label class="col-sm-2 col-form-label">ΦΠΑ</label>
-		<div class="col-sm-10">
-            <div class="input-group">
-                <input type="number" class="form-control" name="vatRate" min="0" max="100" step="1" value="{{supply.getVatRate}}">
-                <span class="input-group-text">%</span>
+            <hr/>
+            <div class="row mb-3">
+                <div class="col-sm-10 offset-sm-2">
+                    <button type="submit" class="btn btn-primary">Αποθήκευση</button>
+                </div>
             </div>
-		</div>
-	</div>
-	<div class="row mb-3">
-		<label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
-		<div class="col-sm-10">
-			{% for field, value in supply.getCustomFields %}
-				<div class="row mb-2">
-		            <div class="customFields-entry input-group">
-		                <input
-		                	type="text"
-		                	class="form-control"
-		                	name="customFields[{{loop.index}}][field]"
-		                	value="{{field}}"
-		                	required
-		                />
-		                <span class="input-group-text">/</span>
-		                <input
-		                	type="text"
-		                	class="form-control"
-		                	name="customFields[{{loop.index}}][value]"
-                            value="{{value}}"
-                            required
-                        />
-                        <button class="btn btn-outline-danger delete-customFields confirm">
-		                    <i class="bi bi-trash"></i>
-		                </button>
-		            </div>
-		        </div>
-		    {% endfor %}
-			<a class="btn btn-success add-customFields">
-				<i class="bi bi-plus-lg"></i>
-			</a>
-		</div>
+        </form>
     </div>
-	<hr/>
-	<div class="row mb-3">
-		<div class="col-sm-10 offset-sm-2">
-			<button type="submit" class="btn btn-primary">Αποθήκευση</button>
-		</div>
-	</div>
-</form>
+
+    <div class="tab-pane fade" id="tab-history">
+        {% if priceHistory is empty %}
+            <p class="text-muted">Δεν υπάρχει ιστορικό τιμής.</p>
+        {% else %}
+            <canvas id="priceHistoryChart"></canvas>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
 
 {% block javascript %}
-	{{parent()}}
+    {{parent()}}
     {{ include (
-        'admin/handlebars.twig', 
+        'admin/handlebars.twig',
             {blocks: {
                 'customFields': [
-                    {element: 'input', inputType: 'text', name: 'field'}, 
-                    {element: 'label', text: '/'}, 
+                    {element: 'input', inputType: 'text', name: 'field'},
+                    {element: 'label', text: '/'},
                     {element: 'input', inputType: 'number', name: 'value'}
                 ],
             }}
-        ) 
+        )
     }}
+    {% if priceHistory is not empty %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+        <script>
+            const priceHistoryLabels = [
+                {% for entry in priceHistory %}
+                    "{{entry.getValidFrom.format('Y-m-d')}}"{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+            const priceHistoryData = [
+                {% for entry in priceHistory %}
+                    {{entry.getPrice}}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            new Chart(document.getElementById('priceHistoryChart'), {
+                type: 'line',
+                data: {
+                    labels: priceHistoryLabels,
+                    datasets: [{
+                        label: 'Τιμή (€)',
+                        data: priceHistoryData,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false,
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        </script>
+    {% endif %}
 {% endblock %}
