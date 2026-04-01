@@ -416,7 +416,6 @@
 		    		activeOrderEntry: null,
 
 		    		tables: [],
-		    		availableTables: [],
 		    		menuSections: [],
 		    		printers: [],
 		    		employees: [],
@@ -489,17 +488,6 @@
                     this.tables = response.data.data.tables
                     this.stations = response.data.data.stations
                     this.employees = response.data.data.employees
-                });
-                axios({
-                    url: '/admin/graph-ql',
-                    method: 'post',
-                    data: `{
-                        availableTables {
-                        	id, name
-                        }
-                    }`
-                }).then(response => {
-                    this.availableTables = response.data.data.availableTables
                 });
                 axios({
                     url: '/admin/graph-ql',

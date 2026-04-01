@@ -411,7 +411,7 @@
 									type="button"
 									class="btn btn-outline-primary btn-lg w-100"
 									@click="order.table = table;"
-									:disabled="_.findIndex(availableTables, table) < 0"
+									:disabled="activeOrders.some(o => o.table && o.table.id == table.id)"
 								>
 									{{table.name}}
 								</button>
@@ -581,7 +581,7 @@
 		    		activeOrderEntry: null,
 
 		    		tables: [],
-		    		availableTables: [],
+		    		activeOrders: [],
 		    		menuSections: [],
 				    printers: [],
 		    		timing: 1,
@@ -671,12 +671,12 @@
                     url: '/admin/graph-ql',
                     method: 'post',
                     data: `{
-                        availableTables {
-                        	id, name
+                        activeOrders {
+                        	id, table {id, name}
                         }
                     }`
                 }).then(response => {
-                    this.availableTables = response.data.data.availableTables
+                    this.activeOrders = response.data.data.activeOrders
                 });
                 axios({
                     url: '/admin/graph-ql',

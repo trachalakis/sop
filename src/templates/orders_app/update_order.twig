@@ -102,7 +102,7 @@
 		        				type="button"
 		        				class="btn btn-outline-primary btn-lg w-100"
 		        				@click="order.table = table;"
-		        				:disabled="_.findIndex(availableTables, table) < 0"
+		        				:disabled="activeOrders.some(o => o.table && o.table.id == table.id)"
 		        			>
 		        				{{table.name}}
 		        			</button>
@@ -450,38 +450,7 @@
 									selectedOrderEntry.discountReason = 'ON_THE_HOUSE'
 								"
 							>Μάγαζι</button>
-							<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Υπάλληλος</button>
-							<ul class="dropdown-menu dropdown-menu-end">
-								<li v-for="employee in employees">
-									<a 
-										class="dropdown-item" 
-										href="#"
-										@click="
-											selectedOrderEntry.discount = calculateOrderEntryPriceNoDiscount(selectedOrderEntry);
-											selectedOrderEntry.discountReason = 'ON_EMPLOYEE_' + employee.fullName
-										"
-									>
-										{{employee.fullName}}
-									</a>
-								</li>
-							</ul>
-							<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Τραπέζι</button>
-							<ul class="dropdown-menu dropdown-menu-end">
-								<template v-for="activeOrder in activeOrders">
-									<li v-if="activeOrder.table.name != order.table.name">
-										<a
-											class="dropdown-item"
-											href="#"
-											@click="
-												selectedOrderEntry.discount = calculateOrderEntryPriceNoDiscount(selectedOrderEntry);
-												selectedOrderEntry.discountReason = 'ON_TABLE_' + activeOrder.table.name
-											"
-										>
-											{{activeOrder.table.name}}
-										</a>
-									</li>
-								</template>
-							</ul>
+							
 						</div>
 
 					  	<!--<label class="form-label fw-bold">Λόγος κεράσματος</label>
@@ -513,11 +482,55 @@
       			<div class="modal-footer">
         			<button
         				type="button"
+        				class="btn btn-secondary btn-lg me-auto"
+        				@click="
+        					orderEntryForTransfer = selectedOrderEntry;
+        					selectedOrderEntry = null
+        				"
+        			>Μεταφορά</button>
+        			<button
+        				type="button"
         				class="btn btn-primary btn-lg"
         				@click="
         					selectedOrderEntry = null
         				"
         			>Ok</button>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+
+	<div class="modal modal-lg d-block" v-if="orderEntryForTransfer != null">
+  		<div class="modal-dialog modal-fullscreen-sm-down">
+    		<div class="modal-content">
+      			<div class="modal-header">
+        			<h5 class="modal-title">Μεταφορά σε τραπέζι</h5>
+        			<button
+        				type="button"
+        				class="btn-close"
+        				@click="orderEntryForTransfer = null"
+        			></button>
+      			</div>
+      			<div class="modal-body">
+      				<div class="list-group">
+      					<template v-for="activeOrder in activeOrders">
+      						<button
+      							v-if="activeOrder.id != order.id"
+      							type="button"
+      							class="list-group-item list-group-item-action fs-5"
+      							@click="transferOrderEntry(activeOrder)"
+      						>
+      							{{activeOrder.table.name}}
+      						</button>
+      					</template>
+      				</div>
+      			</div>
+      			<div class="modal-footer">
+        			<button
+        				type="button"
+        				class="btn btn-secondary btn-lg"
+        				@click="orderEntryForTransfer = null"
+        			>Πίσω</button>
       			</div>
     		</div>
   		</div>
@@ -834,7 +847,6 @@
 		    		cancellationReason: '',
 
 		    		tables: [],
-		    		availableTables: [],
 		    		menuSections: [],
 					employees: [],
 					activeOrders: [],
@@ -870,7 +882,9 @@
 		    		waiter: null,
 
 		    		reprinting: false,
-					printerError: null
+					printerError: null,
+
+		    		orderEntryForTransfer: null
 		    	}
 		    },
 		    watch: {
@@ -926,28 +940,13 @@
                         employees {
                         	id, fullName
                         },
-						activeOrders {
-							table {id, name}
-						}
+						
                     }`
                 }).then(response => {
                     this.menuSections = response.data.data.menuSections
                     this.tables = response.data.data.tables
                     this.printers = response.data.data.printers
-                    this.employees = response.data.data.employees;
-					this.activeOrders = response.data.data.activeOrders;
-                });
-
-                axios({
-                    url: '/admin/graph-ql',
-                    method: 'post',
-                    data: `{
-                        availableTables {
-                        	id, name
-                        }
-                    }`
-                }).then(response => {
-                    this.availableTables = response.data.data.availableTables
+                    this.employees = response.data.data.employees
                 });
 
                 axios({
@@ -979,23 +978,18 @@
 		                        	}
 		                        }
 		                    }
-	                    }
-                    }`
-                }).then(response => {
-                    this.order = response.data.data.order;
-                    this.initialOrder = JSON.parse(JSON.stringify(response.data.data.order));
-                });
-
-                axios({
-                    url: '/admin/graph-ql',
-                    method: 'post',
-                    data: `{
+	                    },
+                        activeOrders {
+							id, table {id, name}
+						},
                         activeUser {
                         	id, fullName
                         }
                     }`
                 }).then(response => {
+                    this.order = response.data.data.order
                     this.waiter = response.data.data.activeUser
+                    this.activeOrders = response.data.data.activeOrders
                 });
 		    },
 		    computed: {
@@ -1180,6 +1174,22 @@
 		    		);
 
 		    		this.newOrderEntryGroup.orderEntries.splice(index, 1);
+		    	},
+		    	transferOrderEntry(targetOrder) {
+		    		axios.post('/orders-app/transfer-entry', {
+		    			orderEntryId: this.orderEntryForTransfer.id,
+		    			targetOrderId: targetOrder.id
+		    		}).then(response => {
+		    			if (response.data == 'ok') {
+		    				this.order.orderEntryGroups.forEach(group => {
+		    					let index = group.orderEntries.findIndex(e => e.id == this.orderEntryForTransfer.id);
+		    					if (index !== -1) {
+		    						group.orderEntries.splice(index, 1);
+		    					}
+		    				});
+		    				this.orderEntryForTransfer = null;
+		    			}
+		    		});
 		    	},
 		    	printOrderEntryGroup(orderEntryGroup) {
 		    		this.reprinting = orderEntryGroup.id

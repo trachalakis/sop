@@ -76,6 +76,7 @@ use Application\Actions\OrdersApp\OrderPayment;
 use Application\Actions\OrdersApp\PrintOrderReceipt;
 use Application\Actions\OrdersApp\UpdateOrder;
 use Application\Actions\OrdersApp\TakeOut;
+use Application\Actions\OrdersApp\TransferOrderEntry;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\CreateReservation;
 use Application\Actions\ReservationsApp\UpdateReservation;
@@ -195,6 +196,7 @@ return function (App $app, $container) {
         $group->get('/catch-of-the-day', CatchOfTheDay::class);
         $group->map(['GET', 'POST'], '/update', UpdateOrder::class);
         $group->map(['GET', 'POST'], '/take-out', TakeOut::class);
+        $group->post('/transfer-entry', TransferOrderEntry::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());

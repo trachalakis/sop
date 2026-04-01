@@ -62,27 +62,6 @@ class AdminQueryType extends ObjectType
                         	->findBy(['isActive' => true]);
                     }
                 ],
-                'availableTables' => [
-                    'type' => Type::listOf(Types::table()),
-                    'resolve' => function ($rootValue, $args, $context, $info) {
-                        $activeTables = $context
-                        	->get(TablesRepository::class)
-                        	->findBy(['isActive' => true], ['position' => 'asc']);
-
-                       	$orders = $context
-                       		->get(OrdersRepository::class)
-                       		->findBy(['status' => 'OPEN']);
-
-                       	foreach ($orders as $order) {
-                       		//$activeTables->removeElement($order->getTable());
-                       		$activeTables = array_filter($activeTables, function ($v) use ($order) {
-                       			return $v != $order->getTable();
-                       		});
-                       	}
-
-                       	return $activeTables;
-                    }
-                ],
                 'printers' => [
                     'type' => Type::listOf(Types::printer()),
                     'resolve' => function ($rootValue, $args, $context, $info) {
