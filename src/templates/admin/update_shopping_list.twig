@@ -2,13 +2,22 @@
 
 {% set activeNavLink = 'supplies' %}
 
-{% block content %}
-{% verbatim %}
+{% block content %}{% verbatim %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/shopping-lists/update" class="text-decoration-none">Ψώνια</a>
+    </li>
+</ol>
 <div id="app">
 
-    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-2 border-bottom">
+    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
         <div>
-            <h1 class="h4 mb-0">Ψώνια</h1>
+            <h1 class="mb-0">Ψώνια</h1>
             <small class="text-muted">για {{formatDate(targetDate)}}<span v-if="selectedSupplies.length > 0"> &mdash; &euro;{{totalCost}}</span></small>
         </div>
         <div class="d-flex gap-2 align-items-center">
