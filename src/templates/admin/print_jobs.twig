@@ -14,7 +14,10 @@
     </li>
 </ol>
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
-    <h1>Εκτυπώσεις</h1>
+    <div>
+        <h1 class="mb-0">Εκτυπώσεις</h1>
+        <small class="text-muted">της τελευταίας ώρας</small>
+    </div>
 </div>
 <div id="app">
 	<table class="table table-responsive table-striped">
@@ -54,16 +57,14 @@
 		vueApp = Vue.createApp({
 		    data() {
 		    	return {
-		    		printJobs: [],
-					//menus: [],
-					//takeAwayTables: 0
+		    		printJobs: []
 		    	}
 		    },
 		    mounted () {
 		    	setInterval(() => {
 					this.fetchPrintJobs()
-				}, 5000)
-                this.fetchPrintJobs();
+				}, 1500)
+                this.fetchPrintJobs()
 		    },
 		    methods: {
 		    	fetchPrintJobs () {
@@ -78,35 +79,11 @@
                     }).then(response => {
                         this.printJobs = response.data.data.printJobs
                     });
-		    		/*axios({
-	                    url: '/admin/graph-ql',
-	                    method: 'post',
-	                    data: `{
-	                        activeOrders {
-	                        	id, uuid, table {id, name}, price, createdAt
-	                        }
-	                    }`
-	                }).then(response => {
-	                    this.orders = response.data.data.activeOrders
-	                });*/
 		    	},
 		    	getTime(date) {
 		    		return date.substr(date.length - 8, 5);
 		    	}
 		    },
-			/*computed: {
-				hasTakeOut () {
-					let ret = false;
-					
-					_.each(this.menus, menu => {
-						if (menu.name == 'Take Out') {
-							ret = true;
-						}
-					});
-
-					return ret;
-				}
-			}*/
 		}).mount('#app');
 	</script>
 {% endblock %}

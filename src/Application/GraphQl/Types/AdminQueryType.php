@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\GraphQl\Types;
 
+use DateTimeImmutable;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -75,7 +76,7 @@ class AdminQueryType extends ObjectType
                     'resolve' => function ($rootValue, $args, $context, $info) {
                         return $context
                         	->get(PrintJobsRepository::class)
-                        	->findBy([], ['createdAt' => 'desc']);
+                        	->findSince(new DateTimeImmutable('-1 hour'));
                     }
                 ],
                 'order' => [
