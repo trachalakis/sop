@@ -113,30 +113,18 @@
                         >
                             {{supply.name}}
                         </div>
-                        <!--<div class="text-muted" style="font-size: 0.75rem;">{{supply.priceUnit}}</div>-->
-                        
-                            <div class="input-group mt-2" v-if="isSelected(supply)" @click.stop>
-                                <input
-                                    type="number"
-                                    class="form-control form-control-sm text-center"
-                                    :value="getSelection(supply).quantity"
-                                    @input="setQuantity(supply, $event.target.value)"
-                                    min="0.1"
-                                    step="0.5"
-                                    
-                                />
-                                <span class="input-group-text">{{supply.priceUnit}}</span>
-                            </div>
-                            <!--<input
+                        <div class="input-group mt-2" v-if="isSelected(supply)" @click.stop>
+                            <input
                                 type="number"
                                 class="form-control form-control-sm text-center"
                                 :value="getSelection(supply).quantity"
                                 @input="setQuantity(supply, $event.target.value)"
                                 min="0.1"
                                 step="0.5"
-                                style="font-size: 1rem; font-weight: 600;"
-                            />-->
-                        
+                                
+                            />
+                            <span class="input-group-text">{{supply.priceUnit}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -307,19 +295,29 @@
                     let total = 0;
                     this.selectedSupplies.forEach(supply => {
                         if (supply.quantity <= 0) return;
-                        const qty = supply.quantity % 1 === 0
-                            ? supply.quantity.toString()
-                            : supply.quantity.toFixed(1);
-                        const unitBlock = `${qty} ${supply.priceUnit}`;
-                        const name = supply.name;
-                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length));
-                        leftText(this.canvasCtx, `${name}${dots}${unitBlock}`, LINE_SIZE, true);
-
+                        
                         const cost = supply.price * supply.quantity;
                         total += cost;
                         const costStr = `€${(Math.round(cost * 100) / 100).toFixed(2)}`;
-                        const costDots = ' '.repeat(Math.max(1, MAX_CHARS - costStr.length));
-                        leftText(this.canvasCtx, `${costDots}${costStr}`, LINE_SIZE - 4);
+                        
+                        const qty = supply.quantity % 1 === 0
+                            ? supply.quantity.toString()
+                            : supply.quantity.toFixed(1);
+                        
+                        let unitBlock = '';
+                        if (supply.priceUnit == 'item') {
+                            unitBlock += `${qty}x`;
+                        } else {
+                            unitBlock += `${qty}${supply.priceUnit}`;
+                        }
+                        
+                        const name = supply.name;
+                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length));
+                        leftText(this.canvasCtx, `${unitBlock} ${name}${dots}${costStr}`, LINE_SIZE, true);
+
+                        
+                        /*const costDots = ' '.repeat(Math.max(1, MAX_CHARS - costStr.length));
+                        leftText(this.canvasCtx, `${costDots}`, LINE_SIZE - 4);*/
                     });
 
                     separator(this.canvasCtx);
