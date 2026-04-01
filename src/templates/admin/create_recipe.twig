@@ -35,7 +35,7 @@
         <label class="col-sm-2 col-form-label">Απόδοση</label>
         <div class="col-sm-10">
             <div class="input-group">
-                <input type="number" min="0" step="0.1" class="form-control" name="yield" value="0"/>
+                <input type="number" min="0" step="0.01" class="form-control" name="yield" value="0"/>
                 <select class="form-select" name="yieldUnit">
                     <option value="item">item</option>
                     <option value="kg">kg</option>
@@ -69,7 +69,7 @@
                                     <option v-for="supply in group.supplies" :value="supply.id" :key="supply.id">[[ supply.name ]]</option>
                                 </optgroup>
                             </select>
-                            <input type="number" min="0" step="0.1" class="form-control" :name="'supply[' + index + '][quantity]'" v-model="row.quantity"/>
+                            <input type="number" min="0" step="0.01" class="form-control" :name="'supply[' + index + '][quantity]'" v-model="row.quantity"/>
                             <select class="form-select" :name="'supply[' + index + '][unit]'" v-model="row.unit">
                                 <option value="item">item</option>
                                 <option value="kg">kg</option>
@@ -98,7 +98,7 @@
                             <select class="form-select" :name="'preparation[' + index + '][id]'" v-model="row.preparationId" @change="onPreparationChange(row)">
                                 <option v-for="prep in preparations" :value="prep.id" :key="prep.id">[[ prep.name ]]</option>
                             </select>
-                            <input type="number" min="0" step="0.1" class="form-control" :name="'preparation[' + index + '][quantity]'" v-model="row.quantity"/>
+                            <input type="number" min="0" step="0.01" class="form-control" :name="'preparation[' + index + '][quantity]'" v-model="row.quantity"/>
                             <select class="form-select" :name="'preparation[' + index + '][unit]'" v-model="row.unit">
                                 <option value="item">item</option>
                                 <option value="kg">kg</option>
