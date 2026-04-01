@@ -44,7 +44,7 @@ use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\CreateRecipe;
 use Application\Actions\Admin\DeleteRecipe;
 use Application\Actions\Admin\UpdateRecipe;
-use Application\Actions\Admin\PrintSupplies;
+
 use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\SaveShoppingList;
 use Application\Actions\Admin\SortSupplyGroups;
@@ -62,6 +62,7 @@ use Application\Actions\Admin\UpdateMenuSection;
 use Application\Actions\Admin\UpdatePrinter;
 use Application\Actions\Admin\UpdatePrintJob;
 use Application\Actions\Admin\UpdateScan;
+use Application\Actions\Admin\UpdateShoppingList;
 use Application\Actions\Admin\UpdateSupply;
 use Application\Actions\Admin\UpdateTable;
 use Application\Actions\Admin\UpdateUser;
@@ -161,12 +162,13 @@ return function (App $app, $container) {
 
         $group->get('/supplies', Supplies::class);
         $group->post('/supply-groups/sort', SortSupplyGroups::class);
-        $group->get('/supplies/print', PrintSupplies::class);
-        $group->post('/shopping-lists/save', SaveShoppingList::class);
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/delete', DeleteSupply::class);
 
+        $group->get('/shopping-lists/update', UpdateShoppingList::class);
+        $group->post('/shopping-lists/save', SaveShoppingList::class);
+        
         $group->get('/languages', Languages::class);
         $group->get('/languages/toggle', ToggleLanguage::class);
 

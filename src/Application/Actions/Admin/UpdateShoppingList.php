@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
-final class PrintSupplies
+final class UpdateShoppingList
 {
     public function __construct(
         private SupplyGroupsRepository $supplyGroupsRepository,
@@ -32,6 +32,7 @@ final class PrintSupplies
                     'id' => $supply->getId(),
                     'name' => $supply->getName(),
                     'priceUnit' => $supply->getPriceUnit(),
+                    'price' => $supply->getPrice(),
                 ];
             }, $group->getSupplies()->toArray()));
 
@@ -69,7 +70,7 @@ final class PrintSupplies
 
         return $this->twig->render(
             $response,
-            'admin/print_supplies.twig',
+            'admin/update_shopping_list.twig',
             [
                 'supplyGroupsJson' => json_encode($supplyGroupsData),
                 'printersJson' => json_encode($printersData),

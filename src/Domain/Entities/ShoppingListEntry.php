@@ -26,6 +26,9 @@ class ShoppingListEntry
     #[ORM\Column(type: 'float', name: 'quantity')]
     private float $quantity;
 
+    #[ORM\Column(type: 'float', name: 'unit_cost', nullable: true)]
+    private ?float $unitCost = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -46,6 +49,11 @@ class ShoppingListEntry
         return $this->quantity;
     }
 
+    public function getUnitCost(): ?float
+    {
+        return $this->unitCost;
+    }
+
     public function setShoppingList(ShoppingList $shoppingList): void
     {
         $this->shoppingList = $shoppingList;
@@ -59,5 +67,10 @@ class ShoppingListEntry
     public function setQuantity(float $quantity): void
     {
         $this->quantity = $quantity;
+    }
+
+    public function setUnitCost(?float $unitCost): void
+    {
+        $this->unitCost = $unitCost;
     }
 }

@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-2 border-bottom">
         <div>
             <h1 class="h4 mb-0">Ψώνια</h1>
-            <small class="text-muted">για {{formatDate(targetDate)}}</small>
+            <small class="text-muted">για {{formatDate(targetDate)}}<span v-if="selectedSupplies.length > 0"> &mdash; &euro;{{totalCost}}</span></small>
         </div>
         <div class="d-flex gap-2 align-items-center">
 
@@ -217,6 +217,10 @@
                 receiptPrinters() {
                     return this.printers.filter(p => p.isReceiptPrinter);
                 },
+                totalCost() {
+                    const total = this.selectedSupplies.reduce((sum, s) => sum + (s.price * s.quantity), 0);
+                    return Math.round(total * 100) / 100;
+                },
             },
             methods: {
                 formatDate(dateStr) {
@@ -257,6 +261,7 @@
                             entries: this.selectedSupplies.map(s => ({
                                 supplyId: s.id,
                                 quantity: s.quantity,
+                                unitCost: s.price,
                             })),
                         });
                         this.saveStatus = 'saved';
@@ -290,6 +295,7 @@
                     const LINE_SIZE = 28;
                     const MAX_CHARS = 31;
 
+                    let total = 0;
                     this.selectedSupplies.forEach(supply => {
                         if (supply.quantity <= 0) return;
                         const qty = supply.quantity % 1 === 0
@@ -299,7 +305,17 @@
                         const name = supply.name;
                         const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length));
                         leftText(this.canvasCtx, `${name}${dots}${unitBlock}`, LINE_SIZE, true);
+
+                        const cost = supply.price * supply.quantity;
+                        total += cost;
+                        const costStr = `€${(Math.round(cost * 100) / 100).toFixed(2)}`;
+                        const costDots = ' '.repeat(Math.max(1, MAX_CHARS - costStr.length));
+                        leftText(this.canvasCtx, `${costDots}${costStr}`, LINE_SIZE - 4);
                     });
+
+                    separator(this.canvasCtx);
+                    const totalStr = `ΣΥΝΟΛΟ: €${(Math.round(total * 100) / 100).toFixed(2)}`;
+                    leftText(this.canvasCtx, totalStr, LINE_SIZE, true);
 
                     y += 12;
 

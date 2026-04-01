@@ -49,6 +49,7 @@ final class SaveShoppingList
             $entry->setShoppingList($shoppingList);
             $entry->setSupply($supply);
             $entry->setQuantity((float) $entryData['quantity']);
+            $entry->setUnitCost(isset($entryData['unitCost']) ? (float) $entryData['unitCost'] : null);
             $shoppingList->addEntry($entry);
         }
 
