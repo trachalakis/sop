@@ -38,9 +38,11 @@
 				<tr>
       			    <td class="ps-4">
 						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
-                        <span class="ms-2 text-muted">
-                            &euro;{{supply.getPrice}} / {{supply.getPriceUnit}}
-                        </span>
+                        {% if supply.getPrice > 0 %}
+                            <span class="ms-2 text-muted">
+                                &euro;{{supply.getPrice}} / {{supply.getPriceUnit}}
+                            </span>
+                        {% endif %}
 					</td>
 					
     			</tr>
