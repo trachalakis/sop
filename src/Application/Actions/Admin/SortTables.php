@@ -10,12 +10,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class SortTables
 {
-    private TablesRepository $tablesRepository;
-
     public function __construct(
-    	TablesRepository $tablesRepository
+    	private TablesRepository $tablesRepository
     ) {
-        $this->tablesRepository = $tablesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

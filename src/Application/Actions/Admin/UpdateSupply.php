@@ -16,24 +16,12 @@ use Slim\Views\Twig;
 
 final class UpdateSupply
 {
-    private SuppliesRepository $suppliesRepository;
-
-    private SupplyGroupsRepository $supplyGroupsRepository;
-
-    private SupplyPriceHistoryRepository $supplyPriceHistoryRepository;
-
-    private Twig $twig;
-
     public function __construct(
-    	SuppliesRepository $suppliesRepository,
-    	SupplyGroupsRepository $supplyGroupsRepository,
-    	SupplyPriceHistoryRepository $supplyPriceHistoryRepository,
-    	Twig $twig
+    	private SuppliesRepository $suppliesRepository,
+    	private SupplyGroupsRepository $supplyGroupsRepository,
+    	private SupplyPriceHistoryRepository $supplyPriceHistoryRepository,
+    	private Twig $twig
     ) {
-        $this->suppliesRepository = $suppliesRepository;
-        $this->supplyGroupsRepository = $supplyGroupsRepository;
-        $this->supplyPriceHistoryRepository = $supplyPriceHistoryRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

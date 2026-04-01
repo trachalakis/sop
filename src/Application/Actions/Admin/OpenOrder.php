@@ -11,12 +11,9 @@ use Slim\Views\Twig;
 
 final class OpenOrder
 {
-	private OrdersRepository $ordersRepository;
-
 	public function __construct(
-        OrdersRepository $ordersRepository
+        private OrdersRepository $ordersRepository
     ) {
-        $this->ordersRepository = $ordersRepository;
     }
 
     public function __invoke(Request $request, Response $response)

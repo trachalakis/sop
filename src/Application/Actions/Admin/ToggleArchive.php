@@ -10,11 +10,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class ToggleArchive
 {
-    private MenuItemsRepository $menuItemsRepository;
-
-    public function __construct(MenuItemsRepository $menuItemsRepository)
+    public function __construct(private MenuItemsRepository $menuItemsRepository)
     {
-        $this->menuItemsRepository = $menuItemsRepository;
     }
 
 	public function __invoke(Request $request, Response $response)

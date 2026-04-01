@@ -10,11 +10,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class DeleteOrder
 {
-    private OrdersRepository $ordersRepository;
-
-    public function __construct(OrdersRepository $ordersRepository)
+    public function __construct(private OrdersRepository $ordersRepository)
     {
-        $this->ordersRepository = $ordersRepository;
     }
 
 	public function __invoke(Request $request, Response $response)

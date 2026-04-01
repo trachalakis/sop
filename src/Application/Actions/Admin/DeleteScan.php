@@ -11,14 +11,8 @@ use Slim\Views\Twig;
 
 final class DeleteScan
 {
-	private $twig;
-
-    private $scansRepository;
-
-    public function __construct(Twig $twig, ScansRepository $scansRepository)
+    public function __construct(private Twig $twig, private ScansRepository $scansRepository)
     {
-        $this->scansRepository = $scansRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

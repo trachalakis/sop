@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class UpdatePin
 {
-    private Twig $twig;
-
-    private UsersRepository $usersRepository;
-
     public function __construct(
-        UsersRepository $usersRepository,
-        Twig $twig
+        private UsersRepository $usersRepository,
+        private Twig $twig
     ) {
-        $this->usersRepository = $usersRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

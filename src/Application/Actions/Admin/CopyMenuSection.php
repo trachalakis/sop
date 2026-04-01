@@ -13,16 +13,10 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class CopyMenuSection
 {
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private MenusRepository $menusRepository;
-
     public function __construct(
-        MenuSectionsRepository $menuSectionsRepository,
-        MenusRepository $menusRepository,
+        private MenuSectionsRepository $menuSectionsRepository,
+        private MenusRepository $menusRepository,
     ) {
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->menusRepository = $menusRepository;
     }
 
     public function __invoke(Request $request, Response $response)

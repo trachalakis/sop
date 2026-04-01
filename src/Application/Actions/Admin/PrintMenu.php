@@ -12,21 +12,11 @@ use Slim\Views\Twig;
 
 final class PrintMenu
 {
-    private Twig $twig;
-
-    private MenusRepository $menusRepository;
-
-    private MenuSectionsRepository $menuSectionsRepository;
-
     public function __construct(
-        MenusRepository $menusRepository,
-        MenuSectionsRepository $menuSectionsRepository,
-        Twig $twig
+        private MenusRepository $menusRepository,
+        private MenuSectionsRepository $menuSectionsRepository,
+        private Twig $twig
     ) {
-        
-        $this->menusRepository = $menusRepository;
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

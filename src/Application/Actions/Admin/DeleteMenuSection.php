@@ -12,16 +12,10 @@ use Slim\Views\Twig;
 
 final class DeleteMenuSection
 {
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        MenuSectionsRepository $menuSectionsRepository,
-        Twig $twig
+        private MenuSectionsRepository $menuSectionsRepository,
+        private Twig $twig
     ) {
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

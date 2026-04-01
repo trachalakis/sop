@@ -19,32 +19,14 @@ use Slim\Views\Twig;
 
 final class UpdateMenuItem
 {
-    private LanguagesRepository $languagesRepository;
-
-    private MenuItemsRepository $menuItemsRepository;
-
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private PrintersRepository $printersRepository;
-
-    private RecipesRepository $recipesRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        LanguagesRepository $languagesRepository,
-        MenuSectionsRepository $menuSectionsRepository,
-        MenuItemsRepository $menuItemsRepository,
-        PrintersRepository $printersRepository,
-        RecipesRepository $recipesRepository,
-        Twig $twig
+        private LanguagesRepository $languagesRepository,
+        private MenuSectionsRepository $menuSectionsRepository,
+        private MenuItemsRepository $menuItemsRepository,
+        private PrintersRepository $printersRepository,
+        private RecipesRepository $recipesRepository,
+        private Twig $twig
     ) {
-        $this->languagesRepository = $languagesRepository;
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->printersRepository = $printersRepository;
-        $this->recipesRepository = $recipesRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

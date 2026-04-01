@@ -14,23 +14,14 @@ use Application\Settings\Settings;
 
 final class Homepage
 {
-	private OrdersRepository $ordersRepository;
-
-	private ReservationsRepository $reservationsRepository;
-
-	private Twig $twig;
-
     //private Settings $settings;
 
     public function __construct(
-    	OrdersRepository $ordersRepository,
-        ReservationsRepository $reservationsRepository,
-        Twig $twig
+    	private OrdersRepository $ordersRepository,
+        private ReservationsRepository $reservationsRepository,
+        private Twig $twig
         //Settings $settings
     ) {
-        $this->ordersRepository = $ordersRepository;
-        $this->reservationsRepository = $reservationsRepository;
-        $this->twig = $twig;
         //$this->settings = $settings;
     }
 

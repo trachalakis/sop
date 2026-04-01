@@ -15,20 +15,11 @@ use Slim\Views\Twig;
 
 final class UpdateMenuSection
 {
-    private Twig $twig;
-
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private LanguagesRepository $languagesRepository;
-
     public function __construct(
-    	Twig $twig,
-    	MenuSectionsRepository $menuSectionsRepository,
-    	LanguagesRepository $languagesRepository
+    	private Twig $twig,
+    	private MenuSectionsRepository $menuSectionsRepository,
+    	private LanguagesRepository $languagesRepository
     ) {
-        $this->twig = $twig;
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->languagesRepository = $languagesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

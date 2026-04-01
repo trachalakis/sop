@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class CatchOfTheDay
 {
-	private MenuItemsRepository $menuItemsRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        MenuItemsRepository $menuItemsRepository,
-        Twig $twig
+        private MenuItemsRepository $menuItemsRepository,
+        private Twig $twig
     ) {
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

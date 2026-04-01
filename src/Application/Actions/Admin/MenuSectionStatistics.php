@@ -15,20 +15,11 @@ use Slim\Views\Twig;
 
 final class MenuSectionStatistics
 {
-	private Twig $twig;
-
-	private OrderEntriesRepository $orderEntriesRepository;
-
-	private MenuSectionsRepository $menuSectionsRepository;
-
 	public function __construct(
-		Twig $twig,
-		OrderEntriesRepository $orderEntriesRepository,
-		MenuSectionsRepository $menuSectionsRepository
+		private Twig $twig,
+		private OrderEntriesRepository $orderEntriesRepository,
+		private MenuSectionsRepository $menuSectionsRepository
 	) {
-		$this->twig = $twig;
-		$this->orderEntriesRepository = $orderEntriesRepository;
-		$this->menuSectionsRepository = $menuSectionsRepository;
 	}
 
 	public function __invoke(Request $request, Response $response)

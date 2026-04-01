@@ -13,14 +13,8 @@ use Slim\Views\Twig;
 
 final class CreateTable
 {
-	private $twig;
-
-    private $tablesRepository;
-
-    public function __construct(Twig $twig, TablesRepository $tablesRepository)
+    public function __construct(private Twig $twig, private TablesRepository $tablesRepository)
     {
-        $this->twig = $twig;
-        $this->tablesRepository = $tablesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

@@ -10,11 +10,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class DeletePrinter
 {
-    private PrintersRepository $printersRepository;
-
-    public function __construct(PrintersRepository $printersRepository)
+    public function __construct(private PrintersRepository $printersRepository)
     {
-        $this->printersRepository = $printersRepository;
     }
 
 	public function __invoke(Request $request, Response $response)

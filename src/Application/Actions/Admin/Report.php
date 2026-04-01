@@ -17,28 +17,13 @@ use Slim\Views\Twig;
 
 final class Report
 {
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private OrdersRepository $ordersRepository;
-
-    private RecipesRepository $recipesRepository;
-
-    private ScansRepository $scansRepository;
-
-    private Twig $twig;
-
     public function __construct(
-    	MenuSectionsRepository $menuSectionsRepository,
-    	OrdersRepository $ordersRepository,
-    	RecipesRepository $recipesRepository,
-    	ScansRepository $scansRepository,
-    	Twig $twig
+    	private MenuSectionsRepository $menuSectionsRepository,
+    	private OrdersRepository $ordersRepository,
+    	private RecipesRepository $recipesRepository,
+    	private ScansRepository $scansRepository,
+    	private Twig $twig
     ) {
-    	$this->menuSectionsRepository = $menuSectionsRepository;
-        $this->ordersRepository = $ordersRepository;
-        $this->recipesRepository = $recipesRepository;
-        $this->scansRepository = $scansRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

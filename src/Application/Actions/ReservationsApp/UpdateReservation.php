@@ -12,20 +12,11 @@ use Slim\Views\Twig;
 
 final class UpdateReservation
 {
-    private ReservationsRepository $reservationsRepository;
-
-    private TablesRepository $tablesRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        ReservationsRepository $reservationsRepository,
-        TablesRepository $tablesRepository,
-        Twig $twig
+        private ReservationsRepository $reservationsRepository,
+        private TablesRepository $tablesRepository,
+        private Twig $twig
     ) {
-        $this->reservationsRepository = $reservationsRepository;
-        $this->tablesRepository = $tablesRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

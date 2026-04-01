@@ -13,20 +13,11 @@ use Slim\Views\Twig;
 
 final class OrderPayment
 {
-	private OrdersRepository $ordersRepository;
-
-	private OrderEntriesRepository $orderEntriesRepository;
-
-	private Twig $twig;
-
 	public function __construct(
-    	OrdersRepository $ordersRepository,
-    	OrderEntriesRepository $orderEntriesRepository,
-    	Twig $twig
+    	private OrdersRepository $ordersRepository,
+    	private OrderEntriesRepository $orderEntriesRepository,
+    	private Twig $twig
     ) {
-        $this->ordersRepository = $ordersRepository;
-        $this->orderEntriesRepository = $orderEntriesRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

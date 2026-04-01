@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class Tables
 {
-	private Twig $twig;
-
-    private TablesRepository $tablesRepository;
-
     public function __construct(
-        Twig $twig,
-        TablesRepository $tablesRepository
+        private Twig $twig,
+        private TablesRepository $tablesRepository
     ) {
-        $this->twig = $twig;
-        $this->tablesRepository = $tablesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

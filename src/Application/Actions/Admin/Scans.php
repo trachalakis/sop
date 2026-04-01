@@ -11,15 +11,8 @@ use Slim\Views\Twig;
 
 final class Scans
 {
-	private Twig $twig;
-
-	private ScansRepository $scansRepository;
-
-	public function __construct(Twig $twig, ScansRepository $scansRepository)
+	public function __construct(private Twig $twig, private ScansRepository $scansRepository)
 	{
-		$this->twig = $twig;
-
-		$this->scansRepository = $scansRepository;
 	}
 
 	public function __invoke(Request $request, Response $response)

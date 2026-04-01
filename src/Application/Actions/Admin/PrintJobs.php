@@ -11,12 +11,9 @@ use Slim\Views\Twig;
 
 final class PrintJobs
 {
-	private Twig $twig;
-
     public function __construct(
-        Twig $twig,
+        private Twig $twig,
     ) {
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

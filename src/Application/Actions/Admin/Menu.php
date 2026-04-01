@@ -12,16 +12,10 @@ use Slim\Views\Twig;
 
 final class Menu
 {
-    private $twig;
-
-    private $menusRepository;
-
     public function __construct(
-        Twig $twig,
-        MenusRepository $menusRepository
+        private Twig $twig,
+        private MenusRepository $menusRepository
     ) {
-        $this->twig = $twig;
-        $this->menusRepository = $menusRepository;
     }
 
     public function __invoke(Request $request, Response $response)

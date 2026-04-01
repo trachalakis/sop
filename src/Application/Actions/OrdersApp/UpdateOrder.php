@@ -22,36 +22,15 @@ use Slim\Views\Twig;
 
 final class UpdateOrder
 {
-    private Twig $twig;
-
-    private MenuItemsRepository $menuItemsRepository;
-
-    private OrdersRepository $ordersRepository;
-
-    private OrderEntriesRepository $orderEntriesRepository;
-
-    private OrderEntryCancellationsRepository $orderEntryCancellationsRepository;
-
-    private OrderEntryGroupsRepository $orderEntryGroupsRepository;
-
-    private TablesRepository $tablesRepository;
-
     public function __construct(
-        MenuItemsRepository $menuItemsRepository,
-        OrdersRepository $ordersRepository,
-        OrderEntriesRepository $orderEntriesRepository,
-        OrderEntryCancellationsRepository $orderEntryCancellationsRepository,
-        OrderEntryGroupsRepository $orderEntryGroupsRepository,
-        TablesRepository $tablesRepository,
-        Twig $twig
+        private MenuItemsRepository $menuItemsRepository,
+        private OrdersRepository $ordersRepository,
+        private OrderEntriesRepository $orderEntriesRepository,
+        private OrderEntryCancellationsRepository $orderEntryCancellationsRepository,
+        private OrderEntryGroupsRepository $orderEntryGroupsRepository,
+        private TablesRepository $tablesRepository,
+        private Twig $twig
     ) {
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->ordersRepository = $ordersRepository;
-        $this->orderEntriesRepository = $orderEntriesRepository;
-        $this->orderEntryCancellationsRepository = $orderEntryCancellationsRepository;
-        $this->orderEntryGroupsRepository = $orderEntryGroupsRepository;
-        $this->tablesRepository = $tablesRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class Languages
 {
-	private Twig $twig;
-
-    private LanguagesRepository $languagesRepository;
-
     public function __construct(
-        Twig $twig,
-        LanguagesRepository $languagesRepository
+        private Twig $twig,
+        private LanguagesRepository $languagesRepository
     ) {
-        $this->twig = $twig;
-        $this->languagesRepository = $languagesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

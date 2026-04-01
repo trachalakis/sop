@@ -14,20 +14,11 @@ use Slim\Views\Twig;
 
 final class Predict
 {
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private OrdersRepository $ordersRepository;
-
-    private Twig $twig;
-
     public function __construct(
-    	MenuSectionsRepository $menuSectionsRepository,
-    	OrdersRepository $ordersRepository,
-    	Twig $twig
+    	private MenuSectionsRepository $menuSectionsRepository,
+    	private OrdersRepository $ordersRepository,
+    	private Twig $twig
     ) {
-    	$this->menuSectionsRepository = $menuSectionsRepository;
-        $this->ordersRepository = $ordersRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

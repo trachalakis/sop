@@ -14,20 +14,11 @@ use Slim\Views\Twig;
 
 final class Clock
 {
-	private ScansRepository $scansRepository;
-
-	private Twig $twig;
-
-	private UsersRepository $usersRepository;
-
 	public function __construct(
-		ScansRepository $scansRepository,
-		Twig $twig,
-		UsersRepository $usersRepository
+		private ScansRepository $scansRepository,
+		private Twig $twig,
+		private UsersRepository $usersRepository
 	) {
-		$this->scansRepository = $scansRepository;
-		$this->twig = $twig;
-		$this->usersRepository = $usersRepository;
 	}
 
 	public function __invoke(Request $request, Response $response)

@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class Printers
 {
-	private PrintersRepository $printersRepository;
-
-	private Twig $twig;
-
     public function __construct(
-        PrintersRepository $printersRepository,
-        Twig $twig
+        private PrintersRepository $printersRepository,
+        private Twig $twig
     ) {
-        $this->twig = $twig;
-        $this->printersRepository = $printersRepository;
     }
 
     public function __invoke(Request $request, Response $response)

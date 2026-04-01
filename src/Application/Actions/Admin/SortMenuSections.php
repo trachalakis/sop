@@ -10,12 +10,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class SortMenuSections
 {
-    private MenuSectionsRepository $menuSectionsRepository;
-
     public function __construct(
-    	MenuSectionsRepository $menuSectionsRepository
+    	private MenuSectionsRepository $menuSectionsRepository
     ) {
-        $this->menuSectionsRepository = $menuSectionsRepository;
     }
 
     public function __invoke(Request $request, Response $response)

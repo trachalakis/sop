@@ -10,12 +10,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class ToggleLanguage
 {
-    private LanguagesRepository $languagesRepository;
-
     public function __construct(
-        LanguagesRepository $languagesRepository
+        private LanguagesRepository $languagesRepository
     ) {
-        $this->languagesRepository = $languagesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

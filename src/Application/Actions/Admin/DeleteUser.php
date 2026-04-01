@@ -11,14 +11,8 @@ use Slim\Views\Twig;
 
 final class DeleteUser
 {
-	private $twig;
-
-    private $usersRepository;
-
-    public function __construct(Twig $twig, UsersRepository $usersRepository)
+    public function __construct(private Twig $twig, private UsersRepository $usersRepository)
     {
-        $this->usersRepository = $usersRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

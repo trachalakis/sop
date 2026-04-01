@@ -12,16 +12,10 @@ use Slim\Views\Twig;
 
 final class UpdateTable
 {
-    private TablesRepository $tablesRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        TablesRepository $tablesRepository,
-        Twig $twig
+        private TablesRepository $tablesRepository,
+        private Twig $twig
     ) {
-        $this->tablesRepository = $tablesRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

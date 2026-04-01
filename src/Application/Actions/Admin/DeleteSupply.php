@@ -12,16 +12,10 @@ use Slim\Views\Twig;
 
 final class DeleteSupply
 {
-    private SuppliesRepository $suppliesRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        SuppliesRepository $suppliesRepository,
-        Twig $twig    
+        private SuppliesRepository $suppliesRepository,
+        private Twig $twig
     ) {
-        $this->suppliesRepository = $suppliesRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

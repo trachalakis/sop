@@ -16,11 +16,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class GraphQl
 {
-	private $container;
-
-	public function __construct(ContainerInterface $container)
+	public function __construct(private ContainerInterface $container)
     {
-        $this->container = $container;
     }
 
     public function __invoke(Request $request, Response $response)

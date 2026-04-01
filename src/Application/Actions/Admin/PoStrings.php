@@ -11,16 +11,10 @@ use Slim\Views\Twig;
 
 final class PoStrings
 {
-    private Twig $twig;
-
-    private PoStringsRepository $poStringsRepository;
-
     public function __construct(
-        Twig $twig,
-        PoStringsRepository $poStringsRepository
+        private Twig $twig,
+        private PoStringsRepository $poStringsRepository
     ) {
-        $this->twig = $twig;
-        $this->poStringsRepository = $poStringsRepository;
     }
 
     public function __invoke(Request $request, Response $response)

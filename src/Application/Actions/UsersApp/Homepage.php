@@ -15,20 +15,11 @@ use Slim\Views\Twig;
 
 final class Homepage
 {
-    private OrdersRepository $ordersRepository;
-
-    private ScansRepository $scansRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        OrdersRepository $ordersRepository,
-        ScansRepository $scansRepository,
-        Twig $twig
+        private OrdersRepository $ordersRepository,
+        private ScansRepository $scansRepository,
+        private Twig $twig
     ) {
-        $this->ordersRepository = $ordersRepository;
-        $this->scansRepository = $scansRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

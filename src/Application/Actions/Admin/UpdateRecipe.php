@@ -13,20 +13,11 @@ use Slim\Views\Twig;
 
 final class UpdateRecipe
 {
-	private RecipesRepository $recipesRepository;
-
-    private SuppliesRepository $suppliesRepository;
-
-    private Twig $twig;
-
     public function __construct(
-    	RecipesRepository $recipesRepository,
-    	SuppliesRepository $suppliesRepository,
-    	Twig $twig
+    	private RecipesRepository $recipesRepository,
+    	private SuppliesRepository $suppliesRepository,
+    	private Twig $twig
     ) {
-    	$this->recipesRepository = $recipesRepository;
-        $this->suppliesRepository = $suppliesRepository;
-        $this->twig = $twig;
     }
 
     public function __invoke(Request $request, Response $response)

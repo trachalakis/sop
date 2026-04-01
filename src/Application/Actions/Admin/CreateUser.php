@@ -13,14 +13,8 @@ use Slim\Views\Twig;
 
 final class CreateUser
 {
-	private $twig;
-
-    private $usersRepository;
-
-    public function __construct(Twig $twig, UsersRepository $usersRepository)
+    public function __construct(private Twig $twig, private UsersRepository $usersRepository)
     {
-        $this->twig = $twig;
-        $this->usersRepository = $usersRepository;
     }
 
     public function __invoke(Request $request, Response $response)

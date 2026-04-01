@@ -16,24 +16,12 @@ use Slim\Views\Twig;
 
 final class CreateMenuSection
 {
-	private Twig $twig;
-
-    private MenusRepository $menusRepository;
-    
-    private MenuSectionsRepository $menuSectionsRepository;
-
-    private LanguagesRepository $languagesRepository;
-
     public function __construct(
-    	Twig $twig,
-    	MenusRepository $menusRepository,
-        MenuSectionsRepository $menuSectionsRepository,
-    	LanguagesRepository $languagesRepository
+    	private Twig $twig,
+    	private MenusRepository $menusRepository,
+        private MenuSectionsRepository $menuSectionsRepository,
+    	private LanguagesRepository $languagesRepository
     ) {
-        $this->twig = $twig;
-        $this->menusRepository = $menusRepository;
-        $this->menuSectionsRepository = $menuSectionsRepository;
-        $this->languagesRepository = $languagesRepository;
     }
 
     public function __invoke(Request $request, Response $response)

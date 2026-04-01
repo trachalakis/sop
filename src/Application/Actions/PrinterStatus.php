@@ -11,12 +11,9 @@ use Monolog\Logger;
 
 final class PrinterStatus
 {
-	private Logger $logger;
-
-	public function __construct(Logger $logger)
-	{
-		$this->logger = $logger;
-	}
+	public function __construct(
+        private Logger $logger
+    ) {}
 
 	public function __invoke(Request $request, Response $response, $args)
 	{

@@ -11,15 +11,8 @@ use Slim\Views\Twig;
 
 final class TabularView
 {
-    private ReservationsRepository $reservationsRepository;
-
-    private Twig $twig;
-
-    public function __construct(Twig $twig, ReservationsRepository $reservationsRepository)
+    public function __construct(private Twig $twig, private ReservationsRepository $reservationsRepository)
     {
-        $this->twig = $twig;
-
-        $this->reservationsRepository = $reservationsRepository;
     }
 
     public function __invoke(Request $request, Response $response)

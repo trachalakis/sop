@@ -14,15 +14,10 @@ use Domain\Enums\PrintJobStatus;
 
 final class Sdp
 {
-	private Logger $logger;
-
-    private PrintJobsRepository $printJobsRepository;
-
-    public function __construct(PrintJobsRepository $printJobsRepository, Logger $logger)
-    {
-        $this->printJobsRepository = $printJobsRepository;
-        $this->logger = $logger;
-    }
+    public function __construct(
+        private PrintJobsRepository $printJobsRepository, 
+        private Logger $logger
+    ){}
 
 	public function __invoke(Request $request, Response $response, $args)
 	{

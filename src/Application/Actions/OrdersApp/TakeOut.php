@@ -21,32 +21,14 @@ use Slim\Views\Twig;
 
 final class TakeOut
 {
-    private Twig $twig;
-
-    private MenuItemsRepository $menuItemsRepository;
-
-    private OrdersRepository $ordersRepository;
-
-    private ReservationsRepository $reservationsRepository;
-
-    private TablesRepository $tablesRepository;
-
-    private UsersRepository $usersRepository;
-
     public function __construct(
-        Twig $twig,
-        MenuItemsRepository $menuItemsRepository,
-        OrdersRepository $ordersRepository,
-        ReservationsRepository $reservationsRepository,
-        TablesRepository $tablesRepository,
-        UsersRepository $usersRepository
+        private Twig $twig,
+        private MenuItemsRepository $menuItemsRepository,
+        private OrdersRepository $ordersRepository,
+        private ReservationsRepository $reservationsRepository,
+        private TablesRepository $tablesRepository,
+        private UsersRepository $usersRepository
     ) {
-        $this->twig = $twig;
-        $this->menuItemsRepository = $menuItemsRepository;
-        $this->ordersRepository = $ordersRepository;
-        $this->reservationsRepository = $reservationsRepository;
-        $this->tablesRepository = $tablesRepository;
-        $this->usersRepository = $usersRepository;
     }
 
     public function __invoke(Request $request, Response $response)

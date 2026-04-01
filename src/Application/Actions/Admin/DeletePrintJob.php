@@ -10,11 +10,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class DeletePrintJob
 {
-    private PrintJobsRepository $printJobsRepository;
-
-    public function __construct(PrintJobsRepository $printJobsRepository)
+    public function __construct(private PrintJobsRepository $printJobsRepository)
     {
-        $this->printJobsRepository = $printJobsRepository;
     }
 
 	public function __invoke(Request $request, Response $response)

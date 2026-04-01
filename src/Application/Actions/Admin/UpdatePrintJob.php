@@ -13,20 +13,11 @@ use Slim\Views\Twig;
 
 final class UpdatePrintJob
 {
-    private PrintersRepository $printersRepository;
-
-    private PrintJobsRepository $printJobsRepository;
-
-    private Twig $twig;
-
     public function __construct(
-        PrintersRepository $printersRepository,
-        PrintJobsRepository $printJobsRepository,
-        Twig $twig
+        private PrintersRepository $printersRepository,
+        private PrintJobsRepository $printJobsRepository,
+        private Twig $twig
     ) {
-        $this->printersRepository = $printersRepository;
-        $this->printJobsRepository = $printJobsRepository;
-        $this->twig = $twig;
     }
 
 	public function __invoke(Request $request, Response $response)

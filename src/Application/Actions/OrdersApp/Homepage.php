@@ -10,10 +10,7 @@ use Slim\Views\Twig;
 
 final class Homepage
 {
-    private Twig $twig;
-
-    public function __construct(Twig $twig) {
-        $this->twig = $twig;
+    public function __construct(private Twig $twig) {
     }
 
     public function __invoke(Request $request, Response $response)

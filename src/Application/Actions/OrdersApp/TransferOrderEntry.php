@@ -14,20 +14,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class TransferOrderEntry
 {
-    private OrderEntriesRepository $orderEntriesRepository;
-
-    private OrderEntryGroupsRepository $orderEntryGroupsRepository;
-
-    private OrdersRepository $ordersRepository;
-
     public function __construct(
-        OrderEntriesRepository $orderEntriesRepository,
-        OrderEntryGroupsRepository $orderEntryGroupsRepository,
-        OrdersRepository $ordersRepository
+        private OrderEntriesRepository $orderEntriesRepository,
+        private OrderEntryGroupsRepository $orderEntryGroupsRepository,
+        private OrdersRepository $ordersRepository
     ) {
-        $this->orderEntriesRepository = $orderEntriesRepository;
-        $this->orderEntryGroupsRepository = $orderEntryGroupsRepository;
-        $this->ordersRepository = $ordersRepository;
     }
 
     public function __invoke(Request $request, Response $response)

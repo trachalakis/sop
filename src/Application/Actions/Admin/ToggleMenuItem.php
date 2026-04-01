@@ -10,12 +10,9 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class ToggleMenuItem
 {
-    private MenuItemsRepository $menuItemsRepository;
-
     public function __construct(
-        MenuItemsRepository $menuItemsRepository
+        private MenuItemsRepository $menuItemsRepository
     ) {
-        $this->menuItemsRepository = $menuItemsRepository;
     }
 
     public function __invoke(Request $request, Response $response)
