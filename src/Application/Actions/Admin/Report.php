@@ -132,7 +132,7 @@ final class Report
 
                 $recipe = $recipesByMenuItemId[$menuItem->getId()] ?? null;
                 if ($recipe !== null && $recipe->getYield() > 0) {
-                    $foodCost += $orderEntry->getQuantity() * ($recipe->getFoodCost($start) / $recipe->getYield());
+                    $foodCost += $orderEntry->getQuantity() * ($recipe->getFoodCost($end) / $recipe->getYield());
                 }
             }
 
