@@ -288,6 +288,7 @@
                     centerText(this.canvasCtx, 'ΛΙΣΤΑ ΠΡΟΜΗΘΕΙΩΝ', 32, true);
                     centerText(this.canvasCtx, dateLabel, 24);
                     separator(this.canvasCtx);
+                    y += 36;
 
                     const LINE_SIZE = 28;
                     const MAX_CHARS = 31;
@@ -312,14 +313,10 @@
                         }
                         
                         const name = supply.name;
-                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length));
+                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length - costStr.length));
                         leftText(this.canvasCtx, `${unitBlock} ${name}${dots}${costStr}`, LINE_SIZE, true);
-
-                        
-                        /*const costDots = ' '.repeat(Math.max(1, MAX_CHARS - costStr.length));
-                        leftText(this.canvasCtx, `${costDots}`, LINE_SIZE - 4);*/
                     });
-
+                    y += 36;
                     separator(this.canvasCtx);
                     const totalStr = `ΣΥΝΟΛΟ: €${(Math.round(total * 100) / 100).toFixed(2)}`;
                     leftText(this.canvasCtx, totalStr, LINE_SIZE, true);
