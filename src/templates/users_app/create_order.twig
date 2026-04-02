@@ -750,7 +750,8 @@
 		    		return this.order.orderEntries.filter(orderEntry => this.isDrink(orderEntry.menuItem));
 		    	},
 		    	isBread(menuItem) {
-		    		return menuItem.id == 1;
+		    		//return menuItem.id == 1;
+                    return getTranslation(menuSection, 'en').name == 'Bread'; //TODO
 		    	},
 		    	isDrink(menuItem) {
 		    		return menuItem.isDrink;
