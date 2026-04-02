@@ -43,6 +43,7 @@ use Application\Actions\Admin\Report;
 use Application\Actions\Admin\Scans;
 use Application\Actions\Admin\CreateRecipe;
 use Application\Actions\Admin\DeleteRecipe;
+use Application\Actions\Admin\PrintRecipe;
 use Application\Actions\Admin\UpdateRecipe;
 
 use Application\Actions\Admin\Recipes;
@@ -144,6 +145,7 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/recipes/create', CreateRecipe::class);
         $group->map(['GET', 'POST'], '/recipes/update', UpdateRecipe::class);
         $group->get('/recipes/delete', DeleteRecipe::class);
+        $group->get('/recipes/print', PrintRecipe::class);
         $group->get('/menu-items/statistics', MenuItemStatistics::class);
         $group->get('/menu-items/toggle', ToggleMenuItem::class);
         $group->post('/menu-items/sort', SortMenuItems::class);
