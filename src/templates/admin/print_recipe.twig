@@ -139,6 +139,30 @@
             y += 6;
         };
 
+        const wrapText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            const maxWidth = W - PAD * 2;
+            const words = text.split(' ');
+            let line = '';
+            for (const word of words) {
+                const test = line ? line + ' ' + word : word;
+                if (ctx.measureText(test).width > maxWidth && line) {
+                    y += fontSize;
+                    ctx.fillText(line, PAD, y);
+                    y += 6;
+                    line = word;
+                } else {
+                    line = test;
+                }
+            }
+            if (line) {
+                y += fontSize;
+                ctx.fillText(line, PAD, y);
+                y += 6;
+            }
+        };
+
         const separator = (ctx) => {
             y += 6;
             ctx.lineWidth = 2;
@@ -179,28 +203,26 @@
                     return result;
                 },
                 printRecipeBlock(ctx, recipe) {
-                    leftText(ctx, recipe.name ?? '—', 28, true);
-                    let meta = `Απόδοση: ${recipe.yield} ${recipe.yieldUnit}`;
+                    centerText(ctx, recipe.name ?? '—', 48, true);
+                    let meta = `${recipe.yield} / ${recipe.yieldUnit}`;
                     if (recipe.duration > 0) meta += `  ${recipe.duration} λεπτά`;
-                    leftText(ctx, meta, 22);
+                    centerText(ctx, meta, 30);
+                    separator(ctx);
                     if (recipe.comments) {
-                        leftText(ctx, recipe.comments, 22);
+                        wrapText(ctx, recipe.comments, 30);
                     }
                     separator(ctx);
 
-                    const LINE = 24;
-                    const MAX = 33;
+                    const LINE = 32;
 
                     for (const s of recipe.supplies) {
-                        const qty = `${s.quantity} ${s.unit}`;
-                        const dots = ' '.repeat(Math.max(1, MAX - qty.length - s.name.length));
-                        leftText(ctx, `${qty}${dots}${s.name}`, LINE);
+                        const qty = `${s.quantity}${s.unit}`;
+                        leftText(ctx, `${qty} ${s.name}`, LINE, true);
                     }
                     for (const p of recipe.preparations) {
                         const qty = `${p.quantity} ${p.unit}`;
                         const label = `${p.recipe.name} *`;
-                        const dots = ' '.repeat(Math.max(1, MAX - qty.length - label.length));
-                        leftText(ctx, `${qty}${dots}${label}`, LINE);
+                        leftText(ctx, `${qty} ${label}`, LINE, true);
                     }
                 },
                 buildReceiptXml() {
