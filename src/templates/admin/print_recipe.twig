@@ -1,0 +1,249 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'recipes' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/recipes" class="text-decoration-none">Συνταγές</a>
+    </li>
+    <li class="breadcrumb-item">Εκτύπωση</li>
+</ol>
+{% verbatim %}
+<div id="app">
+
+    <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom">
+        <div>
+            <h1 class="mb-0">{{recipe.name}}</h1>
+            <small class="text-muted">Απόδοση: {{recipe.yield}} {{recipe.yieldUnit}}<span v-if="recipe.duration > 0"> &mdash; {{recipe.duration}} λεπτά</span></small>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+            <template v-if="receiptPrinters.length === 1">
+                <button
+                    type="button"
+                    class="btn btn-lg"
+                    :class="printStatus === 'printed' ? 'btn-primary' : (printStatus === 'error' ? 'btn-danger' : 'btn-outline-primary')"
+                    :disabled="printing"
+                    @click="print(receiptPrinters[0])"
+                >
+                    <i v-if="!printing" class="bi" :class="printStatus === 'printed' ? 'bi-check-lg' : 'bi-printer'"></i>
+                    <span v-if="printing" class="spinner-border spinner-border-sm"></span>
+                    <span class="d-none d-sm-inline ms-1">{{receiptPrinters[0].name}}</span>
+                </button>
+            </template>
+            <template v-else-if="receiptPrinters.length > 1">
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="btn btn-lg"
+                        :class="printStatus === 'printed' ? 'btn-primary' : (printStatus === 'error' ? 'btn-danger' : 'btn-outline-primary')"
+                        :disabled="printing"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i v-if="!printing" class="bi bi-printer"></i>
+                        <span v-if="printing" class="spinner-border spinner-border-sm"></span>
+                        <i class="bi bi-chevron-down ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li v-for="printer in receiptPrinters">
+                            <a class="dropdown-item fs-5 py-2" href="#" @click.prevent="print(printer)">{{printer.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <div
+        v-if="printStatus === 'printed'"
+        class="alert alert-success alert-dismissible py-2 mb-3"
+        role="alert"
+    >
+        <i class="bi bi-printer me-1"></i>
+        Η συνταγή στάλθηκε στον εκτυπωτή.
+        <button type="button" class="btn-close" @click="printStatus = null"></button>
+    </div>
+
+    <div class="mb-4">
+        <div v-if="recipe.comments" class="text-muted mb-3">{{recipe.comments}}</div>
+        <template v-if="recipe.supplies.length > 0">
+            <h5 class="text-uppercase text-muted fw-semibold mb-2">Υλικά</h5>
+            <ul class="list-unstyled mb-3">
+                <li v-for="s in recipe.supplies" class="mb-1">
+                    <span class="fw-medium">{{s.quantity}} {{s.unit}}</span> {{s.name}}
+                </li>
+            </ul>
+        </template>
+        <template v-if="recipe.preparations.length > 0">
+            <h5 class="text-uppercase text-muted fw-semibold mb-2">Προπαρασκευές</h5>
+            <ul class="list-unstyled">
+                <li v-for="p in recipe.preparations" class="mb-1">
+                    <span class="fw-medium">{{p.quantity}} {{p.unit}}</span> {{p.recipe.name}}
+                </li>
+            </ul>
+        </template>
+    </div>
+
+    <template v-for="p in allSubRecipes(recipe)">
+        <div class="mb-4 border-top pt-3">
+            <h5 class="mb-0">{{p.name}}</h5>
+            <small class="text-muted">Απόδοση: {{p.yield}} {{p.yieldUnit}}<span v-if="p.duration > 0"> &mdash; {{p.duration}} λεπτά</span></small>
+            <div v-if="p.comments" class="text-muted mt-1 mb-2">{{p.comments}}</div>
+            <ul class="list-unstyled mt-2 mb-0">
+                <li v-for="s in p.supplies" class="mb-1">
+                    <span class="fw-medium">{{s.quantity}} {{s.unit}}</span> {{s.name}}
+                </li>
+                <li v-for="pr in p.preparations" class="mb-1">
+                    <span class="fw-medium">{{pr.quantity}} {{pr.unit}}</span> {{pr.recipe.name}} <span class="text-muted">(προπαρασκευή)</span>
+                </li>
+            </ul>
+        </div>
+    </template>
+
+    <canvas width="576" height="10000" class="d-none"></canvas>
+
+</div>
+{% endverbatim %}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        const recipeData = {{ recipeJson|raw }};
+        const printersData = {{ printersJson|raw }};
+    </script>
+    <script src="/assets/js/vue.global.prod.js"></script>
+    <script src="/assets/js/axios.min.js"></script>
+    <script>
+        const W = 576;
+        const PAD = 6;
+        let y = 0;
+
+        const centerText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'center';
+            y += fontSize;
+            ctx.fillText(text, W / 2, y);
+            y += 6;
+        };
+
+        const leftText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            y += fontSize;
+            ctx.fillText(text, PAD, y);
+            y += 6;
+        };
+
+        const separator = (ctx) => {
+            y += 6;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+            y += 10;
+        };
+    </script>
+    <script src="/assets/js/epos-2.24.0.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    recipe: recipeData,
+                    printers: printersData,
+                    printing: false,
+                    printStatus: null,
+                    canvasCtx: null,
+                };
+            },
+            mounted() {
+                this.canvasCtx = document.querySelector('canvas').getContext('2d');
+            },
+            computed: {
+                receiptPrinters() {
+                    return this.printers.filter(p => p.isReceiptPrinter);
+                },
+            },
+            methods: {
+                allSubRecipes(recipe) {
+                    const result = [];
+                    for (const prep of recipe.preparations) {
+                        result.push(prep.recipe);
+                        result.push(...this.allSubRecipes(prep.recipe));
+                    }
+                    return result;
+                },
+                printRecipeBlock(ctx, recipe) {
+                    leftText(ctx, recipe.name ?? '—', 28, true);
+                    let meta = `Απόδοση: ${recipe.yield} ${recipe.yieldUnit}`;
+                    if (recipe.duration > 0) meta += `  ${recipe.duration} λεπτά`;
+                    leftText(ctx, meta, 22);
+                    if (recipe.comments) {
+                        leftText(ctx, recipe.comments, 22);
+                    }
+                    separator(ctx);
+
+                    const LINE = 24;
+                    const MAX = 33;
+
+                    for (const s of recipe.supplies) {
+                        const qty = `${s.quantity} ${s.unit}`;
+                        const dots = ' '.repeat(Math.max(1, MAX - qty.length - s.name.length));
+                        leftText(ctx, `${qty}${dots}${s.name}`, LINE);
+                    }
+                    for (const p of recipe.preparations) {
+                        const qty = `${p.quantity} ${p.unit}`;
+                        const label = `${p.recipe.name} *`;
+                        const dots = ' '.repeat(Math.max(1, MAX - qty.length - label.length));
+                        leftText(ctx, `${qty}${dots}${label}`, LINE);
+                    }
+                },
+                buildReceiptXml() {
+                    y = 0;
+                    this.canvasCtx.clearRect(0, 0, W, 10000);
+                    this.canvasCtx.fillStyle = 'white';
+                    this.canvasCtx.fillRect(0, 0, W, 10000);
+                    this.canvasCtx.fillStyle = 'black';
+
+                    this.printRecipeBlock(this.canvasCtx, this.recipe);
+
+                    for (const sub of this.allSubRecipes(this.recipe)) {
+                        y += 20;
+                        this.printRecipeBlock(this.canvasCtx, sub);
+                    }
+
+                    y += 12;
+
+                    let ePOSBuilder = new epson.ePOSBuilder();
+                    ePOSBuilder.addImage(this.canvasCtx, 0, 0, 576, y, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
+                    ePOSBuilder.addFeedLine(3);
+                    ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
+                    return ePOSBuilder.toString();
+                },
+                async print(printer) {
+                    if (this.printing) return;
+                    this.printing = true;
+                    this.printStatus = null;
+                    try {
+                        const xml = this.buildReceiptXml();
+                        await axios.post('/admin/print-jobs/create', {
+                            printer: printer.name,
+                            xml,
+                        });
+                        this.printStatus = 'printed';
+                    } catch (error) {
+                        this.printStatus = 'error';
+                        alert('Σφάλμα εκτύπωσης: ' + error);
+                    } finally {
+                        this.printing = false;
+                    }
+                },
+            },
+        }).mount('#app');
+    </script>
+{% endblock %}
