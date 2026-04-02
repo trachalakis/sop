@@ -23,6 +23,7 @@ final class SaveShoppingList
     {
         $body = json_decode(file_get_contents('php://input'), true);
         $entries = $body['entries'] ?? [];
+        $notes = isset($body['notes']) ? trim((string) $body['notes']) : null;
 
         $targetDate = $this->getTargetDate();
         $dateStr = $targetDate->format('Y-m-d');
@@ -37,6 +38,7 @@ final class SaveShoppingList
         }
 
         $shoppingList->setUpdatedAt(new DateTimeImmutable());
+        $shoppingList->setNotes($notes !== '' ? $notes : null);
         $shoppingList->clearEntries();
 
         foreach ($entries as $entryData) {

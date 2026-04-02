@@ -59,6 +59,7 @@ final class UpdateShoppingList
         $shoppingList = $this->shoppingListsRepository->findByDate($targetDate);
 
         $existingEntries = [];
+        $existingNotes = '';
         if ($shoppingList !== null) {
             foreach ($shoppingList->getEntries() as $entry) {
                 $existingEntries[] = [
@@ -66,6 +67,7 @@ final class UpdateShoppingList
                     'quantity' => $entry->getQuantity(),
                 ];
             }
+            $existingNotes = $shoppingList->getNotes() ?? '';
         }
 
         return $this->twig->render(
@@ -75,6 +77,7 @@ final class UpdateShoppingList
                 'supplyGroupsJson' => json_encode($supplyGroupsData),
                 'printersJson' => json_encode($printersData),
                 'existingEntriesJson' => json_encode($existingEntries),
+                'existingNotes' => $existingNotes,
                 'targetDate' => $targetDate->format('Y-m-d'),
             ]
         );

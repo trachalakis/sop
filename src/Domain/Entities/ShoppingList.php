@@ -28,6 +28,9 @@ class ShoppingList
     #[ORM\Column(type: 'datetimetz_immutable', name: 'updated_at')]
     private DateTimeImmutable $updatedAt;
 
+    #[ORM\Column(type: 'text', name: 'notes', nullable: true)]
+    private ?string $notes = null;
+
     #[ORM\OneToMany(targetEntity: ShoppingListEntry::class, mappedBy: 'shoppingList', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $entries;
 
@@ -74,6 +77,16 @@ class ShoppingList
     public function setUpdatedAt(DateTimeImmutable $updatedAt): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): void
+    {
+        $this->notes = $notes;
     }
 
     public function clearEntries(): void

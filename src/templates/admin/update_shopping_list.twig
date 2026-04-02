@@ -92,6 +92,25 @@
         <button type="button" class="btn-close" @click="saveStatus = null"></button>
     </div>
 
+    <div
+        v-if="printStatus === 'printed'"
+        class="alert alert-success alert-dismissible py-2 mb-3"
+        role="alert"
+    >
+        <i class="bi bi-printer me-1"></i>
+        Η λίστα στάλθηκε στον εκτυπωτή.
+        <button type="button" class="btn-close" @click="printStatus = null"></button>
+    </div>
+
+    <div class="mb-4">
+        <textarea
+            class="form-control"
+            rows="2"
+            placeholder="Σημειώσεις..."
+            v-model="notes"
+        ></textarea>
+    </div>
+
     <div v-for="group in supplyGroups" :key="group.name" class="mb-4">
         <h5 class="text-muted fw-semibold mb-2 text-uppercase">{{group.name}}</h5>
         <div class="row g-2">
@@ -147,6 +166,7 @@
         const supplyGroupsData = {{ supplyGroupsJson|raw }};
         const printersData = {{ printersJson|raw }};
         const existingEntriesData = {{ existingEntriesJson|raw }};
+        const existingNotesData = {{ existingNotes|json_encode|raw }};
         const targetDateStr = "{{ targetDate }}";
     </script>
     <script src="/assets/js/vue.global.prod.js"></script>
@@ -191,9 +211,11 @@
                     printers: printersData,
                     targetDate: targetDateStr,
                     selectedSupplies: [],
+                    notes: existingNotesData,
                     printing: false,
                     saving: false,
                     saveStatus: null,
+                    printStatus: null,
                     canvasCtx: null,
                 };
             },
@@ -255,6 +277,7 @@
                     this.saveStatus = null;
                     try {
                         await axios.post('/admin/shopping-lists/save', {
+                            notes: this.notes,
                             entries: this.selectedSupplies.map(s => ({
                                 supplyId: s.id,
                                 quantity: s.quantity,
@@ -287,6 +310,10 @@
 
                     centerText(this.canvasCtx, 'ΛΙΣΤΑ ΠΡΟΜΗΘΕΙΩΝ', 32, true);
                     centerText(this.canvasCtx, dateLabel, 24);
+                    if (this.notes && this.notes.trim().length > 0) {
+                        separator(this.canvasCtx);
+                        leftText(this.canvasCtx, this.notes.trim(), 24);
+                    }
                     separator(this.canvasCtx);
                     y += 36;
 
@@ -332,13 +359,16 @@
                 async print(printer) {
                     if (this.printing || this.selectedSupplies.length === 0) return;
                     this.printing = true;
+                    this.printStatus = null;
                     try {
                         const xml = this.buildReceiptXml();
                         await axios.post('/admin/print-jobs/create', {
                             printer: printer.name,
                             xml,
                         });
+                        this.printStatus = 'printed';
                     } catch (error) {
+                        this.printStatus = 'error';
                         alert('Σφάλμα εκτύπωσης: ' + error);
                     } finally {
                         this.printing = false;
