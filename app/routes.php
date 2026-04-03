@@ -101,7 +101,6 @@ use Application\Actions\UsersApp\CreateOrder as UsersAppCreateOrder;
 use Application\Actions\UsersApp\ViewOrder as UsersAppViewOrder;
 use Application\Actions\UsersApp\UpdatePin as UsersAppUpdatePin;
 use Application\Actions\UsersApp\Clock;
-use Application\Actions\UsersApp\TakeOut as UsersAppTakeOut;
 use Domain\Repositories\UserPermissionsRepository;
 use Middleware\Authentication;
 use Middleware\Authorization;
@@ -249,7 +248,6 @@ return function (App $app, $container) {
         $group->get('/orders', UsersAppOrders::class);
         $group->get('/view-order', UsersAppViewOrder::class);
         $group->map(['GET', 'POST'], '/create-order', UsersAppCreateOrder::class);
-        $group->map(['GET', 'POST'], '/take-out', UsersAppTakeOut::class);
         $group->map(['GET', 'POST'], '/update-pin', UsersAppUpdatePin::class);
         $group->get('/clock', Clock::class);
     })
