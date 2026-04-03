@@ -7,23 +7,47 @@
     <h1 class="h2">Dashboard</h1>
 </div>
 <div class="row mb-3">
-    <div class="col-6">
+    <div class="col-sm-12 col-md-4">
         <div class="card text-bg-light mb-3">
             <div class="card-header"><a class="text-decoration-none" href="/orders-app/">Orders</a></div>
             <div class="card-body">
-                <h5 class="card-title">{{openOrders|length}} tables</h5>
+                <h5 class="card-title">{{openOrders|length}} τραπέζια</h5>
                 <p class="card-text">
-                	{{adults}} adults, {{minors}} minors
+                    {{openOrders|map(r => r.getAdults)|reduce((carry, v) => carry + v, 0)}} ενήλικες,
+                    {{openOrders|map(r => r.getMinors)|reduce((carry, v) => carry + v, 0)}} ανήλικοι
                 </p>
+                <a href="/orders-app/" class="btn btn-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Μετάβαση 
+                </a>
             </div>
         </div>
     </div>
-    <div class="col-6">
+
+    <div class="col-sm-12 col-md-4">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header"><a class="text-decoration-none" href="/take-out/">Take Out</a></div>
+            <div class="card-body">
+                <h5 class="card-title">{{activeTakeOutOrders|length}} active orders</h5>
+                <p class="card-text">&nbsp;</p>
+                <a href="/take-out/" class="btn btn-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Μετάβαση 
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-12 col-md-4">
         <div class="card text-bg-light mb-3">
             <div class="card-header"><a class="text-decoration-none" href="/reservations-app/">Reservations</a></div>
             <div class="card-body">
                 <h5 class="card-title">{{todaysReservations|length}} Reservations</h5>
-                <p class="card-text">5 adults / 9 minors</p>
+                <p class="card-text">
+                    {{todaysReservations|map(r => r.getAdults)|reduce((carry, v) => carry + v, 0)}} ενήλικες,
+                    {{todaysReservations|map(r => r.getMinors)|reduce((carry, v) => carry + v, 0)}} ανήλικοι
+                </p>
+                <a href="/reservations-app/" class="btn btn-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Μετάβαση 
+                </a>
             </div>
         </div>
     </div>

@@ -14,28 +14,16 @@ use Application\Settings\Settings;
 
 final class Homepage
 {
-    //private Settings $settings;
-
     public function __construct(
     	private OrdersRepository $ordersRepository,
         private ReservationsRepository $reservationsRepository,
         private Twig $twig
-        //Settings $settings
-    ) {
-        //$this->settings = $settings;
-    }
+    ) { }
 
     public function __invoke(Request $request, Response $response)
     {
-    	$openOrders = $this->ordersRepository->findBy(['status' => 'OPEN'], ['createdAt' => 'desc']);
-
-        $adults = 0;
-        $minors = 0;
-        foreach($openOrders as $order) {
-            $adults += $order->getAdults();
-            $minors += $order->getMinors();
-        }
-
+        $openOrders = $this->ordersRepository->findActiveTableOrders();
+        $activeTakeOutOrders = $this->ordersRepository->findActiveTakeOutOrders();
     	$todaysReservations = $this->reservationsRepository->findByDate(new Datetime);
 
         return $this->twig->render(
@@ -43,10 +31,8 @@ final class Homepage
         	'admin/homepage.twig',
         	[
         		'openOrders' => $openOrders,
-                'adults' => $adults,
-                'minors' => $minors,
+                'activeTakeOutOrders' => $activeTakeOutOrders,
         		'todaysReservations' => $todaysReservations,
-               // 'siteName' => $this->settings->get('siteName')
         	]
         );
     }
