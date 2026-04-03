@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 use Domain\Entities\Language;
 use Domain\Entities\Menu;
+use Domain\Entities\DailyRoleSlot;
+use Domain\Entities\Role;
+use Domain\Entities\WorkShift;
 use Domain\Entities\MenuSection;
 use Domain\Entities\MenuItem;
 use Domain\Entities\Order;
@@ -22,7 +25,10 @@ use Domain\Entities\SupplyPriceHistory;
 use Domain\Entities\Table;
 use Domain\Entities\User;
 use Domain\Entities\UserPermission;
+use Domain\Repositories\DailyRoleSlotsRepository;
 use Domain\Repositories\LanguagesRepository;
+use Domain\Repositories\RolesRepository;
+use Domain\Repositories\WorkShiftsRepository;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -183,6 +189,21 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(User::class);
+        },
+        RolesRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(Role::class);
+        },
+        WorkShiftsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(WorkShift::class);
+        },
+        DailyRoleSlotsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(DailyRoleSlot::class);
         },
         ScansRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

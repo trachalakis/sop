@@ -7,6 +7,15 @@ use Application\Actions\Login;
 use Application\Actions\Logout;
 use Application\Actions\Sdp;
 use Application\Actions\PrinterStatus;
+use Application\Actions\Admin\AddDailyRoleSlot;
+use Application\Actions\Admin\AssignWorkShift;
+use Application\Actions\Admin\CreateRole;
+use Application\Actions\Admin\RemoveDailyRoleSlot;
+use Application\Actions\Admin\UnassignWorkShift;
+use Application\Actions\Admin\WorkSchedule;
+use Application\Actions\Admin\DeleteRole;
+use Application\Actions\Admin\Roles;
+use Application\Actions\Admin\UpdateRole;
 use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\DeleteMenu;
 use Application\Actions\Admin\CopyMenuSection;
@@ -152,6 +161,17 @@ return function (App $app, $container) {
         $group->post('/menu-items/sort', SortMenuItems::class);
         $group->get('/menu-items/delete', DeleteMenuItem::class);
         
+        $group->get('/work-schedule', WorkSchedule::class);
+        $group->post('/work-shifts/assign', AssignWorkShift::class);
+        $group->post('/work-shifts/unassign', UnassignWorkShift::class);
+        $group->post('/daily-role-slots/add', AddDailyRoleSlot::class);
+        $group->post('/daily-role-slots/remove', RemoveDailyRoleSlot::class);
+
+        $group->get('/roles', Roles::class);
+        $group->map(['GET', 'POST'], '/roles/create', CreateRole::class);
+        $group->map(['GET', 'POST'], '/roles/update', UpdateRole::class);
+        $group->get('/roles/delete', DeleteRole::class);
+
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
         $group->map(['GET', 'POST'], '/users/update', UpdateUser::class);

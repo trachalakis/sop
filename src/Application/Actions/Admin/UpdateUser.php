@@ -4,16 +4,19 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Domain\Repositories\RolesRepository;
 use Domain\Repositories\UsersRepository;
-use Domain\Enums\UserRole;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 
 final class UpdateUser
 {
-    public function __construct(private Twig $twig, private UsersRepository $usersRepository)
-    {
+    public function __construct(
+        private Twig $twig,
+        private UsersRepository $usersRepository,
+        private RolesRepository $rolesRepository
+    ) {
     }
 
     public function __invoke(Request $request, Response $response)
@@ -38,11 +41,11 @@ final class UpdateUser
         }
 
         return $this->twig->render(
-            $response, 
+            $response,
             'admin/update_user.twig',
             [
                 'user' => $user,
-                'userRoles' => UserRole::cases()
+                'userRoles' => $this->rolesRepository->findBy([], ['label' => 'asc']),
             ]
         );
 	}

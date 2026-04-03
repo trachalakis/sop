@@ -1,0 +1,475 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'work-schedule' %}
+
+{% block pageCss %}
+<style>
+    #work-schedule-app {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 100px);
+        overflow: hidden;
+    }
+    .grid-wrapper {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    .grid-table { border-collapse: collapse; }
+    .grid-table th,
+    .grid-table td {
+        border: 1px solid #dee2e6;
+        padding: 3px 5px;
+        white-space: nowrap;
+    }
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: #fff;
+        min-width: 160px;
+        max-width: 160px;
+        border-right: 2px solid #adb5bd !important;
+    }
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: #f8f9fa;
+    }
+    .sticky-header.sticky-col { z-index: 3; }
+    .role-divider td { border-top: 2px solid #adb5bd !important; }
+    .grid-cell {
+        min-width: 80px;
+        width: 80px;
+        min-height: 44px;
+        vertical-align: top;
+        font-size: 11px;
+        user-select: none;
+    }
+    .grid-cell.drag-over {
+        outline: 3px solid #0d6efd;
+        outline-offset: -3px;
+        background: #e8f4ff !important;
+    }
+    .shift-badge {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        margin: 1px 0;
+        cursor: pointer;
+        line-height: 1.3;
+    }
+    .shift-badge:hover { opacity: 0.75; }
+    .add-role-panel {
+        flex-shrink: 0;
+        padding: 6px 0 4px;
+        border-top: 1px solid #dee2e6;
+        margin-top: 4px;
+    }
+    .employee-panel {
+        flex-shrink: 0;
+        max-height: 130px;
+        overflow-y: auto;
+        padding: 6px 0 4px;
+        border-top: 2px solid #dee2e6;
+        margin-top: 4px;
+    }
+    .employee-card {
+        cursor: grab;
+        user-select: none;
+        min-width: 120px;
+        font-size: 13px;
+        transition: box-shadow 0.1s, opacity 0.1s;
+    }
+    .employee-card:active { cursor: grabbing; }
+    .employee-card:hover  { box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .hours-ok   { color: #198754; font-weight: 600; }
+    .hours-over { color: #dc3545; font-weight: 600; }
+    .coverage-ok      { color: #198754; }
+    .coverage-warning { color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/work-schedule" class="text-decoration-none">Πρόγραμμα εργασίας</a>
+    </li>
+</ol>
+{% verbatim %}
+<div id="work-schedule-app">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap align-items-center pb-1 mb-2 border-bottom flex-shrink-0">
+        <h1>Πρόγραμμα εργασίας</h1>
+        <div class="d-flex align-items-center gap-3">
+            <a :href="'?date=' + prevDate" class="fs-4 text-decoration-none">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <span class="fw-semibold fs-5">{{formattedDate}}</span>
+            <a :href="'?date=' + nextDate" class="fs-4 text-decoration-none">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-wrapper">
+        <table class="grid-table">
+            <thead>
+                <tr>
+                    <th class="sticky-col sticky-header">Ρόλος</th>
+                    <th
+                        v-for="slot in timeSlots"
+                        :key="slot"
+                        class="sticky-header text-center"
+                        style="min-width:80px; width:80px"
+                    >{{slot}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-if="slots.length === 0">
+                    <tr>
+                        <td :colspan="timeSlots.length + 1" class="text-center text-muted py-4">
+                            Δεν υπάρχουν ρόλοι για αυτή την ημέρα. Πρόσθεσε ρόλους παρακάτω.
+                        </td>
+                    </tr>
+                </template>
+                <template v-for="(slot, idx) in sortedSlots" :key="slot.id">
+                    <tr :class="{ 'role-divider': idx > 0 && sortedSlots[idx - 1].roleId !== slot.roleId }">
+                        <!-- Sticky label col -->
+                        <td class="sticky-col">
+                            <div class="d-flex justify-content-between align-items-start gap-1">
+                                <div>
+                                    <div class="fw-semibold" style="font-size:13px">{{slot.roleLabel}}</div>
+                                    <div
+                                        v-if="slot.minimumManHours && isFirstSlotForRole(slot)"
+                                        style="font-size:10px; font-weight:400"
+                                        :class="roleScheduledHours[slot.roleId] >= slot.minimumManHours ? 'coverage-ok' : 'coverage-warning'"
+                                    >
+                                        <i :class="roleScheduledHours[slot.roleId] >= slot.minimumManHours ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-triangle-fill'"></i>
+                                        {{roleScheduledHours[slot.roleId].toFixed(1)}} / {{slot.minimumManHours}}h
+                                    </div>
+                                </div>
+                                <button
+                                    class="btn btn-sm btn-outline-danger p-0 px-1 flex-shrink-0"
+                                    style="font-size:11px; line-height:1.4"
+                                    @click="removeSlot(slot.id)"
+                                    title="Αφαίρεση σειράς"
+                                >×</button>
+                            </div>
+                        </td>
+                        <!-- Time slot cells with colspan spanning -->
+                        <template v-for="cell in getRowPlan(slot.id)" :key="cell.slot">
+                            <td
+                                v-if="!cell.skip"
+                                class="grid-cell"
+                                :colspan="cell.colspan"
+                                :class="{ 'drag-over': dragOverKey === cellKey(slot.id, cell.slot) }"
+                                @dragover.prevent="dragOver(slot.id, cell.slot)"
+                                @dragleave="dragOverKey = null"
+                                @drop.prevent="drop(slot.id, cell.slot)"
+                            >
+                                <div
+                                    v-for="shift in cell.shifts"
+                                    :key="shift.id"
+                                    class="shift-badge"
+                                    :style="userBadgeStyle(shift.userId)"
+                                    @click="removeShift(shift.id)"
+                                    :title="getUserName(shift.userId) + ' · ' + shift.start + '–' + shift.end + ' · Κλικ για αφαίρεση'"
+                                >
+                                    <span>{{getUserName(shift.userId)}}</span>
+                                    <small style="opacity:0.7">{{shift.start}}–{{shift.end}}</small>
+                                    <i class="bi bi-x" style="opacity:0.65"></i>
+                                </div>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add role panel -->
+    <div class="add-role-panel">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <small class="text-muted fw-semibold">Προσθήκη ρόλου:</small>
+            <button
+                v-for="role in roles"
+                :key="role.id"
+                class="btn btn-sm btn-outline-secondary"
+                @click="addSlot(role.id)"
+            >
+                <i class="bi bi-plus-lg"></i> {{role.label}}
+            </button>
+        </div>
+    </div>
+
+    <!-- Employee panel -->
+    <div class="employee-panel">
+        <div class="d-flex align-items-center gap-2 mb-2">
+            <h6 class="mb-0">Υπάλληλοι</h6>
+            <small class="text-muted">Σύρε υπάλληλο σε ρόλο &amp; ώρα · κλικ σε badge για αφαίρεση</small>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <div
+                v-for="user in users"
+                :key="user.id"
+                class="employee-card border rounded p-2"
+                draggable="true"
+                :style="employeeCardStyle(user.id)"
+                @dragstart="cardDragStart(user.id, $event)"
+                @dragend="dragUserId = null"
+            >
+                <div class="fw-semibold">{{user.fullName}}</div>
+                <div class="mt-1" :class="userHours[user.id] > 40 ? 'hours-over' : 'hours-ok'" style="font-size:11px">
+                    {{userHours[user.id].toFixed(1)}}h
+                    <i v-if="userHours[user.id] > 40" class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="/assets/js/vue.global.prod.js"></script>
+    <script>
+        const INITIAL_SLOTS  = {{ slotsJson|raw }};
+        const INITIAL_SHIFTS = {{ shiftsJson|raw }};
+        const INITIAL_USERS  = {{ usersJson|raw }};
+        const INITIAL_ROLES  = {{ rolesJson|raw }};
+        const DATE_STR       = "{{ date.format('Y-m-d') }}";
+        const PREV_DATE      = "{{ prev.format('Y-m-d') }}";
+        const NEXT_DATE      = "{{ next.format('Y-m-d') }}";
+
+        const PALETTE = [
+            { bg: '#cfe2ff', text: '#084298' },
+            { bg: '#d1e7dd', text: '#0f5132' },
+            { bg: '#fff3cd', text: '#664d03' },
+            { bg: '#f8d7da', text: '#842029' },
+            { bg: '#e2d9f3', text: '#432874' },
+            { bg: '#d4f1f9', text: '#055160' },
+            { bg: '#fde8d0', text: '#7c3800' },
+            { bg: '#fde0f0', text: '#6d1b4a' },
+            { bg: '#d4edda', text: '#155724' },
+            { bg: '#ffe5d9', text: '#6e2c00' },
+        ];
+
+        Vue.createApp({
+            data() {
+                return {
+                    slots:       INITIAL_SLOTS,
+                    shifts:      INITIAL_SHIFTS,
+                    users:       INITIAL_USERS,
+                    roles:       INITIAL_ROLES,
+                    cells:       {},
+                    dragUserId:  null,
+                    dragOverKey: null,
+                    prevDate:    PREV_DATE,
+                    nextDate:    NEXT_DATE,
+                };
+            },
+            mounted() {
+                this.cells = this.initCells();
+            },
+            computed: {
+                timeSlots() {
+                    const slots = [];
+                    for (let h = 8; h <= 23; h++) {
+                        slots.push(String(h).padStart(2, '0') + ':00');
+                        slots.push(String(h).padStart(2, '0') + ':30');
+                    }
+                    return slots;
+                },
+                formattedDate() {
+                    const d = new Date(DATE_STR + 'T12:00:00');
+                    return d.toLocaleDateString('el-GR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                },
+                sortedSlots() {
+                    return [...this.slots].sort((a, b) =>
+                        a.roleLabel.localeCompare(b.roleLabel) || a.id - b.id
+                    );
+                },
+                userHours() {
+                    const h = {};
+                    this.users.forEach(u => h[u.id] = 0);
+                    this.shifts.forEach(s => { h[s.userId] = (h[s.userId] || 0) + s.hours; });
+                    return h;
+                },
+                roleScheduledHours() {
+                    const h = {};
+                    this.slots.forEach(s => { h[s.roleId] = 0; });
+                    this.shifts.forEach(shift => {
+                        const slot = this.slots.find(s => s.id === shift.slotId);
+                        if (slot) h[slot.roleId] = (h[slot.roleId] || 0) + shift.hours;
+                    });
+                    return h;
+                },
+            },
+            methods: {
+                initCells() {
+                    const cells = {};
+                    this.shifts.forEach(s => {
+                        const key = this.cellKey(s.slotId, s.slot);
+                        if (!cells[key]) cells[key] = [];
+                        cells[key].push(s.id);
+                    });
+                    return cells;
+                },
+                cellKey(slotId, timeSlot) {
+                    return `${slotId}_${timeSlot}`;
+                },
+                getCellShifts(slotId, timeSlot) {
+                    const ids = this.cells[this.cellKey(slotId, timeSlot)] || [];
+                    return ids.map(id => this.shifts.find(s => s.id === id)).filter(Boolean);
+                },
+                isFirstSlotForRole(slot) {
+                    return this.sortedSlots.findIndex(s => s.roleId === slot.roleId) ===
+                           this.sortedSlots.findIndex(s => s.id === slot.id);
+                },
+                slotEndIndex(endTime) {
+                    const idx = this.timeSlots.indexOf(endTime);
+                    if (idx !== -1) return idx;
+                    for (let i = 0; i < this.timeSlots.length; i++) {
+                        if (this.timeSlots[i] > endTime) return i;
+                    }
+                    return this.timeSlots.length;
+                },
+                getRowPlan(slotId) {
+                    const plan = [];
+                    let coveredUpToIndex = -1;
+                    for (let i = 0; i < this.timeSlots.length; i++) {
+                        const timeSlot = this.timeSlots[i];
+                        const shifts   = this.getCellShifts(slotId, timeSlot);
+                        if (i < coveredUpToIndex && shifts.length === 0) {
+                            plan.push({ slot: timeSlot, skip: true });
+                            continue;
+                        }
+                        if (shifts.length > 0) {
+                            let maxEndIndex = i + 1;
+                            shifts.forEach(s => {
+                                const eIdx = this.slotEndIndex(s.end);
+                                if (eIdx > maxEndIndex) maxEndIndex = eIdx;
+                            });
+                            const colspan = Math.max(1, maxEndIndex - i);
+                            if (maxEndIndex > coveredUpToIndex) coveredUpToIndex = maxEndIndex;
+                            plan.push({ slot: timeSlot, skip: false, colspan, shifts });
+                        } else {
+                            plan.push({ slot: timeSlot, skip: false, colspan: 1, shifts: [] });
+                        }
+                    }
+                    return plan;
+                },
+                getUserName(userId) {
+                    const user = this.users.find(u => u.id === userId);
+                    return user ? user.fullName.split(' ')[0] : '?';
+                },
+                userColor(userId) {
+                    const idx = this.users.findIndex(u => u.id === userId);
+                    return PALETTE[idx % PALETTE.length];
+                },
+                userBadgeStyle(userId) {
+                    const c = this.userColor(userId);
+                    return { background: c.bg, color: c.text };
+                },
+                employeeCardStyle(userId) {
+                    const c = this.userColor(userId);
+                    return {
+                        background: this.dragUserId === userId ? '#e9ecef' : c.bg,
+                        color:      this.dragUserId === userId ? '#adb5bd' : c.text,
+                        opacity:    this.dragUserId === userId ? '0.45'    : '1',
+                    };
+                },
+                cardDragStart(userId, event) {
+                    this.dragUserId = userId;
+                    event.dataTransfer.effectAllowed = 'copy';
+                    event.dataTransfer.setDragImage(event.currentTarget, 20, 20);
+                },
+                dragOver(slotId, timeSlot) {
+                    this.dragOverKey = this.cellKey(slotId, timeSlot);
+                },
+                drop(slotId, timeSlot) {
+                    if (!this.dragUserId) return;
+                    this.dragOverKey = null;
+
+                    // Prevent same user in same slot at same time
+                    if (this.getCellShifts(slotId, timeSlot).some(s => s.userId === this.dragUserId)) {
+                        this.dragUserId = null;
+                        return;
+                    }
+
+                    const userId = this.dragUserId;
+                    this.dragUserId = null;
+
+                    fetch('/admin/work-shifts/assign', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId, slotId, date: DATE_STR, slot: timeSlot }),
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.ok) return;
+                        this.shifts.push(data.shift);
+                        const key = this.cellKey(slotId, timeSlot);
+                        if (!this.cells[key]) this.cells[key] = [];
+                        this.cells[key].push(data.shift.id);
+                    });
+                },
+                removeShift(shiftId) {
+                    fetch('/admin/work-shifts/unassign', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ shiftId }),
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.ok) return;
+                        this.shifts = this.shifts.filter(s => s.id !== shiftId);
+                        this.cells  = this.initCells();
+                    });
+                },
+                addSlot(roleId) {
+                    fetch('/admin/daily-role-slots/add', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ roleId, date: DATE_STR }),
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.ok) return;
+                        this.slots.push(data.slot);
+                    });
+                },
+                removeSlot(slotId) {
+                    fetch('/admin/daily-role-slots/remove', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slotId }),
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.ok) return;
+                        // Remove the slot and any shifts that belonged to it
+                        this.shifts = this.shifts.filter(s => s.slotId !== slotId);
+                        this.slots  = this.slots.filter(s => s.id !== slotId);
+                        this.cells  = this.initCells();
+                    });
+                },
+            },
+        }).mount('#work-schedule-app');
+    </script>
+{% endblock %}

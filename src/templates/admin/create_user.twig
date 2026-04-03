@@ -55,7 +55,7 @@
 		<div class="col-sm-10">
 			<select class="form-select" name="roles[]" size="15" multiple>
   				{% for userRole in userRoles %}
-                    <option value="{{userRole.value}}">{{userRole.value|replace({'_': ' '})|capitalize}}</option>
+                    <option value="{{userRole.getName}}">{{userRole.getLabel}}</option>
                 {% endfor %}
 			</select>
     	</div>
