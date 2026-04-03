@@ -61,6 +61,9 @@ class Order
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User $waiter;
 
+    #[ORM\Column(type: 'integer', name: 'ticket_number', nullable: true)]
+    private ?int $ticketNumber = null;
+
     #[ORM\Column(type: 'string', name: 'uuid')]
     private string $uuid;
 
@@ -165,6 +168,16 @@ class Order
     public function getTable(): ?Table
     {
         return $this->table;
+    }
+
+    public function getTicketNumber(): ?int
+    {
+        return $this->ticketNumber;
+    }
+
+    public function setTicketNumber(?int $ticketNumber): void
+    {
+        $this->ticketNumber = $ticketNumber;
     }
 
     public function getUuid(): string

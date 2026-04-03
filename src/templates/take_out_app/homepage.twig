@@ -1,0 +1,71 @@
+{% extends 'app_skeleton.twig' %}
+
+{% block content %}
+<div id="app">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+		    {% include 'partials/app_nav.twig' %} / <i class="bi bi-bag"></i>
+		</h1>
+	    <div class="btn-toolbar">
+  			<a href="/take-out/create" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i></a>
+	    </div>
+	</div>
+{% verbatim %}
+	<table class="table table-striped fs-4 mt-4">
+		<tbody>
+			<tr v-for="(order, index) in orders">
+				<td>
+					<a class="text-decoration-none" :href="'/take-out/update?id=' + order.id">
+					<span class="fw-bold">#{{order.ticketNumber}}</span> /
+					&euro;{{order.price}} /
+					{{getTime(order.createdAt)}}</a>
+				</td>
+				<td class="text-end">
+                    <a class="btn btn-lg btn-outline-secondary" :href="'/take-out/payment?id=' + order.id">
+                        <i class="bi bi-currency-euro"></i> <span class="d-none d-sm-none d-md-inline">Πληρωμή</span>
+                    </a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		orders: []
+		    	}
+		    },
+		    mounted() {
+		    	setInterval(() => {
+					this.fetchOrders()
+				}, 5000)
+                this.fetchOrders();
+		    },
+		    methods: {
+		    	fetchOrders() {
+		    		axios({
+	                    url: '/admin/graph-ql',
+	                    method: 'post',
+	                    data: `{
+	                        activeTakeOutOrders {
+	                        	id, uuid, price, ticketNumber, createdAt
+	                        }
+	                    }`
+	                }).then(response => {
+	                    this.orders = response.data.data.activeTakeOutOrders
+	                });
+		    	},
+		    	getTime(date) {
+		    		return date.substr(date.length - 8, 5);
+		    	}
+		    }
+		}).mount('#app');
+	</script>
+{% endblock %}

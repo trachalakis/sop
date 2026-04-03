@@ -2,17 +2,19 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">
-	    {% block breadcrumbs %}<i class="bi bi-house"></i>{% endblock %}
-	</h1>
-	<div class="btn-toolbar mb-2 mb-md-0">
+    <h1>
+        {% block breadcrumbs %}
+        {% include 'partials/app_nav.twig' %} / <i class="bi bi-person"></i>
+        {% endblock %}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
         <div class="dropdown">
             <button type="button" class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                 <i class="bi bi-person-gear"></i>
             </button>
-            <ul class="dropdown-menu" style="">
+            <ul class="dropdown-menu">
                 <li><a class="dropdown-item text-end" href="/users-app/update-pin">Αλλαγή pin</a></li>
-            	<li><a class="dropdown-item text-end" href="/logout">Αποσύνδεση</a></li>
+                <li><a class="dropdown-item text-end" href="/logout">Αποσύνδεση</a></li>
             </ul>
         </div>
     </div>

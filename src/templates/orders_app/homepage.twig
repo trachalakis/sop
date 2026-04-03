@@ -1,19 +1,16 @@
-{% extends 'orders_app/skeleton.twig' %}
+{% extends 'app_skeleton.twig' %}
 
-{% block content %}{% verbatim %}
+{% block content %}
 <div id="app">
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 	    <h1>
-		    <i class="bi bi-fork-knife"></i>
-            /
-            <a class="text-decoration-none" href="/reservations-app/">
-                <i class="bi bi-telephone"></i>
-            </a>
+		    {% include 'partials/app_nav.twig' %} / <i class="bi bi-fork-knife"></i>
 		</h1>
-	    <div class="btn-toolbar">
+	    <div class="btn-toolbar gap-2">
   			<a href="/orders-app/create" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i></a>
 	    </div>
 	</div>
+{% verbatim %}
 	<table class="table table-striped fs-4 mt-4">
 		<tbody>
 			<tr v-for="(order, index) in orders">

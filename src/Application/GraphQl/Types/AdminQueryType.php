@@ -115,9 +115,13 @@ class AdminQueryType extends ObjectType
                 'activeOrders' => [
                 	'type' => Type::listOf(Types::order()),
                 	'resolve' => function ($rootValue, $args, $context, $info) {
-                        $orders = $context->get(OrdersRepository::class)->findBy(['status' => 'OPEN'], ['createdAt' => 'desc']);
-
-                        return $orders;
+                        return $context->get(OrdersRepository::class)->findActiveTableOrders();
+                    }
+                ],
+                'activeTakeOutOrders' => [
+                    'type' => Type::listOf(Types::order()),
+                    'resolve' => function ($rootValue, $args, $context, $info) {
+                        return $context->get(OrdersRepository::class)->findActiveTakeOutOrders();
                     }
                 ],
                 'todaysReservations' => [

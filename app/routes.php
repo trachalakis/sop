@@ -45,7 +45,6 @@ use Application\Actions\Admin\CreateRecipe;
 use Application\Actions\Admin\DeleteRecipe;
 use Application\Actions\Admin\PrintRecipe;
 use Application\Actions\Admin\UpdateRecipe;
-
 use Application\Actions\Admin\Recipes;
 use Application\Actions\Admin\SaveShoppingList;
 use Application\Actions\Admin\SortSupplyGroups;
@@ -77,14 +76,15 @@ use Application\Actions\OrdersApp\CreateOrder;
 use Application\Actions\OrdersApp\OrderPayment;
 use Application\Actions\OrdersApp\PrintOrderReceipt;
 use Application\Actions\OrdersApp\UpdateOrder;
-use Application\Actions\OrdersApp\TakeOut;
 use Application\Actions\OrdersApp\TransferOrderEntry;
+use Application\Actions\TakeOutApp\Homepage as TakeOutAppHomepage;
+use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
+use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\CreateReservation;
 use Application\Actions\ReservationsApp\UpdateReservation;
 use Application\Actions\ReservationsApp\HomepageList as ReservationsAppHomepageList;
 use Application\Actions\ReservationsApp\AssignReservationTables;
-use Application\Actions\ReservationsApp\TabularView;
 use Application\Actions\UsersApp\Homepage as UsersAppHomepage;
 use Application\Actions\UsersApp\Scans as UsersAppScans;
 use Application\Actions\UsersApp\Orders as UsersAppOrders;
@@ -92,6 +92,7 @@ use Application\Actions\UsersApp\CreateOrder as UsersAppCreateOrder;
 use Application\Actions\UsersApp\ViewOrder as UsersAppViewOrder;
 use Application\Actions\UsersApp\UpdatePin as UsersAppUpdatePin;
 use Application\Actions\UsersApp\Clock;
+use Application\Actions\UsersApp\TakeOut as UsersAppTakeOut;
 use Domain\Repositories\UserPermissionsRepository;
 use Middleware\Authentication;
 use Middleware\Authorization;
@@ -199,8 +200,15 @@ return function (App $app, $container) {
         $group->get('/print-receipt', PrintOrderReceipt::class);
         $group->get('/catch-of-the-day', CatchOfTheDay::class);
         $group->map(['GET', 'POST'], '/update', UpdateOrder::class);
-        $group->map(['GET', 'POST'], '/take-out', TakeOut::class);
         $group->post('/transfer-entry', TransferOrderEntry::class);
+    })
+    ->add(new Authorization($container->get(UserPermissionsRepository::class)))
+    ->add(new Authentication());
+
+    $app->group('/take-out', function (RouteCollectorProxy $group) {
+        $group->get('/', TakeOutAppHomepage::class);
+        $group->map(['GET', 'POST'], '/create', TakeOutAppCreateOrder::class);
+        $group->map(['GET', 'POST'], '/update', TakeOutAppUpdateOrder::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
@@ -209,7 +217,6 @@ return function (App $app, $container) {
         $group->get('/', ReservationsAppHomepage::class);
         $group->map(['GET', 'POST'], '/create', CreateReservation::class);
         $group->map(['GET', 'POST'], '/update', UpdateReservation::class);
-        $group->get('/tabular-view', TabularView::class);
         $group->get('/homepage-list', ReservationsAppHomepageList::class);
         $group->post('/assign-tables', AssignReservationTables::class);
     })
@@ -222,6 +229,7 @@ return function (App $app, $container) {
         $group->get('/orders', UsersAppOrders::class);
         $group->get('/view-order', UsersAppViewOrder::class);
         $group->map(['GET', 'POST'], '/create-order', UsersAppCreateOrder::class);
+        $group->map(['GET', 'POST'], '/take-out', UsersAppTakeOut::class);
         $group->map(['GET', 'POST'], '/update-pin', UsersAppUpdatePin::class);
         $group->get('/clock', Clock::class);
     })

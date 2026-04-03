@@ -25,6 +25,7 @@ class OrderType extends ObjectType
                     'table' => Types::table(),
                     'notes' => Type::string(),
                     'price' => Type::float(),
+                    'ticketNumber' => Type::int(),
                     'createdAt' => Types::date(),
                     'orderEntries' => Type::listOf(Types::orderEntry()),
                     'orderEntryGroups' => Type::listOf(Types::orderEntryGroup())

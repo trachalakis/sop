@@ -1,0 +1,681 @@
+{% extends 'app_skeleton.twig' %}
+
+{% block pageCss %}
+	<style>
+		.mt-n1 {
+  			margin-top: -0.25rem !important;
+		}
+	</style>
+{% endblock %}
+
+{% block content %}{% verbatim %}
+<div id="app">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	    <h1>
+	    	<a href="/take-out/" class="text-decoration-none"><i class="bi bi-bag"></i></a> /
+	    	Take out / &euro;{{totalPrice}}
+	    </h1>
+    	<div class="btn-toolbar">
+	       	<a href="#" class="btn btn-lg btn-primary me-2 d-inline d-sm-none fw-bold" @click="showOptions = true;">
+	            &ctdot;
+	        </a>
+	       	<button href="#" class="btn btn-lg btn-primary d-none d-sm-inline" @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
+	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Αποθήκευση
+	        </button>
+	    </div>
+	</div>
+
+	<div class="offcanvas offcanvas-start" :class="showOptions ? 'show' : ''" tabindex="-1">
+  		<div class="offcanvas-header">
+    		<h5 class="offcanvas-title">Επιλογές</h5>
+    		<button type="button" class="btn-close" @click="showOptions = false"></button>
+  		</div>
+  		<div class="offcanvas-body">
+  			<div class="row mb-2">
+  				<div class="col-xs-12 mb-4">
+			        <button class="btn btn-lg btn-primary w-100" @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
+			            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Αποθήκευση
+			        </button>
+			    </div>
+				<div class="col-xs-12 mb-2">
+					<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
+						<span class="me-1">Σχόλια</span>
+						<span v-if="order.notes.length > 0" class="fw-bold">*</span>
+					</button>
+				</div>
+		    </div>
+    	</div>
+  	</div>
+  	<div class="offcanvas-backdrop fade show" v-if="showOptions"></div>
+
+	<div class="d-none d-sm-block">
+		<div class="row gx-1 mb-2">
+			<div class="col">
+				<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
+					<span class="me-1">Σχόλια</span>
+					<span v-if="order.notes.length > 0" class="fw-bold">*</span>
+				</button>
+			</div>
+	    </div>
+	</div>
+
+	<div class="row gx-1 mb-2">
+		<div class="sticky-top">
+			<button
+				type="button"
+				class="btn btn-lg btn-primary w-100 mt-2 mb-2"
+				@click="isMenuSectionsModalVisible = true"
+			>
+				Προσθήκη
+			</button>
+		</div>
+
+		<div class="modal modal-lg" :class="isMenuSectionsModalVisible ? 'd-block' :''" tabindex="-1">
+  			<div class="modal-dialog modal-fullscreen-sm-down">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Επιλογή κατηγορίας</h5>
+        				<button type="button" class="btn-close" @click="isMenuSectionsModalVisible = false"></button>
+      				</div>
+      				<div class="modal-body">
+						<div class="row gx-1">
+			        		<div class="col-sm-6 mb-2" v-for="menuSection in menuSections">
+			        			<button
+			        				type="button"
+			        				class="btn btn-outline-primary btn-lg w-100"
+			        				@click="activeMenuSection = menuSection; isMenuSectionsModalVisible = false"
+			        			>
+			        				{{getTranslation(menuSection, 'el').name}}
+			        			</button>
+			        		</div>
+			        	</div>
+      				</div>
+      				<div class="modal-footer">
+        				<button type="button" class="btn btn-lg btn-secondary" @click="isMenuSectionsModalVisible = false">
+        					Κλείσιμο
+        				</button>
+      				</div>
+    			</div>
+  			</div>
+		</div>
+
+		<div class="modal modal-lg d-block" v-if="activeMenuSection != null">
+  			<div class="modal-dialog modal-fullscreen-sm-down">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Επιλογή πιάτου</h5>
+        				<button
+        					type="button"
+        					class="btn-close"
+        					@click="activeMenuSection = null; isMenuSectionsModalVisible = false"
+        				></button>
+      				</div>
+      				<div class="modal-body">
+						<div class="row gx-1">
+			        		<div class="col-sm-6 mb-2" v-for="menuItem in activeMenuSection.menuItems">
+			        			<div class="btn-group w-100">
+  									<button v-if="menuItem.priceUnit == 'kg'"
+  										type="button"
+  										class="btn btn-lg btn-outline-primary w-75"
+  										@click="showMenuItemOptionsModal(menuItem)"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
+  									>
+  										{{getTranslation(menuItem, 'el').name}}
+  										<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
+  									</button>
+  									<button v-else
+  										type="button"
+  										class="btn btn-lg btn-outline-primary w-75"
+  										@click="
+	  										addOrderEntry({
+	  											menuItem: menuItem,
+	  											timing: isDrink(menuItem) ? 6 : 1,
+	  											family: 1,
+	  											notes: '',
+	  											orderEntryExtras: []
+	  										});
+	  									"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
+  									>
+  										{{getTranslation(menuItem, 'el').name}}
+  										<span class="text-body-secondary">(&euro;{{menuItem.price}})</span>
+  										<span
+  											v-if="menuItem.trackAvailableQuantity && menuItem.availableQuantity <= 7"
+  											class="badge rounded-pill text-bg-danger ms-1"
+  										>
+  											{{menuItem.availableQuantity}}
+  										</span>
+  									</button>
+  									<button
+  										type="button"
+  										class="btn btn-lg btn-outline-primary w-25"
+  										@click="showMenuItemOptionsModal(menuItem)"
+										:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
+  									>
+  										<span class="fw-bold">&ctdot;</span>
+  									</button>
+								</div>
+			        		</div>
+			        	</div>
+      				</div>
+      				<div class="modal-footer">
+        				<button
+        					type="button"
+        					class="btn btn-lg btn-secondary"
+        					@click="activeMenuSection = null; isMenuSectionsModalVisible = true"
+        				>
+        					Πίσω
+        				</button>
+      				</div>
+    			</div>
+  			</div>
+		</div>
+
+		<div class="modal modal-lg d-block" v-if="newMenuItem != null">
+  			<div class="modal-dialog modal-fullscreen-sm-down">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Επιλογές</h5>
+        				<button
+        					type="button"
+        					class="btn-close"
+        					@click="newMenuItem = null; activeMenuSection = null; isMenuSectionsModalVisible = false"
+        				></button>
+      				</div>
+      				<div class="modal-body">
+						<div class="mb-3" v-if="newMenuItem.priceUnit == 'kg'">
+							<label class="form-label">Βάρος (γρ)</label>
+							<input class="form-control" type="number" min="50" step="1" v-model="newOrderEntry.weight"/>
+						</div>
+						<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.extras">
+  							<label class="form-check-label w-100 fs-5">
+		  						<input
+		  							class="form-check-input"
+		  							type="checkbox"
+		  							:value="extra"
+		  							v-model="newOrderEntry.orderEntryExtras"
+		  						>
+			    				{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
+  							</label>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Σχόλια</label>
+  							<textarea
+  								class="form-control"
+  								rows="2"
+  								v-model="newOrderEntry.notes"
+  							></textarea>
+						</div>
+      				</div>
+      				<div class="modal-footer">
+      					<button
+        					type="button"
+        					class="btn btn-secondary btn-lg"
+        					@click="newMenuItem = null"
+        				>Πίσω</button>
+        				<button
+        					type="button"
+        					class="btn btn-primary btn-lg"
+        					@click="
+        						newOrderEntry.menuItem = newMenuItem;
+        						addOrderEntry(newOrderEntry);
+        						newMenuItem = null;
+        						activeMenuSection = null;
+        						isMenuSectionsModalVisible = true;
+        						newOrderEntry = {notes:'', orderEntryExtras: []};
+        					"
+        				>Ok</button>
+      				</div>
+    			</div>
+  			</div>
+		</div>
+
+		<div class="modal modal-lg d-block" v-if="activeOrderEntry != null">
+  			<div class="modal-dialog modal-fullscreen-sm-down">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Επιλογές</h5>
+        				<button
+        					type="button"
+        					class="btn-close"
+        					@click="activeOrderEntry = null"
+        				></button>
+      				</div>
+      				<div class="modal-body">
+						<div class="mb-3" v-if="activeOrderEntry.menuItem.priceUnit == 'kg'">
+							<label class="form-label">Βάρος (γρ)</label>
+							<input
+								class="form-control"
+								type="number"
+								min="50"
+								step="1"
+								v-model="activeOrderEntry.weight"/>
+						</div>
+						<div class="form-check form-control-lg mb-2" v-for="extra in activeOrderEntry.menuItem.extras">
+  							<label class="form-check-label w-100 fs-5">
+		  						<input
+		  							class="form-check-input"
+		  							type="checkbox"
+		  							:value="extra"
+		  							v-model="activeOrderEntry.orderEntryExtras"
+		  						>
+								{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
+  							</label>
+						</div>
+						<div class="mb-3">
+							<label class="form-label">Σχόλια</label>
+  							<textarea
+  								class="form-control form-control-lg"
+  								rows="2"
+  								v-model="activeOrderEntry.notes"
+  							></textarea>
+						</div>
+      				</div>
+      				<div class="modal-footer">
+      					<button
+        					type="button"
+        					class="btn btn-secondary btn-lg"
+        					@click="activeOrderEntry = null"
+        				>Πίσω</button>
+        				<button
+        					type="button"
+        					class="btn btn-primary btn-lg"
+        					@click="activeOrderEntry = null"
+        				>Ok</button>
+      				</div>
+    			</div>
+  			</div>
+		</div>
+
+		<div v-for="(n, i) in 7">
+			<div class="mb-1 p-1 ps-2 pe-2" v-if="filteredEntries(i).length > 0">
+				<div
+					v-for="orderEntry in filteredEntries(i)"
+					@click="activeOrderEntry = orderEntry"
+				>
+		  			<div class="mb-2 d-flex w-100 justify-content-between">
+		      			<div class="fs-5">
+		      				{{orderEntry.quantity}} &times;
+		      				{{getTranslation(orderEntry.menuItem, 'el').name}}
+		      				/ &euro;{{calculateOrderEntryPrice(orderEntry)}}
+		      			</div>
+		      			<div>
+		      				<button
+		      					type="button"
+		      					class="btn btn-secondary me-2"
+		      					@click.stop="if (orderEntry.quantity > 1) { orderEntry.quantity--; } else { deleteOrderEntry(orderEntry.index) }"
+		      				>
+			      				<span class="fw-bold">&#x2212;</span>
+			      			</button>
+			      			<button
+			      				type="button"
+			      				class="btn btn-secondary"
+			      				@click.stop="orderEntry.quantity++"
+			      			>
+			      				<span class="fw-bold">&#x002B;</span>
+			      			</button>
+			      		</div>
+		    		</div>
+		    		<div class="mt-n1 ps-3">
+		    			<div v-if="orderEntry.weight > 0">
+		    				βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
+		    			</div>
+		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
+		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
+			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+			    			</span>
+		    			</div>
+		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+		    		</div>
+		  		</div>
+			</div>
+			<hr v-if="filteredEntries(i).length > 0"/>
+		</div>
+	</div>
+
+	<!-- Modals -->
+	<div class="row gx-1 mb-2">
+		<div class="modal" tabindex="-1" :class="showNotesModal ? 'd-block' : ''">
+  			<div class="modal-dialog modal-lg modal-fullscreen-sm-down">
+    			<div class="modal-content">
+      				<div class="modal-header">
+        				<h5 class="modal-title">Σχόλια</h5>
+        				<button type="button" class="btn-close" @click="showNotesModal = false"></button>
+      				</div>
+      				<div class="modal-body">
+			        	<div class="row">
+			        		<textarea class="form-control" v-model="order.notes" rows="3"></textarea>
+			        	</div>
+      				</div>
+      				<div class="modal-footer">
+        				<button type="button" class="btn btn-secondary btn-lg" @click="showNotesModal = false">Κλείσιμο</button>
+      				</div>
+    			</div>
+  			</div>
+		</div>
+	</div>
+	<!-- End modals -->
+
+</div>
+<canvas width="576" height="1500" class="d-none"></canvas>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+	{{ parent() }}
+	<script src="/assets/js/vue.global.prod.js"></script>
+	<script src="/assets/js/axios.min.js"></script>
+	<script src="/assets/js/lodash.min.js"></script>
+	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script>
+		vueApp = Vue.createApp({
+		    data() {
+		    	return {
+		    		isMenuSectionsModalVisible: false,
+		    		showNotesModal: false,
+		    		showOptions: false,
+		    		savingOrder: false,
+
+		    		activeMenuSection: null,
+		    		newMenuItem: null,
+		    		activeOrderEntry: null,
+
+		    		menuSections: [],
+		    		printers: [],
+
+		    		newOrderEntry: {
+		    			orderEntryExtras: [],
+		    			notes: '',
+		    			weight: null
+		    		},
+
+		    		order: {
+		    			notes: '',
+		    			orderEntries: []
+		    		},
+
+		    		canvasCtx: null
+		    	}
+		    },
+    		watch: {
+		        'printers': {
+		        	handler: function () {
+			        	let isTrue = _.reduce(this.printers, function(result, printer) {
+	  						return result && printer.printOk;
+						}, true);
+
+						if (isTrue) {
+							window.location.href = '/take-out/';
+						}
+					},
+					deep: true,
+		            immediate: false
+		        }
+		    },
+		    mounted() {
+		    	this.canvasCtx = document.querySelector('canvas').getContext('2d');
+
+		    	axios({
+                    url: '/admin/graph-ql?useCachedResults=true',
+                    method: 'post',
+                    data: `{
+                        menuSections(menu: "Take Out") {
+                            id, translations { name, language },
+                            menuItems: activeMenuItems {
+                            	id, trackAvailableQuantity, availableQuantity, priceUnit, isDrink, price, translations { name, language }, menuPosition,
+                            	extras: allExtras {
+                            		id, name, price
+                            	},
+                            	printers { id, name, printerAddress }
+                            }
+                        },
+                        printers {
+                        	id, name, printerAddress, isReceiptPrinter
+                        }
+                    }`
+                }).then(response => {
+                    this.menuSections = response.data.data.menuSections;
+                    this.printers = response.data.data.printers;
+                });
+		    },
+		    computed: {
+		    	totalPrice() {
+		    		let totalPrice = 0;
+		    		_.each(this.order.orderEntries, orderEntry => {
+			    		totalPrice += this.calculateOrderEntryPrice(orderEntry);
+			    	});
+		    		return _.round(totalPrice, 1);
+		    	}
+		    },
+		    methods: {
+		    	getHm() {
+		    		const now = new Date();
+		    		return `${now.getHours()}:${now.getMinutes() < 10 ? '0' + now.getMinutes() : now.getMinutes()}\n`;
+		    	},
+		    	getTranslation(object, language) {
+		    		return _.find(object.translations, t => t.language == language);
+		    	},
+		    	save() {
+		    		if (this.order.orderEntries.length == 0 || this.savingOrder) return;
+		    		this.savingOrder = true;
+
+		    		axios.post('/take-out/create', this.order)
+                    .then(response => {
+                        if (response.data.ticketNumber) {
+                        	this.printOrder(response.data.ticketNumber);
+                        }
+                    }).catch(error => {
+    					alert(error);
+    					this.savingOrder = false;
+  					});
+		    	},
+		    	drawReceiptOnCanvas(ctx, printer, ticketNumber) {
+		    		const W = 576;
+		    		const PAD = 3;
+		    		const INDENT = 40;
+		    		let y = 0;
+
+		    		ctx.clearRect(0, 0, W, 1500);
+		    		ctx.fillStyle = 'white';
+		    		ctx.fillRect(0, 0, W, 1500);
+		    		ctx.fillStyle = 'black';
+
+		    		const centerText = (text, fontSize, bold = false) => {
+		    			ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+		    			ctx.textAlign = 'center';
+		    			y += fontSize;
+		    			ctx.fillText(text, W / 2, y);
+		    			y += 8;
+		    		};
+
+		    		const leftText = (text, fontSize, bold = false, indent = 0) => {
+		    			ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+		    			ctx.textAlign = 'left';
+		    			y += fontSize;
+		    			ctx.fillText(text, PAD + indent, y);
+		    			y += 8;
+		    		};
+
+		    		const separator = () => {
+		    			y += 8;
+		    			ctx.lineWidth = 2;
+		    			ctx.beginPath();
+		    			ctx.moveTo(0, y);
+		    			ctx.lineTo(W, y);
+		    			ctx.stroke();
+		    			y += 12;
+		    		};
+
+		    		// Header
+		    		y += 16;
+		    		centerText(this.getHm().trim(), 22);
+		    		y += 8;
+		    		centerText('TAKE AWAY', 44, true);
+		    		y += 8;
+		    		centerText(`#${ticketNumber}`, 80, true);
+
+		    		if (this.order.notes.length > 0) {
+		    			y += 8;
+		    			centerText('***', 28);
+		    			this.order.notes.split('\n').forEach(line => centerText(line, 28));
+		    			centerText('***', 28);
+		    		}
+
+		    		y += 8;
+		    		separator();
+
+		    		// Order entries grouped by timing
+		    		let orderEntriesCount = 0;
+
+		    		for (let i = 0; i < 7; i++) {
+		    			let entries = this.orderedEntries(i).filter(orderEntry =>
+		    				_.findIndex(orderEntry.menuItem.printers, p => p.id == printer.id) != -1
+		    				|| printer.isReceiptPrinter
+		    			);
+
+		    			entries.forEach(orderEntry => {
+		    				orderEntriesCount++;
+		    				let quantity = orderEntry.quantity;
+		    				let name = this.getTranslation(orderEntry.menuItem, 'el').name;
+		    				let weight = orderEntry.weight != null ? ` ${orderEntry.weight / 1000}Kg` : '';
+
+		    				if (printer.isReceiptPrinter) {
+		    					let priceBlock = ` (€${this.calculateOrderEntryPrice(orderEntry)})`;
+		    					leftText(`${quantity} \xd7 ${name}${weight}${priceBlock}`, 30, true);
+		    				} else {
+		    					let tickboxes = '';
+		    					if (quantity > 1) {
+		    						for (let j = 0; j < quantity; j++) tickboxes += '[]';
+		    					}
+		    					let mainLine = `${quantity} \xd7 ${name}${weight}`;
+		    					if (quantity <= 6) mainLine += ` ${tickboxes}`;
+		    					leftText(mainLine, 30, true);
+		    					if (quantity > 6 && tickboxes) {
+		    						leftText(tickboxes, 26, false, INDENT);
+		    					}
+		    				}
+
+		    				orderEntry.orderEntryExtras.forEach(extra => {
+		    					leftText(extra.name, 24, false, INDENT);
+		    				});
+
+		    				if (orderEntry.notes.length > 0) {
+		    					leftText(orderEntry.notes, 24, false, INDENT);
+		    				}
+		    			});
+
+		    			if (entries.length > 0) {
+		    				let hasMore = false;
+		    				for (let j = i + 1; j < 7; j++) {
+		    					if (this.orderedEntries(j).some(oe =>
+		    						_.findIndex(oe.menuItem.printers, p => p.id == printer.id) != -1
+		    						|| printer.isReceiptPrinter
+		    					)) {
+		    						hasMore = true;
+		    						break;
+		    					}
+		    				}
+		    				if (hasMore) separator();
+		    			}
+		    		}
+
+		    		if (printer.isReceiptPrinter) {
+		    			separator();
+		    			leftText(`Σύνολο: €${this.totalPrice}`, 30, true);
+		    		}
+
+		    		return { orderEntriesCount, canvasHeight: y + 20 };
+		    	},
+		    	printOrder(ticketNumber) {
+		    		_.each(this.printers, printer => {
+		    			let { orderEntriesCount, canvasHeight } = this.drawReceiptOnCanvas(this.canvasCtx, printer, ticketNumber);
+
+		    			if (orderEntriesCount > 0) {
+		    				let pr = new epson.ePOSBuilder();
+		    				pr.addImage(this.canvasCtx, 0, 0, 576, canvasHeight, pr.COLOR_1, pr.MODE_MONO);
+		    				pr.addFeedLine(5);
+		    				pr.addCut(pr.CUT_FEED);
+		    				axios.post('/admin/print-jobs/create', {
+		    					printer: printer.name,
+		    					xml: pr.toString()
+		    				}).then(response => {
+		    					if (response.data == 'ok') {
+		    						printer.printOk = true;
+		    					}
+		    				}).catch(error => {
+		    					alert(error);
+		    				});
+		    			} else {
+		    				printer.printOk = true;
+		    			}
+		    		});
+		    	},
+		    	showMenuItemOptionsModal(menuItem) {
+		    		this.newMenuItem = menuItem;
+		    		this.newOrderEntry.timing = this.isDrink(menuItem) ? 6 : 1;
+		    		this.newOrderEntry.family = 1;
+		    		this.newOrderEntry.notes = '';
+		    		if (menuItem.priceUnit == 'kg') {
+		    			this.newOrderEntry.weight = '';
+		    		}
+		    	},
+		    	addOrderEntry(newOrderEntry) {
+		    		let index = this.order.orderEntries.findIndex(
+		    			orderEntry =>
+		    				orderEntry.menuItem.id == newOrderEntry.menuItem.id
+		    				&& orderEntry.timing == newOrderEntry.timing
+		    				&& orderEntry.notes == newOrderEntry.notes
+		    				&& _.isEqual(orderEntry.orderEntryExtras, newOrderEntry.orderEntryExtras)
+		    		);
+
+		    		if (index != -1) {
+		    			this.order.orderEntries[index].quantity++;
+		    		} else {
+		    			this.order.orderEntries.push({
+			    			index: this.order.orderEntries.length,
+			    			quantity: 1,
+			    			family: 1,
+			    			timing: newOrderEntry.timing,
+			    			menuItem: newOrderEntry.menuItem,
+			    			orderEntryExtras: newOrderEntry.orderEntryExtras,
+			    			notes: newOrderEntry.notes,
+			    			weight: newOrderEntry.weight ?? null,
+			    			price: this.calculateOrderEntryPrice(newOrderEntry)
+			    		});
+		    		}
+		    	},
+		    	deleteOrderEntry(i) {
+		    		let index = this.order.orderEntries.findIndex(e => e.index == i);
+		    		this.order.orderEntries.splice(index, 1);
+		    	},
+		    	filteredEntries(timing) {
+		    		return this.order.orderEntries.filter(e => e.timing == timing);
+		    	},
+		    	orderedEntries(step) {
+		    		let entries = this.order.orderEntries.filter(e => e.timing == step);
+		    		return _.sortBy(entries, [o => o.menuItem.menuPosition]);
+		    	},
+		    	isDrink(menuItem) {
+		    		return menuItem.isDrink;
+		    	},
+		    	calculateOrderEntryPrice(orderEntry) {
+		    		let price = orderEntry.menuItem.price;
+
+		    		if (orderEntry.menuItem.priceUnit == 'kg') {
+		    			let weight = orderEntry.weight;
+		    			if (weight < 1000) {
+		    				price -= price * ((1000 - weight) / 1000);
+		    			} else {
+		    				price += price * ((weight - 1000) / 1000);
+		    			}
+		    		}
+
+		    		_.each(orderEntry.orderEntryExtras, extra => {
+		    			price += extra.price;
+		    		});
+
+		    		return _.round(price * orderEntry.quantity, 1);
+		    	},
+		    }
+		}).mount('#app');
+	</script>
+{% endblock %}

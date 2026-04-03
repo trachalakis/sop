@@ -1,12 +1,11 @@
-{% extends 'orders_app/skeleton.twig' %}
+{% extends 'app_skeleton.twig' %}
 
 
 
 {% block content %}
 <div class="header d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1>
-	    <a class="text-decoration-none" href="/orders-app/"><i class="bi bi-fork-knife"></i></a>
-	    / <i class="bi bi-telephone"></i>
+	    {% include 'partials/app_nav.twig' %} / <i class="bi bi-telephone"></i>
 	</h1>
     <div class="btn-toolbar">
        	<a href="/reservations-app/create" class="btn btn-primary btn-lg"><i class="bi bi-plus-lg"></i></a>
