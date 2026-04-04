@@ -35,9 +35,10 @@ final class Homepage
                 'adults'   => $r->getAdults(),
                 'minors'   => $r->getMinors(),
                 'dateTime' => $r->getDateTime()->format('Y-m-d H:i:s'),
-                'comments' => $r->getComments() ?? '',
-                'status'   => $r->getStatus(),
-                'tables'   => $r->getTables() ?? [],
+                'comments'        => $r->getComments() ?? '',
+                'status'          => $r->getStatus(),
+                'tables'          => $r->getTables() ?? [],
+                'telephoneNumber' => $r->getTelephoneNumber() ?? '',
             ];
         }, $reservations));
 

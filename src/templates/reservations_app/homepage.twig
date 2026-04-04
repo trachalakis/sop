@@ -4,7 +4,7 @@
     {{ parent() }}
     <style>
         html, body { height: 100%; overflow: hidden; }
-        .container-fluid, .row, main { height: 100%; overflow: hidden; }
+        .container-fluid, .container-fluid > .row, main { height: 100%; overflow: hidden; }
 
         #app {
             display: flex;
@@ -13,6 +13,13 @@
             overflow: hidden;
         }
 
+        /* home view */
+        .home-view {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
         .grid-wrapper {
             flex: 1;
             min-height: 0;
@@ -20,7 +27,6 @@
             border: 1px solid #dee2e6;
             border-radius: 4px;
         }
-
         .reservations-panel {
             flex-shrink: 0;
             max-height: 180px;
@@ -41,7 +47,7 @@
             position: sticky;
             left: 0;
             z-index: 2;
-            background: #white;
+            background: white;
             font-weight: 600;
             min-width: 100px;
             max-width: 100px;
@@ -52,12 +58,9 @@
             top: 0;
             z-index: 1;
             background: #eee;
-            /*color: white;*/
         }
         .sticky-header.sticky-col {
             z-index: 3;
-            /*background: #343a40;
-            color: white;*/
         }
         .grid-cell {
             min-width: 90px;
@@ -89,146 +92,352 @@
             top: 0;
             z-index: 20;
         }
+
+        /* form view */
+        .form-view {
+            overflow-y: auto;
+            height: 100%;
+            scrollbar-width: none; /* Firefox */
+        }
+        .form-view::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
     </style>
 {% endblock %}
 
 {% block content %}{% verbatim %}
 <div id="app">
 
-    <!-- Placement mode banner -->
-    <div v-if="selectedReservationId" class="alert alert-primary d-flex justify-content-between align-items-center mb-2 placement-banner">
-        <span>
-            <i class="bi bi-cursor-fill me-1"></i>
-            Τοποθέτηση: <strong>{{selectedReservationName}}</strong>
-            &mdash; κάνε κλικ σε τραπέζι στις <strong>{{selectedSlot}}</strong> για να τοποθετήσεις / αφαιρέσεις
-        </span>
-        <button class="btn btn-sm btn-outline-primary" @click="selectedReservationId = null">
-            <i class="bi bi-x-lg"></i> Ακύρωση
-        </button>
-    </div>
+    <!-- ========== HOME VIEW ========== -->
+    <div v-if="currentView === 'home'" class="home-view">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom flex-shrink-0">
-        <h1>
-            {% endverbatim %}{% include 'partials/app_nav.twig' %}{% verbatim %} / <i class="bi bi-telephone"></i>
-        </h1>
-        <div class="d-flex align-items-center gap-3">
-            <a class="fs-2" :href="'?date=' + prevDate">
-                <strong><i class="bi bi-chevron-left"></i></strong>
-            </a>
-            <h2 class="mb-0 display-6">{{formattedDate}} / {{coverCount}}</h2>
-            <a class="fs-2" :href="'?date=' + nextDate">
-                <strong><i class="bi bi-chevron-right"></i></strong>
-            </a>
-        </div>
-        <a href="/reservations-app/create" class="btn btn-primary btn-lg">
-            <i class="bi bi-plus-lg"></i>
-        </a>
-    </div>
-
-    <!-- Grid -->
-    <div class="grid-wrapper">
-        <table class="grid-table">
-            <thead>
-                <tr>
-                    <th class="sticky-col sticky-header text-center">Τραπέζι</th>
-                    <th
-                        v-for="slot in timeSlots"
-                        class="sticky-header text-center"
-                        style="min-width:90px; width:90px"
-                        :style="selectedSlot === slot ? { background: '#0a58ca' } : {}"
-                    >{{slot}}</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="table in tables" :key="table.id">
-                    <td class="sticky-col">{{table.name}}</td>
-                    <td
-                        v-for="slot in timeSlots"
-                        :key="slot"
-                        class="grid-cell"
-                        :draggable="!!getCellReservation(table.id, slot)"
-                        :style="cellStyle(table.id, slot)"
-                        @click="clickCell(table.id, slot)"
-                        @dragstart="cellDragStart(table.id, slot, $event)"
-                        @dragover.prevent="dragOver(table.id, slot)"
-                        @drop.prevent="drop(table.id, slot)"
-                        @dragend="dragEnd"
-                    >
-                        <template v-if="getCellReservation(table.id, slot)">
-                            <div class="fw-semibold" style="font-size:11px; line-height:1.2">
-                                {{getCellReservation(table.id, slot).name.substring(0, 10)}}
-                            </div>
-                            <div style="font-size:10px; opacity:0.85">
-                                {{getCellReservation(table.id, slot).adults + getCellReservation(table.id, slot).minors}} ατ.
-                            </div>
-                        </template>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Reservations panel -->
-    <div class="reservations-panel">
-        <div class="d-flex align-items-center gap-3 mb-2">
-            <h5 class="mb-0">Κρατήσεις</h5>
-            <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
-                {{unplacedReservations.length}} αναθέτηση
+        <!-- Placement mode banner -->
+        <div v-if="selectedReservationId" class="alert alert-primary d-flex justify-content-between align-items-center mb-2 placement-banner">
+            <span>
+                <i class="bi bi-cursor-fill me-1"></i>
+                Τοποθέτηση: <strong>{{selectedReservationName}}</strong>
+                &mdash; κάνε κλικ σε τραπέζι στις <strong>{{selectedSlot}}</strong> για να τοποθετήσεις / αφαιρέσεις
             </span>
-            <span v-else class="badge bg-success">
-                <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
-            </span>
-            <small class="text-muted">Σύρε κράτηση σε κελί &mdash; ή κάνε κλικ για τοποθέτηση με κλικ</small>
+            <button class="btn btn-sm btn-outline-primary" @click="selectedReservationId = null">
+                <i class="bi bi-x-lg"></i> Ακύρωση
+            </button>
         </div>
 
-        <div class="d-flex flex-wrap gap-2">
-            <div
-                v-for="reservation in activeReservations"
-                :key="reservation.id"
-                class="reservation-card border rounded p-2"
-                draggable="true"
-                :style="reservationCardStyle(reservation)"
-                @click="selectReservation(reservation)"
-                @dragstart="cardDragStart(reservation, $event)"
-                @dragend="dragEnd"
-            >
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                    <div>
-                        <div class="fw-bold fs-6">{{reservation.name}}</div>
-                        <div class="mt-1" style="font-size:13px">
-                            {{reservation.dateTime.substring(11, 16)}}
-                            &nbsp;/&nbsp;
-                            {{reservation.adults}} + {{reservation.minors}}
-                        </div>
-                        <div v-if="reservation.comments" style="font-size:11px; opacity:0.75; max-width:160px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
-                            {{reservation.comments}}
-                        </div>
-                    </div>
-                    <div class="d-flex flex-column align-items-end gap-1">
-                        <span class="badge" :class="statusBadgeClass(reservation.status)" style="font-size:10px">
-                            {{statusLabel(reservation.status)}}
-                        </span>
-                        <span v-if="isPlaced(reservation.id)" class="badge bg-secondary" style="font-size:10px">
-                            <i class="bi bi-grid-fill"></i> τοποθ.
-                        </span>
-                        <a
-                            :href="'/reservations-app/update?id=' + reservation.id"
-                            class="badge bg-light text-dark text-decoration-none border"
-                            style="font-size:10px"
-                            @click.stop
+        <!-- Header -->
+        <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom flex-shrink-0">
+            <h1>
+                {% endverbatim %}{% include 'partials/app_nav.twig' %}{% verbatim %} / <i class="bi bi-telephone"></i>
+            </h1>
+            <div class="d-flex align-items-center gap-3">
+                <a class="fs-2" :href="'?date=' + prevDate">
+                    <strong><i class="bi bi-chevron-left"></i></strong>
+                </a>
+                <h2 class="mb-0 display-6">{{formattedDate}} / {{coverCount}}</h2>
+                <a class="fs-2" :href="'?date=' + nextDate">
+                    <strong><i class="bi bi-chevron-right"></i></strong>
+                </a>
+            </div>
+            <button @click="openCreate()" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        </div>
+
+        <!-- Grid -->
+        <div class="grid-wrapper">
+            <table class="grid-table">
+                <thead>
+                    <tr>
+                        <th class="sticky-col sticky-header text-center">Τραπέζι</th>
+                        <th
+                            v-for="slot in timeSlots"
+                            class="sticky-header text-center"
+                            style="min-width:90px; width:90px"
+                            :style="selectedSlot === slot ? { background: '#0a58ca' } : {}"
+                        >{{slot}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="table in tables" :key="table.id">
+                        <td class="sticky-col">{{table.name}}</td>
+                        <td
+                            v-for="slot in timeSlots"
+                            :key="slot"
+                            class="grid-cell"
+                            :draggable="!!getCellReservation(table.id, slot)"
+                            :style="cellStyle(table.id, slot)"
+                            @click="clickCell(table.id, slot)"
+                            @dragstart="cellDragStart(table.id, slot, $event)"
+                            @dragover.prevent="dragOver(table.id, slot)"
+                            @drop.prevent="drop(table.id, slot)"
+                            @dragend="dragEnd"
                         >
-                            <i class="bi bi-pencil"></i>
-                        </a>
+                            <template v-if="getCellReservation(table.id, slot)">
+                                <div class="fw-semibold" style="font-size:11px; line-height:1.2">
+                                    {{getCellReservation(table.id, slot).name.substring(0, 10)}}
+                                </div>
+                                <div style="font-size:10px; opacity:0.85">
+                                    {{getCellReservation(table.id, slot).adults + getCellReservation(table.id, slot).minors}} ατ.
+                                </div>
+                            </template>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reservations panel -->
+        <div class="reservations-panel">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <h5 class="mb-0">Κρατήσεις</h5>
+                <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
+                    {{unplacedReservations.length}} αναθέτηση
+                </span>
+                <span v-else class="badge bg-success">
+                    <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
+                </span>
+                <small class="text-muted">Σύρε κράτηση σε κελί &mdash; ή κάνε κλικ για τοποθέτηση με κλικ</small>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <div
+                    v-for="reservation in activeReservations"
+                    :key="reservation.id"
+                    class="reservation-card border rounded p-2"
+                    draggable="true"
+                    :style="reservationCardStyle(reservation)"
+                    @click="selectReservation(reservation)"
+                    @dragstart="cardDragStart(reservation, $event)"
+                    @dragend="dragEnd"
+                >
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div>
+                            <div class="fw-bold fs-6">{{reservation.name}}</div>
+                            <div class="mt-1" style="font-size:13px">
+                                {{reservation.dateTime.substring(11, 16)}}
+                                &nbsp;/&nbsp;
+                                {{reservation.adults}} + {{reservation.minors}}
+                            </div>
+                            <div v-if="reservation.comments" style="font-size:11px; opacity:0.75; max-width:160px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
+                                {{reservation.comments}}
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-end gap-1">
+                            <span class="badge" :class="statusBadgeClass(reservation.status)" style="font-size:10px">
+                                {{statusLabel(reservation.status)}}
+                            </span>
+                            <span v-if="isPlaced(reservation.id)" class="badge bg-secondary" style="font-size:10px">
+                                <i class="bi bi-grid-fill"></i> τοποθ.
+                            </span>
+                            <button
+                                class="badge bg-light text-dark border"
+                                style="font-size:10px; cursor:pointer"
+                                @click.stop="openUpdate(reservation)"
+                            >
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div v-if="activeReservations.length === 0" class="text-muted mt-3">
+                Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+            </div>
         </div>
 
-        <div v-if="activeReservations.length === 0" class="text-muted mt-3">
-            Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+    </div><!-- end home view -->
+
+
+    <!-- ========== CREATE VIEW ========== -->
+    <div v-if="currentView === 'create'" class="form-view">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1>
+                <a href="#" @click.prevent="currentView = 'home'" class="text-decoration-none"><i class="bi bi-telephone"></i></a> /
+                Νέα κράτηση
+            </h1>
         </div>
-    </div>
+        <div v-if="formError" class="alert alert-danger">{{formError}}</div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Όνομα</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control form-control-lg" v-model="form.name" autocomplete="off"/>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+            <div class="col-sm-10">
+                <input type="tel" class="form-control form-control-lg" v-model="form.telephoneNumber" autocomplete="off"/>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="i in 25" :key="i">
+                        <input type="radio" class="btn-check" :id="'c-adults-' + i" :value="i" v-model="form.adults"/>
+                        <label class="btn fs-4" :for="'c-adults-' + i">{{i}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ανήλικοι</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="i in minorValues" :key="i">
+                        <input type="radio" class="btn-check" :id="'c-minors-' + i" :value="i" v-model="form.minors"/>
+                        <label class="btn fs-4" :for="'c-minors-' + i">{{i}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ώρα</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="slot in formTimeSlots" :key="slot">
+                        <input type="radio" class="btn-check" :id="'c-time-' + slot" :value="slot" v-model="form.time"/>
+                        <label class="btn fs-4" :for="'c-time-' + slot">{{slot}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Μέρα</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="d in formDates" :key="d.value">
+                        <input type="radio" class="btn-check" :id="'c-date-' + d.value" :value="d.value" v-model="form.date"/>
+                        <label class="btn" :for="'c-date-' + d.value">
+                            <div class="fs-4">{{d.weekday}}</div>
+                            <div>{{d.dayMonth}}</div>
+                        </label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Τραπέζι</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="table in tables" :key="table.id">
+                        <input type="radio" class="btn-check" :id="'c-table-' + table.id" :value="table.name" v-model="form.table"/>
+                        <label class="btn fs-4" :for="'c-table-' + table.id">{{table.name}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
+            <div class="col-sm-10">
+                <textarea class="form-control form-control-lg" v-model="form.comments" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-10 offset-sm-2">
+                <button @click="submitCreate()" class="btn btn-lg btn-primary" :disabled="saving">
+                    <span class="spinner-border spinner-border-sm me-1" v-if="saving"></span>
+                    Αποθήκευση
+                </button>
+            </div>
+        </div>
+    </div><!-- end create view -->
+
+
+    <!-- ========== UPDATE VIEW ========== -->
+    <div v-if="currentView === 'update'" class="form-view">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+            <h1>
+                <a href="#" @click.prevent="currentView = 'home'" class="text-decoration-none"><i class="bi bi-telephone"></i></a> /
+                <span v-if="form.id">Κράτηση #{{form.id}}</span>
+            </h1>
+        </div>
+        <div v-if="formError" class="alert alert-danger">{{formError}}</div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Όνομα</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control form-control-lg" v-model="form.name" autocomplete="off"/>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Τηλέφωνο</label>
+            <div class="col-sm-10">
+                <input type="tel" class="form-control form-control-lg" v-model="form.telephoneNumber" autocomplete="off"/>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ενήλικες</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="i in 25" :key="i">
+                        <input type="radio" class="btn-check" :id="'u-adults-' + i" :value="i" v-model="form.adults"/>
+                        <label class="btn fs-4" :for="'u-adults-' + i">{{i}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ανήλικοι</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="i in minorValues" :key="i">
+                        <input type="radio" class="btn-check" :id="'u-minors-' + i" :value="i" v-model="form.minors"/>
+                        <label class="btn fs-4" :for="'u-minors-' + i">{{i}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Ώρα</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="slot in formTimeSlots" :key="slot">
+                        <input type="radio" class="btn-check" :id="'u-time-' + slot" :value="slot" v-model="form.time"/>
+                        <label class="btn fs-4" :for="'u-time-' + slot">{{slot}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Μέρα</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="d in formDates" :key="d.value">
+                        <input type="radio" class="btn-check" :id="'u-date-' + d.value" :value="d.value" v-model="form.date"/>
+                        <label class="btn" :for="'u-date-' + d.value">
+                            <div class="fs-4">{{d.weekday}}</div>
+                            <div>{{d.dayMonth}}</div>
+                        </label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Τραπέζι</label>
+            <div class="col-sm-10">
+                <div class="overflow-auto d-flex">
+                    <template v-for="table in tables" :key="table.id">
+                        <input type="checkbox" class="btn-check" :id="'u-table-' + table.id" :value="table.name" v-model="form.tables"/>
+                        <label class="btn fs-4" :for="'u-table-' + table.id">{{table.name}}</label>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <label class="col-sm-2 col-form-label fs-4">Σχόλια</label>
+            <div class="col-sm-10">
+                <textarea class="form-control form-control-lg" v-model="form.comments" rows="3"></textarea>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-sm-10 offset-sm-2">
+                <button @click="submitUpdate()" class="btn btn-lg btn-primary" :disabled="saving">
+                    <span class="spinner-border spinner-border-sm me-1" v-if="saving"></span>
+                    Αποθήκευση
+                </button>
+            </div>
+        </div>
+    </div><!-- end update view -->
 
 </div>
 {% endverbatim %}{% endblock %}
@@ -237,6 +446,7 @@
     {{ parent() }}
     <script src="/assets/js/vue.global.prod.js"></script>
     <script src="/assets/js/lodash.min.js"></script>
+    <script src="/assets/js/axios.min.js"></script>
     <script>
         const INITIAL_RESERVATIONS = {{ reservationsJson|raw }};
         const INITIAL_TABLES       = {{ tablesJson|raw }};
@@ -260,6 +470,8 @@
         Vue.createApp({
             data() {
                 return {
+                    // home view
+                    currentView: 'home',
                     tables: INITIAL_TABLES,
                     reservations: INITIAL_RESERVATIONS,
                     allTimeSlots: this.generateTimeSlots(),
@@ -267,15 +479,27 @@
                     selectedReservationId: null,
                     prevDate: PREV_DATE,
                     nextDate: NEXT_DATE,
+                    startSlot: null,
+                    cutoffTime: null,
+                    dragReservationId: null,
+                    dragSourceKey: null,
+                    dragOverKey: null,
 
-                    // time filter (today only)
-                    startSlot: null,   // earliest visible slot, e.g. '18:30'
-                    cutoffTime: null,  // Date: hide reservations before this
-
-                    // drag state
-                    dragReservationId: null,  // reservation being dragged
-                    dragSourceKey: null,      // cell key if dragging from a cell, null if from panel
-                    dragOverKey: null,        // cell key currently hovered during drag
+                    // form
+                    form: {
+                        id: null,
+                        name: '',
+                        telephoneNumber: '',
+                        adults: 2,
+                        minors: 0,
+                        time: '',
+                        date: '',
+                        table: '',
+                        tables: [],
+                        comments: ''
+                    },
+                    formError: null,
+                    saving: false,
                 };
             },
             mounted() {
@@ -324,6 +548,35 @@
                     const r = this.reservations.find(r => r.id === this.selectedReservationId);
                     return r ? this.dateTimeToSlot(r.dateTime) : null;
                 },
+                minorValues() {
+                    return Array.from({ length: 26 }, (_, i) => i);
+                },
+                formTimeSlots() {
+                    const slots = [];
+                    for (let h = 12; h <= 22; h++) {
+                        slots.push(`${String(h).padStart(2, '0')}:00`);
+                        slots.push(`${String(h).padStart(2, '0')}:30`);
+                    }
+                    return slots;
+                },
+                formDates() {
+                    const dates = [];
+                    const today = new Date();
+                    today.setHours(12, 0, 0, 0);
+                    for (let i = 0; i <= 60; i++) {
+                        const d = new Date(today);
+                        d.setDate(d.getDate() + i);
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        dates.push({
+                            value: `${year}-${month}-${day}`,
+                            weekday: d.toLocaleDateString('el-GR', { weekday: 'short' }),
+                            dayMonth: d.toLocaleDateString('el-GR', { day: '2-digit', month: 'short' })
+                        });
+                    }
+                    return dates;
+                },
             },
             methods: {
                 generateTimeSlots() {
@@ -365,25 +618,17 @@
                     const rid = this.cells[this.cellKey(tableId, slot)];
                     return rid ? this.reservations.find(r => r.id === rid) : null;
                 },
-
-                // --- Click placement ---
                 clickCell(tableId, slot) {
-                    // Ignore click if it was the end of a drag
                     if (this.dragReservationId !== null) return;
-                    // In selection mode, only allow placement at the reservation's own time slot
                     if (this.selectedReservationId && this.selectedSlot && slot !== this.selectedSlot) return;
-
                     const key = this.cellKey(tableId, slot);
                     const current = this.getCellReservation(tableId, slot);
-
                     if (this.selectedReservationId) {
                         if (current && current.id === this.selectedReservationId) {
-                            // clicking own cell → remove
                             const newCells = { ...this.cells };
                             delete newCells[key];
                             this.cells = newCells;
                         } else {
-                            // clear any previous placement of this reservation, then place
                             const newCells = { ...this.cells };
                             this.clearReservation(newCells, this.selectedReservationId);
                             newCells[key] = this.selectedReservationId;
@@ -400,18 +645,13 @@
                     this.selectedReservationId =
                         this.selectedReservationId === reservation.id ? null : reservation.id;
                 },
-
-                // --- Drag from reservation card ---
                 cardDragStart(reservation, event) {
                     this.dragReservationId = reservation.id;
                     this.dragSourceKey = null;
                     this.selectedReservationId = null;
                     event.dataTransfer.effectAllowed = 'move';
-                    // Ghost image: use the card element itself
                     event.dataTransfer.setDragImage(event.currentTarget, 20, 20);
                 },
-
-                // --- Drag from an occupied grid cell ---
                 cellDragStart(tableId, slot, event) {
                     const reservation = this.getCellReservation(tableId, slot);
                     if (!reservation) { event.preventDefault(); return; }
@@ -420,46 +660,33 @@
                     this.selectedReservationId = null;
                     event.dataTransfer.effectAllowed = 'move';
                 },
-
-                // --- Drag over a cell ---
                 dragOver(tableId, slot) {
                     const dragSlot = this.dateTimeToSlot(
                         this.reservations.find(r => r.id === this.dragReservationId)?.dateTime
                     );
                     this.dragOverKey = (dragSlot && slot !== dragSlot) ? null : this.cellKey(tableId, slot);
                 },
-
-                // --- Drop onto a cell ---
                 drop(tableId, slot) {
                     if (!this.dragReservationId) return;
-                    // Restrict drop to the reservation's own time slot
                     const dragSlot = this.dateTimeToSlot(
                         this.reservations.find(r => r.id === this.dragReservationId)?.dateTime
                     );
                     if (dragSlot && slot !== dragSlot) return;
                     const targetKey = this.cellKey(tableId, slot);
-
                     const newCells = { ...this.cells };
-
-                    // Clear all placements of this reservation, then place at target
                     this.clearReservation(newCells, this.dragReservationId);
                     newCells[targetKey] = this.dragReservationId;
                     this.cells = newCells;
-
                     this.saveAssignment(this.dragReservationId);
                     this.dragReservationId = null;
                     this.dragSourceKey = null;
                     this.dragOverKey = null;
                 },
-
-                // --- Drag ended (with or without a drop) ---
                 dragEnd() {
                     this.dragReservationId = null;
                     this.dragSourceKey = null;
                     this.dragOverKey = null;
                 },
-
-                // Persist table assignment for a reservation to the server
                 saveAssignment(reservationId) {
                     const tableNames = Object.entries(this.cells)
                         .filter(([, rid]) => rid === reservationId)
@@ -469,25 +696,16 @@
                         })
                         .filter(Boolean);
 
-                    fetch('/reservations-app/assign-tables', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: reservationId, tables: tableNames }),
-                    });
+                    axios.post('/reservations-app/assign-tables', { id: reservationId, tables: tableNames });
 
-                    // Update local reservation object too
                     const r = this.reservations.find(r => r.id === reservationId);
                     if (r) r.tables = tableNames;
                 },
-
-                // Remove all placements of a reservation from cells
                 clearReservation(cells, reservationId) {
                     Object.keys(cells).forEach(k => {
                         if (cells[k] === reservationId) delete cells[k];
                     });
                 },
-
-                // --- Helpers ---
                 isPlaced(reservationId) {
                     return this.placedReservationIds.has(reservationId);
                 },
@@ -495,7 +713,6 @@
                     const idx = this.reservations.findIndex(r => r.id === reservationId);
                     return PALETTE[idx % PALETTE.length];
                 },
-
                 cellStyle(tableId, slot) {
                     const key = this.cellKey(tableId, slot);
                     const reservation = this.getCellReservation(tableId, slot);
@@ -506,27 +723,16 @@
                     const isTargetSlot = inSelectMode && this.selectedSlot === slot;
                     const isDimmed = inSelectMode && this.selectedSlot && this.selectedSlot !== slot;
 
-                    // Drop target highlight (drag-and-drop, unrestricted)
                     if (isDragOver) {
-                        return {
-                            background: '#0d6efd',
-                            color: '#fff',
-                            cursor: 'copy',
-                            outline: '3px solid #0a58ca',
-                            outlineOffset: '-3px',
-                        };
+                        return { background: '#0d6efd', color: '#fff', cursor: 'copy', outline: '3px solid #0a58ca', outlineOffset: '-3px' };
                     }
-
                     if (!reservation) {
-                        if (isDimmed) {
-                            return { background: '#f3f3f3', cursor: 'not-allowed', opacity: '0.5' };
-                        }
+                        if (isDimmed) return { background: '#f3f3f3', cursor: 'not-allowed', opacity: '0.5' };
                         return {
                             background: (isTargetSlot || isDragging) ? '#e8f4ff' : '#ffffff',
                             cursor: (isTargetSlot || isDragging) ? 'copy' : 'default',
                         };
                     }
-
                     const color = this.reservationColor(reservation.id);
                     const isSelected = this.selectedReservationId === reservation.id;
                     return {
@@ -539,7 +745,6 @@
                         fontWeight: isSelected ? '700' : '400',
                     };
                 },
-
                 reservationCardStyle(reservation) {
                     const isSelected = this.selectedReservationId === reservation.id;
                     const placed = this.isPlaced(reservation.id);
@@ -555,16 +760,104 @@
                         minWidth: '160px',
                     };
                 },
-
                 statusBadgeClass(status) {
-                    return {
-                        PENDING:   'bg-warning text-dark',
-                        ARRIVED:   'bg-success',
-                        CANCELLED: 'bg-danger',
-                    }[status] ?? 'bg-secondary';
+                    return { PENDING: 'bg-warning text-dark', ARRIVED: 'bg-success', CANCELLED: 'bg-danger' }[status] ?? 'bg-secondary';
                 },
                 statusLabel(status) {
                     return { PENDING: 'ΑΝΑΜ.', ARRIVED: 'ΗΡΘΕ', CANCELLED: 'ΑΚΥΡ.' }[status] ?? status;
+                },
+
+                // form methods
+                openCreate() {
+                    this.form = {
+                        id: null,
+                        name: '',
+                        telephoneNumber: '',
+                        adults: 2,
+                        minors: 0,
+                        time: '',
+                        date: this.formDates[0]?.value ?? '',
+                        table: '',
+                        tables: [],
+                        comments: ''
+                    };
+                    this.formError = null;
+                    this.currentView = 'create';
+                },
+                openUpdate(reservation) {
+                    const dt = reservation.dateTime;
+                    this.form = {
+                        id: reservation.id,
+                        name: reservation.name,
+                        telephoneNumber: reservation.telephoneNumber ?? '',
+                        adults: reservation.adults,
+                        minors: reservation.minors,
+                        time: dt.substring(11, 16),
+                        date: dt.substring(0, 10),
+                        table: reservation.tables?.[0] ?? '',
+                        tables: reservation.tables ? [...reservation.tables] : [],
+                        comments: reservation.comments ?? ''
+                    };
+                    this.formError = null;
+                    this.currentView = 'update';
+                },
+                submitCreate() {
+                    if (this.saving) return;
+                    this.saving = true;
+                    this.formError = null;
+                    axios.post('/reservations-app/create', {
+                        name: this.form.name,
+                        telephoneNumber: this.form.telephoneNumber,
+                        adults: this.form.adults,
+                        minors: this.form.minors,
+                        time: this.form.time,
+                        date: this.form.date,
+                        tables: this.form.table ? [this.form.table] : [],
+                        comments: this.form.comments
+                    }).then(response => {
+                        this.reservations.push(response.data);
+                        this.cells = this.initCells();
+                        this.currentView = 'home';
+                        this.saving = false;
+                    }).catch(error => {
+                        this.formError = error.response?.data?.error ?? 'Σφάλμα αποθήκευσης';
+                        this.saving = false;
+                    });
+                },
+                submitUpdate() {
+                    if (this.saving) return;
+                    this.saving = true;
+                    this.formError = null;
+                    axios.post(`/reservations-app/update?id=${this.form.id}`, {
+                        name: this.form.name,
+                        telephoneNumber: this.form.telephoneNumber,
+                        adults: this.form.adults,
+                        minors: this.form.minors,
+                        time: this.form.time,
+                        date: this.form.date,
+                        tables: this.form.tables,
+                        comments: this.form.comments
+                    }).then(() => {
+                        const idx = this.reservations.findIndex(r => r.id === this.form.id);
+                        if (idx !== -1) {
+                            this.reservations[idx] = {
+                                ...this.reservations[idx],
+                                name: this.form.name.toUpperCase(),
+                                telephoneNumber: this.form.telephoneNumber,
+                                adults: this.form.adults,
+                                minors: this.form.minors,
+                                dateTime: `${this.form.date} ${this.form.time}:00`,
+                                tables: this.form.tables,
+                                comments: this.form.comments.toUpperCase()
+                            };
+                        }
+                        this.cells = this.initCells();
+                        this.currentView = 'home';
+                        this.saving = false;
+                    }).catch(error => {
+                        this.formError = error.response?.data?.error ?? 'Σφάλμα αποθήκευσης';
+                        this.saving = false;
+                    });
                 },
             },
         }).mount('#app');

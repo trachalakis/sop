@@ -24,8 +24,27 @@ final class UpdateReservation
         $reservation = $this->reservationsRepository->find($request->getQueryParams()['id']);
 
         if ($request->getMethod() == 'POST') {
+            $isJson = str_contains($request->getHeaderLine('Content-Type'), 'application/json');
+
+            if ($isJson) {
+                $requestData = json_decode(file_get_contents('php://input'), true);
+
+                $reservation->setDateTime(new \DateTime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
+                $reservation->setName(mb_strtoupper($requestData['name']));
+                $reservation->setAdults(intval($requestData['adults']));
+                $reservation->setMinors(intval($requestData['minors']));
+                $reservation->setTelephoneNumber($requestData['telephoneNumber']);
+                $reservation->setComments(mb_strtoupper($requestData['comments'] ?? ''));
+                $reservation->setTables($requestData['tables'] ?? []);
+
+                $this->reservationsRepository->persist($reservation);
+
+                $response->getBody()->write(json_encode(['success' => true]));
+                return $response->withHeader('Content-Type', 'application/json');
+            }
+
             $requestData = $request->getParsedBody();
-            
+
             $reservation->setDateTime(new \Datetime(sprintf("%s %s:00", $requestData['date'], $requestData['time'])));
             $reservation->setName(mb_strtoupper($requestData['name']));
             $reservation->setAdults(intval($requestData['adults']));
