@@ -21,13 +21,33 @@
 					{{getTime(order.createdAt)}}</a>
 				</td>
 				<td class="text-end">
-                    <a class="btn btn-lg btn-outline-secondary" :href="'/take-out/payment?id=' + order.id">
+                    <button class="btn btn-lg btn-outline-secondary" @click="confirmPayment(order)">
                         <i class="bi bi-currency-euro"></i> <span class="d-none d-sm-none d-md-inline">Πληρωμή</span>
-                    </a>
+                    </button>
 				</td>
 			</tr>
 		</tbody>
 	</table>
+
+	<div class="modal" tabindex="-1" :class="payingOrder ? 'd-block' : ''">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Επιβεβαίωση πληρωμής</h5>
+					<button type="button" class="btn-close" @click="payingOrder = null"></button>
+				</div>
+				<div class="modal-body" v-if="payingOrder">
+					<p class="fs-5">#{{payingOrder.ticketNumber}} / &euro;{{payingOrder.price}}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-lg" @click="payingOrder = null">Άκυρο</button>
+					<button type="button" class="btn btn-primary btn-lg" @click="pay" :disabled="paying">
+						<span class="spinner-border spinner-border-sm me-1" v-if="paying"></span>OK
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endverbatim %}{% endblock %}
 
@@ -39,7 +59,9 @@
 		vueApp = Vue.createApp({
 		    data() {
 		    	return {
-		    		orders: []
+		    		orders: [],
+		    		payingOrder: null,
+		    		paying: false
 		    	}
 		    },
 		    mounted() {
@@ -64,6 +86,23 @@
 		    	},
 		    	getTime(date) {
 		    		return date.substr(date.length - 8, 5);
+		    	},
+		    	confirmPayment(order) {
+		    		this.payingOrder = order;
+		    	},
+		    	pay() {
+		    		this.paying = true;
+		    		axios.post('/take-out/payment', { orderId: this.payingOrder.id })
+		    			.then(response => {
+		    				if (response.data === 'ok') {
+		    					this.payingOrder = null;
+		    					this.paying = false;
+		    					this.fetchOrders();
+		    				}
+		    			}).catch(error => {
+		    				alert(error);
+		    				this.paying = false;
+		    			});
 		    	}
 		    }
 		}).mount('#app');

@@ -46,57 +46,6 @@ final class UpdateOrder
 
             $order = $this->ordersRepository->find($requestData['order']['id']);
 
-            if (count($requestData['newOrderEntryGroup']['orderEntries']) > 0) {
-                $orderEntryGroup = new OrderEntryGroup;
-                $orderEntryGroup->setCreatedAt(new DateTimeImmutable);
-                $orderEntryGroup->setNotes($requestData['newOrderEntryGroup']['notes']);
-                $orderEntryGroup->setOrder($order);
-
-                $this->orderEntryGroupsRepository->persist($orderEntryGroup);
-
-                foreach ($requestData['newOrderEntryGroup']['orderEntries'] as $entry) {
-                    $menuItem = $this->menuItemsRepository->find($entry['menuItem']['id']);
-
-                    if ($menuItem->getTrackAvailableQuantity()) {
-                        $menuItem->setAvailableQuantity($menuItem->getAvailableQuantity() - intval($entry['quantity']));
-                        $this->menuItemsRepository->persist($menuItem);
-
-                        if (function_exists('apcu_clear_cache')) {
-                            apcu_clear_cache();
-                        }
-                    }
-
-                    $orderEntry = new OrderEntry;
-                    $orderEntry->setMenuItem($menuItem);
-                    $orderEntry->setMenuItemPrice($menuItem->getPrice());
-                    $orderEntry->setQuantity(intval($entry['quantity']));
-                    $orderEntry->setIsPaid(false);
-                    if ($menuItem->getPriceUnit() == 'kg') {
-                        $orderEntry->setWeight(intval($entry['weight']));
-                    } else {
-                        $orderEntry->setWeight(null);
-                    }
-                    $orderEntry->setDiscount(intval($entry['discount']));
-                    $orderEntry->setOrder($order);
-                    $orderEntry->setFamily(intval($entry['family']));
-                    $orderEntry->setTiming(intval($entry['timing']));
-                    $orderEntry->setNotes($entry['notes']);
-
-                    $orderEntryExtras = [];
-                    foreach ($entry['orderEntryExtras'] as $extra) {
-                        $orderEntryExtra = new OrderEntryExtra;
-                        $orderEntryExtra->setName($extra['name']);
-                        $orderEntryExtra->setPrice(floatval($extra['price']));
-                        $orderEntryExtra->setOrderEntry($orderEntry);
-                        $orderEntryExtras[] = $orderEntryExtra;
-                    }
-                    $orderEntry->setOrderEntryExtras($orderEntryExtras);
-                    $orderEntry->setOrderEntryGroup($orderEntryGroup);
-
-                    $this->orderEntriesRepository->persist($orderEntry);
-                }
-            }
-
             foreach ($requestData['order']['orderEntryGroups'] as $orderEntryGroup) {
                 foreach ($orderEntryGroup['orderEntries'] as $entry) {
                     $orderEntry = $this->orderEntriesRepository->find($entry['id']);
@@ -114,6 +63,10 @@ final class UpdateOrder
                             $cancellation->setOrderEntry($orderEntry);
 
                             $this->orderEntryCancellationsRepository->persist($cancellation);
+
+                            //if an order entry is cancelled reset its discount
+                            $orderEntry->setDiscount(0);
+                            $orderEntry->setDiscountReason('');
                         }
                     }
                 }

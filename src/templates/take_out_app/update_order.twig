@@ -3,260 +3,21 @@
 {% block content %}{% verbatim %}
 <div id="app">
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-	    <h1>
-	    	<a href="/take-out/" class="text-decoration-none"><i class="bi bi-bag"></i></a> /
-	    	<span v-if="order.ticketNumber">#{{order.ticketNumber}}</span>
-	    	/ &euro;{{totalPrice}}
-	    </h1>
+	    <div>
+            <h1>
+                <a href="/take-out/" class="text-decoration-none"><i class="bi bi-bag"></i></a> /
+                <span v-if="order.ticketNumber">#{{order.ticketNumber}}</span>
+                / &euro;{{totalPrice}}
+            </h1>
+        </div>
     	<div class="btn-toolbar">
-	       	<a href="#" class="btn btn-lg btn-outline-secondary me-2 d-inline d-sm-none" @click="showOptions = true;">
-	            <span class="fw-bold">&ctdot;</span>
-	        </a>
-	       	<button class="btn btn-lg btn-primary d-none d-sm-inline" @click="save">
+	       	<button class="btn btn-lg btn-primary" @click="save">
 	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>
-	            <span class="d-none d-sm-inline">Αποθήκευση</span>
+	            <i class="bi bi-floppy"></i>
 	        </button>
 	    </div>
 	</div>
-
-	<div class="offcanvas offcanvas-start" :class="showOptions ? 'show' : ''" tabindex="-1">
-  		<div class="offcanvas-header">
-    		<h5 class="offcanvas-title">Επιλογές</h5>
-    		<button type="button" class="btn-close" @click="showOptions = false"></button>
-  		</div>
-  		<div class="offcanvas-body">
-  			<div class="row mb-2">
-  				<div class="col-xs-12 mb-4">
-			        <button class="btn btn-lg btn-primary w-100" @click="save" :disabled="savingOrder">
-			            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Αποθήκευση
-			        </button>
-			    </div>
-				<div class="col-xs-12 mb-2">
-					<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
-						<span class="me-1">Σχόλια</span>
-						<span v-if="newOrderEntryGroup.notes.length > 0" class="fw-bold">*</span>
-					</button>
-				</div>
-		    </div>
-    	</div>
-  	</div>
-  	<div class="offcanvas-backdrop fade show" v-if="showOptions"></div>
-
-	<div class="d-none d-sm-block">
-		<div class="row gx-1 mb-2">
-			<div class="col">
-				<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
-					<span class="me-1">Σχόλια</span>
-					<span v-if="newOrderEntryGroup.notes.length > 0" class="fw-bold">*</span>
-				</button>
-			</div>
-		</div>
-	</div>
-
-	<div class="sticky-top">
-		<button
-			type="button"
-			class="btn btn-lg btn-primary w-100 mb-3 mt-0"
-			@click="isMenuSectionsModalVisible = true"
-		>
-			Προσθήκη
-		</button>
-	</div>
-
-	<div class="modal" tabindex="-1" :class="showNotesModal ? 'd-block' : ''">
-  		<div class="modal-dialog modal-lg modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">Σχόλια</h5>
-        			<button type="button" class="btn-close" @click="showNotesModal = false"></button>
-      			</div>
-      			<div class="modal-body">
-		        	<div class="row gx-1">
-		        		<textarea class="form-control" v-model="newOrderEntryGroup.notes" rows="3"></textarea>
-		        	</div>
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-secondary btn-lg" @click="showNotesModal = false">Κλείσιμο</button>
-      			</div>
-    		</div>
-  		</div>
-	</div>
-
 	
-
-	
-
-	<div class="modal modal-lg" :class="isMenuSectionsModalVisible ? 'd-block' :''" tabindex="-1">
-  		<div class="modal-dialog modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">Επιλογή κατηγορίας</h5>
-        			<button type="button" class="btn-close" @click="isMenuSectionsModalVisible = false"></button>
-      			</div>
-      			<div class="modal-body">
-					<div class="row gx-1">
-		        		<div class="col-sm-6 mb-2" v-for="menuSection in menuSections">
-		        			<button
-		        				type="button"
-		        				class="btn btn-outline-primary btn-lg w-100"
-		        				@click="activeMenuSection = menuSection;isMenuSectionsModalVisible = false "
-		        			>
-		        				{{getTranslation(menuSection, 'el').name}}
-		        			</button>
-		        		</div>
-		        	</div>
-      			</div>
-      			<div class="modal-footer">
-        			<button type="button" class="btn btn-secondary" @click="isMenuSectionsModalVisible = false">
-        				Κλείσιμο
-        			</button>
-      			</div>
-    		</div>
-  		</div>
-	</div>
-
-	<div class="modal modal-lg d-block" v-if="activeMenuSection != null">
-	  	<div class="modal-dialog modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">Επιλογή πιάτου</h5>
-        			<button
-        				type="button"
-        				class="btn-close"
-        				@click="activeMenuSection = null;isMenuSectionsModalVisible = false"
-        			></button>
-      			</div>
-      			<div class="modal-body">
-					<div class="row gx-1">
-		        		<div class="col-sm-6 mb-2" v-for="menuItem in activeMenuSection.menuItems">
-		        			<div class="btn-group w-100">
-  								<button v-if="menuItem.priceUnit == 'kg'"
-  									type="button"
-  									class="btn btn-lg btn-outline-primary w-75"
-  									@click="showMenuItemOptionsModal(menuItem)"
-									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
-  								>
-  									{{getTranslation(menuItem, 'el').name}}
-  									<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
-  								</button>
-  								<button v-else
-  									type="button"
-  									class="btn btn-lg btn-outline-primary w-75"
-  									@click="
-	  									addOrderEntry({
-	  										menuItem: menuItem,
-	  										timing: isDrink(menuItem) ? 6 : timing,
-	  										family: family,
-	  										notes: '',
-	  										orderEntryExtras: []
-	  									});
-	  								"
-									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
-  								>
-  									{{getTranslation(menuItem, 'el').name}} <span class="text-body-secondary">(&euro;{{menuItem.price}})</span>
-  									<span
-  										v-if="menuItem.availableQuantity <= 7"
-  										class="badge rounded-pill text-bg-danger ms-1"
-  									>
-  										{{menuItem.availableQuantity}}
-  									</span>
-  								</button>
-  								<button
-  									type="button"
-  									class="btn btn-lg btn-outline-primary w-25"
-  									@click="showMenuItemOptionsModal(menuItem)"
-									:disabled="menuItem.trackAvailableQuantity && menuItem.availableQuantity == 0"
-  								>
-  									<span class="fw-bold">&ctdot;</span>
-  								</button>
-							</div>
-		        		</div>
-		        	</div>
-      			</div>
-      			<div class="modal-footer">
-        			<button
-        				type="button"
-        				class="btn btn-lg btn-secondary"
-        				@click="activeMenuSection = null; isMenuSectionsModalVisible = true"
-        			>
-        				Πίσω
-        			</button>
-      			</div>
-    		</div>
-	  	</div>
-	</div>
-
-	<div class="modal modal-lg d-block" v-if="newMenuItem != null">
-  		<div class="modal-dialog modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">Επιλογές</h5>
-        			<button
-        				type="button"
-        				class="btn-close"
-        				@click="newMenuItem = null;activeMenuSection = null; isMenuSectionsModalVisible = false"
-        			></button>
-      			</div>
-      			<div class="modal-body">
-					<div class="mb-3" v-if="newMenuItem.priceUnit == 'kg'">
-						<label class="form-label">Βάρος (γρ)</label>
-						<input class="form-control" type="number" min="50" step="1" v-model="newOrderEntry.weight"/>
-					</div>
-					<div class="form-check form-control-lg mb-2" v-for="extra in newMenuItem.extras">
-  						<label class="form-check-label w-100 fs-5">
-	  						<input
-	  							class="form-check-input"
-	  							type="checkbox"
-	  							:value="extra"
-	  							v-model="newOrderEntry.orderEntryExtras"
-	  						>
-		    				{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
-  						</label>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Χρόνος</label>
-						<select class="form-select form-control-lg mb-2" v-model="newOrderEntry.timing">
-							<option v-for="i in 5">{{i}}</option>
-						</select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Οικογένεια</label>
-						<select class="form-select form-control-lg mb-2" v-model="newOrderEntry.family">
-							<option v-for="i in 12">{{i}}</option>
-						</select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Σχόλια</label>
-  						<textarea
-  							class="form-control"
-  							rows="2"
-  							v-model="newOrderEntry.notes"
-  						></textarea>
-					</div>
-      			</div>
-      			<div class="modal-footer">
-      				<button
-        				type="button"
-        				class="btn btn-secondary btn-lg"
-        				@click="newMenuItem = null"
-        			>Πίσω</button>
-        			<button
-        				type="button"
-        				class="btn btn-primary btn-lg"
-        				@click="
-        					newOrderEntry.menuItem = newMenuItem;
-        					addOrderEntry(newOrderEntry);
-        					newMenuItem = null;
-        					activeMenuSection = null;
-        					isMenuSectionsModalVisible = true
-        					newOrderEntry = {notes:'', orderEntryExtras: []};
-        				"
-        			>Ok</button>
-      			</div>
-    		</div>
-  		</div>
-	</div>
-
 	<div class="modal modal-lg d-block" v-if="selectedOrderEntry != null">
   		<div class="modal-dialog modal-fullscreen-sm-down">
     		<div class="modal-content">
@@ -296,85 +57,12 @@
         				type="button"
         				class="btn btn-primary btn-lg"
         				@click="selectedOrderEntry = null"
-        			>Ok</button>
+        			>OK</button>
       			</div>
     		</div>
   		</div>
 	</div>
-
-	<div class="modal modal-lg d-block" v-if="selectedNewOrderEntry != null">
-  		<div class="modal-dialog modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">{{getTranslation(selectedNewOrderEntry.menuItem, 'el').name}}</h5>
-        			<button
-        				type="button"
-        				class="btn-close"
-        				@click="selectedNewOrderEntry = null;"
-        			></button>
-      			</div>
-      			<div class="modal-body">
-					<div class="mb-3" v-if="selectedNewOrderEntry.weight != null">
-						<label class="form-label">Βάρος (γρ)</label>
-						<input
-							class="form-control form-control-lg"
-							type="number"
-							min="50"
-							step="1"
-							v-model="selectedNewOrderEntry.weight"/>
-					</div>
-					<div class="form-check form-control-lg mb-3" v-for="extra in selectedNewOrderEntry.menuItem.extras">
-  						<label class="form-check-label w-100">
-	  						<input
-	  							class="form-check-input"
-	  							type="checkbox"
-	  							:value="extra"
-	  							v-model="selectedNewOrderEntry.orderEntryExtras"
-	  						>
-							{{extra.name}} <span v-if="extra.price != 0">(&euro;{{extra.price}})</span>
-  						</label>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Έκπτωση</label>
-						<input
-							class="form-control form-control-lg"
-							type="number"
-							min="0"
-							step="0.1"
-							v-model="selectedNewOrderEntry.discount"/>
-					</div>
-					<div class="mb-3" v-if="!isDrink(selectedNewOrderEntry.menuItem)">
-						<label class="form-label">Χρόνος</label>
-						<select class="form-select form-control-lg mb-2" v-model="selectedNewOrderEntry.timing">
-							<option v-for="i in 5">{{i}}</option>
-						</select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Οικογένεια</label>
-						<select class="form-select form-control-lg mb-2" v-model="selectedNewOrderEntry.family">
-							<option v-for="i in 12">{{i}}</option>
-						</select>
-					</div>
-					<div class="mb-3">
-						<label class="form-label">Σχόλια</label>
-  						<textarea
-  							class="form-control form-control-lg"
-  							rows="2"
-  							v-model="selectedNewOrderEntry.notes"
-  						></textarea>
-					</div>
-      			</div>
-      			<div class="modal-footer">
-        			<button
-        				type="button"
-        				class="btn btn-primary btn-lg"
-        				@click="selectedNewOrderEntry = null"
-        			>Ok</button>
-      			</div>
-    		</div>
-  		</div>
-	</div>
-
+	
 	<div class="modal modal-lg d-block" v-if="orderEntryForCancellation != null">
   		<div class="modal-dialog modal-fullscreen-sm-down">
     		<div class="modal-content">
@@ -411,80 +99,6 @@
   		</div>
 	</div>
 
-	<!-- error modal -->
-	<div class="modal modal-lg d-block" v-if="printerError != null">
-  		<div class="modal-dialog modal-fullscreen-sm-down">
-    		<div class="modal-content">
-      			<div class="modal-header">
-        			<h5 class="modal-title">Λάθος εκτύπωσης</h5>
-        			<button
-        				type="button"
-        				class="btn-close"
-        				@click="printerError = null"
-        			></button>
-      			</div>
-      			<div class="modal-body">
-      				<div class="mb-3">
-						<p class="text-center fs-5">{{printerError.errorText}}</p>
-					</div>
-      			</div>
-    		</div>
-  		</div>
-	</div>
-
-	<div class="border rounded mb-3" v-if="newOrderEntryGroup.orderEntries.length > 0">
-		<div class="row">
-			<div class="col">
-				<div class="fs-5 fw-medium fst-italic text-center border-bottom p-1">
-					{{newOrderEntryGroup.createdAt}}
-					<span v-if="newOrderEntryGroup.notes.length > 0">/ {{newOrderEntryGroup.notes}}</span>
-				</div>
-			</div>
-		</div>
-		<div v-for="(n, i) in 7">
-			<div class="mb-1 p-1 ps-2 pe-2" v-if="filterGroupEntries(newOrderEntryGroup, i).length > 0">
-				<div
-					class="mb-2"
-					v-for="(orderEntry, index) in filterGroupEntries(newOrderEntryGroup, i)"
-					@click="selectedNewOrderEntry = orderEntry;"
-				>
-					<div class="d-flex w-100 justify-content-between">
-		      			<div class="fs-5">
-		      				{{orderEntry.quantity}} &times;
-		      				{{getTranslation(orderEntry.menuItem, 'el').name}}
-		      				/ &euro;{{calculateOrderEntryPrice(orderEntry)}}
-		      			</div>
-		      			<div>
-		      				<button
-		      					type="button"
-		      					class="btn btn-secondary me-2"
-		      					@click.stop="if (orderEntry.quantity > 1) { orderEntry.quantity--; } else { deleteNewOrderEntry(orderEntry) }"
-		      				>
-			      				<span class="fw-bold">&#x2212;</span>
-			      			</button>
-			      			<button
-			      				type="button"
-			      				class="btn btn-secondary"
-			      				@click.stop="orderEntry.quantity++"
-			      			>
-			      				<span class="fw-bold">&#x002B;</span>
-			      			</button>
-			      		</div>
-		      		</div>
-		    		<div class="mb-0 ps-3">
-		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
-		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
-			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
-			    			</span>
-		    			</div>
-		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
-		    		</div>
-		  		</div>
-			</div>
-			<hr v-if="filterGroupEntries(newOrderEntryGroup, i).length > 0 && filterGroupEntries(newOrderEntryGroup, i + 1).length > 0" class="m-1"/>
-		</div>
-	</div>
-
 	<div v-for="orderEntryGroup in order.orderEntryGroups" class="border rounded mb-3">
 		<div class="row">
 			<div class="col">
@@ -493,76 +107,53 @@
 					<span v-if="orderEntryGroup.notes.length > 0">{{orderEntryGroup.notes}} /</span>
 					<span @click="printOrderEntryGroup(orderEntryGroup)" class="text-primary">
 						reprint
-					</span><span v-if="reprinting == orderEntryGroup.id" class="spinner-border spinner-border-sm"></span>
+					</span>
+                    <span v-if="reprinting == orderEntryGroup.id" class="spinner-border spinner-border-sm"></span>
 				</div>
 			</div>
 		</div>
-		<div v-for="(n, i) in 7">
-			<div class="mb-1 p-1 ps-2 pe-2" v-if="filterGroupEntries(orderEntryGroup, i).length > 0">
-				<div
-					class="mb-2"
-					v-for="(orderEntry, index) in filterGroupEntries(orderEntryGroup, i)"
-				>
-	      			<div class="d-flex w-100 justify-content-between">
-		      			<div class="fs-5">
-		      				{{orderEntry.quantity}} &times;
-		      				{{getTranslation(orderEntry.menuItem, 'el').name}}
-		      				<span class="text-primary text-decoration-none" v-if="orderEntry.quantity > 0" @click="selectedOrderEntry = orderEntry">
-		      				 / &euro;{{calculateOrderEntryPrice(orderEntry)}}
-		      				</span>
-		      			</div>
-		      			<div>
-		      				<button
-		      					type="button"
-		      					class="btn btn-secondary me-2"
-		      					:disabled="orderEntry.quantity == 0"
-		      					@click.stop="orderEntryForCancellation = orderEntry"
-		      				>
-			      				<span class="fw-bold">&#x2212;</span>
-			      			</button>
-			      			<button
-			      				type="button"
-			      				class="btn btn-secondary"
-			      				@click.stop="
-			      					addOrderEntry({
-										menuItem: orderEntry.menuItem,
-										timing: orderEntry.menuItem.isDrink ? 6 : 1,
-										family: orderEntry.family,
-										notes: orderEntry.notes,
-										weight: orderEntry.weight,
-										orderEntryExtras: orderEntry.orderEntryExtras
-									});
-			      				"
-								:disabled="orderEntry.menuItem.trackAvailableQuantity && orderEntry.menuItem.availableQuantity == 0"
-			      			>
-			      				<span class="fw-bold">&#x002B;</span>
-			      			</button>
-			      		</div>
-		      		</div>
-		    		<div class="mb-0 ps-3">
-		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
-		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
-			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
-			    			</span>
-		    			</div>
-		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
-		    		</div>
-		    		<div class="mb-0 ps-3">
-		    			<div v-for="orderEntryCancellation in orderEntry.orderEntryCancellations">
-		    				<span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt}}</span>
-		    			</div>
-		    			<div v-if="orderEntry.discount > 0" class="text-danger">
-		    				<span v-if="orderEntry.discountReason == 'ON_THE_HOUSE'">Κέρασμα από μαγαζί</span>
-							<span v-if="orderEntry.discountReason.includes('ON_EMPLOYEE_')">
-								Κέρασμα από {{orderEntry.discountReason.replace('ON_EMPLOYEE_', '')}}
-							</span>
-		    				(-&euro;{{orderEntry.discount}})
-		    			</div>
-		    		</div>
-		  		</div>
-			</div>
-			<hr v-if="filterGroupEntries(orderEntryGroup, i).length > 0" class="m-1"/>
-		</div>
+		
+        <div class="mb-1 p-1 ps-2 pe-2">
+            <div class="mb-2" v-for="(orderEntry, index) in orderEntryGroup.orderEntries">
+                <div class="d-flex w-100 justify-content-between">
+                    <div class="fs-5">
+                        {{orderEntry.quantity}} &times;
+                        {{getTranslation(orderEntry.menuItem, 'el').name}}
+                        <span class="text-primary text-decoration-none" v-if="orderEntry.quantity > 0" @click="selectedOrderEntry = orderEntry">
+                            / &euro;{{calculateOrderEntryPrice(orderEntry)}}
+                        </span>
+                    </div>
+                    <div>
+                        <button
+                            type="button"
+                            class="btn btn-secondary me-2"
+                            :disabled="orderEntry.quantity == 0"
+                            @click.stop="orderEntryForCancellation = orderEntry"
+                        >
+                            <span class="fw-bold">&#x2212;</span>
+                        </button>
+                        
+                    </div>
+                </div>
+                <div class="mb-0 ps-3">
+                    <div v-if="orderEntry.orderEntryExtras.length > 0">
+                        <span v-for="(extra, index) in orderEntry.orderEntryExtras">
+                            <span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+                        </span>
+                    </div>
+                    <div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+                </div>
+                <div class="mb-0 ps-3">
+                    <div v-for="orderEntryCancellation in orderEntry.orderEntryCancellations">
+                        <span class="text-danger">{{orderEntryCancellation.cancellationReason}} / {{orderEntryCancellation.createdAt}}</span>
+                    </div>
+                    <div v-if="orderEntry.discount > 0" class="text-danger">
+                        <span v-if="orderEntry.discountReason == 'ON_THE_HOUSE'">Κέρασμα από μαγαζί</span>
+                        (-&euro;{{orderEntry.discount}})
+                    </div>
+                </div>
+            </div>
+        </div>
 	</div>
 </div>
 <canvas width="576" height="1500" class="d-none"></canvas>
@@ -579,26 +170,13 @@
 		vueApp = Vue.createApp({
 		    data() {
 		    	return {
-		    		isMenuSectionsModalVisible: false,
-		    		showNotesModal: false,
-
-		    		activeMenuSection: null,
-		    		newMenuItem: null,
 		    		selectedOrderEntry: null,
-		    		selectedNewOrderEntry: null,
 
 		    		orderEntryForCancellation: null,
 		    		cancellationReason: '',
 
-		    		menuSections: [],
-
 		    		family: 1,
 		    		timing: 1,
-
-		    		newOrderEntry: {
-		    			orderEntryExtras: [],
-		    			notes: ''
-		    		},
 
 		    		newOrderEntryGroup: {
 		    			orderEntries: [],
@@ -620,7 +198,6 @@
 		    		waiter: null,
 
 		    		reprinting: false,
-		    		printerError: null,
 
 		    		canvasCtx: null
 		    	}
@@ -638,18 +215,6 @@
 					},
 					deep: true,
 		            immediate: false
-		        },
-		        'newOrderEntryGroup.orderEntries': {
-		        	handler: function () {
-			        	if (this.newOrderEntryGroup.orderEntries.length > 0) {
-			        		let d = new Date();
-			        		let minutes = (d.getMinutes() < 10) ? '0' + d.getMinutes() : d.getMinutes();
-			        		let hours = (d.getHours() < 10) ? '0' + d.getHours() : d.getHours();
-			        		this.newOrderEntryGroup.createdAt = hours + ':' + minutes;
-			        	}
-					},
-					deep: true,
-		            immediate: false
 		        }
 		    },
 		    mounted() {
@@ -661,22 +226,11 @@
                     url: '/admin/graph-ql?useCachedResults=true',
                     method: 'post',
                     data: `{
-                        menuSections(menu: "Take Out") {
-                            id, translations { name, language },
-                            menuItems: activeMenuItems {
-                            	id, trackAvailableQuantity, availableQuantity, isDrink, price, priceUnit, menuPosition, translations { name, language },
-                            	extras: allExtras {
-                            		id, name, price
-                            	},
-                            	printers { id, name, printerAddress }
-                            }
-                        },
                         printers {
                         	id, name, printerAddress, isReceiptPrinter
                         }
                     }`
                 }).then(response => {
-                    this.menuSections = response.data.data.menuSections;
                     this.printers = response.data.data.printers;
                 });
 
@@ -734,48 +288,6 @@
 		    	getTranslation(object, language) {
 		    		return _.find(object.translations, translation => translation.language == language);
 		    	},
-		    	isDrink(menuItem) {
-		    		return menuItem.isDrink;
-		    	},
-		    	isEqual(entryA, entryB) {
-		    		return entryA.menuItem.id == entryB.menuItem.id
-						&& entryA.weight == entryB.weight
-	    				&& entryA.family == entryB.family
-	    				&& entryA.timing == entryB.timing
-	    				&& entryA.notes == entryB.notes
-	    				&& _.isEqual(entryA.orderEntryExtras, entryB.orderEntryExtras)
-		    	},
-		    	addOrderEntry(newOrderEntry) {
-		    		let index = this.newOrderEntryGroup.orderEntries.findIndex(
-		    			orderEntry => this.isEqual(orderEntry, newOrderEntry)
-		    		);
-
-	    			if (index != -1) {
-	    				this.newOrderEntryGroup.orderEntries[index].quantity++;
-	    			} else {
-		    			this.newOrderEntryGroup.orderEntries.splice(index, 0, {
-			    			quantity: 1,
-			    			family: newOrderEntry.family,
-			    			timing: newOrderEntry.timing,
-			    			menuItem: newOrderEntry.menuItem,
-			    			menuItemPrice: newOrderEntry.menuItem.price,
-			    			orderEntryExtras: newOrderEntry.orderEntryExtras,
-			    			notes: newOrderEntry.notes,
-			    			weight: newOrderEntry.weight,
-			    			discount: 0,
-			    		});
-			    	}
-		    	},
-		    	showMenuItemOptionsModal(menuItem) {
-		    		this.newMenuItem = menuItem;
-		    		this.newOrderEntry.timing = this.isDrink(menuItem) ? 6 : this.timing;
-		    		this.newOrderEntry.family = this.family;
-		    		this.newOrderEntry.notes = '';
-
-		    		if (menuItem.priceUnit == 'kg') {
-	  					this.newOrderEntry.weight = '';
-		    		}
-		    	},
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItemPrice;
 
@@ -812,18 +324,6 @@
 
 		    		return _.round(price * orderEntry.quantity, 1);
 		    	},
-		    	filterGroupEntries(orderGroup, timing) {
-		    		let orderedEntries = orderGroup.orderEntries.filter(
-		    			orderEntry => orderEntry.timing == timing
-		    		);
-		    		return _.sortBy(orderedEntries, [o => o.menuItem.menuPosition]);
-		    	},
-		    	deleteNewOrderEntry(oe) {
-		    		let index = this.newOrderEntryGroup.orderEntries.findIndex(
-		    			orderEntry => this.isEqual(orderEntry, oe)
-		    		);
-		    		this.newOrderEntryGroup.orderEntries.splice(index, 1);
-		    	},
 		    	save() {
 		    		if (this.savingOrder) return;
 		    		this.savingOrder = true;
@@ -833,7 +333,8 @@
 		    			newOrderEntryGroup: this.newOrderEntryGroup
 		    		}).then(response => {
 		                if (response.data == 'ok') {
-		                	this.printOrder();
+		                	//this.printOrder();
+                            window.location.href = '/take-out/';
 		                }
 		            }).catch(error => {
     					console.log(error);
@@ -898,58 +399,57 @@
 
 		    		let orderEntriesCount = 0;
 
-		    		for (let i = 0; i < 7; i++) {
-		    			let entries = this.filterGroupEntries(orderEntryGroup, i).filter(orderEntry =>
-		    				_.findIndex(orderEntry.menuItem.printers, p => p.id == printer.id) != -1
-		    				|| printer.isReceiptPrinter
-		    			);
+		    		
+                    let entries = orderEntryGroup.orderEntries.filter(orderEntry =>
+                        _.findIndex(orderEntry.menuItem.printers, p => p.id == printer.id) != -1
+                        || printer.isReceiptPrinter
+                    );
 
-		    			entries.forEach(orderEntry => {
-		    				orderEntriesCount++;
-		    				let quantity = orderEntry.quantity;
-		    				let name = this.getTranslation(orderEntry.menuItem, 'el').name;
-		    				let weight = orderEntry.weight != null && orderEntry.weight > 0
-		    					? ` ${orderEntry.weight / 1000}Kg` : '';
+                    entries.forEach(orderEntry => {
+                        orderEntriesCount++;
+                        let quantity = orderEntry.quantity;
+                        let name = this.getTranslation(orderEntry.menuItem, 'el').name;
+                        let weight = orderEntry.weight != null && orderEntry.weight > 0
+                            ? ` ${orderEntry.weight / 1000}Kg` : '';
 
-		    				if (printer.isReceiptPrinter) {
-		    					let priceBlock = ` (€${this.calculateOrderEntryPrice(orderEntry)})`;
-		    					leftText(`${quantity} \xd7 ${name}${weight}${priceBlock}`, 30, true);
-		    				} else {
-		    					let tickboxes = '';
-		    					if (quantity > 1) {
-		    						for (let j = 0; j < quantity; j++) tickboxes += '[]';
-		    					}
-		    					let mainLine = `${quantity} \xd7 ${name}${weight}`;
-		    					if (quantity <= 6) mainLine += ` ${tickboxes}`;
-		    					leftText(mainLine, 30, true);
-		    					if (quantity > 6 && tickboxes) {
-		    						leftText(tickboxes, 26, false, INDENT);
-		    					}
-		    				}
+                        if (printer.isReceiptPrinter) {
+                            let priceBlock = ` (€${this.calculateOrderEntryPrice(orderEntry)})`;
+                            leftText(`${quantity} \xd7 ${name}${weight}${priceBlock}`, 30, true);
+                        } else {
+                            let tickboxes = '';
+                            if (quantity > 1) {
+                                for (let j = 0; j < quantity; j++) tickboxes += '[]';
+                            }
+                            let mainLine = `${quantity} \xd7 ${name}${weight}`;
+                            if (quantity <= 6) mainLine += ` ${tickboxes}`;
+                            leftText(mainLine, 30, true);
+                            if (quantity > 6 && tickboxes) {
+                                leftText(tickboxes, 26, false, INDENT);
+                            }
+                        }
 
-		    				orderEntry.orderEntryExtras.forEach(extra => {
-		    					leftText(extra.name, 24, false, INDENT);
-		    				});
+                        orderEntry.orderEntryExtras.forEach(extra => {
+                            leftText(extra.name, 24, false, INDENT);
+                        });
 
-		    				if (orderEntry.notes && orderEntry.notes.length > 0) {
-		    					leftText(orderEntry.notes, 24, false, INDENT);
-		    				}
-		    			});
+                        if (orderEntry.notes && orderEntry.notes.length > 0) {
+                            leftText(orderEntry.notes, 24, false, INDENT);
+                        }
+                    });
 
-		    			if (entries.length > 0) {
-		    				let hasMore = false;
-		    				for (let j = i + 1; j < 7; j++) {
-		    					if (this.filterGroupEntries(orderEntryGroup, j).some(oe =>
-		    						_.findIndex(oe.menuItem.printers, p => p.id == printer.id) != -1
-		    						|| printer.isReceiptPrinter
-		    					)) {
-		    						hasMore = true;
-		    						break;
-		    					}
-		    				}
-		    				if (hasMore) separator();
-		    			}
-		    		}
+                    if (entries.length > 0) {
+                        let hasMore = false;
+                        for (let j = i + 1; j < 7; j++) {
+                            if (this.filterGroupEntries(orderEntryGroup, j).some(oe =>
+                                _.findIndex(oe.menuItem.printers, p => p.id == printer.id) != -1
+                                || printer.isReceiptPrinter
+                            )) {
+                                hasMore = true;
+                                break;
+                            }
+                        }
+                        if (hasMore) separator();
+                    }
 
 		    		if (showTotal && printer.isReceiptPrinter) {
 		    			separator();
@@ -957,35 +457,6 @@
 		    		}
 
 		    		return { orderEntriesCount, canvasHeight: y + 20 };
-		    	},
-		    	printOrder() {
-		    		if (this.newOrderEntryGroup.orderEntries.length == 0) {
-		    			_.each(this.printers, printer => { printer.printOk = true; });
-		    			return;
-		    		}
-
-		    		_.each(this.printers, printer => {
-		    			let { orderEntriesCount, canvasHeight } = this.drawGroupOnCanvas(
-		    				this.canvasCtx, printer, this.newOrderEntryGroup, 'EXTRA', true
-		    			);
-
-		    			if (orderEntriesCount > 0) {
-		    				let pr = new epson.ePOSBuilder();
-		    				pr.addImage(this.canvasCtx, 0, 0, 576, canvasHeight, pr.COLOR_1, pr.MODE_MONO);
-		    				pr.addFeedLine(5);
-		    				pr.addCut(pr.CUT_FEED);
-		    				axios.post('/admin/print-jobs/create', {
-		    					printer: printer.name,
-		    					xml: pr.toString()
-		    				}).then(response => {
-		    					if (response.data == 'ok') {
-		    						printer.printOk = true;
-		    					}
-		    				}).catch(error => { alert(error); });
-		    			} else {
-		    				printer.printOk = true;
-		    			}
-		    		});
 		    	},
 		    	printOrderEntryGroup(orderEntryGroup) {
 		    		this.reprinting = orderEntryGroup.id;

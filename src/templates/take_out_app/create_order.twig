@@ -10,54 +10,28 @@
 
 {% block content %}{% verbatim %}
 <div id="app">
-	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-2 border-bottom">
 	    <h1>
 	    	<a href="/take-out/" class="text-decoration-none"><i class="bi bi-bag"></i></a> /
 	    	Take out / &euro;{{totalPrice}}
 	    </h1>
     	<div class="btn-toolbar">
-	       	<a href="#" class="btn btn-lg btn-primary me-2 d-inline d-sm-none fw-bold" @click="showOptions = true;">
-	            &ctdot;
-	        </a>
-	       	<button href="#" class="btn btn-lg btn-primary d-none d-sm-inline" @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
-	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Αποθήκευση
+	       	<button href="#" class="btn btn-lg btn-primary " @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
+	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>
+                <i class="bi bi-floppy"></i>
 	        </button>
 	    </div>
 	</div>
 
-	<div class="offcanvas offcanvas-start" :class="showOptions ? 'show' : ''" tabindex="-1">
-  		<div class="offcanvas-header">
-    		<h5 class="offcanvas-title">Επιλογές</h5>
-    		<button type="button" class="btn-close" @click="showOptions = false"></button>
-  		</div>
-  		<div class="offcanvas-body">
-  			<div class="row mb-2">
-  				<div class="col-xs-12 mb-4">
-			        <button class="btn btn-lg btn-primary w-100" @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
-			            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>Αποθήκευση
-			        </button>
-			    </div>
-				<div class="col-xs-12 mb-2">
-					<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
-						<span class="me-1">Σχόλια</span>
-						<span v-if="order.notes.length > 0" class="fw-bold">*</span>
-					</button>
-				</div>
-		    </div>
-    	</div>
-  	</div>
-  	<div class="offcanvas-backdrop fade show" v-if="showOptions"></div>
-
-	<div class="d-none d-sm-block">
-		<div class="row gx-1 mb-2">
-			<div class="col">
-				<button type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
+		<div class="row gx-1 mb-2 pb-2 border-bottom">
+			<div class="col text-center">
+				<button v-if="order.notes.length == 0" type="button" class="btn btn-outline-primary btn-lg w-100" @click="showNotesModal = true">
 					<span class="me-1">Σχόλια</span>
 					<span v-if="order.notes.length > 0" class="fw-bold">*</span>
 				</button>
+                <span v-else class="fs-4 text-muted" @click="showNotesModal = true"><i class="bi bi-pencil"></i> {{order.notes}}</span>
 			</div>
 	    </div>
-	</div>
 
 	<div class="row gx-1 mb-2">
 		<div class="sticky-top">
@@ -66,7 +40,7 @@
 				class="btn btn-lg btn-primary w-100 mt-2 mb-2"
 				@click="isMenuSectionsModalVisible = true"
 			>
-				Προσθήκη
+				<i class="bi bi-plus-lg"></i> Προσθήκη
 			</button>
 		</div>
 
@@ -287,50 +261,47 @@
   			</div>
 		</div>
 
-		<div v-for="(n, i) in 7">
-			<div class="mb-1 p-1 ps-2 pe-2" v-if="filteredEntries(i).length > 0">
-				<div
-					v-for="orderEntry in filteredEntries(i)"
-					@click="activeOrderEntry = orderEntry"
-				>
-		  			<div class="mb-2 d-flex w-100 justify-content-between">
-		      			<div class="fs-5">
-		      				{{orderEntry.quantity}} &times;
-		      				{{getTranslation(orderEntry.menuItem, 'el').name}}
-		      				/ &euro;{{calculateOrderEntryPrice(orderEntry)}}
-		      			</div>
-		      			<div>
-		      				<button
-		      					type="button"
-		      					class="btn btn-secondary me-2"
-		      					@click.stop="if (orderEntry.quantity > 1) { orderEntry.quantity--; } else { deleteOrderEntry(orderEntry.index) }"
-		      				>
-			      				<span class="fw-bold">&#x2212;</span>
-			      			</button>
-			      			<button
-			      				type="button"
-			      				class="btn btn-secondary"
-			      				@click.stop="orderEntry.quantity++"
-			      			>
-			      				<span class="fw-bold">&#x002B;</span>
-			      			</button>
-			      		</div>
-		    		</div>
-		    		<div class="mt-n1 ps-3">
-		    			<div v-if="orderEntry.weight > 0">
-		    				βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
-		    			</div>
-		    			<div v-if="orderEntry.orderEntryExtras.length > 0">
-		    				<span v-for="(extra, index) in orderEntry.orderEntryExtras">
-			    				<span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
-			    			</span>
-		    			</div>
-		    			<div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
-		    		</div>
-		  		</div>
-			</div>
-			<hr v-if="filteredEntries(i).length > 0"/>
-		</div>
+		
+			
+        <div
+            v-for="orderEntry in order.orderEntries"
+            @click="activeOrderEntry = orderEntry"
+        >
+            <div class="mb-2 d-flex w-100 justify-content-between">
+                <div class="fs-5">
+                    {{orderEntry.quantity}} &times;
+                    {{getTranslation(orderEntry.menuItem, 'el').name}}
+                    / &euro;{{calculateOrderEntryPrice(orderEntry)}}
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-secondary me-2"
+                        @click.stop="if (orderEntry.quantity > 1) { orderEntry.quantity--; } else { deleteOrderEntry(orderEntry.index) }"
+                    >
+                        <span class="fw-bold">&#x2212;</span>
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        @click.stop="orderEntry.quantity++"
+                    >
+                        <span class="fw-bold">&#x002B;</span>
+                    </button>
+                </div>
+            </div>
+            <div class="mt-n1 ps-3">
+                <div v-if="orderEntry.weight > 0">
+                    βάρος <span class="fw-bold">{{orderEntry.weight}}gr</span>
+                </div>
+                <div v-if="orderEntry.orderEntryExtras.length > 0">
+                    <span v-for="(extra, index) in orderEntry.orderEntryExtras">
+                        <span>{{extra.name}}</span><span v-if="index != orderEntry.orderEntryExtras.length - 1"> / </span>
+                    </span>
+                </div>
+                <div v-if="orderEntry.notes.length > 0">{{orderEntry.notes}}</div>
+            </div>
+        </div>
 	</div>
 
 	<!-- Modals -->
@@ -348,7 +319,7 @@
 			        	</div>
       				</div>
       				<div class="modal-footer">
-        				<button type="button" class="btn btn-secondary btn-lg" @click="showNotesModal = false">Κλείσιμο</button>
+        				<button type="button" class="btn btn-primary btn-lg" @click="showNotesModal = false">ΟΚ</button>
       				</div>
     			</div>
   			</div>
@@ -646,9 +617,6 @@
 		    	deleteOrderEntry(i) {
 		    		let index = this.order.orderEntries.findIndex(e => e.index == i);
 		    		this.order.orderEntries.splice(index, 1);
-		    	},
-		    	filteredEntries(timing) {
-		    		return this.order.orderEntries.filter(e => e.timing == timing);
 		    	},
 		    	orderedEntries(step) {
 		    		let entries = this.order.orderEntries.filter(e => e.timing == step);

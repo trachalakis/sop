@@ -89,6 +89,7 @@ use Application\Actions\OrdersApp\TransferOrderEntry;
 use Application\Actions\TakeOutApp\Homepage as TakeOutAppHomepage;
 use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
 use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
+use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\CreateReservation;
 use Application\Actions\ReservationsApp\UpdateReservation;
@@ -228,6 +229,7 @@ return function (App $app, $container) {
         $group->get('/', TakeOutAppHomepage::class);
         $group->map(['GET', 'POST'], '/create', TakeOutAppCreateOrder::class);
         $group->map(['GET', 'POST'], '/update', TakeOutAppUpdateOrder::class);
+        $group->post('/payment', TakeOutAppPayment::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());

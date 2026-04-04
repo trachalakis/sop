@@ -40,7 +40,7 @@ final class CreateOrder
             $order->setTable(null);
             $order->setAdults(0);
             $order->setMinors(0);
-            $order->setNotes($requestData['notes'] ?? '');
+            $order->setNotes('');
             $order->setTicketNumber($this->ordersRepository->getNextTicketNumber($now));
             $order->setCreatedAt($now);
             $order->setWaiter($waiter);
@@ -50,7 +50,7 @@ final class CreateOrder
 
             $orderEntryGroup = new OrderEntryGroup();
             $orderEntryGroup->setCreatedAt($now);
-            $orderEntryGroup->setNotes('');
+            $orderEntryGroup->setNotes($requestData['notes']);
             $orderEntryGroup->setOrder($order);
 
             $orderEntries = [];
