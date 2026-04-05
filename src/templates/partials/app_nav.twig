@@ -5,5 +5,8 @@
         <li><a class="dropdown-item py-2" href="/take-out/"><i class="bi bi-bag me-2"></i>Take out</a></li>
         <li><a class="dropdown-item py-2" href="/reservations-app/"><i class="bi bi-telephone me-2"></i>Κρατήσεις</a></li>
         <li><a class="dropdown-item py-2" href="/users-app/"><i class="bi bi-person me-2"></i>Χρήστες</a></li>
+        {% if 'webmaster' in currentUser.getRoles %}
+            <li><a class="dropdown-item py-2" href="/admin/"><i class="bi bi-database me-2"></i>Διαχείρηση</a></li>
+        {% endif %}
     </ul>
 </div>

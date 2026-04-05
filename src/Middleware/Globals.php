@@ -13,22 +13,16 @@ use Slim\Views\Twig;
 
 final class Globals implements MiddlewareInterface
 {
-    private Settings $settings;
-
-    private Twig $twig;
-
 	public function __construct(
-        Settings $settings,
-        Twig $twig
-    ) {
-        $this->settings = $settings;
-        $this->twig = $twig;
-    }
+        private Settings $settings,
+        private Twig $twig
+    ) { }
 
     public function process(Request $request, RequestHandler $handler): Response
     {
         $this->twig->offsetSet('siteName', $this->settings->get('siteName'));
         $this->twig->offsetSet('appMode', $this->settings->get('appMode'));
+        $this->twig->offsetSet('currentUser', $_SESSION['user']);
         
         $response = $handler->handle($request);
         return $response;
