@@ -72,6 +72,7 @@
             overflow: hidden;
             transition: filter 0.08s;
             user-select: none;
+            position: relative;
         }
         .grid-cell:hover {
             filter: brightness(0.92);
@@ -154,26 +155,41 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="table in tables" :key="table.id">
-                        <td class="sticky-col">{{table.name}}</td>
+                    <tr v-for="row in tableRows" :key="row.table.id">
+                        <td class="sticky-col">{{row.table.name}}</td>
                         <td
-                            v-for="slot in timeSlots"
-                            :key="slot"
+                            v-for="cell in row.cells"
+                            :key="cell.slot"
                             class="grid-cell"
-                            :draggable="!!getCellReservation(table.id, slot)"
-                            :style="cellStyle(table.id, slot)"
-                            @click="clickCell(table.id, slot)"
-                            @dragstart="cellDragStart(table.id, slot, $event)"
-                            @dragover.prevent="dragOver(table.id, slot)"
-                            @drop.prevent="drop(table.id, slot)"
+                            :colspan="cell.colspan > 1 ? cell.colspan : null"
+                            :draggable="!!cell.reservation"
+                            :style="cellStyle(row.table.id, cell.slot)"
+                            @click="clickCell(row.table.id, cell.slot)"
+                            @dragstart="cellDragStart(row.table.id, cell.slot, $event)"
+                            @dragover.prevent="dragOver(row.table.id, cell.slot)"
+                            @drop.prevent="drop(row.table.id, cell.slot)"
                             @dragend="dragEnd"
                         >
-                            <template v-if="getCellReservation(table.id, slot)">
+                            <template v-if="cell.reservation">
                                 <div class="fw-semibold" style="font-size:11px; line-height:1.2">
-                                    {{getCellReservation(table.id, slot).name.substring(0, 10)}}
+                                    {{cell.reservation.name.substring(0, 10)}}
                                 </div>
                                 <div style="font-size:10px; opacity:0.85">
-                                    {{getCellReservation(table.id, slot).adults + getCellReservation(table.id, slot).minors}} ατ.
+                                    {{cell.reservation.adults + cell.reservation.minors}} ατ.
+                                </div>
+                                <div
+                                    style="position:absolute; bottom:0; right:0; display:flex; gap:1px;"
+                                    @click.stop
+                                >
+                                    <button
+                                        v-if="(durations[cell.reservation.id] ?? 4) > 1"
+                                        style="font-size:10px; line-height:1; padding:1px 4px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                        @click="adjustDuration(cell.reservation.id, -1)"
+                                    >&#x2212;</button>
+                                    <button
+                                        style="font-size:10px; line-height:1; padding:1px 4px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                        @click="adjustDuration(cell.reservation.id, +1)"
+                                    >&#x002B;</button>
                                 </div>
                             </template>
                         </td>
@@ -245,7 +261,7 @@
     </div><!-- end home view -->
 
     <!-- ========== OFFCANVAS FORM ========== -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="reservationOffcanvas" data-bs-backdrop="false" data-bs-scroll="true" style="width:min(520px,100vw)">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="reservationOffcanvas" data-bs-backdrop="true" data-bs-scroll="false" style="width:min(520px,100vw)">
         <div class="offcanvas-header border-bottom">
             <h5 class="offcanvas-title fs-4">
                 <span v-if="formMode === 'create'">Νέα κράτηση</span>
@@ -374,6 +390,7 @@
                     dragReservationId: null,
                     dragSourceKey: null,
                     dragOverKey: null,
+                    durations: {},
 
                     // form
                     formMode: null,
@@ -440,6 +457,27 @@
                     if (!this.selectedReservationId) return null;
                     const r = this.reservations.find(r => r.id === this.selectedReservationId);
                     return r ? this.dateTimeToSlot(r.dateTime) : null;
+                },
+                tableRows() {
+                    return this.tables.map(table => {
+                        const cells = [];
+                        const slots = this.timeSlots;
+                        let i = 0;
+                        while (i < slots.length) {
+                            const slot = slots[i];
+                            const reservation = this.getCellReservation(table.id, slot);
+                            if (reservation) {
+                                const dur = this.durations[reservation.id] ?? 4;
+                                const colspan = Math.min(dur, slots.length - i);
+                                cells.push({ slot, reservation, colspan });
+                                i += colspan;
+                            } else {
+                                cells.push({ slot, reservation: null, colspan: 1 });
+                                i++;
+                            }
+                        }
+                        return { table, cells };
+                    });
                 },
                 minorValues() {
                     return Array.from({ length: 26 }, (_, i) => i);
@@ -658,6 +696,12 @@
                 },
                 statusLabel(status) {
                     return { PENDING: 'ΑΝΑΜ.', ARRIVED: 'ΗΡΘΕ', CANCELLED: 'ΑΚΥΡ.' }[status] ?? status;
+                },
+
+                adjustDuration(reservationId, delta) {
+                    const current = this.durations[reservationId] ?? 4;
+                    const next = Math.max(1, current + delta);
+                    this.durations = { ...this.durations, [reservationId]: next };
                 },
 
                 // form methods
