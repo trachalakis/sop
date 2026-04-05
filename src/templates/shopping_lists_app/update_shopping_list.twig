@@ -308,27 +308,37 @@
                     const MAX_CHARS = 31;
 
                     let total = 0;
-                    this.selectedSupplies.forEach(supply => {
-                        if (supply.quantity <= 0) return;
+                    this.supplyGroups.forEach(group => {
+                        const groupItems = group.supplies
+                            .map(s => this.getSelection(s))
+                            .filter(s => s && s.quantity > 0);
 
-                        const cost = supply.price * supply.quantity;
-                        total += cost;
-                        const costStr = `€${(Math.round(cost * 100) / 100).toFixed(2)}`;
+                        if (groupItems.length === 0) return;
 
-                        const qty = supply.quantity % 1 === 0
-                            ? supply.quantity.toString()
-                            : supply.quantity.toFixed(1);
+                        leftText(this.canvasCtx, group.name.toUpperCase(), LINE_SIZE, true);
 
-                        let unitBlock = '';
-                        if (supply.priceUnit == 'item') {
-                            unitBlock += `${qty}x`;
-                        } else {
-                            unitBlock += `${qty}${supply.priceUnit}`;
-                        }
+                        groupItems.forEach(supply => {
+                            const cost = supply.price * supply.quantity;
+                            total += cost;
+                            const costStr = `€${(Math.round(cost * 100) / 100).toFixed(2)}`;
 
-                        const name = supply.name;
-                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length - costStr.length));
-                        leftText(this.canvasCtx, `${unitBlock} ${name}${dots}${costStr}`, LINE_SIZE, true);
+                            const qty = supply.quantity % 1 === 0
+                                ? supply.quantity.toString()
+                                : supply.quantity.toFixed(1);
+
+                            let unitBlock = '';
+                            if (supply.priceUnit == 'item') {
+                                unitBlock += `${qty}x`;
+                            } else {
+                                unitBlock += `${qty}${supply.priceUnit}`;
+                            }
+
+                            const name = supply.name;
+                            const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length - costStr.length));
+                            leftText(this.canvasCtx, `${unitBlock} ${name}${dots}${costStr}`, LINE_SIZE, false);
+                        });
+
+                        y += PAD;
                     });
                     y += 36;
                     separator(this.canvasCtx);
