@@ -42,6 +42,7 @@ try {
     $stmt = $pdo->prepare("
         INSERT INTO user_permissions (path, allowed_roles)
         VALUES (:path, :roles)
+        ON CONFLICT (path) DO UPDATE SET allowed_roles = EXCLUDED.allowed_roles
     ");
 
     foreach ($paths as $path) {
