@@ -21,7 +21,7 @@ final class Permissions
 
     public function __invoke(Request $request, Response $response)
     {
-        $permissions = $this->userPermissionsRepository->findAll();
+        $permissions = $this->userPermissionsRepository->findBy([], ['path' => 'asc']);
 
         $rolesMap = [];
         foreach ($this->rolesRepository->findBy([], ['label' => 'asc']) as $role) {

@@ -34,7 +34,7 @@
             <tr>
                 <td>
                     <a class="text-decoration-none" href="/admin/permissions/update?id={{ permission.getId }}">
-                        <code>{{ permission.getPath }}</code>
+                        <code>{{ permission.getPath | e }}</code>
                     </a>
                 </td>
                 <td>

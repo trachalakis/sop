@@ -39,7 +39,7 @@ class UserPermission
 
     public function setAllowedRoles(array $allowedRoles)
     {
-        $this->allowedRoles = $allowedRoles;
+        $this->allowedRoles = array_values(array_filter($allowedRoles));
     }
 
     public function setPath(string $path)
