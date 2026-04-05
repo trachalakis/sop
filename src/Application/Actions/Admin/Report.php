@@ -197,11 +197,12 @@ final class Report
 
 	            $salaries += $scan->getSalary();
 
-                if (in_array('foh', $scan->getUser()->getRoles())) {
+                $userRoleNames = array_map(fn($r) => $r->getName(), $scan->getUser()->getRoles());
+                if (in_array('foh', $userRoleNames)) {
                     $fohSalaries += $scan->getSalary();
                 }
 
-                if (in_array('boh', $scan->getUser()->getRoles())) {
+                if (in_array('boh', $userRoleNames)) {
                     $bohSalaries += $scan->getSalary();
                 }
 	        }
