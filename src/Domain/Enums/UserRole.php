@@ -17,4 +17,5 @@ enum UserRole: string
     case assistantWaiter = 'assistant_waiter';
     case barManager = 'bar_manager';
     case barAssistant = 'bar_assistant';
+    case shoppingListsManager = 'shopping_lists_manager';
 }

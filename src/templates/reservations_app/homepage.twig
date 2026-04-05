@@ -94,6 +94,20 @@
             z-index: 20;
         }
 
+        .incoming-call-banner {
+            position: fixed;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1060;
+            min-width: 320px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+            animation: ring 0.4s ease infinite alternate;
+        }
+        @keyframes ring {
+            from { box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+            to   { box-shadow: 0 4px 24px rgba(25,135,84,0.6); }
+        }
         .offcanvas-body {
             scrollbar-width: none;
         }
@@ -183,11 +197,11 @@
                                 >
                                     <button
                                         v-if="(durations[cell.reservation.id] ?? 4) > 1"
-                                        style="font-size:10px; line-height:1; padding:1px 4px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                        style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
                                         @click="adjustDuration(cell.reservation.id, -1)"
                                     >&#x2212;</button>
                                     <button
-                                        style="font-size:10px; line-height:1; padding:1px 4px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                        style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
                                         @click="adjustDuration(cell.reservation.id, +1)"
                                     >&#x002B;</button>
                                 </div>
@@ -346,6 +360,22 @@
         </div>
     </div>
 
+    <!-- ========== INCOMING CALL BANNER ========== -->
+    <div v-if="incomingCall" class="incoming-call-banner alert alert-success d-flex align-items-center justify-content-between gap-3 px-4 py-3 rounded">
+        <div>
+            <i class="bi bi-telephone-inbound-fill me-2"></i>
+            <strong style="font-size:1.1rem">{{incomingCall.number}}</strong>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-success btn-lg" @click="answerCall()">
+                <i class="bi bi-telephone-fill"></i>
+            </button>
+            <button class="btn btn-danger btn-lg" @click="rejectCall()">
+                <i class="bi bi-telephone-x-fill"></i>
+            </button>
+        </div>
+    </div>
+
 </div>
 {% endverbatim %}{% endblock %}
 
@@ -354,6 +384,7 @@
     <script src="/assets/js/vue.global.prod.js"></script>
     <script src="/assets/js/lodash.min.js"></script>
     <script src="/assets/js/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jssip@3.10.1/dist/jssip.min.js"></script>
     <script>
         const INITIAL_RESERVATIONS = {{ reservationsJson|raw }};
         const INITIAL_TABLES       = {{ tablesJson|raw }};
@@ -391,6 +422,7 @@
                     dragSourceKey: null,
                     dragOverKey: null,
                     durations: {},
+                    incomingCall: null,  // { number, session }
 
                     // form
                     formMode: null,
@@ -421,7 +453,10 @@
                     this.cutoffTime = oneHourAgo;
                 }
                 this.cells = this.initCells();
+                const saved = localStorage.getItem('reservationDurations_' + DATE_STR);
+                if (saved) this.durations = JSON.parse(saved);
                 this.offcanvas = new bootstrap.Offcanvas(document.getElementById('reservationOffcanvas'));
+                this.initSip();
             },
             computed: {
                 timeSlots() {
@@ -698,10 +733,47 @@
                     return { PENDING: 'ΑΝΑΜ.', ARRIVED: 'ΗΡΘΕ', CANCELLED: 'ΑΚΥΡ.' }[status] ?? status;
                 },
 
+                initSip() {
+                    const SIP_WS_URI  = '';  // e.g. 'wss://your-pbx.com:8089/ws'
+                    const SIP_URI     = '';  // e.g. 'sip:1001@your-pbx.com'
+                    const SIP_PASS    = '';  // extension password
+
+                    if (!SIP_WS_URI || !SIP_URI || !SIP_PASS) return;
+
+                    const socket = new JsSIP.WebSocketInterface(SIP_WS_URI);
+                    const ua = new JsSIP.UA({
+                        sockets: [socket],
+                        uri: SIP_URI,
+                        password: SIP_PASS,
+                        register: true,
+                    });
+
+                    ua.on('newRTCSession', (e) => {
+                        if (e.originator !== 'remote') return;
+                        const session = e.session;
+                        const number = session.remote_identity?.uri?.user ?? 'Άγνωστος';
+                        this.incomingCall = { number, session };
+                    });
+
+                    ua.start();
+                },
+                answerCall() {
+                    if (!this.incomingCall) return;
+                    this.incomingCall.session.answer({ mediaConstraints: { audio: true, video: false } });
+                    this.openCreate();
+                    this.form.telephoneNumber = this.incomingCall.number;
+                    this.incomingCall = null;
+                },
+                rejectCall() {
+                    if (!this.incomingCall) return;
+                    this.incomingCall.session.terminate();
+                    this.incomingCall = null;
+                },
                 adjustDuration(reservationId, delta) {
                     const current = this.durations[reservationId] ?? 4;
                     const next = Math.max(1, current + delta);
                     this.durations = { ...this.durations, [reservationId]: next };
+                    localStorage.setItem('reservationDurations_' + DATE_STR, JSON.stringify(this.durations));
                 },
 
                 // form methods
