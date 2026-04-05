@@ -68,7 +68,7 @@ final class Homepage
         $selfDeliveries = $this->ordersRepository->findBy(['employee' => $_SESSION['user']]);
 
         return $this->twig->render($response, 'users_app/homepage.twig', [
-            //'user' => $_SESSION['user'],
+            'user' => $_SESSION['user'],
             'userIsWorking' => $lastCheckIn != null,
             'hours' => $hours,
             'minutes' => $minutes,
