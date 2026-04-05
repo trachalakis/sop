@@ -1,0 +1,372 @@
+{% extends 'app_skeleton.twig' %}
+
+{% block content %}{% verbatim %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/shopping-lists-app/update" class="text-decoration-none">Ψώνια</a>
+    </li>
+</ol>
+<div id="app">
+
+    <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+        <div>
+            <h1 class="mb-0">Ψώνια</h1>
+            <small class="text-muted">για {{formatDate(targetDate)}}<span v-if="selectedSupplies.length > 0"> &mdash; &euro;{{totalCost}}</span></small>
+        </div>
+        <div class="d-flex gap-2 align-items-center">
+
+            <button
+                type="button"
+                class="btn btn-lg"
+                :class="saveStatus === 'saved' ? 'btn-primary' : (saveStatus === 'error' ? 'btn-danger' : 'btn-outline-primary')"
+                :disabled="selectedSupplies.length === 0 || saving"
+                @click="save"
+                title="Αποθήκευση λίστας"
+            >
+                <i v-if="!saving" class="bi" :class="saveStatus === 'saved' ? 'bi-check-lg' : 'bi-floppy'"></i>
+                <span v-if="saving" class="spinner-border spinner-border-sm"></span>
+            </button>
+
+            <template v-if="receiptPrinters.length === 1">
+                <button
+                    type="button"
+                    class="btn btn-lg"
+                    :class="selectedSupplies.length > 0 ? 'btn-outline-primary' : 'btn-secondary'"
+                    :disabled="selectedSupplies.length === 0 || printing"
+                    @click="print(receiptPrinters[0])"
+                >
+                    <i class="bi bi-printer"></i>
+                    <span class="d-none d-sm-inline ms-1">{{receiptPrinters[0].name}}</span>
+                </button>
+            </template>
+            <template v-else-if="receiptPrinters.length > 1">
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="btn btn-lg"
+                        :class="selectedSupplies.length > 0 ? 'btn-primary' : 'btn-secondary'"
+                        :disabled="selectedSupplies.length === 0 || printing"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i class="bi bi-printer"></i>
+                        <span v-if="selectedSupplies.length > 0" class="badge bg-light text-dark ms-1">@{{selectedSupplies.length}}</span>
+                        <i class="bi bi-chevron-down ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li v-for="printer in receiptPrinters">
+                            <a class="dropdown-item fs-5 py-2" href="#" @click.prevent="print(printer)">@{{printer.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </template>
+
+            <button
+                v-if="selectedSupplies.length > 0"
+                type="button"
+                class="btn btn-lg btn-outline-secondary"
+                @click="clearSelection"
+                title="Εκκαθάριση"
+            >
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+        </div>
+    </div>
+
+    <div
+        v-if="saveStatus === 'saved'"
+        class="alert alert-success alert-dismissible py-2 mb-3"
+        role="alert"
+    >
+        <i class="bi bi-check-circle me-1"></i>
+        Η λίστα αποθηκεύτηκε για {{formatDate(targetDate)}}.
+        <button type="button" class="btn-close" @click="saveStatus = null"></button>
+    </div>
+
+    <div
+        v-if="printStatus === 'printed'"
+        class="alert alert-success alert-dismissible py-2 mb-3"
+        role="alert"
+    >
+        <i class="bi bi-printer me-1"></i>
+        Η λίστα στάλθηκε στον εκτυπωτή.
+        <button type="button" class="btn-close" @click="printStatus = null"></button>
+    </div>
+
+    <div class="mb-4">
+        <textarea
+            class="form-control"
+            rows="2"
+            placeholder="Σημειώσεις..."
+            v-model="notes"
+        ></textarea>
+    </div>
+
+    <div v-for="group in supplyGroups" :key="group.name" class="mb-4">
+        <h5 class="text-muted fw-semibold mb-2 text-uppercase">{{group.name}}</h5>
+        <div class="row g-2">
+            <div
+                v-for="supply in group.supplies"
+                :key="supply.id"
+                class="col-6 col-sm-4 col-md-3 col-lg-2"
+            >
+                <div
+                    class="card h-100 user-select-none"
+                    :class="isSelected(supply) ? 'border-primary shadow-sm' : 'border'"
+                    style="cursor: pointer;"
+                    @click="toggleSupply(supply)"
+                >
+                    <div class="card-body p-2 d-flex flex-column align-items-center justify-content-center text-center" style="min-height: 72px;">
+                        <div
+                            class="fw-medium"
+                            :class="isSelected(supply) ? 'text-primary' : ''"
+                        >
+                            {{supply.name}}
+                        </div>
+                        <div class="input-group mt-2" v-if="isSelected(supply)" @click.stop>
+                            <input
+                                type="number"
+                                class="form-control form-control-sm text-center"
+                                :value="getSelection(supply).quantity"
+                                @input="setQuantity(supply, $event.target.value)"
+                                min="0.1"
+                                step="0.5"
+
+                            />
+                            <span class="input-group-text">{{supply.priceUnit}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-if="supplyGroups.length === 0" class="text-center text-muted py-5">
+        Δεν υπάρχουν προμήθειες.
+    </div>
+
+    <canvas width="576" height="5000" class="d-none"></canvas>
+
+</div>
+{% endverbatim %}
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        const supplyGroupsData = {{ supplyGroupsJson|raw }};
+        const printersData = {{ printersJson|raw }};
+        const existingEntriesData = {{ existingEntriesJson|raw }};
+        const existingNotesData = {{ existingNotes|json_encode|raw }};
+        const targetDateStr = "{{ targetDate }}";
+    </script>
+    <script src="/assets/js/vue.global.prod.js"></script>
+    <script src="/assets/js/axios.min.js"></script>
+    <script>
+        const W = 576;
+        const PAD = 6;
+        let y = 0;
+
+        const centerText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'center';
+            y += fontSize;
+            ctx.fillText(text, W / 2, y);
+            y += 6;
+        };
+
+        const leftText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            y += fontSize;
+            ctx.fillText(text, PAD, y);
+            y += 6;
+        };
+
+        const separator = (ctx) => {
+            y += 6;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+            y += 10;
+        };
+    </script>
+    <script src="/assets/js/epos-2.24.0.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    supplyGroups: supplyGroupsData,
+                    printers: printersData,
+                    targetDate: targetDateStr,
+                    selectedSupplies: [],
+                    notes: existingNotesData,
+                    printing: false,
+                    saving: false,
+                    saveStatus: null,
+                    printStatus: null,
+                    canvasCtx: null,
+                };
+            },
+            mounted() {
+                this.canvasCtx = document.querySelector('canvas').getContext('2d');
+
+                existingEntriesData.forEach(entry => {
+                    for (const group of this.supplyGroups) {
+                        const supply = group.supplies.find(s => s.id === entry.supplyId);
+                        if (supply) {
+                            this.selectedSupplies.push({ ...supply, quantity: entry.quantity });
+                            break;
+                        }
+                    }
+                });
+            },
+            computed: {
+                receiptPrinters() {
+                    return this.printers.filter(p => p.isReceiptPrinter);
+                },
+                totalCost() {
+                    const total = this.selectedSupplies.reduce((sum, s) => sum + (s.price * s.quantity), 0);
+                    return Math.round(total * 100) / 100;
+                },
+            },
+            methods: {
+                formatDate(dateStr) {
+                    if (!dateStr) return '';
+                    const [y, m, d] = dateStr.split('-');
+                    return `${d}/${m}/${y}`;
+                },
+                isSelected(supply) {
+                    return this.selectedSupplies.some(s => s.id === supply.id);
+                },
+                getSelection(supply) {
+                    return this.selectedSupplies.find(s => s.id === supply.id);
+                },
+                toggleSupply(supply) {
+                    const idx = this.selectedSupplies.findIndex(s => s.id === supply.id);
+                    if (idx === -1) {
+                        this.selectedSupplies.push({ ...supply, quantity: 1 });
+                    } else {
+                        this.selectedSupplies.splice(idx, 1);
+                    }
+                },
+                setQuantity(supply, value) {
+                    const sel = this.getSelection(supply);
+                    if (sel) {
+                        sel.quantity = parseFloat(value) || 0;
+                    }
+                },
+                clearSelection() {
+                    this.selectedSupplies = [];
+                    this.saveStatus = null;
+                },
+                async save() {
+                    if (this.saving || this.selectedSupplies.length === 0) return;
+                    this.saving = true;
+                    this.saveStatus = null;
+                    try {
+                        await axios.post('/shopping-lists-app/save', {
+                            notes: this.notes,
+                            entries: this.selectedSupplies.map(s => ({
+                                supplyId: s.id,
+                                quantity: s.quantity,
+                                unitCost: s.price,
+                            })),
+                        });
+                        this.saveStatus = 'saved';
+                    } catch (error) {
+                        this.saveStatus = 'error';
+                        alert('Σφάλμα αποθήκευσης: ' + error);
+                    } finally {
+                        this.saving = false;
+                    }
+                },
+                getHm() {
+                    const now = new Date();
+                    const h = now.getHours();
+                    const m = now.getMinutes();
+                    return `${h}:${m < 10 ? '0' + m : m}`;
+                },
+                buildReceiptXml() {
+                    y = 0;
+                    this.canvasCtx.clearRect(0, 0, W, 5000);
+                    this.canvasCtx.fillStyle = 'white';
+                    this.canvasCtx.fillRect(0, 0, W, 5000);
+                    this.canvasCtx.fillStyle = 'black';
+
+                    const [yr, mo, da] = this.targetDate.split('-');
+                    const dateLabel = `${da}/${mo}/${yr}  ${this.getHm()}`;
+
+                    centerText(this.canvasCtx, 'ΛΙΣΤΑ ΠΡΟΜΗΘΕΙΩΝ', 32, true);
+                    centerText(this.canvasCtx, dateLabel, 24);
+                    if (this.notes && this.notes.trim().length > 0) {
+                        separator(this.canvasCtx);
+                        leftText(this.canvasCtx, this.notes.trim(), 24);
+                    }
+                    separator(this.canvasCtx);
+                    y += 36;
+
+                    const LINE_SIZE = 28;
+                    const MAX_CHARS = 31;
+
+                    let total = 0;
+                    this.selectedSupplies.forEach(supply => {
+                        if (supply.quantity <= 0) return;
+
+                        const cost = supply.price * supply.quantity;
+                        total += cost;
+                        const costStr = `€${(Math.round(cost * 100) / 100).toFixed(2)}`;
+
+                        const qty = supply.quantity % 1 === 0
+                            ? supply.quantity.toString()
+                            : supply.quantity.toFixed(1);
+
+                        let unitBlock = '';
+                        if (supply.priceUnit == 'item') {
+                            unitBlock += `${qty}x`;
+                        } else {
+                            unitBlock += `${qty}${supply.priceUnit}`;
+                        }
+
+                        const name = supply.name;
+                        const dots = '.'.repeat(Math.max(1, MAX_CHARS - name.length - unitBlock.length - costStr.length));
+                        leftText(this.canvasCtx, `${unitBlock} ${name}${dots}${costStr}`, LINE_SIZE, true);
+                    });
+                    y += 36;
+                    separator(this.canvasCtx);
+                    const totalStr = `ΣΥΝΟΛΟ: €${(Math.round(total * 100) / 100).toFixed(2)}`;
+                    leftText(this.canvasCtx, totalStr, LINE_SIZE, true);
+
+                    y += 12;
+
+                    let ePOSBuilder = new epson.ePOSBuilder();
+                    ePOSBuilder.addImage(this.canvasCtx, 0, 0, 576, y, ePOSBuilder.COLOR_1, ePOSBuilder.MODE_MONO);
+                    ePOSBuilder.addFeedLine(3);
+                    ePOSBuilder.addCut(ePOSBuilder.CUT_FEED);
+                    return ePOSBuilder.toString();
+                },
+                async print(printer) {
+                    if (this.printing || this.selectedSupplies.length === 0) return;
+                    this.printing = true;
+                    this.printStatus = null;
+                    try {
+                        const xml = this.buildReceiptXml();
+                        await axios.post('/admin/print-jobs/create', {
+                            printer: printer.name,
+                            xml,
+                        });
+                        this.printStatus = 'printed';
+                    } catch (error) {
+                        this.printStatus = 'error';
+                        alert('Σφάλμα εκτύπωσης: ' + error);
+                    } finally {
+                        this.printing = false;
+                    }
+                },
+            },
+        }).mount('#app');
+    </script>
+{% endblock %}
