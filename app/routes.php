@@ -55,7 +55,7 @@ use Application\Actions\Admin\DeleteRecipe;
 use Application\Actions\Admin\PrintRecipe;
 use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\Recipes;
-use Application\Actions\Admin\SaveShoppingList;
+use Application\Actions\ShoppingListsApp\SaveShoppingList as ShoppingListsAppSaveShoppingList;
 use Application\Actions\Admin\SortSupplyGroups;
 use Application\Actions\Admin\Supplies;
 use Application\Actions\Admin\SortMenuItems;
@@ -71,7 +71,7 @@ use Application\Actions\Admin\UpdateMenuSection;
 use Application\Actions\Admin\UpdatePrinter;
 use Application\Actions\Admin\UpdatePrintJob;
 use Application\Actions\Admin\UpdateScan;
-use Application\Actions\Admin\UpdateShoppingList;
+use Application\Actions\ShoppingListsApp\UpdateShoppingList as ShoppingListsAppUpdateShoppingList;
 use Application\Actions\Admin\UpdateSupply;
 use Application\Actions\Admin\UpdateTable;
 use Application\Actions\Admin\UpdateUser;
@@ -189,9 +189,6 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/delete', DeleteSupply::class);
 
-        $group->get('/shopping-lists/update', UpdateShoppingList::class);
-        $group->post('/shopping-lists/save', SaveShoppingList::class);
-        
         $group->get('/languages', Languages::class);
         $group->get('/languages/toggle', ToggleLanguage::class);
 
@@ -240,6 +237,13 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/update', UpdateReservation::class);
         $group->get('/homepage-list', ReservationsAppHomepageList::class);
         $group->post('/assign-tables', AssignReservationTables::class);
+    })
+    ->add(new Authorization($container->get(UserPermissionsRepository::class)))
+    ->add(new Authentication());
+
+    $app->group('/shopping-lists-app', function (RouteCollectorProxy $group) {
+        $group->get('/update', ShoppingListsAppUpdateShoppingList::class);
+        $group->post('/save', ShoppingListsAppSaveShoppingList::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
