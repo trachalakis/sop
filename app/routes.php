@@ -14,6 +14,7 @@ use Application\Actions\Admin\RemoveDailyRoleSlot;
 use Application\Actions\Admin\UnassignWorkShift;
 use Application\Actions\Admin\WorkSchedule;
 use Application\Actions\Admin\DeleteRole;
+use Application\Actions\Admin\CreatePermission;
 use Application\Actions\Admin\Permissions;
 use Application\Actions\Admin\Roles;
 use Application\Actions\Admin\UpdateRole;
@@ -174,6 +175,7 @@ return function (App $app, $container) {
         $group->get('/roles/delete', DeleteRole::class);
 
         $group->get('/permissions', Permissions::class);
+        $group->map(['GET', 'POST'], '/permissions/create', CreatePermission::class);
 
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
