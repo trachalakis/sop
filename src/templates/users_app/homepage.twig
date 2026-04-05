@@ -50,6 +50,18 @@
 	        </div>
 	    </div>
 	{% endif %}
+    {% if 'shopping_lists_manager' in user.getRoles %}
+        <div class="col-6">
+	        <div class="card text-bg-light mb-3">
+	            <div class="card-header"><a class="text-decoration-none" href="/shopping-lists-app/update">Ψώνια</a></div>
+	            <div class="card-body">
+	                <p class="card-text">
+	                	<a href="/shopping-lists-app/update" class="btn btn-primary btn-lg">Ψώνια</a>
+	                </p>
+	            </div>
+	        </div>
+	    </div>
+    {% endif %}
 	<div class="col-6">
 		<div class="card text-bg-light mb-3">
 			<div class="card-header"><a class="text-decoration-none" href="/users-app/orders">Αυτοπαραδόσεις</a></div>
