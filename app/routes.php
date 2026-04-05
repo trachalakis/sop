@@ -16,6 +16,7 @@ use Application\Actions\Admin\WorkSchedule;
 use Application\Actions\Admin\DeleteRole;
 use Application\Actions\Admin\CreatePermission;
 use Application\Actions\Admin\Permissions;
+use Application\Actions\Admin\UpdatePermission;
 use Application\Actions\Admin\Roles;
 use Application\Actions\Admin\UpdateRole;
 use Application\Actions\Admin\CreateMenu;
@@ -176,6 +177,7 @@ return function (App $app, $container) {
 
         $group->get('/permissions', Permissions::class);
         $group->map(['GET', 'POST'], '/permissions/create', CreatePermission::class);
+        $group->map(['GET', 'POST'], '/permissions/update', UpdatePermission::class);
 
         $group->get('/users', Users::class);
         $group->map(['GET', 'POST'], '/users/create', CreateUser::class);
