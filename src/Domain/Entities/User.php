@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Domain\Entities;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Domain\Enums\UserRole;
 use Domain\Repositories\UsersRepository;
 
 #[ORM\Entity(repositoryClass: UsersRepository::class)]
@@ -35,8 +36,11 @@ class User
     #[ORM\Column(type: 'string', name: 'password_hash')]
     private string $passwordHash;
 
-    #[ORM\Column(type: 'simple_array',  name: 'roles')]
-    private array $roles;
+    #[ORM\ManyToMany(targetEntity: Role::class)]
+    #[ORM\JoinTable(name: 'user_roles')]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
+    #[ORM\InverseJoinColumn(onDelete: 'CASCADE')]
+    private Collection $roles;
 
     public function __construct(
         bool $isActive,
@@ -46,6 +50,7 @@ class User
         float $hourlyRate,
         array $roles
     ) {
+        $this->roles = new ArrayCollection();
         $this->setIsActive($isActive);
         $this->setEmailAddress($emailAddress);
         $this->setPassword($password);
@@ -61,12 +66,12 @@ class User
 
     public function getEmailAddress(): string
     {
-    	return $this->emailAddress;
+        return $this->emailAddress;
     }
 
     public function getFullName(): string
     {
-    	return $this->fullName;
+        return $this->fullName;
     }
 
     public function getHourlyRate(): ?float
@@ -91,27 +96,47 @@ class User
 
     public function getRoles(): array
     {
-        return $this->roles;
+        return $this->roles->toArray();
+    }
+
+    public function hasRole(string $role): bool
+    {
+        foreach ($this->roles as $r) {
+            if ($r->getName() === $role || $r->getName() === 'webmaster') {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isEmployee(): bool
     {
-        return in_array('employee', $this->roles);
+        foreach ($this->roles as $r) {
+            if ($r->getName() === 'employee') {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function isWaiter(): bool
     {
-        return in_array('waiter', $this->roles);
+        foreach ($this->roles as $r) {
+            if ($r->getName() === 'waiter') {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function setEmailAddress(string $emailAddress): void
     {
-    	$this->emailAddress = $emailAddress;
+        $this->emailAddress = $emailAddress;
     }
 
     public function setFullName(string $fullName): void
     {
-    	$this->fullName = $fullName;
+        $this->fullName = $fullName;
     }
 
     public function setHourlyRate(float $hourlyRate): void
@@ -128,7 +153,7 @@ class User
     {
         $this->notes = $notes;
     }
-    
+
     public function setPassword(string $password): void
     {
         $this->passwordHash = password_hash($password, PASSWORD_BCRYPT);
@@ -136,6 +161,9 @@ class User
 
     public function setRoles(array $roles): void
     {
-        $this->roles = $roles;
+        $this->roles->clear();
+        foreach ($roles as $role) {
+            $this->roles->add($role);
+        }
     }
 }
