@@ -12,7 +12,7 @@ use Slim\Views\Twig;
 final class Login
 {
 	public function __construct(
-        private Twig $twig, 
+        private Twig $twig,
         private UsersRepository $usersRepository
     ) { }
 
@@ -30,13 +30,14 @@ final class Login
                 if (password_verify($requestParams['password'], $user->getPasswordHash())) {
                 	$_SESSION['user'] = $user;
 
-                    if (in_array('webmaster', $user->getRoles())) {
+                    $roleNames = array_map(fn($r) => $r->getName(), $user->getRoles());
+                    if (in_array('webmaster', $roleNames)) {
                         return $response->withHeader('Location', '/admin/')->withStatus(302);
                     }
-                    if (in_array('terminal', $user->getRoles())) {
+                    if (in_array('terminal', $roleNames)) {
                         return $response->withHeader('Location', '/orders-app/')->withStatus(302);
                     }
-                    if (in_array('employee', $user->getRoles())) {
+                    if (in_array('employee', $roleNames)) {
                         return $response->withHeader('Location', '/users-app/')->withStatus(302);
                     }
                 }

@@ -28,7 +28,9 @@ final class Authorization implements MiddlewareInterface
         	return $response->withHeader('Location', '/login')->withStatus(302);
         }
 
-        if (in_array('webmaster', $user->getRoles())) {
+        $userRoleNames = array_map(fn($r) => $r->getName(), $user->getRoles());
+
+        if (in_array('webmaster', $userRoleNames)) {
             $response = $handler->handle($request);
             return $response;
         }
@@ -38,7 +40,7 @@ final class Authorization implements MiddlewareInterface
             $path = str_replace('/', '\/', $permission->getPath());
             $path = sprintf("/%s/", $path);
             if (preg_match($path, $request->getUri()->getPath())) {
-                if (count(array_intersect($permission->getAllowedRoles(), $user->getRoles())) > 0) {
+                if (count(array_intersect($permission->getAllowedRoles(), $userRoleNames)) > 0) {
                     $response = $handler->handle($request);
             		return $response;
                 }
