@@ -66,8 +66,9 @@
 		<label class="col-sm-2 col-form-label">Roles</label>
 		<div class="col-sm-10">
 			<select class="form-select" name="roles[]" size="15" multiple>
+				{% set userRoleNames = user.getRoles()|map(r => r.getName) %}
 				{% for userRole in userRoles %}
-                    <option value="{{userRole.getName}}" {{userRole.getName in user.getRoles ? 'selected' : ''}}>{{userRole.getLabel}}</option>
+                    <option value="{{userRole.getName}}" {{userRole.getName in userRoleNames ? 'selected' : ''}}>{{userRole.getLabel}}</option>
                 {% endfor %}
 			</select>
     	</div>
