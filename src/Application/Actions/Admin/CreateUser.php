@@ -25,13 +25,16 @@ final class CreateUser
 		if ($request->getMethod() == 'POST') {
             $requestData = $request->getParsedBody();
 
+            $roleNames = $requestData['roles'] ?? [];
+            $roles = $roleNames ? $this->rolesRepository->findBy(['name' => $roleNames]) : [];
+
             $user = new User(
                 boolval($requestData['isActive']),
                 $requestData['emailAddress'],
                 $requestData['password'],
                 $requestData['fullName'],
                 floatval($requestData['hourlyRate']),
-                $requestData['roles'] ?? []
+                $roles
             );
             $user->setNotes($requestData['notes']);
             $this->usersRepository->persist($user);

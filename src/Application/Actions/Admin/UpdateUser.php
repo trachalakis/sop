@@ -32,7 +32,9 @@ final class UpdateUser
             }
             $user->setFullName($requestData['fullName']);
             $user->setHourlyRate(floatval($requestData['hourlyRate']));
-            $user->setRoles($requestData['roles'] ?? []);
+            $roleNames = $requestData['roles'] ?? [];
+            $roles = $roleNames ? $this->rolesRepository->findBy(['name' => $roleNames]) : [];
+            $user->setRoles($roles);
             $user->setNotes($requestData['notes']);
 
             $this->usersRepository->persist($user);
