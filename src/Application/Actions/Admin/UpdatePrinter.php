@@ -28,6 +28,7 @@ final class UpdatePrinter
             $printer->setIsActive(boolval($requestData['isActive']));
             $printer->setName($requestData['name']);
             $printer->setPrinterType(PrinterType::from($requestData['printerType']));
+            $printer->setIsUtilityPrinter(boolval($requestData['isUtilityPrinter'] ?? false));
 
 			$this->printersRepository->persist($printer);
 

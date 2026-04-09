@@ -30,6 +30,9 @@
 					{% if not printer.getIsActive %}
 						<span class="badge rounded-pill text-bg-danger">ανενεργός</span>
 					{% endif %}
+					{% if printer.getIsUtilityPrinter %}
+						<span class="badge rounded-pill text-bg-info">utility</span>
+					{% endif %}
 				</td>
 			</tr>
 		{% endfor %}

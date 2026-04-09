@@ -55,6 +55,15 @@
 			{% endfor %}
 		</div>
 	</div>
+	<div class="row mb-3">
+	    <label class="col-sm-2 col-form-label">Utility Printer</label>
+	    <div class="col-sm-10">
+	        <select class="form-select" name="isUtilityPrinter">
+	            <option value="1" {{printer.getIsUtilityPrinter ? 'selected' : ''}}>Ναί</option>
+	            <option value="0" {{printer.getIsUtilityPrinter ? '' : 'selected'}}>Όχι</option>
+	        </select>
+	    </div>
+	</div>
     <hr/>
 	<div class="row mb-3">
 		<div class="col-sm-10 offset-sm-2">

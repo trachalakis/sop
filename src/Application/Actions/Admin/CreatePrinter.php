@@ -28,6 +28,7 @@ final class CreatePrinter
             $printer->setPrinterType(PrinterType::from($requestData['printerType']));
             $printer->setHasReceiptPrinter(false);
             $printer->setPrinterAddress('0.0.0.0');
+            $printer->setIsUtilityPrinter(boolval($requestData['isUtilityPrinter'] ?? false));
 
             $this->printersRepository->persist($printer);
 
