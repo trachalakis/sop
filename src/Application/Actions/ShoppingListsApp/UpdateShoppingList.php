@@ -52,6 +52,7 @@ final class UpdateShoppingList
                 'name' => $printer->getName(),
                 'printerAddress' => $printer->getPrinterAddress(),
                 'isReceiptPrinter' => $printer->getIsReceiptPrinter(),
+                'isUtilityPrinter' => $printer->getIsUtilityPrinter(),
             ];
         }, $printers));
 
