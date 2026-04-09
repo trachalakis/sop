@@ -33,11 +33,5 @@ final class CreatePrintJob
             $response->getBody()->write('ok');
 			return $response;
         }
-
-        /*return $this->twig->render(
-            $response, 
-            'admin/create_table.twig',
-            ['exception' => $exception ?? null]
-        );*/
 	}
 }
