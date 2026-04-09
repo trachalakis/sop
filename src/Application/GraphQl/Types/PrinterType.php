@@ -21,7 +21,8 @@ class PrinterType extends ObjectType
                     'name' => Type::string(),
                     'printerAddress' => Type::string(),
                     'isActive' => Type::boolean(),
-                    'isReceiptPrinter' => Type::boolean()
+                    'isReceiptPrinter' => Type::boolean(),
+                    'isUtilityPrinter' => Type::boolean()
                 ];
             },
             'resolveField' => function ($object, $args, $context, $info) {
