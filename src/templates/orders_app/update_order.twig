@@ -1090,7 +1090,7 @@
 		    	},
 		    	isBread(menuItem) {
 		    		//return menuItem.id == 1;
-                    return getTranslation(menuSection, 'en').name == 'Bread'; //TODO
+                    return this.getTranslation(menuItem, 'en').name == 'Bread'; //TODO
 		    	},
 		    	isDrink(menuItem) {
 		    		return menuItem.isDrink;

@@ -958,7 +958,7 @@
 		    		return this.order.orderEntries.filter(orderEntry => this.isDrink(orderEntry.menuItem));
 		    	},
 		    	isBread(menuItem) {
-		    		return menuItem.id == 1;
+		    		return this.getTranslation(menuItem, 'en').name == 'Bread'; //TODO
 		    	},
 		    	isDrink(menuItem) {
 		    		return menuItem.isDrink;
