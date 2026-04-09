@@ -567,6 +567,7 @@
 	<script src="/assets/js/axios.min.js"></script>
 	<script src="/assets/js/lodash.min.js"></script>
 	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script src="/assets/js/receipt-canvas.js"></script>
 	<script>
 		vueApp = Vue.createApp({
 		    data() {
@@ -730,130 +731,33 @@
 	    					alert(error);
 	  					});
 		    	},
-		    	drawReceiptOnCanvas(ctx, printer) {
-		    		const W = 576;
-		    		const PAD = 3;
-		    		const INDENT = 40;
-		    		let y = 0;
-
-		    		ctx.clearRect(0, 0, W, 1500);
-		    		ctx.fillStyle = 'white';
-		    		ctx.fillRect(0, 0, W, 1500);
-		    		ctx.fillStyle = 'black';
-
-		    		const centerText = (text, fontSize, bold = false) => {
-		    			ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
-		    			ctx.textAlign = 'center';
-		    			y += fontSize;
-		    			ctx.fillText(text, W / 2, y);
-		    			y += 8;
-		    		};
-
-		    		const leftText = (text, fontSize, bold = false, indent = 0) => {
-		    			ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
-		    			ctx.textAlign = 'left';
-		    			y += fontSize;
-		    			ctx.fillText(text, PAD + indent, y);
-		    			y += 8;
-		    		};
-
-		    		const separator = () => {
-		    			y += 8;
-		    			ctx.lineWidth = 2;
-                        ctx.beginPath();
-		    			ctx.moveTo(0, y);
-		    			ctx.lineTo(W, y);
-		    			ctx.stroke();
-		    			y += 12;
-		    		};
-
-		    		// Header
-		    		y += 16;
-		    		centerText(`${this.waiter.fullName} / ` + this.getHm().trim(), 22);
-		    		y += 8;
-		    		centerText('ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ', 44, true);
-		    		y += 10;
-		    		centerText(`Τραπέζι ${this.order.table.name}`, 64);
-		    		y += 6;
-		    		centerText(`Άτομα ${this.order.adults} / ${this.order.minors}`, 40);
-
-		    		if (this.order.notes.length > 0) {
-		    			y += 8;
-		    			centerText('***', 28);
-		    			this.order.notes.split('\n').forEach(line => centerText(line, 28));
-		    			centerText('***', 28);
-		    		}
-
-		    		y += 8;
-		    		separator();
-
-		    		// Order entries grouped by timing
-		    		let orderEntriesCount = 0;
-
-		    		for (let i = 0; i < 7; i++) {
-		    			let entries = this.orderedEntries(i).filter(orderEntry =>
-		    				_.findIndex(orderEntry.menuItem.printers, s => s.id == printer.id) != -1
-		    			);
-
-		    			entries.forEach(orderEntry => {
-		    				orderEntriesCount++;
-		    				let quantity = orderEntry.quantity;
-		    				let name = this.getTranslation(orderEntry.menuItem, 'el').name;
-		    				let nameEn = this.getTranslation(orderEntry.menuItem, 'en').name;
-
-		    				let weight = orderEntry.weight != null ? ` ${orderEntry.weight / 1000}Kg` : '';
-
-		    				let tickboxes = '';
-		    				if (quantity > 1 && nameEn != 'Bread') {
-		    					for (let j = 0; j < quantity; j++) tickboxes += '[]';
-		    				}
-
-		    				let mainLine = `${quantity} \xd7 ${name}${weight}`;
-		    				if (quantity <= 6) mainLine += ` ${tickboxes}`;
-		    				leftText(mainLine, 30, true);
-
-		    				if (quantity > 6 && tickboxes) {
-		    					leftText(tickboxes, 26, false, INDENT);
-		    				}
-
-		    				if (this.orderHasManyFamilies()) {
-		    					leftText(`(F${orderEntry.family})`, 24, false, INDENT);
-		    				}
-
-		    				orderEntry.orderEntryExtras.forEach(extra => {
-		    					leftText(extra.name, 24, false, INDENT);
-		    				});
-
-		    				if (orderEntry.notes.length > 0) {
-		    					leftText(orderEntry.notes, 24, false, INDENT);
-		    				}
-		    			});
-
-		    			// Separator between non-empty timing groups
-		    			if (entries.length > 0) {
-		    				let hasMore = false;
-		    				for (let j = i + 1; j < 7; j++) {
-		    					if (this.orderedEntries(j).some(oe => _.findIndex(oe.menuItem.printers, s => s.id == printer.id) != -1)) {
-		    						hasMore = true;
-		    						break;
-		    					}
-		    				}
-		    				if (hasMore) separator();
-		    			}
-		    		}
-
-		    		return { orderEntriesCount, canvasHeight: y + 20 };
-		    	},
 		    	printOrder() {
 		    		_.each(this.printers, printer => {
 		    			let pr = new epson.ePOSBuilder();
 
-		    			let { orderEntriesCount, canvasHeight } = this.drawReceiptOnCanvas(this.canvasCtx, printer);
+		    			let { orderEntriesCount, canvasHeight } = drawReceiptOnCanvas(
+		    				this.canvasCtx,
+		    				printer,
+		    				this.order.orderEntries,
+		    				{
+		    					waiterName: this.waiter.fullName,
+		    					label: 'ΝΕΑ ΠΑΡΑΓΓΕΛΙΑ',
+		    					tableName: this.order.table.name,
+		    					adults: this.order.adults,
+		    					minors: this.order.minors,
+		    					notes: this.order.notes
+		    				},
+		    				{
+		    					hasManyFamilies: this.orderHasManyFamilies(),
+		    					getTranslation: this.getTranslation.bind(this),
+		    					calculateOrderEntryPrice: this.calculateOrderEntryPrice.bind(this)
+		    				}
+		    			);
 
 		    			if (orderEntriesCount > 0) {
 		    				pr.addImage(this.canvasCtx, 0, 0, 576, canvasHeight, pr.COLOR_1, pr.MODE_MONO);
-                            pr.addFeedLine(5);
-                            pr.addCut(pr.CUT_FEED);
+		    				pr.addFeedLine(5);
+		    				pr.addCut(pr.CUT_FEED);
 		    				axios.post(
 		    					'/admin/print-jobs/create',
 		    					{
