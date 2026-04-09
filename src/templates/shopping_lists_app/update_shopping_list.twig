@@ -22,19 +22,19 @@
                 <span v-if="saving" class="spinner-border spinner-border-sm"></span>
             </button>
 
-            <template v-if="receiptPrinters.length === 1">
+            <template v-if="utilityPrinters.length === 1">
                 <button
                     type="button"
                     class="btn btn-lg"
                     :class="selectedSupplies.length > 0 ? 'btn-outline-primary' : 'btn-secondary'"
                     :disabled="selectedSupplies.length === 0 || printing"
-                    @click="print(receiptPrinters[0])"
+                    @click="print(utilityPrinters[0])"
                 >
                     <i class="bi bi-printer"></i>
-                    <span class="d-none d-sm-inline ms-1">{{receiptPrinters[0].name}}</span>
+                    <span class="d-none d-sm-inline ms-1">{{utilityPrinters[0].name}}</span>
                 </button>
             </template>
-            <template v-else-if="receiptPrinters.length > 1">
+            <template v-else-if="utilityPrinters.length > 1">
                 <div class="btn-group">
                     <button
                         type="button"
@@ -49,7 +49,7 @@
                         <i class="bi bi-chevron-down ms-1"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li v-for="printer in receiptPrinters">
+                        <li v-for="printer in utilityPrinters">
                             <a class="dropdown-item fs-5 py-2" href="#" @click.prevent="print(printer)">@{{printer.name}}</a>
                         </li>
                     </ul>
@@ -222,6 +222,9 @@
             computed: {
                 receiptPrinters() {
                     return this.printers.filter(p => p.isReceiptPrinter);
+                },
+                utilityPrinters() {
+                    return this.printers.filter(p => p.isUtilityPrinter);
                 },
                 totalCost() {
                     const total = this.selectedSupplies.reduce((sum, s) => sum + (s.price * s.quantity), 0);
