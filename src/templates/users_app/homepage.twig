@@ -34,7 +34,7 @@
             </div>
         </div>
     </div>-->
-    {% if user.isWaiter %}
+    {% if currentUser.hasRole('waiter') %}
     	<div class="col-6">
 	        <div class="card text-bg-light mb-3">
 	            <div class="card-header"><a class="text-decoration-none" href="/orders-app/">Παραγγελιοληψία</a></div>
@@ -50,7 +50,7 @@
 	        </div>
 	    </div>
 	{% endif %}
-    {% if 'shopping_lists_manager' in user.getRoles %}
+    {% if currentUser.hasRole('shopping_lists_manager') %}
         <div class="col-6">
 	        <div class="card text-bg-light mb-3">
 	            <div class="card-header"><a class="text-decoration-none" href="/shopping-lists-app/update">Ψώνια</a></div>
@@ -99,9 +99,6 @@
     ></script>
     <script>
     	$('.start-stop').click(function () {
-	    	//var form = new FormData();
-	        //form.append('passwordHash', '{{user.getPasswordHash}}');
-
 	        axios.get('/users-app/clock')
 			.then(function (response) {
 				bootbox.alert(response.data);

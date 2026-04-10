@@ -452,32 +452,8 @@
 							>Μάγαζι</button>
 							
 						</div>
-
-					  	<!--<label class="form-label fw-bold">Λόγος κεράσματος</label>
-					  	<div>
-						  	<input
-						  		class="btn-check"
-						  		type="radio"
-						  		value="ON_THE_HOUSE"
-						  		@click="selectedOrderEntry.discount = calculateOrderEntryPrice(selectedOrderEntry)"
-						  		v-model="selectedOrderEntry.discountReason"
-						  		id="discountReason-1"
-						  	/>
-  							<label class="btn" for="discountReason-1">Κέρασμα από μαγαζί</label>
-  							<input class="btn-check" type="radio" value="OTHER" v-model="selectedOrderEntry.discountReason" id="discountReason-2">
-  							<label class="btn" for="discountReason-2">Άλλο</label>
-  						</div>-->
 					</div>
-      				<!--<div class="mb-3">
-						<label class="form-label fw-bold">Έκπτωση</label>
-						<div class="input-group mb-3">
-  							<span class="input-group-text">&euro;</span>
-  							<input class="form-control form-control-lg" type="number"
-							min="0"
-							step="0.1"
-							v-model="selectedOrderEntry.discount">
-						</div>
-					</div>-->
+      				
       			</div>
       			<div class="modal-footer">
         			<button
@@ -804,12 +780,6 @@
 		    			</div>
 		    			<div v-if="orderEntry.discount > 0" class="text-danger">
 		    				<span v-if="orderEntry.discountReason == 'ON_THE_HOUSE'">Κέρασμα από μαγαζί</span>
-							<span v-if="orderEntry.discountReason.includes('ON_EMPLOYEE_')">
-								Κέρασμα από {{orderEntry.discountReason.replace('ON_EMPLOYEE_', '')}}
-							</span>
-							<span v-if="orderEntry.discountReason.includes('ON_TABLE_')">
-								Κέρασμα από τραπέζι {{orderEntry.discountReason.replace('ON_TABLE_', '')}}
-							</span>
 		    				(-&euro;{{orderEntry.discount}})
 		    			</div>
 		    		</div>
@@ -818,8 +788,6 @@
 			<hr v-if="filterGroupEntries(orderEntryGroup, i).length > 0" class="m-1"/>
 		</div>
 	</div>
-	<!--<hr/>
-	<h3 class="text-end pe-4">Total: &euro;{{totalPrice}}</h3>-->
 </div>
 <canvas width="576" height="1500" class="d-none"></canvas>
 {% endverbatim %}{% endblock %}
