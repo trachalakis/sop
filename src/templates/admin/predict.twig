@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Report {{date.format('D j M Y')}}</h1>
+    <h1 class="h2">Prediction {{date.format('D j M Y')}}</h1>
     <div class="btn-toolbar">
         <a class="btn btn-primary me-2" href="/admin/predict?date={{prev.format('Y-m-d')}}">
             <i class="fa-solid fa-chevron-left"></i>
@@ -13,11 +13,11 @@
     </div>
 </div>
 
-<form class="row gx-2 align-items-center" method="get" autocomplete="off">
+<form class="row gx-2 align-items-center mb-3" method="get" autocomplete="off">
     <div class="col-auto">
         <div class="input-group">
             <div class="input-group-text">Date</div>
-            <input type="date" name="date" class="form-control" value="{{start.format('Y-m-d')}}"/>
+            <input type="date" name="date" class="form-control" value="{{date.format('Y-m-d')}}"/>
         </div>
     </div>
     <div class="col-auto">
@@ -25,31 +25,58 @@
     </div>
 </form>
 <hr/>
-Total: <strong>{{prediction.sales}}&euro;</strong> /
-{% if orders|length > 0 %}
-	Cost per order <strong>{{ (total / (orders|length))|round(1, 'floor') }}</strong>
-{% endif %}
-</br>
-Covers: <strong>{{coversAdults + coversMinors}} </strong> /
-{% if coversAdults > 0 %}
-	Cost per adult cover <strong>{{(total / coversAdults)|round(1, 'floor')}}</strong> /
-{% endif %}
-{% if coversMinors > 0 %}
-	Cost per cover <strong>{{(total / (prediction.coversAdults + prediction.coversMinors))|round(1, 'floor')}}</strong>
-{% endif %}
-<br/>
-<br/>
-Fish weight: <strong>{{prediction.fishWeight / 1000}}Kg</strong>
+
+{% set totalCovers = prediction.coversAdults + prediction.coversMinors %}
+
+<div class="row mb-2">
+    <div class="col-auto">
+        Sales <strong>{{prediction.sales|round(1)}}&euro;</strong>
+    </div>
+    <div class="col-auto">
+        Take-away <strong>{{prediction.salesTakeAway|round(1)}}&euro;</strong>
+    </div>
+    <div class="col-auto">
+        Covers <strong>{{totalCovers|round(1)}}</strong>
+        ({{prediction.coversAdults|round(1)}} + {{prediction.coversMinors|round(1)}})
+    </div>
+    {% if totalCovers > 0 %}
+    <div class="col-auto">
+        Per cover <strong>{{(prediction.sales / totalCovers)|round(1)}}&euro;</strong>
+    </div>
+    {% endif %}
+</div>
+
+<div class="row mb-3">
+    <div class="col-auto">
+        Weight <strong>{{(prediction.totalWeight / 1000)|round(1)}}Kg</strong>
+    </div>
+    <div class="col-auto">
+        Food cost <strong>{{prediction.foodCost|round(1)}}&euro;</strong>
+    </div>
+    <div class="col-auto">
+        Plates <strong>{{prediction.servedPlates|round(1)}}</strong>
+    </div>
+    <div class="col-auto">
+        Drinks <strong>{{prediction.servedDrinks|round(1)}}</strong>
+    </div>
+</div>
+
 <hr/>
+
 <div class="row">
-    {% for i,v in menuSections %}
-	    <div class="col-sm-3 mb-3">
-	    	<h5>{{v.menuSection.getTranslation('el').getName }} / {{v.count}} / {{v.sales }}&euro;</h5>
-	    	{% for j,k in v.menuItems %}
-                <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / {{k.weight}} / {{k.sales}}&euro;</p>
+    {% for i,v in prediction.menuSections %}
+        <div class="col-sm-3 mb-3">
+            <h5>{{v.menuSection.getTranslation('el').getName}} / {{v.count|round(1)}} / {{v.sales|round(1)}}&euro;</h5>
+            {% for j,k in v.menuItems %}
+                <p class="mb-1">
+                    {{k.menuItem.getTranslation('el').getName}} /
+                    {{k.count|round(1)}} /
+                    {{k.weight|round(1)}} /
+                    {{k.sales|round(1)}}&euro;
+                </p>
             {% endfor %}
-	    </div>
-	{% endfor %}
+        </div>
+    {% endfor %}
 </div>
 <hr/>
 {% endblock %}
