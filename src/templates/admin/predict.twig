@@ -71,7 +71,7 @@
                 <p class="mb-1">
                     {{k.menuItem.getTranslation('el').getName}} /
                     {{k.count|round(1)}} /
-                    {{k.weight|round(1)}} /
+                    {{(k.weight / 1000)|round(1)}}Kg /
                     {{k.sales|round(1)}}&euro;
                 </p>
             {% endfor %}
