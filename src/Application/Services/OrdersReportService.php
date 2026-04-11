@@ -117,6 +117,9 @@ final class OrdersReportService
                 if ($orderEntry->getPrice() == 0) {
                     continue;
                 }
+                if ($orderEntry->getMenuItem() === null) {
+                    continue;
+                }
                 if ($orderEntry->getMenuItem()->getIsDrink()) {
                     $servedDrinks += $orderEntry->getQuantity();
                 } else {
