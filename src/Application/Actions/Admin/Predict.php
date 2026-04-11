@@ -81,8 +81,8 @@ final class Predict
             return $empty;
         }
 
-        $n           = count($reports);
-        $totalWeight = ($n * ($n + 1)) / 2; // sum of 1..N
+        $n          = count($reports);
+        $weightSum  = ($n * ($n + 1)) / 2; // sum of 1..N
 
         $scalars = ['sales', 'salesTakeAway', 'coversAdults', 'coversMinors',
                     'totalWeight', 'foodCost', 'servedPlates', 'servedDrinks'];
@@ -90,7 +90,7 @@ final class Predict
         $prediction = array_fill_keys($scalars, 0.0);
 
         foreach ($reports as $i => $data) {
-            $w = ($n - $i) / $totalWeight; // index 0 → weight N, index N-1 → weight 1
+            $w = ($n - $i) / $weightSum; // index 0 → weight N, index N-1 → weight 1
             foreach ($scalars as $key) {
                 $prediction[$key] += $data[$key] * $w;
             }
