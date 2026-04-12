@@ -27,9 +27,14 @@ final class Predict
         $queryParams = $request->getQueryParams();
         $date = new DateTime($queryParams['date'] ?? 'today');
 
-        // Collect reports for up to 8 past same-weekday dates, most recent first.
+        // Collect up to 8 non-empty same-weekday reports, looking back as far as
+        // 104 weeks (2 years) to handle seasonally-operated restaurants.
         $rawReports = [];
-        for ($weeksBack = 1; $weeksBack <= 8; $weeksBack++) {
+        for ($weeksBack = 1; $weeksBack <= 104; $weeksBack++) {
+            if (count($rawReports) === 8) {
+                break;
+            }
+
             $pastDate = (clone $date)->sub(new DateInterval("P{$weeksBack}W"));
             $orders   = $this->ordersRepository->findByDate($pastDate);
 
