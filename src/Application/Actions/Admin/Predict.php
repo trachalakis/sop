@@ -128,7 +128,7 @@ final class Predict
             $sectionCount = 0.0;
             $sectionSales = 0.0;
             foreach ($reports as $i => $data) {
-                $w   = ($n - $i) / $totalWeight;
+                $w   = ($n - $i) / $weightSum;
                 $sec = $data['menuSections'][$sectionId] ?? null;
                 $sectionCount += ($sec['count'] ?? 0) * $w;
                 $sectionSales += ($sec['sales'] ?? 0) * $w;
@@ -142,7 +142,7 @@ final class Predict
                 $itemSales  = 0.0;
 
                 foreach ($reports as $i => $data) {
-                    $w    = ($n - $i) / $totalWeight;
+                    $w    = ($n - $i) / $weightSum;
                     $item = $data['menuSections'][$sectionId]['menuItems'][$itemId] ?? null;
                     if ($item !== null && $itemMeta === null) {
                         $itemMeta = $item; // first (most-recent) seen = metadata source
