@@ -87,7 +87,7 @@ final class UpdateShoppingList
     private function getTargetDate(): DateTimeImmutable
     {
         $now = new DateTimeImmutable();
-        if ((int) $now->format('H') < 5) {
+        if ((int) $now->format('H') < 12) {
             return $now;
         }
         return $now->modify('+1 day');
