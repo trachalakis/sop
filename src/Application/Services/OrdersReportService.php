@@ -103,9 +103,9 @@ final class OrdersReportService
                 $totalWeight += ($orderEntry->getWeight() * $orderEntry->getQuantity());
 
                 $recipe = $recipesByMenuItemId[$menuItem->getId()] ?? null;
-                if ($recipe !== null && $recipe->getYield() > 0) {
+                /*if ($recipe !== null && $recipe->getYield() > 0) {
                     $foodCost += $orderEntry->getQuantity() * ($recipe->getFoodCost($end) / $recipe->getYield());
-                }
+                }*/
             }
         }
 
