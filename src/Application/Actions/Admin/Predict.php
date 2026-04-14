@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateInterval;
 use Application\Services\OrdersReportService;
 use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\PrintersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -18,6 +19,7 @@ final class Predict
     public function __construct(
         private OrdersRepository $ordersRepository,
         private OrdersReportService $ordersReportService,
+        private PrintersRepository $printersRepository,
         private Twig $twig
     ) {
     }
@@ -50,14 +52,34 @@ final class Predict
 
         $prediction = $this->weightedAverage($rawReports);
 
+        $printers = $this->printersRepository->findBy(['isActive' => true], ['name' => 'asc']);
+        $printersData = array_values(array_map(fn($p) => [
+            'id'             => $p->getId(),
+            'name'           => $p->getName(),
+            'printerAddress' => $p->getPrinterAddress(),
+        ], $printers));
+
+        $predictionData = [
+            'date'         => $date->format('D j M Y'),
+            'menuSections' => array_values(array_map(fn($s) => [
+                'name'      => $s['menuSection']->getTranslation('el')->getName(),
+                'menuItems' => array_values(array_map(fn($item) => [
+                    'name'  => $item['menuItem']->getTranslation('el')->getName(),
+                    'count' => $item['count'],
+                ], array_values($s['menuItems']))),
+            ], array_values($prediction['menuSections']))),
+        ];
+
         return $this->twig->render(
             $response,
             'admin/predict.twig',
             [
-                'date'       => $date,
-                'prev'       => (clone $date)->sub(new DateInterval('P1D')),
-                'next'       => (clone $date)->add(new DateInterval('P1D')),
-                'prediction' => $prediction,
+                'date'           => $date,
+                'prev'           => (clone $date)->sub(new DateInterval('P1D')),
+                'next'           => (clone $date)->add(new DateInterval('P1D')),
+                'prediction'     => $prediction,
+                'printersJson'   => json_encode($printersData),
+                'predictionJson' => json_encode($predictionData),
             ]
         );
     }
