@@ -44,6 +44,8 @@
                     </ul>
                 </div>
             </template>
+            <span v-if="printStatus === 'printed'" class="ms-2 text-success"><i class="bi bi-check-lg"></i></span>
+            <span v-if="printStatus === 'error'" class="ms-2 text-danger"><i class="bi bi-x-lg"></i></span>
         </div>
         {% endverbatim %}
     </div>
@@ -184,11 +186,11 @@
                     separator(this.canvasCtx);
 
                     for (const section of predictionData.menuSections) {
+                        const visibleItems = section.menuItems.filter(item => Math.round(item.count) !== 0);
+                        if (visibleItems.length === 0) continue;
                         leftText(this.canvasCtx, section.name, 32, true);
-                        for (const item of section.menuItems) {
-                            const count = Math.round(item.count);
-                            if (count === 0) continue;
-                            leftText(this.canvasCtx, `${item.name}  x${count}`, 30);
+                        for (const item of visibleItems) {
+                            leftText(this.canvasCtx, `${item.name}  x${Math.round(item.count)}`, 30);
                         }
                         separator(this.canvasCtx);
                     }

@@ -52,7 +52,7 @@ final class Predict
 
         $prediction = $this->weightedAverage($rawReports);
 
-        $printers = $this->printersRepository->findBy(['isActive' => true], ['name' => 'asc']);
+        $printers = $this->printersRepository->findBy(['isActive' => true, 'isUtilityPrinter' => true], ['name' => 'asc']);
         $printersData = array_values(array_map(fn($p) => [
             'id'             => $p->getId(),
             'name'           => $p->getName(),
