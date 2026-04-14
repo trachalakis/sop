@@ -40,6 +40,16 @@ if ($columnExists) {
     die("Column 'roles' already exists on 'scans'. Migration may have already run.\n");
 }
 
-$pdo->exec("ALTER TABLE scans ADD COLUMN roles JSONB NULL");
-echo "Added column 'roles' to 'scans'.\n";
-echo "Migration completed successfully.\n";
+$pdo->beginTransaction();
+
+try {
+    $pdo->exec("ALTER TABLE scans ADD COLUMN roles JSONB NULL");
+    echo "Added column 'roles' to 'scans'.\n";
+
+    $pdo->commit();
+    echo "Migration completed successfully.\n";
+
+} catch (PDOException $e) {
+    $pdo->rollBack();
+    die("Migration failed, rolled back. Error: " . $e->getMessage() . "\n");
+}
