@@ -226,20 +226,20 @@
 	  						</label>
 						</div>
 						<div v-if="isBread(newMenuItem)">
-							<input type="hidden" value="0" v-model="newOrderEntry.timing">
+							<input type="hidden" value="0" v-model.number="newOrderEntry.timing">
 						</div>
 						<div v-else-if="isDrink(newMenuItem)">
-							<input type="hidden" value="6" v-model="newOrderEntry.timing">
+							<input type="hidden" value="6" v-model.number="newOrderEntry.timing">
 						</div>
 						<div class="mb-3" v-else>
 							<label class="form-label">Χρόνος</label>
-							<select class="form-select form-control-lg mb-2" v-model="newOrderEntry.timing">
+							<select class="form-select form-control-lg mb-2" v-model.number="newOrderEntry.timing">
 								<option v-for="i in 5">{{i}}</option>
 							</select>
 						</div>
 						<div class="mb-3">
 							<label class="form-label">Οικογένεια</label>
-							<select class="form-select form-control-lg mb-2" v-model="newOrderEntry.family">
+							<select class="form-select form-control-lg mb-2" v-model.number="newOrderEntry.family">
 								<option v-for="i in 12">{{i}}</option>
 							</select>
 						</div>
@@ -309,13 +309,13 @@
 						</div>
 						<div class="mb-3" v-if="!isBread(activeOrderEntry.menuItem) && !isDrink(activeOrderEntry.menuItem)">
 							<label class="form-label">Χρόνος</label>
-							<select class="form-select form-control-lg mb-2" v-model="activeOrderEntry.timing">
+							<select class="form-select form-control-lg mb-2" v-model.number="activeOrderEntry.timing">
 								<option v-for="i in 5">{{i}}</option>
 							</select>
 						</div>
 						<div class="mb-3">
 							<label class="form-label">Οικογένεια</label>
-							<select class="form-select form-control-lg mb-2" v-model="activeOrderEntry.family">
+							<select class="form-select form-control-lg mb-2" v-model.number="activeOrderEntry.family">
 								<option v-for="i in 12">{{i}}</option>
 							</select>
 						</div>
@@ -591,7 +591,8 @@
 		    		newOrderEntry: {
 		    			orderEntryExtras: [],
 		    			notes: '',
-		    			weight: null
+		    			weight: null,
+                        timing: 0
 		    		},
 
 		    		order: {
