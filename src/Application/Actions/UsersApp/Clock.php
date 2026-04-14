@@ -28,11 +28,13 @@ final class Clock
 			$user = $this->usersRepository->find($_SESSION['user']->getId());
 			$scan = $this->scansRepository->findLastUserCheckIn($user);
 			if ($scan == null) {
+				$roles = array_map(fn($r) => $r->getName(), $user->getRoles());
 				$scan = new Scan(
 					$user->getHourlyRate(),
 					$now,
 					null,
-					$user
+					$user,
+					$roles
 				);
 
 				$this->scansRepository->add($scan);
