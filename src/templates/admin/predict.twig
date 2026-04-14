@@ -10,6 +10,42 @@
         <a class="btn btn-primary me-4" href="/admin/predict?date={{next.format('Y-m-d')}}">
             <i class="fa-solid fa-chevron-right"></i>
         </a>
+        {% verbatim %}
+        <div id="print-app">
+            <template v-if="printers.length === 1">
+                <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    :disabled="printing"
+                    @click="print(printers[0])"
+                >
+                    <i v-if="!printing" class="bi bi-printer"></i>
+                    <span v-if="printing" class="spinner-border spinner-border-sm"></span>
+                    <span class="d-none d-sm-inline ms-1">{{printers[0].name}}</span>
+                </button>
+            </template>
+            <template v-else-if="printers.length > 1">
+                <div class="btn-group">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary"
+                        :disabled="printing"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                    >
+                        <i v-if="!printing" class="bi bi-printer"></i>
+                        <span v-if="printing" class="spinner-border spinner-border-sm"></span>
+                        <i class="bi bi-chevron-down ms-1"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li v-for="printer in printers">
+                            <a class="dropdown-item" href="#" @click.prevent="print(printer)">{{printer.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </template>
+        </div>
+        {% endverbatim %}
     </div>
 </div>
 
@@ -79,4 +115,108 @@
     {% endfor %}
 </div>
 <hr/>
+<canvas width="576" height="10000" class="d-none"></canvas>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        const printersData = {{ printersJson|raw }};
+        const predictionData = {{ predictionJson|raw }};
+    </script>
+    <script src="/assets/js/vue.global.prod.js"></script>
+    <script src="/assets/js/axios.min.js"></script>
+    <script>
+        const W = 576;
+        const PAD = 6;
+        let y = 0;
+
+        const centerText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'center';
+            y += fontSize;
+            ctx.fillText(text, W / 2, y);
+            y += 6;
+        };
+
+        const leftText = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            y += fontSize;
+            ctx.fillText(text, PAD, y);
+            y += 6;
+        };
+
+        const separator = (ctx) => {
+            y += 6;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(W, y);
+            ctx.stroke();
+            y += 10;
+        };
+    </script>
+    <script src="/assets/js/epos-2.24.0.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    printers: printersData,
+                    printing: false,
+                    printStatus: null,
+                    canvasCtx: null,
+                };
+            },
+            mounted() {
+                this.canvasCtx = document.querySelector('canvas').getContext('2d');
+            },
+            methods: {
+                buildReceiptXml() {
+                    y = 0;
+                    this.canvasCtx.clearRect(0, 0, W, 10000);
+                    this.canvasCtx.fillStyle = 'white';
+                    this.canvasCtx.fillRect(0, 0, W, 10000);
+                    this.canvasCtx.fillStyle = 'black';
+
+                    centerText(this.canvasCtx, 'ΠΡΟΒΛΕΨΗ', 40, true);
+                    centerText(this.canvasCtx, predictionData.date, 30);
+                    separator(this.canvasCtx);
+
+                    for (const section of predictionData.menuSections) {
+                        leftText(this.canvasCtx, section.name, 32, true);
+                        for (const item of section.menuItems) {
+                            const count = Math.round(item.count);
+                            if (count === 0) continue;
+                            leftText(this.canvasCtx, `${item.name}  x${count}`, 30);
+                        }
+                        separator(this.canvasCtx);
+                    }
+
+                    y += 12;
+
+                    let pr = new epson.ePOSBuilder();
+                    pr.addImage(this.canvasCtx, 0, 0, 576, y, pr.COLOR_1, pr.MODE_MONO);
+                    pr.addFeedLine(3);
+                    pr.addCut(pr.CUT_FEED);
+                    return pr.toString();
+                },
+                async print(printer) {
+                    if (this.printing) return;
+                    this.printing = true;
+                    this.printStatus = null;
+                    try {
+                        const xml = this.buildReceiptXml();
+                        await axios.post('/admin/print-jobs/create', { printer: printer.name, xml });
+                        this.printStatus = 'printed';
+                    } catch (e) {
+                        this.printStatus = 'error';
+                        alert('Σφάλμα εκτύπωσης: ' + e);
+                    } finally {
+                        this.printing = false;
+                    }
+                },
+            },
+        }).mount('#print-app');
+    </script>
 {% endblock %}
