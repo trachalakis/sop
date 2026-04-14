@@ -32,16 +32,21 @@ class Scan
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User $user;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $roles;
+
     public function __construct(
         float $hourlyRate,
         Datetime $checkIn,
         ?Datetime $checkOut,
-        User $user
+        User $user,
+        ?array $roles = null
     ) {
         $this->setHourlyRate($hourlyRate);
         $this->setCheckIn($checkIn);
         $this->setCheckOut($checkOut);
         $this->setUser($user);
+        $this->setRoles($roles);
     }
 
     public function getId()
@@ -108,5 +113,15 @@ class Scan
     public function setUser(User $user)
     {
         $this->user = $user;
+    }
+
+    public function getRoles(): ?array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(?array $roles): void
+    {
+        $this->roles = $roles;
     }
 }
