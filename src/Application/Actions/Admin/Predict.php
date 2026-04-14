@@ -62,9 +62,9 @@ final class Predict
         $predictionData = [
             'date'         => $date->format('D j M Y'),
             'menuSections' => array_values(array_map(fn($s) => [
-                'name'      => $s['menuSection']->getTranslation('el')->getName(),
+                'name'      => $s['menuSection']->getTranslation('el')?->getName() ?? '',
                 'menuItems' => array_values(array_map(fn($item) => [
-                    'name'  => $item['menuItem']->getTranslation('el')->getName(),
+                    'name'  => $item['menuItem']->getTranslation('el')?->getName() ?? '',
                     'count' => $item['count'],
                 ], array_values($s['menuItems']))),
             ], array_values($prediction['menuSections']))),
@@ -78,8 +78,8 @@ final class Predict
                 'prev'           => (clone $date)->sub(new DateInterval('P1D')),
                 'next'           => (clone $date)->add(new DateInterval('P1D')),
                 'prediction'     => $prediction,
-                'printersJson'   => json_encode($printersData),
-                'predictionJson' => json_encode($predictionData),
+                'printersJson'   => json_encode($printersData, JSON_THROW_ON_ERROR),
+                'predictionJson' => json_encode($predictionData, JSON_THROW_ON_ERROR),
             ]
         );
     }
