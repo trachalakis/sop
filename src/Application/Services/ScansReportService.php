@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
-use Domain\Entities\Scan;
-
 final class ScansReportService
 {
     /**
@@ -39,15 +37,10 @@ final class ScansReportService
             $manMinutes += $interval->i;
             $manSeconds += $interval->s;
 
-            if ($manSeconds >= 60) {
-                $manMinutes++;
-                $manSeconds -= 60;
-            }
-
-            if ($manMinutes >= 60) {
-                $manHours++;
-                $manMinutes -= 60;
-            }
+            $manMinutes += intdiv($manSeconds, 60);
+            $manSeconds  = $manSeconds % 60;
+            $manHours   += intdiv($manMinutes, 60);
+            $manMinutes  = $manMinutes % 60;
 
             $salaries += $scan->getSalary();
 
