@@ -27,8 +27,6 @@ public function buildReport(iterable $scans): array
     'manMinutes'      => int,
     'manSeconds'      => int,
     'salaries'        => float,
-    'bohSalaries'     => float,
-    'fohSalaries'     => float,
     'salariesPerRole' => array<string, float>,  // keyed by role slug
 ]
 ```
@@ -43,13 +41,13 @@ if ($scan->getRoles() !== null) {
 }
 ```
 
-BOH/FOH salaries continue to be derived from the user's current roles (existing behaviour — `$scan->getUser()->getRoles()`), unchanged.
+The separate `bohSalaries` and `fohSalaries` variables are removed entirely. BOH and FOH salaries are available via `salariesPerRole['boh']` and `salariesPerRole['foh']` when those roles exist.
 
 ## `Report.php` Changes
 
 - Inject `ScansReportService` via constructor.
 - Replace the existing inline scans loop with `$scansReportService->buildReport($scans)`.
-- Unpack all keys from the result (same variable names as today).
+- Unpack all keys from the result. Remove `$bohSalaries` and `$fohSalaries` variables.
 - Pass `salariesPerRole` to the Twig template.
 
 ## `report.twig` Changes
@@ -74,6 +72,5 @@ ScansReportService::class => function (ContainerInterface $c) {
 
 ## Out of Scope
 
-- No changes to BOH/FOH salary calculation logic.
-- No UI changes beyond the new per-role line in the totals section.
+- No UI changes beyond replacing the BOH/FOH lines with the per-role breakdown.
 - No changes to the scans fetch query in `Report.php`.
