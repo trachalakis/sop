@@ -1,14 +1,16 @@
 {% extends 'admin/skeleton.twig' %}
 
+{% set activeNavLink = 'predict' %}
+
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Prediction {{date.format('D j M Y')}}</h1>
     <div class="btn-toolbar">
         <a class="btn btn-primary me-2" href="/admin/predict?date={{prev.format('Y-m-d')}}">
-            <i class="fa-solid fa-chevron-left"></i>
+            <i class="bi bi-chevron-left"></i>
         </a>
         <a class="btn btn-primary me-4" href="/admin/predict?date={{next.format('Y-m-d')}}">
-            <i class="fa-solid fa-chevron-right"></i>
+            <i class="bi bi-chevron-right"></i>
         </a>
         {% verbatim %}
         <div id="print-app">
