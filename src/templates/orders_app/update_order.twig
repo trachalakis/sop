@@ -303,6 +303,9 @@
   								>
   									{{getTranslation(menuItem, 'el').name}}
   									<span class="text-body-secondary">(&euro;{{menuItem.price}}/Kg)</span>
+  									<span v-if="menuItemOrderedCount(menuItem) > 0" class="badge rounded-pill text-bg-success ms-1">
+  										{{menuItemOrderedCount(menuItem)}}
+  									</span>
   								</button>
   								<button v-else
   									type="button"
@@ -324,6 +327,9 @@
   										class="badge rounded-pill text-bg-danger ms-1"
   									>
   										{{menuItem.availableQuantity}}
+  									</span>
+  									<span v-if="menuItemOrderedCount(menuItem) > 0" class="badge rounded-pill text-bg-success ms-1">
+  										{{menuItemOrderedCount(menuItem)}}
   									</span>
   								</button>
   								<button
@@ -1076,6 +1082,11 @@
 		    	},
 		    	isDrink(menuItem) {
 		    		return menuItem.isDrink;
+		    	},
+		    	menuItemOrderedCount(menuItem) {
+		    		return this.newOrderEntryGroup.orderEntries
+		    			.filter(e => e.menuItem.id == menuItem.id)
+		    			.reduce((sum, e) => sum + e.quantity, 0);
 		    	},
 		    	getTranslation(object, language) {
 		    		return _.find(object.translations, translation => {
