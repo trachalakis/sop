@@ -1,5 +1,14 @@
 {% extends 'app_skeleton.twig' %}
 
+{% block pageCss %}
+	<style>
+		.btn:active {
+			transform: scale(0.93);
+			transition: transform 0.08s ease-in-out;
+		}
+	</style>
+{% endblock %}
+
 {% block content %}{% verbatim %}
 <div id="app">
 	<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -1334,13 +1343,4 @@
 		    }
 		}).mount('#app')
 	</script>
-{% endblock %}
-
-{% block pageCss %}
-	<style>
-		.btn:active {
-			transform: scale(0.93);
-			transition: transform 0.08s ease-in-out;
-		}
-	</style>
 {% endblock %}
