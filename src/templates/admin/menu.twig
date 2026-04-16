@@ -121,7 +121,7 @@
                                         {% if menuItem.getTrackAvailableQuantity %}
                                             <form action="/admin/menu-items/update?id={{menuItem.getId}}" method="post" style="display:inline-block">
                                                 <select class="form-select form-select-sm" name="availableQuantity" >
-                                                    {% for i in 0..60 %}
+                                                    {% for i in 0..120 %}
                                                         <option value="{{i}}" {{i == menuItem.getAvailableQuantity ? 'selected' : ''}}>{{i}}</option>
                                                     {% endfor %}
                                                 </select>
