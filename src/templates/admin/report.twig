@@ -101,7 +101,7 @@
 	{% endif %}
 	{% if servedDrinks > 0 %}
 		<br/>
-		labour cost per served drink: {{(fohSalaries / servedDrinks )|round(2)}}
+		labour cost per served drink: {{((salariesPerRole['foh'] ?? 0) / servedDrinks )|round(2)}}
 	{% endif %}
 </div>
 <hr/>
