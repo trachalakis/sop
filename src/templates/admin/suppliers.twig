@@ -1,0 +1,44 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'suppliers' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/suppliers" class="text-decoration-none">Προμηθευτές</a>
+    </li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1>Προμηθευτές</h1>
+    <div class="btn-toolbar gap-2">
+        <a href="/admin/suppliers/create" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i>
+        </a>
+    </div>
+</div>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Όνομα</th>
+            <th>Τηλέφωνο</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for supplier in suppliers %}
+        <tr>
+            <td>
+                <a class="text-decoration-none" href="/admin/suppliers/update?id={{supplier.getId}}">
+                    {{supplier.getName}}
+                </a>
+            </td>
+            <td>{{supplier.getTelephone}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
