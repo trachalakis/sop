@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Domain\Entities\SupplyGroup;
+use Domain\Entities\Supplier;
 use Domain\Enums\PriceUnit;
 use Domain\Repositories\SuppliesRepository;
 
@@ -42,6 +43,10 @@ class Supply
 
     #[ORM\OneToMany(targetEntity: SupplyPriceHistory::class, mappedBy: 'supply')]
     private Collection $priceHistory;
+
+    #[ORM\ManyToOne(targetEntity: Supplier::class)]
+    #[ORM\JoinColumn(name: 'supplier_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Supplier $supplier = null;
 
     public function __construct()
     {
@@ -90,6 +95,16 @@ class Supply
     public function getSupplyGroup(): SupplyGroup
     {
     	return $this->supplyGroup;
+    }
+
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): void
+    {
+        $this->supplier = $supplier;
     }
 
     public function setCustomField($field, $value): void
