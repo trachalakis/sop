@@ -10,6 +10,7 @@ use Domain\Enums\PriceUnit;
 use Domain\Repositories\SuppliesRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use Domain\Repositories\SupplyPriceHistoryRepository;
+use Domain\Repositories\SuppliersRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
@@ -20,6 +21,7 @@ final class UpdateSupply
     	private SuppliesRepository $suppliesRepository,
     	private SupplyGroupsRepository $supplyGroupsRepository,
     	private SupplyPriceHistoryRepository $supplyPriceHistoryRepository,
+    	private SuppliersRepository $suppliersRepository,
     	private Twig $twig
     ) {
     }
@@ -53,13 +55,17 @@ final class UpdateSupply
                     $supply->setCustomField($customField['field'], $customField['value']);
                 }
             }
-            
+
+            $supplierId = $requestData['supplier'] ?? '';
+            $supply->setSupplier($supplierId !== '' ? $this->suppliersRepository->find((int)$supplierId) : null);
+
 			$this->suppliesRepository->persist($supply);
 
 			return $response->withHeader('Location', '/admin/supplies')->withStatus(302);
 		}
 
 		$supplyGroups = $this->supplyGroupsRepository->findBy([], ['name' => 'asc']);
+		$suppliers = $this->suppliersRepository->findBy([], ['name' => 'ASC']);
 
         $priceHistory = $supply->getPriceHistory()->toArray();
         usort($priceHistory, fn($a, $b) => $a->getValidFrom() <=> $b->getValidFrom());
@@ -72,6 +78,7 @@ final class UpdateSupply
 				'supplyGroups' => $supplyGroups,
                 'priceUnits' => PriceUnit::cases(),
                 'priceHistory' => $priceHistory,
+                'suppliers' => $suppliers,
 			]
 		);
 	}

@@ -82,6 +82,19 @@
                 </div>
             </div>
             <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Προμηθευτής</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="supplier">
+                        <option value="">—</option>
+                        {% for supplier in suppliers %}
+                            <option value="{{supplier.getId}}" {{supply.getSupplier and supply.getSupplier.getId == supplier.getId ? 'selected' : ''}}>
+                                {{supplier.getName}}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Πρόσθετα πεδία</label>
                 <div class="col-sm-10">
                     {% for field, value in supply.getCustomFields %}
