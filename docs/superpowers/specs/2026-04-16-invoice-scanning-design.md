@@ -81,7 +81,7 @@ Send the invoice image as a base64-encoded `image` content block. The prompt ask
 
 After parsing, the `supplier_name` is matched case-insensitively against `suppliers.name`. Two outcomes:
 - **Match found** — `supplier_id` is resolved automatically; review page shows supplier as read-only
-- **No match** — review page shows a warning ("Προμηθευτής «{name}» δεν βρέθηκε") and a dropdown for the user to select the correct supplier
+- **No match** — review page shows a warning ("Προμηθευτής «{name}» δεν βρέθηκε") with two options: a dropdown to select an existing supplier, or a small inline form to create a new supplier (name + telephone) without leaving the review page
 
 ---
 
@@ -105,7 +105,7 @@ No supplier dropdown — supplier is determined from the invoice.
 
 **`GET /admin/invoices/review`**
 Pre-filled review form showing:
-- Supplier: auto-filled (read-only) or warning + dropdown if unmatched
+- Supplier: auto-filled (read-only) or warning with choice of existing supplier dropdown or inline new supplier form (name + telephone) if unmatched
 - Invoice date (editable)
 - Invoice number (editable, optional)
 - Editable table of line items: description, quantity, unit_price (extras stored silently)
