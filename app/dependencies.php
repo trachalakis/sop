@@ -21,6 +21,7 @@ use Domain\Entities\Recipe;
 use Domain\Entities\ShoppingList;
 use Domain\Entities\Supply;
 use Domain\Entities\SupplyGroup;
+use Domain\Entities\Supplier;
 use Domain\Entities\SupplyPriceHistory;
 use Domain\Entities\Table;
 use Domain\Entities\User;
@@ -47,6 +48,7 @@ use Domain\Repositories\ReservationsRepository;
 use Domain\Repositories\TablesRepository;
 use Domain\Repositories\PrintersRepository;
 use Domain\Repositories\OrderEntryGroupsRepository;
+use Domain\Repositories\SuppliersRepository;
 use Domain\Repositories\SupplyGroupsRepository;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
@@ -221,6 +223,10 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(SupplyGroup::class);
+        },
+        SuppliersRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+            return $em->getRepository(Supplier::class);
         },
         SupplyPriceHistoryRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);

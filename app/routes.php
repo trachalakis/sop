@@ -61,6 +61,10 @@ use Application\Actions\Admin\UpdateRecipe;
 use Application\Actions\Admin\Recipes;
 use Application\Actions\ShoppingListsApp\SaveShoppingList as ShoppingListsAppSaveShoppingList;
 use Application\Actions\Admin\SortSupplyGroups;
+use Application\Actions\Admin\Suppliers;
+use Application\Actions\Admin\CreateSupplier;
+use Application\Actions\Admin\UpdateSupplier;
+use Application\Actions\Admin\DeleteSupplier;
 use Application\Actions\Admin\Supplies;
 use Application\Actions\Admin\SortMenuItems;
 use Application\Actions\Admin\SortMenuSections;
@@ -197,6 +201,11 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/supplies/create', CreateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/update', UpdateSupply::class);
         $group->map(['GET', 'POST'], '/supplies/delete', DeleteSupply::class);
+
+        $group->get('/suppliers', Suppliers::class);
+        $group->map(['GET', 'POST'], '/suppliers/create', CreateSupplier::class);
+        $group->map(['GET', 'POST'], '/suppliers/update', UpdateSupplier::class);
+        $group->get('/suppliers/delete', DeleteSupplier::class);
 
         $group->get('/languages', Languages::class);
         $group->get('/languages/toggle', ToggleLanguage::class);
