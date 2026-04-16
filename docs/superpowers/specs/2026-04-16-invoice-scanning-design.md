@@ -60,6 +60,13 @@ Send the invoice image as a base64-encoded `image` content block. The prompt ask
 ```json
 {
   "supplier_name": "string — as it appears on the invoice",
+  "supplier_details": {
+    "afm": "string or null — ΑΦΜ / VAT number",
+    "doy": "string or null — ΔΟΥ",
+    "address": "string or null",
+    "email": "string or null",
+    "website": "string or null"
+  },
   "invoice_number": "string or null",
   "date": "YYYY-MM-DD or null",
   "entries": [
@@ -77,11 +84,13 @@ Send the invoice image as a base64-encoded `image` content block. The prompt ask
 }
 ```
 
+Claude extracts whatever supplier header fields are visible; any field not present on the invoice is returned as `null`. The `supplier_details` object is stored as-is into `Supplier.details` (a nullable `jsonb` column).
+
 ### Supplier matching
 
 After parsing, the `supplier_name` is matched case-insensitively against `suppliers.name`. Two outcomes:
-- **Match found** — `supplier_id` is resolved automatically; review page shows supplier as read-only
-- **No match** — review page shows a warning ("Προμηθευτής «{name}» δεν βρέθηκε") with two options: a dropdown to select an existing supplier, or a small inline form to create a new supplier (name + telephone) without leaving the review page
+- **Match found** — `supplier_id` is resolved automatically; review page shows supplier as read-only. If the matched supplier's `details` field is empty, the extracted `supplier_details` are written into it.
+- **No match** — review page shows a warning ("Προμηθευτής «{name}» δεν βρέθηκε") with two options: a dropdown to select an existing supplier, or a small inline form to create a new supplier (name + telephone) without leaving the review page. When a new supplier is created inline, the extracted `supplier_details` are stored in its `details` field.
 
 ---
 

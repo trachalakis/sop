@@ -22,6 +22,9 @@ class Supplier
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $telephone = null;
 
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $details = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -45,5 +48,15 @@ class Supplier
     public function setTelephone(?string $telephone): void
     {
         $this->telephone = $telephone;
+    }
+
+    public function getDetails(): ?array
+    {
+        return $this->details;
+    }
+
+    public function setDetails(?array $details): void
+    {
+        $this->details = $details;
     }
 }
