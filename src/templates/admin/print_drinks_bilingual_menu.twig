@@ -41,14 +41,19 @@
                             </h1>
                         </div>
                     </div>
-                    {% for menuItem in menuSection.getActiveMenuItems %}
+                    {% for menuItem in menuSection.getActiveMenuItems
+                        |filter(
+                            m => m.getCustomField('print_menu_description_en')|length > 0 and 
+                            m.getCustomField('print_menu_description_el')|length > 0
+                        )
+                    %}
                         <div class="row mb-1">
                             <div class="col text-end me-n">
                                 <h5 class="mb-0">
                                     {{(menuItem.getTranslation('el').getName|split('/'))[0]}}
                                 </h5>
                                 <p class="mb-1">
-                                    {{menuItem.getCustomField('print_description_el')|nl2br}}
+                                    {{menuItem.getCustomField('print_menu_description_el')|nl2br}}
                                 </p>
                             </div>
                             <div class="col-1">&euro;{{menuItem.getPrice}}</div>
@@ -57,7 +62,7 @@
                                     {{(menuItem.getTranslation('en').getName|split('/'))[0]}}
                                 </h5>
                                 <p class="mb-1">
-                                    {{menuItem.getCustomField('print_description_en')|nl2br}}
+                                    {{menuItem.getCustomField('print_menu_description_en')|nl2br}}
                                 </p>
                             </div>
                         </div>
