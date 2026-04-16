@@ -78,8 +78,9 @@
     <br/>
     man-hours: <strong>{{manHours}}h:{{manMinutes}}m:{{manSeconds}}s</strong> &bull;
     salaries: <strong>&euro;{{salaries|round}}</strong> &bull;
-	BOH Salaries: <strong>&euro;{{bohSalaries|round}}</strong> &bull;
-	FOH Salaries: <strong>&euro;{{fohSalaries|round}}</strong> &bull;
+	{% for role, amount in salariesPerRole %}
+		{{role}}: <strong>&euro;{{amount|round}}</strong> &bull;
+	{% endfor %}
     <a href="/admin/scans?date={{start.format('Y-m-d')}}" target="_blank">Scans</a><br/>
 	fish weight: <strong>{{totalWeight / 1000}}Kg</strong>
     <br/>
