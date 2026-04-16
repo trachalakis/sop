@@ -53,6 +53,7 @@ use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
 use Application\Settings\Settings;
 use Application\Services\OrdersReportService;
+use Application\Services\ScansReportService;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
@@ -235,6 +236,9 @@ return function (ContainerBuilder $containerBuilder) {
             return new OrdersReportService(
                 $c->get(RecipesRepository::class)
             );
+        },
+        ScansReportService::class => function (ContainerInterface $c) {
+            return new ScansReportService();
         },
         ShoppingListsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
