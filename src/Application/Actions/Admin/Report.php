@@ -7,6 +7,7 @@ namespace Application\Actions\Admin;
 use Datetime;
 use DateTimeImmutable;
 use Application\Services\OrdersReportService;
+use Application\Services\ScansReportService;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\MenuSectionsRepository;
@@ -21,6 +22,7 @@ final class Report
         private MenuSectionsRepository $menuSectionsRepository,
         private OrdersRepository $ordersRepository,
         private OrdersReportService $ordersReportService,
+        private ScansReportService $scansReportService,
         private ScansRepository $scansRepository,
         private Twig $twig
     ) {
@@ -113,41 +115,12 @@ final class Report
 	    $criteria->andWhere(Criteria::expr()->lte('checkIn', $end));
         $scans = $this->scansRepository->matching($criteria);
 
-        $manHours = 0;
-        $manMinutes = 0;
-        $manSeconds = 0;
-        $salaries = 0;
-        $bohSalaries = 0;
-        $fohSalaries = 0;
-        foreach($scans as $scan) {
-        	$interval = $scan->getInterval();
-
-            if ($interval != null) {
-	            $manHours += $interval->h;
-	            $manMinutes += $interval->i;
-	            $manSeconds += $interval->s;
-	            if ($manSeconds >= 60) {
-	                $manMinutes++;
-	                $manSeconds -= 60;
-	            }
-
-	            if ($manMinutes >= 60) {
-	                $manHours++;
-	                $manMinutes -= 60;
-	            }
-
-	            $salaries += $scan->getSalary();
-
-                $userRoleNames = array_map(fn($r) => $r->getName(), $scan->getUser()->getRoles());
-                if (in_array('foh', $userRoleNames)) {
-                    $fohSalaries += $scan->getSalary();
-                }
-
-                if (in_array('boh', $userRoleNames)) {
-                    $bohSalaries += $scan->getSalary();
-                }
-	        }
-        }
+        $scansReport     = $this->scansReportService->buildReport($scans);
+        $manHours        = $scansReport['manHours'];
+        $manMinutes      = $scansReport['manMinutes'];
+        $manSeconds      = $scansReport['manSeconds'];
+        $salaries        = $scansReport['salaries'];
+        $salariesPerRole = $scansReport['salariesPerRole'];
 
         /*** Statistics ***/
         $standardDeviation = 0;
@@ -161,7 +134,6 @@ final class Report
         }
 
         $oneYearAgo = (clone $start)->sub(new \DateInterval('P1Y'));
-
 
         return $this->twig->render(
             $response,
@@ -185,8 +157,7 @@ final class Report
                 'manSeconds' => $manSeconds,
 
                 'salaries' => $salaries,
-                'fohSalaries' => $fohSalaries,
-                'bohSalaries' => $bohSalaries,
+                'salariesPerRole' => $salariesPerRole,
 
                 'ordersPerHourData' => $ordersPerHourData,
                 'coversPerHourData' => $coversPerHourData,
