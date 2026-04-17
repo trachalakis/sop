@@ -1,0 +1,46 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'invoices' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item active">Τιμολόγια</li>
+</ol>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{'Τιμολόγια'|_}}</h1>
+    <div class="btn-toolbar">
+        <a href="/admin/invoices/scan" class="btn btn-primary">
+            <i class="bi bi-camera"></i>
+        </a>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{{'Ημερομηνία'|_}}</th>
+            <th>{{'Προμηθευτής'|_}}</th>
+            <th>{{'Αριθμός'|_}}</th>
+            <th>{{'Γραμμές'|_}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoices %}
+        <tr>
+            <td>
+                <a class="text-decoration-none" href="/admin/invoices/view?id={{invoice.getId}}">
+                    {{invoice.getDate.format('d/m/Y')}}
+                </a>
+            </td>
+            <td>{{invoice.getSupplier.getName}}</td>
+            <td>{{invoice.getInvoiceNumber}}</td>
+            <td>{{invoice.getEntries|length}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
