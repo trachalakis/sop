@@ -2,126 +2,71 @@
 
 {% set activeNavLink = 'invoices' %}
 
-{%  block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">View invoice</h1>
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/invoices" class="text-decoration-none">Τιμολόγια</a>
+    </li>
+    <li class="breadcrumb-item active">{{invoice.getDate.format('d/m/Y')}}</li>
+</ol>
+
+<div class="pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{invoice.getSupplier.getName}}</h1>
+    <p class="text-muted mb-0">
+        {{invoice.getDate.format('d/m/Y')}}
+        {% if invoice.getInvoiceNumber %}· {{invoice.getInvoiceNumber}}{% endif %}
+        · {{'Σαρώθηκε'|_}} {{invoice.getScannedAt.format('d/m/Y H:i')}}
+    </p>
 </div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label">Type</label>
-	<div class="col-sm-10">
-		<select class="form-select" disabled>
-        	<option value="normal" {{invoice.getType == 'normal' ? 'selected' : ''}}>Normal</option>
-        	<option value="credit" {{invoice.getType == 'credit' ? 'selected' : ''}}>Credit</option>
-        </select>
-	</div>
-</div>
-<div class="row mb-3">
-    <label class="col-sm-2 col-form-label">Supplier</label>
-    <div class="col-sm-10">
-        <input class="form-control" value="{{invoice.getSupplier.getName}}" disabled/>
-    </div>
-</div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label">Invoice number</label>
-	<div class="col-sm-10">
-		<input type="text" class="form-control" value="{{invoice.getInvoiceNumber}}" disabled/>
-	</div>
-</div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label">Invoice date</label>
-	<div class="col-sm-10">
-		<input type="date" class="form-control" value="{{invoice.getDate.format('Y-m-d')}}" disabled/>
-	</div>
-</div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label"></label>
-	<div class="col-sm-10">
-		<div class="row mb-2">
-			<div class="col"><label>Supply</label></div>
-			<div class="col"><label>Quantity</label></div>
-			<div class="col"><label>Unit</label></div>
-			<div class="col"><label>Price</label></div>
-			<div class="col"><label>Vat</label></div>
-			<div class="col"><label>Vat %</label></div>
-		</div>
-		{% for invoiceEntry in invoice.getInvoiceEntries %}
-			<div class="row mb-3 gx-1">
-    			<div class="col">
-    				<input
-    					class="form-control"
-    					type="text"
-    					value="{{invoiceEntry.getSupply.getName}}"
-    					disabled
-    				/>
-    			</div>
-    			<div class="col">
-    				<input
-						class="form-control"
-						type="number"
-    					value="{{invoiceEntry.getQuantity}}"
-    					disabled
-    				/>
-    			</div>
-    			<div class="col">
-    				<select
-    					class="form-select"
-    					disabled
-    				>
-    					<option value="item" {{invoiceEntry.getUnit == 'item' ? 'selected' : ''}}>Tεμ</option>
-	            		<option value="kg" {{invoiceEntry.getUnit == 'kg' ? 'selected' : ''}}>Kg</option>
-	            		<option value="lt" {{invoiceEntry.getUnit == 'lt' ? 'selected' : ''}}>Lt</option>
-    				</select>
-    			</div>
-    			<div class="col">
-    				<input
-    					type="number"
-    					class="form-control"
-    					value="{{invoiceEntry.getPrice}}"
-    					disabled
-    				/>
-    			</div>
-    			<div class="col">
-    				<input
-    					type="number"
-    					class="form-control"
-    					value="{{invoiceEntry.getVat}}"
-    					disabled
-    				/>
-    			</div>
-    			<div class="col">
-    				<input
-    					type="number"
-    					class="form-control"
-    					value="{{invoiceEntry.getVatPercentage}}"
-    					disabled
-    				/>
-    			</div>
-    		</div>
-	    {% endfor %}
-	</div>
-</div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label">Vat</label>
-	<div class="col-sm-10">
-		<input
-			type="number"
-			step="0.01"
-			class="form-control"
-			disabled
-			value="{{invoice.getVat}}"
-		/>
-	</div>
-</div>
-<div class="row mb-3">
-	<label class="col-sm-2 col-form-label">Total</label>
-	<div class="col-sm-10">
-		<input
-			type="number"
-			step="0.01"
-			class="form-control"
-			disabled
-			value="{{invoice.getTotal}}"
-		/>
-	</div>
-</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{{'Περιγραφή'|_}}</th>
+            <th>{{'Ποσότητα'|_}}</th>
+            <th>{{'Τιμή μον.'|_}}</th>
+            <th>{{'Προμήθεια'|_}}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in invoice.getEntries %}
+        <tr>
+            <td>{{entry.getDescription}}</td>
+            <td>{{entry.getQuantity}}</td>
+            <td>{{entry.getUnitPrice}}</td>
+            <td>
+                {% if entry.getSupplyAlias %}
+                    <a href="/admin/supplies/update?id={{entry.getSupplyAlias.getSupply.getId}}" class="text-decoration-none">
+                        {{entry.getSupplyAlias.getSupply.getName}}
+                    </a>
+                {% else %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#link-{{entry.getId}}"
+                    >
+                        {{'Σύνδεση'|_}}
+                    </button>
+                    <div class="collapse mt-2" id="link-{{entry.getId}}">
+                        <form method="post" action="/admin/invoices/link-entry" class="d-flex gap-2">
+                            <input type="hidden" name="invoice_entry_id" value="{{entry.getId}}">
+                            <select name="supply_id" class="form-select form-select-sm">
+                                <option value="">{{'Επιλέξτε'|_}}</option>
+                                {% for supply in supplies %}
+                                    <option value="{{supply.getId}}">{{supply.getName}}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">{{'Αποθήκευση'|_}}</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
