@@ -1,0 +1,38 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'invoices' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-camera"></i></a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/invoices" class="text-decoration-none">Τιμολόγια</a>
+    </li>
+    <li class="breadcrumb-item active">Σάρωση</li>
+</ol>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{'Σάρωση τιμολογίου'|_}}</h1>
+</div>
+
+{% if error is defined %}
+    <div class="alert alert-danger">{{error}}</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="mt-3" style="max-width:480px">
+    <div class="mb-3">
+        <label class="form-label fw-semibold">{{'Φωτογραφία τιμολογίου'|_}}</label>
+        <input
+            type="file"
+            name="invoice"
+            class="form-control form-control-lg"
+            accept="image/*"
+            capture="environment"
+            required
+        >
+    </div>
+    <button type="submit" class="btn btn-primary btn-lg w-100">{{'Ανάλυση'|_}}</button>
+</form>
+{% endblock %}
