@@ -87,6 +87,14 @@ use Application\Actions\Admin\Users;
 use Application\Actions\Admin\UserScans;
 use Application\Actions\Admin\UserOrders;
 use Application\Actions\Admin\ViewOrder;
+use Application\Actions\Admin\ScanInvoice;
+use Application\Actions\Admin\ReviewInvoice;
+use Application\Actions\Admin\ConfirmInvoice;
+use Application\Actions\Admin\Invoices;
+use Application\Actions\Admin\ViewInvoice;
+use Application\Actions\Admin\LinkInvoiceEntry;
+use Application\Actions\Admin\SupplyAliases;
+use Application\Actions\Admin\DeleteSupplyAlias;
 use Application\Actions\OrdersApp\Homepage as OrdersAppHomepage;
 use Application\Actions\OrdersApp\CatchOfTheDay;
 use Application\Actions\OrdersApp\CreateOrder;
@@ -206,6 +214,16 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/suppliers/create', CreateSupplier::class);
         $group->map(['GET', 'POST'], '/suppliers/update', UpdateSupplier::class);
         $group->get('/suppliers/delete', DeleteSupplier::class);
+
+        $group->get('/invoices', Invoices::class);
+        $group->map(['GET', 'POST'], '/invoices/scan', ScanInvoice::class);
+        $group->get('/invoices/review', ReviewInvoice::class);
+        $group->post('/invoices/confirm', ConfirmInvoice::class);
+        $group->get('/invoices/view', ViewInvoice::class);
+        $group->post('/invoices/link-entry', LinkInvoiceEntry::class);
+
+        $group->get('/supply-aliases', SupplyAliases::class);
+        $group->get('/supply-aliases/delete', DeleteSupplyAlias::class);
 
         $group->get('/languages', Languages::class);
         $group->get('/languages/toggle', ToggleLanguage::class);
