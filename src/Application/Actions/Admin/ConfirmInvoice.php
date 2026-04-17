@@ -57,18 +57,18 @@ final class ConfirmInvoice
         // Build Invoice
         $invoice = new Invoice();
         $invoice->setSupplier($supplier);
-        $invoice->setDate(new DateTime($data['date']));
+        $invoice->setDate(new DateTime(!empty($data['date']) ? $data['date'] : 'today'));
         $invoice->setInvoiceNumber(!empty($data['invoice_number']) ? $data['invoice_number'] : null);
         // scannedAt is auto-set to now() in Invoice::__construct()
 
         // Build entries
-        foreach ($data['entries'] as $entryData) {
+        foreach (($data['entries'] ?? []) as $entryData) {
             $entry = new InvoiceEntry();
             $entry->setDescription($entryData['description']);
             $entry->setQuantity((float) $entryData['quantity']);
             $entry->setUnitPrice((float) $entryData['unit_price']);
             $extras = isset($entryData['extras']) ? json_decode($entryData['extras'], true) : null;
-            $entry->setExtras($extras ?: null);
+            $entry->setExtras(is_array($extras) ? $extras : null);
 
             // Auto-link supply alias if one exists for this supplier + description
             $alias = $this->supplyAliasesRepository->findBySupplierAndDescription(
