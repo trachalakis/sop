@@ -22,7 +22,7 @@ class InvoiceEntriesRepository extends EntityRepository
              WHERE e.description = :desc AND i.supplier = :supplierId'
         )
         ->setParameter('desc', $description)
-        ->setParameter('supplierId', $supplierId)
+        ->setParameter('supplierId', $supplierId, \Doctrine\DBAL\Types\Types::INTEGER)
         ->getResult();
 
         foreach ($entries as $entry) {
