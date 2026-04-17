@@ -32,12 +32,13 @@ class Invoice
     #[ORM\Column(type: 'datetimetz')]
     private DateTimeInterface $scannedAt;
 
-    #[ORM\OneToMany(targetEntity: InvoiceEntry::class, mappedBy: 'invoice', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: InvoiceEntry::class, mappedBy: 'invoice', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $entries;
 
     public function __construct()
     {
-        $this->entries = new ArrayCollection();
+        $this->entries   = new ArrayCollection();
+        $this->scannedAt = new \DateTimeImmutable();
     }
 
     public function getId(): int { return $this->id; }
@@ -54,7 +55,9 @@ class Invoice
 
     public function addEntry(InvoiceEntry $entry): void
     {
-        $this->entries->add($entry);
-        $entry->setInvoice($this);
+        if (!$this->entries->contains($entry)) {
+            $this->entries->add($entry);
+            $entry->setInvoice($this);
+        }
     }
 }
