@@ -1,0 +1,74 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'supply-aliases' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item active">Ψευδώνυμα προμηθειών</li>
+</ol>
+
+<div class="pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{'Ψευδώνυμα προμηθειών'|_}}</h1>
+</div>
+
+{% for alias in aliases %}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <a href="/admin/supplies/update?id={{alias.getSupply.getId}}" class="text-decoration-none">
+                            {{alias.getSupply.getName}}
+                        </a>
+                    </h5>
+                    <p class="text-muted mb-0 small">
+                        {{alias.getSupplier.getName}} · «{{alias.getDescription}}»
+                    </p>
+                </div>
+                <a href="/admin/supply-aliases/delete?id={{alias.getId}}" class="btn btn-sm btn-outline-danger confirm">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+
+            {% if aliasEntries[alias.getId] is defined and aliasEntries[alias.getId] is not empty %}
+                <canvas id="chart-{{alias.getId}}" class="mt-3" height="80"></canvas>
+            {% else %}
+                <p class="text-muted small mt-2 mb-0">{{'Δεν υπάρχουν δεδομένα τιμής.'|_}}</p>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <p class="text-muted">{{'Δεν υπάρχουν ψευδώνυμα ακόμα.'|_}}</p>
+{% endfor %}
+
+{% endblock %}
+
+{% block javascript %}
+    {{parent()}}
+    {% if aliases is not empty %}
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+        <script>
+        {% for alias in aliases %}
+            {% if aliasEntries[alias.getId] is defined and aliasEntries[alias.getId] is not empty %}
+            new Chart(document.getElementById('chart-{{alias.getId}}'), {
+                type: 'line',
+                data: {
+                    labels: [{% for e in aliasEntries[alias.getId] %}"{{e.getInvoice.getDate.format('Y-m-d')}}"{% if not loop.last %},{% endif %}{% endfor %}],
+                    datasets: [{
+                        label: 'Τιμή (€)',
+                        data: [{% for e in aliasEntries[alias.getId] %}{{e.getUnitPrice}}{% if not loop.last %},{% endif %}{% endfor %}],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        fill: false,
+                    }]
+                },
+                options: { scales: { y: { beginAtZero: false } } }
+            });
+            {% endif %}
+        {% endfor %}
+        </script>
+    {% endif %}
+{% endblock %}
