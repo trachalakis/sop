@@ -89,11 +89,10 @@
                 </td>
                 <td>
                     <input type="number" step="0.001" name="entries[{{i}}][unit_price]" class="form-control form-control-sm" value="{{entry.unit_price}}" required>
+                    {% if entry.extras is defined and entry.extras is not null %}
+                        <input type="hidden" name="entries[{{i}}][extras]" value="{{ entry.extras|json_encode|e('html_attr') }}">
+                    {% endif %}
                 </td>
-                {# Preserve extras as hidden fields #}
-                {% if entry.extras is defined and entry.extras is not null %}
-                    <input type="hidden" name="entries[{{i}}][extras]" value='{{entry.extras|json_encode}}'>
-                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
