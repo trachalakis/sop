@@ -107,6 +107,9 @@ final class InvoiceParserService
         }
 
         $response = json_decode($responseBody, true);
+        if (!is_array($response)) {
+            throw new RuntimeException('Claude API response is not valid JSON: ' . $responseBody);
+        }
         $text = $response['content'][0]['text'] ?? '';
 
         // Strip markdown code fences if present
