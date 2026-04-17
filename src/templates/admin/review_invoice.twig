@@ -1,0 +1,104 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'invoices' %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/invoices" class="text-decoration-none">Τιμολόγια</a>
+    </li>
+    <li class="breadcrumb-item active">Επισκόπηση</li>
+</ol>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{'Επισκόπηση τιμολογίου'|_}}</h1>
+</div>
+
+<form method="post" action="/admin/invoices/confirm">
+
+    {# Supplier section #}
+    <div class="mb-3">
+        <label class="form-label fw-semibold">{{'Προμηθευτής'|_}}</label>
+        {% if scan.supplier_id %}
+            <p class="form-control-plaintext">
+                {% for supplier in suppliers %}
+                    {% if supplier.getId == scan.supplier_id %}{{supplier.getName}}{% endif %}
+                {% endfor %}
+            </p>
+            <input type="hidden" name="supplier_id" value="{{scan.supplier_id}}">
+        {% else %}
+            <div class="alert alert-warning">
+                {{'Προμηθευτής'|_}} «{{scan.supplier_name}}» {{'δεν βρέθηκε'|_}}.
+            </div>
+            <div class="mb-2">
+                <label class="form-label">{{'Επιλογή υπάρχοντος'|_}}</label>
+                <select name="supplier_id" class="form-select">
+                    <option value="">{{'— Επιλέξτε —'|_}}</option>
+                    {% for supplier in suppliers %}
+                        <option value="{{supplier.getId}}">{{supplier.getName}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="form-label">{{'ή Δημιουργία νέου'|_}}</label>
+                <div class="row g-2">
+                    <div class="col">
+                        <input type="text" name="new_supplier_name" class="form-control" placeholder="{{'Όνομα'|_}}">
+                    </div>
+                    <div class="col">
+                        <input type="text" name="new_supplier_telephone" class="form-control" placeholder="{{'Τηλέφωνο'|_}}">
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {# Invoice header #}
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">{{'Ημερομηνία'|_}}</label>
+            <input type="date" name="date" class="form-control" value="{{scan.date}}" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label fw-semibold">{{'Αριθμός τιμολογίου'|_}}</label>
+            <input type="text" name="invoice_number" class="form-control" value="{{scan.invoice_number}}">
+        </div>
+    </div>
+
+    {# Line items #}
+    <h5 class="mb-2">{{'Γραμμές'|_}}</h5>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>{{'Περιγραφή'|_}}</th>
+                <th>{{'Ποσότητα'|_}}</th>
+                <th>{{'Τιμή μονάδας'|_}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i, entry in scan.entries %}
+            <tr>
+                <td>
+                    <input type="text" name="entries[{{i}}][description]" class="form-control form-control-sm" value="{{entry.description}}" required>
+                </td>
+                <td>
+                    <input type="number" step="0.001" name="entries[{{i}}][quantity]" class="form-control form-control-sm" value="{{entry.quantity}}" required>
+                </td>
+                <td>
+                    <input type="number" step="0.001" name="entries[{{i}}][unit_price]" class="form-control form-control-sm" value="{{entry.unit_price}}" required>
+                </td>
+                {# Preserve extras as hidden fields #}
+                {% if entry.extras is defined and entry.extras is not null %}
+                    <input type="hidden" name="entries[{{i}}][extras]" value='{{entry.extras|json_encode}}'>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">{{'Αποθήκευση'|_}}</button>
+</form>
+{% endblock %}
