@@ -26,6 +26,9 @@ use Domain\Entities\SupplyPriceHistory;
 use Domain\Entities\Table;
 use Domain\Entities\User;
 use Domain\Entities\UserPermission;
+use Domain\Entities\Invoice;
+use Domain\Entities\InvoiceEntry;
+use Domain\Entities\SupplyAlias;
 use Domain\Repositories\DailyRoleSlotsRepository;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\RolesRepository;
@@ -50,12 +53,16 @@ use Domain\Repositories\PrintersRepository;
 use Domain\Repositories\OrderEntryGroupsRepository;
 use Domain\Repositories\SuppliersRepository;
 use Domain\Repositories\SupplyGroupsRepository;
+use Domain\Repositories\InvoicesRepository;
+use Domain\Repositories\InvoiceEntriesRepository;
+use Domain\Repositories\SupplyAliasesRepository;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
 use Slim\Views\Twig;
 use Application\Settings\Settings;
 use Application\Services\OrdersReportService;
 use Application\Services\ScansReportService;
+use Application\Services\InvoiceParserService;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
@@ -265,6 +272,18 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(UserPermission::class);
+        },
+        InvoicesRepository::class => function (ContainerInterface $c) {
+            return $c->get(EntityManager::class)->getRepository(Invoice::class);
+        },
+        InvoiceEntriesRepository::class => function (ContainerInterface $c) {
+            return $c->get(EntityManager::class)->getRepository(InvoiceEntry::class);
+        },
+        SupplyAliasesRepository::class => function (ContainerInterface $c) {
+            return $c->get(EntityManager::class)->getRepository(SupplyAlias::class);
+        },
+        InvoiceParserService::class => function (ContainerInterface $c) {
+            return new InvoiceParserService($_ENV['ANTHROPIC_API_KEY']);
         },
         'SessionUser' => function (ContainerInterface $c) {
             return $_SESSION['user'] ?? null;
