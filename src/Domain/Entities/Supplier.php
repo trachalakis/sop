@@ -16,13 +16,13 @@ class Supplier
     #[ORM\GeneratedValue]
     private int $id;
 
-    #[ORM\Column(type: 'string', unique: true)]
+    #[ORM\Column(name: 'name', type: 'string', unique: true)]
     private string $name;
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'telephone_number', type: 'string', nullable: true)]
     private ?string $telephone = null;
 
-    #[ORM\Column(type: 'json', nullable: true)]
+    #[ORM\Column(name: 'details', type: 'json', nullable: true)]
     private ?array $details = null;
 
     public function getId(): int
@@ -35,9 +35,9 @@ class Supplier
         return $this->name;
     }
 
-    public function getTelephone(): ?string
+    public function getTelephoneNumber(): ?string
     {
-        return $this->telephone;
+        return $this->telephoneNumber;
     }
 
     public function setName(string $name): void
@@ -45,9 +45,9 @@ class Supplier
         $this->name = $name;
     }
 
-    public function setTelephone(?string $telephone): void
+    public function setTelephone(?string $telephoneNumber): void
     {
-        $this->telephone = $telephone;
+        $this->telephoneNumber = $telephoneNumber;
     }
 
     public function getDetails(): ?array
