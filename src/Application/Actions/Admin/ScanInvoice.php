@@ -34,8 +34,18 @@ final class ScanInvoice
                 ]);
             }
 
-            $mediaType = $file->getClientMediaType() ?: 'image/jpeg';
             $imageData = (string) $file->getStream();
+            $mediaType = $file->getClientMediaType() ?: 'image/jpeg';
+
+            // Convert HEIC (and any other non-JPEG/PNG/GIF/WEBP) to JPEG
+            if (!in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
+                $imagick = new \Imagick();
+                $imagick->readImageBlob($imageData);
+                $imagick->setImageFormat('jpeg');
+                $imageData = $imagick->getImageBlob();
+                $imagick->destroy();
+                $mediaType = 'image/jpeg';
+            }
 
             try {
                 $parsed = $this->parser->parse($imageData, $mediaType);
