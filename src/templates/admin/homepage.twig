@@ -51,5 +51,21 @@
             </div>
         </div>
     </div>
+
+    <div class="col-sm-12 col-md-4">
+        <div class="card text-bg-light mb-3">
+            <div class="card-header"><a class="text-decoration-none" href="/shopping-lists-app/update">Ψώνια</a></div>
+            <div class="card-body">
+                <h5 class="card-title">{{todaysReservations|length}} Reservations</h5>
+                <p class="card-text">
+                    {{todaysReservations|map(r => r.getAdults)|reduce((carry, v) => carry + v, 0)}} ενήλικες,
+                    {{todaysReservations|map(r => r.getMinors)|reduce((carry, v) => carry + v, 0)}} ανήλικοι
+                </p>
+                <a href="/shopping-lists-app/update" class="btn btn-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right"></i> Μετάβαση 
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
