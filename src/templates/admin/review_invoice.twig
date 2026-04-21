@@ -76,6 +76,7 @@
                 <th>{{'Περιγραφή'|_}}</th>
                 <th>{{'Ποσότητα'|_}}</th>
                 <th>{{'Τιμή μονάδας'|_}}</th>
+                <th>{{'Εκπτώσεις'|_}}</th>
             </tr>
         </thead>
         <tbody>
@@ -91,6 +92,13 @@
                     <input type="number" step="0.001" name="entries[{{i}}][unit_price]" class="form-control form-control-sm" value="{{entry.unit_price}}" required>
                     {% if entry.extras is defined and entry.extras is not null %}
                         <input type="hidden" name="entries[{{i}}][extras]" value="{{ entry.extras|json_encode|e('html_attr') }}">
+                    {% endif %}
+                </td>
+                <td class="text-muted small align-middle">
+                    {% if entry.extras.discounts is defined and entry.extras.discounts is not empty %}
+                        {% for d in entry.extras.discounts %}{{d}}%{% if not loop.last %} + {% endif %}{% endfor %}
+                    {% else %}
+                        —
                     {% endif %}
                 </td>
             </tr>

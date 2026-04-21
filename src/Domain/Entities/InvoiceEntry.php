@@ -29,6 +29,9 @@ class InvoiceEntry
     #[ORM\Column(type: 'float', name: 'unit_price')]
     private float $unitPrice;
 
+    #[ORM\Column(type: 'float', name: 'effective_unit_price', nullable: true)]
+    private ?float $effectiveUnitPrice = null;
+
     #[ORM\Column(type: 'json', nullable: true)]
     private ?array $extras = null;
 
@@ -41,6 +44,7 @@ class InvoiceEntry
     public function getDescription(): string { return $this->description; }
     public function getQuantity(): float { return $this->quantity; }
     public function getUnitPrice(): float { return $this->unitPrice; }
+    public function getEffectiveUnitPrice(): ?float { return $this->effectiveUnitPrice; }
     public function getExtras(): ?array { return $this->extras; }
     public function getSupplyAlias(): ?SupplyAlias { return $this->supplyAlias; }
 
@@ -48,6 +52,7 @@ class InvoiceEntry
     public function setDescription(string $description): void { $this->description = $description; }
     public function setQuantity(float $quantity): void { $this->quantity = $quantity; }
     public function setUnitPrice(float $unitPrice): void { $this->unitPrice = $unitPrice; }
+    public function setEffectiveUnitPrice(?float $effectiveUnitPrice): void { $this->effectiveUnitPrice = $effectiveUnitPrice; }
     public function setExtras(?array $extras): void { $this->extras = $extras; }
     public function setSupplyAlias(?SupplyAlias $supplyAlias): void { $this->supplyAlias = $supplyAlias; }
 }

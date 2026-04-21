@@ -66,9 +66,21 @@ final class ConfirmInvoice
             $entry = new InvoiceEntry();
             $entry->setDescription($entryData['description']);
             $entry->setQuantity((float) $entryData['quantity']);
-            $entry->setUnitPrice((float) $entryData['unit_price']);
+            $grossPrice = (float) $entryData['unit_price'];
+            $entry->setUnitPrice($grossPrice);
             $extras = isset($entryData['extras']) ? json_decode($entryData['extras'], true) : null;
-            $entry->setExtras(is_array($extras) ? $extras : null);
+            $extras = is_array($extras) ? $extras : null;
+            $entry->setExtras($extras);
+
+            // Compute effective unit price after all stacked discounts
+            $discounts = $extras['discounts'] ?? [];
+            if (!empty($discounts)) {
+                $effectivePrice = $grossPrice;
+                foreach ($discounts as $d) {
+                    $effectivePrice *= (1 - (float) $d / 100);
+                }
+                $entry->setEffectiveUnitPrice($effectivePrice);
+            }
 
             // Auto-link supply alias if one exists for this supplier + description
             $alias = $this->supplyAliasesRepository->findBySupplierAndDescription(

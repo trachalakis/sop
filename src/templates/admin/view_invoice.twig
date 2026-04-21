@@ -28,6 +28,8 @@
             <th>{{'Περιγραφή'|_}}</th>
             <th>{{'Ποσότητα'|_}}</th>
             <th>{{'Τιμή μον.'|_}}</th>
+            <th>{{'Εκπτώσεις'|_}}</th>
+            <th>{{'Τιμή μετά έκπτωση'|_}}</th>
             <th>{{'Προμήθεια'|_}}</th>
         </tr>
     </thead>
@@ -37,6 +39,21 @@
             <td>{{entry.getDescription}}</td>
             <td>{{entry.getQuantity}}</td>
             <td>{{entry.getUnitPrice}}</td>
+            <td class="text-muted small">
+                {% set discounts = entry.getExtras.discounts ?? [] %}
+                {% if discounts is not empty %}
+                    {% for d in discounts %}{{d}}%{% if not loop.last %} + {% endif %}{% endfor %}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                {% if entry.getEffectiveUnitPrice is not null %}
+                    {{entry.getEffectiveUnitPrice|number_format(3, '.', '')}}
+                {% else %}
+                    {{entry.getUnitPrice|number_format(3, '.', '')}}
+                {% endif %}
+            </td>
             <td>
                 {% if entry.getSupplyAlias %}
                     <a href="/admin/supplies/update?id={{entry.getSupplyAlias.getSupply.getId}}" class="text-decoration-none">

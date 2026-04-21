@@ -14,7 +14,7 @@ use RuntimeException;
  *   supplier_details array{afm:?string, doy:?string, address:?string, email:?string, website:?string}
  *   invoice_number   string|null
  *   date             string|null  (YYYY-MM-DD)
- *   entries          array of {description:string, quantity:float, unit_price:float, extras:array}
+ *   entries          array of {description:string, quantity:float, unit_price:float, extras:array{unit:?string, vat_rate:int, line_total:float, discounts:float[]}}
  */
 final class InvoiceParserService
 {
@@ -50,7 +50,7 @@ final class InvoiceParserService
                         ],
                         [
                             'type' => 'text',
-                            'text' => 'Extract all invoice data from this image and return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
+                            'text' => 'Extract all invoice data from this image and return ONLY a valid JSON object with this exact structure (no markdown, no extra text). For "discounts", list all discount percentages applied to each line item as an array of numbers (e.g. [10.0, 5.0]); use an empty array [] if there are no discounts:
 {
   "supplier_name": "string as it appears on the invoice",
   "supplier_details": {
@@ -70,7 +70,8 @@ final class InvoiceParserService
       "extras": {
         "unit": "string or null",
         "vat_rate": 0,
-        "line_total": 0.0
+        "line_total": 0.0,
+        "discounts": [10.0, 5.0]
       }
     }
   ]
