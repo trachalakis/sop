@@ -34,7 +34,14 @@
         </tr>
     </thead>
     <tbody>
+        {% set totalNet = 0 %}
+        {% set totalVat = 0 %}
         {% for entry in invoice.getEntries %}
+        {% set linePrice = entry.getEffectiveUnitPrice is not null ? entry.getEffectiveUnitPrice : entry.getUnitPrice %}
+        {% set lineNet = linePrice * entry.getQuantity %}
+        {% set lineVat = lineNet * (entry.getExtras.vat_rate ?? 0) / 100 %}
+        {% set totalNet = totalNet + lineNet %}
+        {% set totalVat = totalVat + lineVat %}
         <tr>
             <td>{{entry.getDescription}}</td>
             <td>{{entry.getQuantity}}</td>
@@ -85,5 +92,22 @@
         </tr>
         {% endfor %}
     </tbody>
+    <tfoot class="table-group-divider fw-semibold">
+        <tr>
+            <td colspan="4" class="text-end">{{'Σύνολο (χωρίς ΦΠΑ)'|_}}</td>
+            <td>{{totalNet|number_format(2, '.', '')}}</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td colspan="4" class="text-end">{{'ΦΠΑ'|_}}</td>
+            <td>{{totalVat|number_format(2, '.', '')}}</td>
+            <td></td>
+        </tr>
+        <tr class="table-dark">
+            <td colspan="4" class="text-end">{{'Σύνολο (με ΦΠΑ)'|_}}</td>
+            <td>{{(totalNet + totalVat)|number_format(2, '.', '')}}</td>
+            <td></td>
+        </tr>
+    </tfoot>
 </table>
 {% endblock %}
