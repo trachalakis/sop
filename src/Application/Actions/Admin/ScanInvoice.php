@@ -36,16 +36,7 @@ final class ScanInvoice
 
             $imageData = (string) $file->getStream();
             $mediaType = $file->getClientMediaType() ?: 'image/jpeg';
-
-            // Convert HEIC (and any other non-JPEG/PNG/GIF/WEBP) to JPEG
-            if (!in_array($mediaType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'], true)) {
-                $imagick = new \Imagick();
-                $imagick->readImageBlob($imageData);
-                $imagick->setImageFormat('jpeg');
-                $imageData = $imagick->getImageBlob();
-                $imagick->destroy();
-                $mediaType = 'image/jpeg';
-            }
+            $imageData = $this->normaliseImage($imageData, $mediaType);
 
             try {
                 $parsed = $this->parser->parse($imageData, $mediaType);
@@ -78,5 +69,34 @@ final class ScanInvoice
         }
 
         return $this->twig->render($response, 'admin/scan_invoice.twig', []);
+    }
+
+    /**
+     * Convert to JPEG, resize to max 1600px on the longest side, and compress
+     * until the result is under the Claude API 5 MB image limit.
+     * Updates $mediaType to 'image/jpeg' in all cases.
+     */
+    private function normaliseImage(string $imageData, string &$mediaType): string
+    {
+        $imagick = new \Imagick();
+        $imagick->readImageBlob($imageData);
+        $imagick->setImageFormat('jpeg');
+
+        // Resize so the longest side is at most 1600px (preserves aspect ratio)
+        $imagick->resizeImage(1600, 1600, \Imagick::FILTER_LANCZOS, 1, bestfit: true);
+
+        // Start at quality 85, drop by 15 each iteration until under 5 MB
+        $quality = 85;
+        $limit = 5 * 1024 * 1024;
+        do {
+            $imagick->setImageCompressionQuality($quality);
+            $result = $imagick->getImageBlob();
+            $quality -= 15;
+        } while (strlen($result) > $limit && $quality > 10);
+
+        $imagick->destroy();
+        $mediaType = 'image/jpeg';
+
+        return $result;
     }
 }
