@@ -43,7 +43,7 @@
 			</div>
 		</div>
 		{% for menuSection in menuSections %}
-			{% for menuItem in menuSection.getActiveMenuItems %}
+			{% for menuItem in menuSection.getActiveMenuItems|filter(m => m.getCustomField('print_menu_description_en')|length > 0) %}
 				<div class="row mb-2">
 					<div class="col text-end me-n">
 						<h5 class="mb-0">
