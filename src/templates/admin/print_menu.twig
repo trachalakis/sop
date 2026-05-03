@@ -4,23 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <title>Menu | {{siteName}}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-	<style type="text/css">
+    <title></title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous"
+	>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
+    <style type="text/css">
 		body {
-			font-family: 'pfalfabeta', 'Aegithalos', Fallback, sans-serif;
-		}
-
-		@font-face {
-    		font-family: Aegithalos;
-    		src: url("/assets/fonts/aegithalos.otf") format("opentype");
-		}
-
-		@font-face {
-    		font-family: 'pfalfabeta';
-    		src: url('/assets/fonts/pfalfabeta/pfalfabeta-regular.otf') format('opentype');
-    		font-weight: normal;
-    		font-style: normal;
+			font-family: "EB Garamond", serif;
+            font-optical-sizing: auto;
+            font-weight: 400;
+            font-style: normal;
 		}
 	</style>
 </head>
@@ -28,54 +27,48 @@
 	<div class="container-fluid text-center">
 		<div class="row mb-3">
 			<div class="col-12 text-center">
-				<img src="/assets/img/logo_no_name.png" height="100"/>
+				<img src="/assets/logo.jpg" height="100"/>
 			</div>
 		</div>
 		{% for menuSection in menuSections %}
-			{% for menuItem in menuSection.getActiveMenuItems %}
-				{% if menuItem.getIsActive and menuItem.getIsPublic %}
-					<div class="row mb-3">
-						<div class="col-12 text-center">
-							<h5 class="mb-0">
-								{{(menuItem.getTranslation(lang).getName|split('/'))[0]}} &centerdot; &euro;{{menuItem.getPrice}}
-							</h5>
-							<p class="mb-1">
-								{% if menuItem.getCustomField('print_description_' ~ lang) %}
-									{{menuItem.getCustomField('print_description_' ~ lang)}}
-								{% endif %}
-							</p>
-						</div>
-					</div>
-				{% endif %}
-				{% if menuItem.getId == 1 %} {# Bread #}
-					<div class="row mb-3">
-						<div class="col-12 text-center">
-							<h5 class="mb-0">
-								{{lang == 'en' ? 'Catch of the day' : 'Ψάρι ημέρας' }}
-							</h5>
-							<p class="mb-1">
-								{{lang == 'en' ? 'fresh local fish, different selection each day, please ask for advice' : 'Ρωτήστε μας για το φρέσκο ψάρι ημέρας'}}
-							</p>
-						</div>
-					</div>
-				{% endif %}
-
-			{% endfor %}
+			<div class="row mb-4">
+                <div class="col">
+                    <div class="row mb-1">
+                        <div class="col">
+                            <h1 class="h3">
+                                {{menuSection.getTranslation('el').getName}} | {{menuSection.getTranslation('en').getName}} 
+                            </h1>
+                        </div>
+                    </div>
+                    {% for menuItem in menuSection.getActiveMenuItems
+                        |filter(
+                            m => m.getCustomField('print_menu_description_en')|length > 0 and 
+                            m.getCustomField('print_menu_description_el')|length > 0
+                        )
+                    %}
+                        <div class="row mb-1">
+                            <div class="col text-end me-n">
+                                <h5 class="mb-0">
+                                    {{(menuItem.getTranslation('el').getName|split('/'))[0]}}
+                                </h5>
+                                <p class="mb-1">
+                                    {{menuItem.getCustomField('print_menu_description_el')|nl2br}}
+                                </p>
+                            </div>
+                            <div class="col-1">&euro;{{menuItem.getPrice}}</div>
+                            <div class="col text-start ms-n">
+                                <h5 class="mb-0">
+                                    {{(menuItem.getTranslation('en').getName|split('/'))[0]}}
+                                </h5>
+                                <p class="mb-1">
+                                    {{menuItem.getCustomField('print_menu_description_en')|nl2br}}
+                                </p>
+                            </div>
+                        </div>
+			        {% endfor %}
+                </div>
+            </div>
 		{% endfor %}
-		<div class="row mb-3">
-			<div class="col-12 text-center">
-				<p class="mb-1">
-					{% for i in 1..10 %}
-						<img width="50" src="/assets/img/fish_color.png"/>
-					{% endfor %}
-				</p>
-				<p class="mb-1">
-					{{
-						lang == 'en' ? ' Please let us know of any food allergies we should be aware of in the preparation of your meal.' 
-						: 'Παρακαλούμε ενημερώστε το προσωπικό της επιχείρησης μας για τυχόν αλλεργίες ή δυσανεξίες που μπορεί να έχετε. '}}
-				</p>
-			</div>
-		</div>
 	</div>
 </body>
 </html>
