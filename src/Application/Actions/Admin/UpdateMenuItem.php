@@ -47,7 +47,9 @@ final class UpdateMenuItem
                     apcu_clear_cache();
                 }
 
-                return $response->withHeader('Location', '/admin/menu')->withStatus(302);
+                return $response->withHeader(
+                    'Location', '/admin/menu?id=' . $menuItem->getMenuSection()->getMenu()->getId()
+                )->withStatus(302);
             }
 
             $menuItem->setPrice(floatval($requestData['price']));
