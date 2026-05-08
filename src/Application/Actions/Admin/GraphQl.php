@@ -25,7 +25,7 @@ final class GraphQl
 		$queryParams = $request->getQueryParams();
 		$useCachedResults = isset($queryParams['useCachedResults']);
 
-		$key = sha1($request->getBody()->__toString());
+		$key = sha1($this->container->get('settings')['siteName'] . $request->getBody()->__toString());
 		$fetched = false;
 
 		if (function_exists('apcu_fetch')) {
