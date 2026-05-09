@@ -38,7 +38,7 @@ class Invoice
     public function __construct()
     {
         $this->entries   = new ArrayCollection();
-        $this->scannedAt = new \DateTimeImmutable();
+        $this->scannedAt = new \DateTime();
     }
 
     public function getId(): int 

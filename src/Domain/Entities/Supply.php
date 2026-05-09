@@ -48,6 +48,9 @@ class Supply
     #[ORM\JoinColumn(name: 'supplier_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Supplier $supplier = null;
 
+    #[ORM\Column(type: 'boolean', name: 'is_active')]
+    private bool $isActive = true;
+
     public function __construct()
     {
         $this->priceHistory = new ArrayCollection();
@@ -105,6 +108,16 @@ class Supply
     public function setSupplier(?Supplier $supplier): void
     {
         $this->supplier = $supplier;
+    }
+
+    public function getIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): void
+    {
+        $this->isActive = $isActive;
     }
 
     public function setCustomField($field, $value): void

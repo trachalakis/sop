@@ -40,6 +40,15 @@
     <div class="tab-pane fade show active" id="tab-form">
         <form method="post" autocomplete="off" action="">
             <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Ενεργό</label>
+                <div class="col-sm-10">
+                    <select class="form-select" name="isActive">
+                        <option value="1" {{supply.getIsActive ? 'selected' : ''}}>Ναί</option>
+                        <option value="0" {{supply.getIsActive ? '' : 'selected'}}>Όχι</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Όνομα</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" name="name" value="{{supply.getName}}"/>

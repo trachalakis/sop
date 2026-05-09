@@ -35,6 +35,7 @@ final class UpdateSupply
 			$supplyGroup = $this->supplyGroupsRepository->find($requestData['supplyGroup']);
 			$supply->setName($requestData['name']);
 			$supply->setSupplyGroup($supplyGroup);
+            $supply->setIsActive(boolval($requestData['isActive']));
 
             $newPrice = floatval($requestData['price']);
             if ($supply->getPrice() !== $newPrice) {
@@ -58,6 +59,8 @@ final class UpdateSupply
 
             $supplierId = $requestData['supplier'] ?? '';
             $supply->setSupplier($supplierId !== '' ? $this->suppliersRepository->find((int)$supplierId) : null);
+
+            
 
 			$this->suppliesRepository->persist($supply);
 

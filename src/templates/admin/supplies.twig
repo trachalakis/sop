@@ -16,35 +16,43 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-1 border-bottom">
     <h1>Προμήθειες</h1>
     <div class="btn-toolbar gap-2">
+        <button id="toggle-inactive" class="btn btn-outline-secondary btn-sm" data-showing="0">
+            {{'Εμφάνιση ανενεργών'|_}}
+        </button>
        	<a href="/admin/supplies/create" class="btn btn-primary">
             <i class="bi bi-plus-lg"></i>
         </a>
     </div>
 </div>
-<ul class="nav nav-pills flex-nowrap overflow-auto mb-3">
+<ul id="supply-group-nav" class="nav nav-pills flex-nowrap overflow-auto mb-3">
     {% for supplyGroup in supplyGroups|filter(sg => sg.getSupplies|length > 0) %}
-        <li class="nav-item text-nowrap">
-            <a class="nav-link {{loop.index == 1 ? 'ps-0' : ''}}" href="#supply-group-{{supplyGroup.getId}}">{{supplyGroup.getName}}</a>
+        {% set activeCount = supplyGroup.getSupplies|filter(s => s.getIsActive)|length %}
+        <li class="nav-item text-nowrap{{activeCount == 0 ? ' inactive-group-nav d-none' : ''}}" data-group-id="{{supplyGroup.getId}}">
+            <a class="nav-link {{loop.first ? 'ps-0' : ''}}" href="#supply-group-{{supplyGroup.getId}}">{{supplyGroup.getName}}</a>
         </li>
     {% endfor %}
 </ul>
 <div id="supply-groups-sortable">
 {% for supplyGroup in supplyGroups|filter(sg => sg.getSupplies|length > 0) %}
-	<div id="supply-group-{{supplyGroup.getId}}" data-id="{{supplyGroup.getId}}">
+    {% set activeCount = supplyGroup.getSupplies|filter(s => s.getIsActive)|length %}
+	<div id="supply-group-{{supplyGroup.getId}}" data-id="{{supplyGroup.getId}}" data-active-count="{{activeCount}}" class="{{activeCount == 0 ? 'inactive-group d-none' : ''}}">
     <h2 style="cursor: grab;">{{supplyGroup.getName}}</h2>
 	<table class="table table-responsive">
 		<tbody>
 			{% for supply in supplyGroup.getSupplies %}
-				<tr>
+				<tr class="{{supply.getIsActive ? '' : 'supply-inactive d-none'}}">
       			    <td class="ps-4">
 						<a class="text-decoration-none" href="/admin/supplies/update?id={{supply.getId}}">{{supply.getName}}</a>
+                        {% if not supply.getIsActive %}
+                            <span class="badge bg-secondary ms-1">{{'ανενεργό'|_}}</span>
+                        {% endif %}
                         {% if supply.getPrice > 0 %}
                             <span class="ms-2 text-muted">
                                 &euro;{{supply.getPrice}} / {{supply.getPriceUnit}}
                             </span>
                         {% endif %}
 					</td>
-					
+
     			</tr>
 			{% endfor %}
 		</tbody>
@@ -69,6 +77,24 @@
                     headers: { 'Content-Type': 'application/json' }
                 });
             }
+        });
+
+        document.getElementById('toggle-inactive').addEventListener('click', function () {
+            const show = this.dataset.showing === '0';
+            this.dataset.showing = show ? '1' : '0';
+            this.textContent = show ? '{{'Απόκρυψη ανενεργών'|_}}' : '{{'Εμφάνιση ανενεργών'|_}}';
+            this.classList.toggle('btn-outline-secondary', !show);
+            this.classList.toggle('btn-secondary', show);
+
+            document.querySelectorAll('.supply-inactive').forEach(function (el) {
+                el.classList.toggle('d-none', !show);
+            });
+            document.querySelectorAll('.inactive-group').forEach(function (el) {
+                el.classList.toggle('d-none', !show);
+            });
+            document.querySelectorAll('.inactive-group-nav').forEach(function (el) {
+                el.classList.toggle('d-none', !show);
+            });
         });
     </script>
 {% endblock %}
