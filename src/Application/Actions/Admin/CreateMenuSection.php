@@ -35,7 +35,6 @@ final class CreateMenuSection
             $menuSection = new MenuSection;
             $menuSection->setIsActive(boolval($postData['isActive']));
             $menuSection->setPosition(intval($postData['position']));
-            $menuSection->setPrintMenuPage(intval($postData['printMenuPage']));
             $menuSection->setMenu($menu);
 
             $translations = [];
