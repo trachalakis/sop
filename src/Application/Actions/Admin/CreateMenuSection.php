@@ -34,7 +34,6 @@ final class CreateMenuSection
 
             $menuSection = new MenuSection;
             $menuSection->setIsActive(boolval($postData['isActive']));
-            $menuSection->setIsPublic(boolval($postData['isPublic']));
             $menuSection->setPosition(intval($postData['position']));
             $menuSection->setPrintMenuPage(intval($postData['printMenuPage']));
             $menuSection->setMenu($menu);
