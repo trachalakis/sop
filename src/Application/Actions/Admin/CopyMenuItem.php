@@ -77,16 +77,15 @@ final class CopyMenuItem
 
             // Copy recipe
             $sourceRecipe = $this->recipesRepository->findOneBy(['menuItem' => $sourceItem]);
-            $newRecipe = new Recipe();
-            $newRecipe->setMenuItem($newItem);
-            $newRecipe->setName($sourceRecipe?->getName());
-            $newRecipe->setDuration($sourceRecipe?->getDuration() ?? 0);
-            $newRecipe->setYield($sourceRecipe?->getYield() ?? 1);
-            $newRecipe->setYieldUnit($sourceRecipe?->getYieldUnit() ?? 'item');
-            $newRecipe->setComments($sourceRecipe?->getComments());
-
-            // Copy ingredients
             if ($sourceRecipe !== null) {
+                $newRecipe = new Recipe();
+                $newRecipe->setMenuItem($newItem);
+                $newRecipe->setName($sourceRecipe->getName());
+                $newRecipe->setDuration($sourceRecipe->getDuration());
+                $newRecipe->setYield($sourceRecipe->getYield());
+                $newRecipe->setYieldUnit($sourceRecipe->getYieldUnit());
+                $newRecipe->setComments($sourceRecipe->getComments());
+
                 $newIngredients = [];
                 foreach ($sourceRecipe->getIngredients() as $ingredient) {
                     $newIngredient = new Ingredient();
@@ -98,9 +97,9 @@ final class CopyMenuItem
                     $newIngredients[] = $newIngredient;
                 }
                 $newRecipe->setIngredients($newIngredients);
-            }
 
-            $this->recipesRepository->persist($newRecipe);
+                $this->recipesRepository->persist($newRecipe);
+            }
 
             if (function_exists('apcu_clear_cache')) {
                 apcu_clear_cache();
