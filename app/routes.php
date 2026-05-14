@@ -24,6 +24,7 @@ use Application\Actions\Admin\CreateMenu;
 use Application\Actions\Admin\DeleteMenu;
 use Application\Actions\Admin\CopyMenuSection;
 use Application\Actions\Admin\CreateMenuItem;
+use Application\Actions\Admin\CopyMenuItem;
 use Application\Actions\Admin\CreateMenuSection;
 use Application\Actions\Admin\CreatePrinter;
 use Application\Actions\Admin\CreatePrintJob;
@@ -163,6 +164,7 @@ return function (App $app, $container) {
         $group->get('/menu-sections/delete', DeleteMenuSection::class);
         
         $group->map(['GET', 'POST'], '/menu-items/create', CreateMenuItem::class);
+        $group->map(['GET', 'POST'], '/menu-items/copy', CopyMenuItem::class);
         $group->map(['GET', 'POST'], '/menu-items/update', UpdateMenuItem::class);
         $group->get('/menu-items/toggle-archive', ToggleArchive::class);
         $group->map(['GET', 'POST'], '/menu-items/recipe', MenuItemRecipe::class);

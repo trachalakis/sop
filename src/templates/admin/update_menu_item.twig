@@ -42,6 +42,11 @@
             </button>
             <ul class="dropdown-menu">
                 <li>
+                    <a class="dropdown-item" href="/admin/menu-items/copy?id={{menuItem.getId}}">
+                        <i class="bi bi-copy"></i> Αντιγραφή σε…
+                    </a>
+                </li>
+                <li>
                     <a class="dropdown-item" href="/admin/menu-items/toggle-archive?id={{menuItem.getId}}">
                         {{menuItem.getIsArchived ? 'Επαναφορά' : 'Αρχειοθέτηση'}}
                     </a>
