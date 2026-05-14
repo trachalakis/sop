@@ -36,7 +36,6 @@ final class CreateOrder
 
             $order = new Order();
             $order->setUuid(Uuid::uuid4()->toString());
-            $order->setStatus('OPEN');
             $order->setTable(null);
             $order->setAdults(0);
             $order->setMinors(0);
@@ -46,7 +45,15 @@ final class CreateOrder
             $order->setWaiter($waiter);
             $order->setEmployee(null);
             $order->setReservation(null);
-            $order->setPaidAt(null);
+            
+            if (!empty($requestData['markAsPaid'])) {
+                $order->setStatus('CLOSED');
+                $order->setPaidAt(new DatetimeImmutable);
+            } else {
+                $order->setStatus('OPEN');
+                $order->setPaidAt(null);
+            }
+
 
             $orderEntryGroup = new OrderEntryGroup();
             $orderEntryGroup->setCreatedAt($now);
@@ -71,7 +78,7 @@ final class CreateOrder
                 $orderEntry->setFamily(1);
                 $orderEntry->setTiming(intval($entry['timing'] ?? 1));
                 $orderEntry->setNotes($entry['notes'] ?? '');
-                $orderEntry->setIsPaid(false);
+                $orderEntry->setIsPaid(!empty($requestData['markAsPaid']));
                 $orderEntry->setOrderEntryGroup($orderEntryGroup);
                 $orderEntry->setWeight(isset($entry['weight']) ? intval($entry['weight']) : null);
 
@@ -90,6 +97,10 @@ final class CreateOrder
 
             $order->setOrderEntries($orderEntries);
             $order->setOrderEntryGroups([$orderEntryGroup]);
+
+            if (!empty($requestData['markAsPaid'])) {
+                $order->setPaidAt($now);
+            }
 
             $this->ordersRepository->persist($order);
 

@@ -15,10 +15,13 @@
 	    	<a href="/take-out/" class="text-decoration-none"><i class="bi bi-bag"></i></a> /
 	    	Take out / &euro;{{totalPrice}}
 	    </h1>
-    	<div class="btn-toolbar">
-	       	<button href="#" class="btn btn-lg btn-primary " @click="save" :disabled="savingOrder || order.orderEntries.length == 0">
+    	<div class="btn-toolbar gap-2">
+	       	<button type="button" class="btn btn-lg btn-success" @click="save(false)" :disabled="savingOrder || order.orderEntries.length == 0">
 	            <span class="spinner-border spinner-border-sm me-1" v-if="savingOrder"></span>
-                <i class="bi bi-floppy"></i>
+                <i class="bi bi-receipt-cutoff"></i>
+	        </button>
+	       	<button type="button" class="btn btn-lg btn-primary" @click="save(true)" :disabled="savingOrder || order.orderEntries.length == 0">
+                <i class="bi bi-cash-coin"></i>
 	        </button>
 	    </div>
 	</div>
@@ -368,21 +371,6 @@
 		    		canvasCtx: null
 		    	}
 		    },
-    		watch: {
-		        'printers': {
-		        	handler: function () {
-			        	let isTrue = _.reduce(this.printers, function(result, printer) {
-	  						return result && printer.printOk;
-						}, true);
-
-						if (isTrue) {
-							window.location.href = '/take-out/';
-						}
-					},
-					deep: true,
-		            immediate: false
-		        }
-		    },
 		    mounted() {
 		    	this.canvasCtx = document.querySelector('canvas').getContext('2d');
 
@@ -422,21 +410,23 @@
 		    	getTranslation(object, language) {
 		    		return _.find(object.translations, t => t.language == language);
 		    	},
-		    	save() {
+		    	save(markAsPaid) {
 		    		if (this.order.orderEntries.length == 0 || this.savingOrder) return;
 		    		this.savingOrder = true;
 
-		    		axios.post('/take-out/create', this.order)
+		    		axios.post('/take-out/create', { ...this.order, markAsPaid })
                     .then(response => {
                         if (response.data.ticketNumber) {
-                        	this.printOrder(response.data.ticketNumber);
+                        	this.printOrder(response.data.ticketNumber, markAsPaid ? 1 : 2);
                         }
                     }).catch(error => {
     					alert(error);
     					this.savingOrder = false;
   					});
 		    	},
-		    	printOrder(ticketNumber) {
+		    	printOrder(ticketNumber, copies) {
+		    		const promises = [];
+
 		    		_.each(this.printers, printer => {
 		    			let { orderEntriesCount, canvasHeight } = drawReceiptOnCanvas(
 		    				this.canvasCtx,
@@ -460,19 +450,21 @@
 		    				pr.addImage(this.canvasCtx, 0, 0, 576, canvasHeight, pr.COLOR_1, pr.MODE_MONO);
 		    				pr.addFeedLine(5);
 		    				pr.addCut(pr.CUT_FEED);
-		    				axios.post('/admin/print-jobs/create', {
-		    					printer: printer.name,
-		    					xml: pr.toString()
-		    				}).then(response => {
-		    					if (response.data == 'ok') {
-		    						printer.printOk = true;
-		    					}
-		    				}).catch(error => {
-		    					alert(error);
-		    				});
-		    			} else {
-		    				printer.printOk = true;
+		    				const xml = pr.toString();
+		    				const count = printer.isReceiptPrinter ? copies : 1;
+		    				for (let i = 0; i < count; i++) {
+		    					promises.push(
+		    						axios.post('/admin/print-jobs/create', {
+		    							printer: printer.name,
+		    							xml,
+		    						}).catch(error => alert(error))
+		    					);
+		    				}
 		    			}
+		    		});
+
+		    		Promise.all(promises).then(() => {
+		    			window.location.href = '/take-out/';
 		    		});
 		    	},
 		    	showMenuItemOptionsModal(menuItem) {
