@@ -27,14 +27,17 @@ final class UpdateShoppingList
         $printers = $this->printersRepository->findBy(['isActive' => true], ['name' => 'asc']);
 
         $supplyGroupsData = array_values(array_filter(array_map(function ($group) {
-            $supplies = array_values(array_map(function ($supply) {
+            $supplies = array_values(array_filter(array_map(function ($supply) {
+                if (!$supply->getIsActive()) {
+                    return null;
+                }
                 return [
                     'id' => $supply->getId(),
                     'name' => $supply->getName(),
                     'priceUnit' => $supply->getPriceUnit(),
                     'price' => $supply->getPrice(),
                 ];
-            }, $group->getSupplies()->toArray()));
+            }, $group->getSupplies()->toArray())));
 
             if (count($supplies) === 0) {
                 return null;
