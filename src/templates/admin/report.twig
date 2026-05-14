@@ -60,7 +60,9 @@
 <div class="totals">
     sales: <strong>&euro;{{sales}}</strong> &bull;
     {% if orders|length > 0 %}
-    	sales / cover: <strong>&euro;{{(sales / (coversAdults + coversMinors))|round(1, 'floor')}}</strong> &bull;
+    	{% if (coverAdults + coversMinors) > 0 %}
+            sales / cover: <strong>&euro;{{(sales / (coversAdults + coversMinors))|round(1, 'floor')}}</strong> &bull;
+        {% endif %}
     	sales / order: <strong>&euro;{{(sales / (orders|length))|round(1, 'floor')}}</strong>
     {% endif %}
     &bull;
