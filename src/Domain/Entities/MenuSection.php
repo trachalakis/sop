@@ -45,9 +45,9 @@ class MenuSection
 
     public function __construct()
     {
-        $this->translations = new ArrayCollection();
-        $this->menuItems = new ArrayCollection();
-        $this->extras = new ArrayCollection();
+        $this->translations = new ArrayCollection;
+        $this->menuItems = new ArrayCollection;
+        $this->extras = new ArrayCollection;
     }
 
     public function getId(): int

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Application\Actions\Admin;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Domain\Entities\Extra;
 use Domain\Entities\MenuSection;
 use Domain\Entities\MenuSectionTranslation;
@@ -37,7 +38,7 @@ final class CreateMenuSection
             $menuSection->setPosition(intval($postData['position']));
             $menuSection->setMenu($menu);
 
-            $translations = [];
+            $translations = new ArrayCollection;
             foreach($languages as $language) {
             	$menuSectionTranslation = new MenuSectionTranslation;
             	$menuSectionTranslation->setLanguage($language);
