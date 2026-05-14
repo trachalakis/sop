@@ -7,11 +7,16 @@
  *     timing (0-6), quantity, weight, notes, family,
  *     menuItemPrice, menuItem.printers [{id}], menuItem.translations [{name, language}],
  *     orderEntryExtras [{name}]
- * @param {{ waiterName: string, label: string, tableName: string,
- *           adults: number, minors: number, notes: string }} header
+ * @param {{ waiterName?: string, label: string, tableName?: string,
+ *           adults?: number, minors?: number, notes: string,
+ *           ticketNumber?: number }} header
+ *   If ticketNumber is set, renders take-out style header (TAKE AWAY / #N)
+ *   instead of the table/adults/minors header.
  * @param {{ hasManyFamilies: bool,
  *           getTranslation: (menuItem, langCode) => {name: string},
- *           calculateOrderEntryPrice: (orderEntry) => number }} helpers
+ *           calculateOrderEntryPrice: (orderEntry) => number,
+ *           total?: number }} helpers
+ *   If helpers.total is provided, a total line is printed at the bottom of receipt output.
  * @returns {{ orderEntriesCount: number, canvasHeight: number }}
  */
 function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
@@ -55,13 +60,22 @@ function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
     const today = new Date();
     const hm = `${today.getHours()}:${today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()}`;
     y += 16;
-    centerText(`${header.waiterName} / ${hm}`, 22);
-    y += 8;
-    centerText(header.label, 44, true);
-    y += 10;
-    centerText(`Τραπέζι ${header.tableName}`, 64);
-    y += 6;
-    centerText(`Άτομα ${header.adults} / ${header.minors}`, 40);
+
+    if (header.ticketNumber != null) {
+        centerText(hm, 22);
+        y += 8;
+        centerText(header.label, 44, true);
+        y += 8;
+        centerText(`#${header.ticketNumber}`, 80, true);
+    } else {
+        centerText(`${header.waiterName} / ${hm}`, 22);
+        y += 8;
+        centerText(header.label, 44, true);
+        y += 10;
+        centerText(`Τραπέζι ${header.tableName}`, 64);
+        y += 6;
+        centerText(`Άτομα ${header.adults} / ${header.minors}`, 40);
+    }
 
     if (header.notes && header.notes.length > 0) {
         y += 8;
@@ -138,6 +152,11 @@ function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
             }
             if (hasMore) separator();
         }
+    }
+
+    if (printer.isReceiptPrinter && helpers.total != null) {
+        separator();
+        leftText(`Σύνολο: €${helpers.total}`, 30, true);
     }
 
     return { orderEntriesCount, canvasHeight: y + 20 };
