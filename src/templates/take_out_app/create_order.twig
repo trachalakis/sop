@@ -384,6 +384,7 @@
 		    		barcodeBuffer: [],
 		    		barcodeFirstKeyAt: null,
 		    		scanToast: { visible: false, message: '', success: true },
+		    		_toastTimer: null,
 		    	}
 		    },
 		    mounted() {
@@ -468,7 +469,7 @@
     					this.savingOrder = false;
   					});
 		    	},
-		    	printOrder(ticketNumber, copies) {console.log(ticketNumber);
+		    	printOrder(ticketNumber, copies) {
 		    		const promises = [];
 
 		    		_.each(this.printers, printer => {
@@ -562,13 +563,22 @@
 		    	    const matched = allItems.find(item => item.barcode === code);
 
 		    	    if (!matched) {
+		    	        if (this._toastTimer) clearTimeout(this._toastTimer);
 		    	        this.scanToast = { visible: true, message: 'Δεν βρέθηκε', success: false };
-		    	        setTimeout(() => { this.scanToast.visible = false; }, 1500);
+		    	        this._toastTimer = setTimeout(() => { this.scanToast.visible = false; }, 1500);
 		    	        return;
 		    	    }
 
-		    	    this.scanToast = { visible: true, message: this.getTranslation(matched, 'el').name, success: true };
-		    	    setTimeout(() => { this.scanToast.visible = false; }, 1500);
+		    	    if (matched.trackAvailableQuantity && matched.availableQuantity === 0) {
+		    	        if (this._toastTimer) clearTimeout(this._toastTimer);
+		    	        this.scanToast = { visible: true, message: 'Εξαντλήθηκε', success: false };
+		    	        this._toastTimer = setTimeout(() => { this.scanToast.visible = false; }, 1500);
+		    	        return;
+		    	    }
+
+		    	    if (this._toastTimer) clearTimeout(this._toastTimer);
+		    	    this.scanToast = { visible: true, message: this.getTranslation(matched, 'el')?.name ?? matched.barcode, success: true };
+		    	    this._toastTimer = setTimeout(() => { this.scanToast.visible = false; }, 1500);
 
 		    	    if (matched.priceUnit === 'kg' || matched.extras.length > 0) {
 		    	        this.showMenuItemOptionsModal(matched);
