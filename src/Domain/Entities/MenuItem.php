@@ -41,6 +41,9 @@ class MenuItem
     #[ORM\Column(type: 'boolean', name: 'is_archived')]
     private bool $isArchived;
 
+    #[ORM\Column(type: 'string', name: 'barcode', nullable: true)]
+    private ?string $barcode = null;
+
     #[ORM\Column(type: 'boolean', name: 'is_drink')]
     private bool $isDrink;
 
@@ -102,6 +105,11 @@ class MenuItem
     public function getAvailableQuantity(): ?int
     {
         return $this->availableQuantity;
+    }
+
+    public function getBarcode(): ?string
+    {
+        return $this->barcode;
     }
 
     public function getCustomField(string $field): ?string
@@ -208,6 +216,11 @@ class MenuItem
     public function setAvailableQuantity(?int $availableQuantity): void
     {
         $this->availableQuantity = $availableQuantity;
+    }
+
+    public function setBarcode(?string $barcode): void
+    {
+        $this->barcode = $barcode;
     }
 
     public function setCustomField($field, $value): void

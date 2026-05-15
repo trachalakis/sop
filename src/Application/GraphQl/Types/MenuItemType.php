@@ -18,6 +18,7 @@ class MenuItemType extends ObjectType
             'fields' => function ()  {
                 return [
                     'id' => Type::id(),
+                    'barcode' => Type::string(),
                     'availableQuantity' => Type::int(),
                     'trackAvailableQuantity' => Type::boolean(),
                     'isActive' => Type::boolean(),
