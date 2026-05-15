@@ -71,8 +71,8 @@ A global `keydown` listener is registered in `mounted()` and cleaned up in `unmo
 - `barcodeFirstKeyAt`: timestamp (ms) of the first character in the current sequence
 
 **On a non-Enter keypress:**
-- Append the character to `barcodeBuffer`
-- If the buffer was empty, record `barcodeFirstKeyAt = Date.now()`
+- If `document.activeElement` is an `<input>` or `<textarea>`, clear the buffer and ignore the event (a modal text field is focused — scanner output belongs there, not to the barcode listener)
+- Otherwise: append the character to `barcodeBuffer`; if the buffer was empty, record `barcodeFirstKeyAt = Date.now()`
 
 **On Enter:**
 - If `barcodeBuffer.length >= 6` and `Date.now() - barcodeFirstKeyAt <= 500`: treat as a barcode scan
