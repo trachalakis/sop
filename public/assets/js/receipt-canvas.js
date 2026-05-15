@@ -61,7 +61,7 @@ function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
     const hm = `${today.getHours()}:${today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()}`;
     y += 16;
 
-    if (header.ticketNumber != null) {
+    if (header.label == 'TAKE AWAY') {
         centerText(hm, 22);
         y += 8;
         centerText(header.label, 44, true);
