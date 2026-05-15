@@ -59,6 +59,7 @@ final class UpdateMenuItem
             $menuItem->setPosition(intval($requestData['position']));
             $menuItem->setIsDrink(boolval($requestData['isDrink']));
             $menuItem->setTrackAvailableQuantity(boolval($requestData['trackAvailableQuantity']));
+            $menuItem->setBarcode($requestData['barcode'] ?? null ?: null);
 
             $menuSection = $this->menuSectionsRepository->find($requestData['menuSection']);
             $menuItem->setMenuSection($menuSection);
