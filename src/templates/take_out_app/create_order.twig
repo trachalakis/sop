@@ -384,7 +384,6 @@
 		    		barcodeBuffer: [],
 		    		barcodeFirstKeyAt: null,
 		    		scanToast: { visible: false, message: '', success: true },
-		    		_toastTimer: null,
 		    	}
 		    },
 		    mounted() {
@@ -413,6 +412,7 @@
                     this.printers = response.data.data.printers;
                 });
 
+		    	this._toastTimer = null;
 		    	this._barcodeHandler = (e) => {
 		    	    const tag = document.activeElement?.tagName?.toLowerCase();
 		    	    if (tag === 'input' || tag === 'textarea') {
