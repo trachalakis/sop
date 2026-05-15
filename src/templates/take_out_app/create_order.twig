@@ -330,6 +330,18 @@
 	</div>
 	<!-- End modals -->
 
+	<div
+	    v-if="scanToast.visible"
+	    class="position-fixed bottom-0 start-50 translate-middle-x mb-4"
+	    style="z-index: 9999"
+	>
+	    <div class="toast show" :class="scanToast.success ? 'text-bg-success' : 'text-bg-danger'">
+	        <div class="toast-body fw-bold text-center px-4">
+	            {{scanToast.message}}
+	        </div>
+	    </div>
+	</div>
+
 </div>
 <canvas width="576" height="1500" class="d-none"></canvas>
 {% endverbatim %}{% endblock %}
@@ -368,7 +380,10 @@
 		    			orderEntries: []
 		    		},
 
-		    		canvasCtx: null
+		    		canvasCtx: null,
+		    		barcodeBuffer: [],
+		    		barcodeFirstKeyAt: null,
+		    		scanToast: { visible: false, message: '', success: true },
 		    	}
 		    },
 		    mounted() {
@@ -381,7 +396,7 @@
                         menuSections(menu: "Take Out") {
                             id, translations { name, language },
                             menuItems: activeMenuItems {
-                            	id, trackAvailableQuantity, availableQuantity, priceUnit, isDrink, price, translations { name, language }, menuPosition,
+                            	id, barcode, trackAvailableQuantity, availableQuantity, priceUnit, isDrink, price, translations { name, language }, menuPosition,
                             	extras: allExtras {
                             		id, name, price
                             	},
@@ -396,6 +411,35 @@
                     this.menuSections = response.data.data.menuSections;
                     this.printers = response.data.data.printers;
                 });
+
+		    	this._barcodeHandler = (e) => {
+		    	    const tag = document.activeElement?.tagName?.toLowerCase();
+		    	    if (tag === 'input' || tag === 'textarea') {
+		    	        this.barcodeBuffer = [];
+		    	        this.barcodeFirstKeyAt = null;
+		    	        return;
+		    	    }
+		    	    if (e.key === 'Enter') {
+		    	        if (
+		    	            this.barcodeBuffer.length >= 6 &&
+		    	            this.barcodeFirstKeyAt !== null &&
+		    	            Date.now() - this.barcodeFirstKeyAt <= 500
+		    	        ) {
+		    	            this.handleBarcodeScan(this.barcodeBuffer.join(''));
+		    	        }
+		    	        this.barcodeBuffer = [];
+		    	        this.barcodeFirstKeyAt = null;
+		    	    } else if (e.key.length === 1) {
+		    	        if (this.barcodeBuffer.length === 0) {
+		    	            this.barcodeFirstKeyAt = Date.now();
+		    	        }
+		    	        this.barcodeBuffer.push(e.key);
+		    	    }
+		    	};
+		    	document.addEventListener('keydown', this._barcodeHandler);
+		    },
+		    unmounted() {
+		    	document.removeEventListener('keydown', this._barcodeHandler);
 		    },
 		    computed: {
 		    	totalPrice() {
@@ -424,7 +468,7 @@
     					this.savingOrder = false;
   					});
 		    	},
-		    	printOrder(ticketNumber, copies) {
+		    	printOrder(ticketNumber, copies) {console.log(ticketNumber);
 		    		const promises = [];
 
 		    		_.each(this.printers, printer => {
@@ -512,6 +556,31 @@
 		    	},
 		    	isDrink(menuItem) {
 		    		return menuItem.isDrink;
+		    	},
+		    	handleBarcodeScan(code) {
+		    	    const allItems = this.menuSections.flatMap(s => s.menuItems);
+		    	    const matched = allItems.find(item => item.barcode === code);
+
+		    	    if (!matched) {
+		    	        this.scanToast = { visible: true, message: 'Δεν βρέθηκε', success: false };
+		    	        setTimeout(() => { this.scanToast.visible = false; }, 1500);
+		    	        return;
+		    	    }
+
+		    	    this.scanToast = { visible: true, message: this.getTranslation(matched, 'el').name, success: true };
+		    	    setTimeout(() => { this.scanToast.visible = false; }, 1500);
+
+		    	    if (matched.priceUnit === 'kg' || matched.extras.length > 0) {
+		    	        this.showMenuItemOptionsModal(matched);
+		    	    } else {
+		    	        this.addOrderEntry({
+		    	            menuItem: matched,
+		    	            timing: this.isDrink(matched) ? 6 : 1,
+		    	            family: 1,
+		    	            notes: '',
+		    	            orderEntryExtras: [],
+		    	        });
+		    	    }
 		    	},
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItem.price;
