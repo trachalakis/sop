@@ -44,6 +44,9 @@ class MenuItem
     #[ORM\Column(type: 'string', name: 'barcode', nullable: true)]
     private ?string $barcode = null;
 
+    #[ORM\Column(type: 'integer', name: 'fiscal_department', nullable: true)]
+    private ?int $fiscalDepartment = null;
+
     #[ORM\Column(type: 'boolean', name: 'is_drink')]
     private bool $isDrink;
 
@@ -110,6 +113,11 @@ class MenuItem
     public function getBarcode(): ?string
     {
         return $this->barcode;
+    }
+
+    public function getFiscalDepartment(): ?int
+    {
+        return $this->fiscalDepartment;
     }
 
     public function getCustomField(string $field): ?string
@@ -221,6 +229,11 @@ class MenuItem
     public function setBarcode(?string $barcode): void
     {
         $this->barcode = $barcode;
+    }
+
+    public function setFiscalDepartment(?int $fiscalDepartment): void
+    {
+        $this->fiscalDepartment = $fiscalDepartment;
     }
 
     public function setCustomField($field, $value): void

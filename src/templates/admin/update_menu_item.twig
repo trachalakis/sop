@@ -108,7 +108,20 @@
 	<div class="row mb-3">
 		<label class="col-sm-2 col-form-label">Barcode</label>
 		<div class="col-sm-10">
-			<input type="text" class="form-control" name="barcode" maxlength="64" value="{{menuItem.getBarcode}}"/>
+			<input type="text" class="form-control" name="barcode" minlength="6" maxlength="64" value="{{menuItem.getBarcode}}"/>
+		</div>
+	</div>
+	<div class="row mb-3">
+		<label class="col-sm-2 col-form-label">Τμήμα ΦΤΜ</label>
+		<div class="col-sm-10">
+			<input
+				type="number"
+				min="1"
+				step="1"
+				class="form-control"
+				name="fiscalDepartment"
+				value="{{menuItem.getFiscalDepartment}}"
+			/>
 		</div>
 	</div>
 	<div class="row mb-3">

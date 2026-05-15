@@ -53,6 +53,7 @@ final class CopyMenuItem
             $newItem->setAvailableQuantity($sourceItem->getAvailableQuantity());
             $newItem->setCustomFields($sourceItem->getCustomFields());
             $newItem->setBarcode($sourceItem->getBarcode());
+            $newItem->setFiscalDepartment($sourceItem->getFiscalDepartment());
             $newItem->setPosition($maxPosition + 1);
             $newItem->setMenuSection($targetSection);
             $newItem->setPrinters(new \Doctrine\Common\Collections\ArrayCollection($sourceItem->getPrinters()->toArray()));

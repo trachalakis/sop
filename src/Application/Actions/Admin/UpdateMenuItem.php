@@ -60,6 +60,11 @@ final class UpdateMenuItem
             $menuItem->setIsDrink(boolval($requestData['isDrink']));
             $menuItem->setTrackAvailableQuantity(boolval($requestData['trackAvailableQuantity']));
             $menuItem->setBarcode($requestData['barcode'] ?? null ?: null);
+            $menuItem->setFiscalDepartment(
+                isset($requestData['fiscalDepartment']) && $requestData['fiscalDepartment'] !== ''
+                    ? intval($requestData['fiscalDepartment'])
+                    : null
+            );
 
             $menuSection = $this->menuSectionsRepository->find($requestData['menuSection']);
             $menuItem->setMenuSection($menuSection);
