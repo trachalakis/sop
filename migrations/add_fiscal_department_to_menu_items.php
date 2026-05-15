@@ -16,15 +16,20 @@ foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
     $_ENV[trim($key)] = trim($value, " \t\n\r\0\x0B\"'");
 }
 
-$dsn = "pgsql:host={$_ENV['DB_HOST']};dbname={$_ENV['DB_NAME']}";
+$host     = $_ENV['DB_HOST'] ?? '';
+$dbname   = $_ENV['DB_NAME'] ?? '';
+$username = $_ENV['DB_USERNAME'] ?? '';
+$password = $_ENV['DB_PASSWORD'] ?? '';
+
+$dsn = "pgsql:host={$host};dbname={$dbname}";
 
 try {
-    $pdo = new PDO($dsn, $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD'], [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $pdo = new PDO($dsn, $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 } catch (PDOException $e) {
     die("Connection failed: " . $e->getMessage() . "\n");
 }
 
-echo "Connected to database '{$_ENV['DB_NAME']}'.\n";
+echo "Connected to database '{$dbname}'.\n";
 
 $exists = $pdo->query("
     SELECT COUNT(*) FROM information_schema.columns
@@ -43,5 +48,5 @@ try {
     echo "Migration completed successfully.\n";
 } catch (PDOException $e) {
     $pdo->rollBack();
-    die("Migration failed: " . $e->getMessage() . "\n");
+    die("Migration failed, rolled back. Error: " . $e->getMessage() . "\n");
 }
