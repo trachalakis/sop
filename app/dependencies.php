@@ -286,6 +286,7 @@ return function (ContainerBuilder $containerBuilder) {
         },
         EcrJobsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
+
             return $em->getRepository(EcrJob::class);
         },
         InvoiceParserService::class => function (ContainerInterface $c) {
