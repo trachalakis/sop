@@ -9,6 +9,8 @@ use Domain\Entities\Order;
 use Domain\Entities\OrderEntryGroup;
 use Domain\Entities\OrderEntry;
 use Domain\Entities\OrderEntryExtra;
+use Domain\Entities\EcrJob;
+use Domain\Repositories\EcrJobsRepository;
 use Domain\Repositories\MenuItemsRepository;
 use Domain\Repositories\OrdersRepository;
 use Domain\Repositories\ReservationsRepository;
@@ -25,6 +27,7 @@ final class CreateOrder
         private Twig $twig,
         private MenuItemsRepository $menuItemsRepository,
         private OrdersRepository $ordersRepository,
+        private EcrJobsRepository $ecrJobsRepository,
         private ReservationsRepository $reservationsRepository,
         private TablesRepository $tablesRepository,
         private UsersRepository $usersRepository
@@ -109,6 +112,13 @@ final class CreateOrder
             $order->setOrderEntryGroups([$orderEntryGroup]);
 
             $this->ordersRepository->persist($order);
+
+            $ecrJob = new EcrJob();
+            $ecrJob->setOrder($order);
+            $ecrJob->setStatus('pending');
+            $ecrJob->setAttempts(0);
+            $ecrJob->setCreatedAt(new DateTimeImmutable());
+            $this->ecrJobsRepository->persist($ecrJob);
 
 			$response->getBody()->write('ok');
 			return $response;
