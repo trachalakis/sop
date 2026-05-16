@@ -330,6 +330,19 @@
         </div>
         <div class="offcanvas-body">
             <div v-if="formError" class="alert alert-danger">{{formError}}</div>
+            <div v-if="formMode === 'update'" class="mb-3">
+                <label class="form-label fs-5">Κατάσταση</label>
+                <div class="d-flex gap-2">
+                    <input type="radio" class="btn-check" id="f-status-PENDING" value="PENDING" v-model="form.status">
+                    <label class="btn fs-4 btn-outline-warning flex-fill" for="f-status-PENDING">Εκκρεμής</label>
+
+                    <input type="radio" class="btn-check" id="f-status-ARRIVED" value="ARRIVED" v-model="form.status">
+                    <label class="btn fs-4 btn-outline-success flex-fill" for="f-status-ARRIVED">Ήρθε</label>
+
+                    <input type="radio" class="btn-check" id="f-status-CANCELLED" value="CANCELLED" v-model="form.status">
+                    <label class="btn fs-4 btn-outline-danger flex-fill" for="f-status-CANCELLED">Ακύρωση</label>
+                </div>
+            </div>
             <div class="mb-3">
                 <label class="form-label fs-5">Όνομα</label>
                 <input type="text" class="form-control form-control-lg" v-model="form.name" autocomplete="off"/>
@@ -481,7 +494,8 @@
                         date: '',
                         table: '',
                         tables: [],
-                        comments: ''
+                        comments: '',
+                        status: ''
                     },
                     formError: null,
                     saving: false,
@@ -802,7 +816,8 @@
                         date: dt.substring(0, 10),
                         table: reservation.tables?.[0] ?? '',
                         tables: reservation.tables ? [...reservation.tables] : [],
-                        comments: reservation.comments ?? ''
+                        comments: reservation.comments ?? '',
+                        status: reservation.status
                     };
                     this.formError = null;
                     this.formMode = 'update';
@@ -843,7 +858,8 @@
                         time: this.form.time,
                         date: this.form.date,
                         tables: this.form.tables,
-                        comments: this.form.comments
+                        comments: this.form.comments,
+                        status: this.form.status
                     }).then(() => {
                         const idx = this.reservations.findIndex(r => r.id === this.form.id);
                         if (idx !== -1) {
@@ -858,7 +874,8 @@
                                     minors: this.form.minors,
                                     dateTime: `${this.form.date} ${this.form.time}:00`,
                                     tables: this.form.tables,
-                                    comments: this.form.comments.toUpperCase()
+                                    comments: this.form.comments.toUpperCase(),
+                                    status: this.form.status
                                 });
                             }
                         }
