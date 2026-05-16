@@ -29,6 +29,8 @@ use Domain\Entities\UserPermission;
 use Domain\Entities\Invoice;
 use Domain\Entities\InvoiceEntry;
 use Domain\Entities\SupplyAlias;
+use Domain\Entities\EcrJob;
+use Domain\Repositories\EcrJobsRepository;
 use Domain\Repositories\DailyRoleSlotsRepository;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\RolesRepository;
@@ -281,6 +283,10 @@ return function (ContainerBuilder $containerBuilder) {
         },
         SupplyAliasesRepository::class => function (ContainerInterface $c) {
             return $c->get(EntityManager::class)->getRepository(SupplyAlias::class);
+        },
+        EcrJobsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+            return $em->getRepository(EcrJob::class);
         },
         InvoiceParserService::class => function (ContainerInterface $c) {
             return new InvoiceParserService($_ENV['ANTHROPIC_API_KEY']);

@@ -119,6 +119,8 @@ use Application\Actions\UsersApp\CreateOrder as UsersAppCreateOrder;
 use Application\Actions\UsersApp\ViewOrder as UsersAppViewOrder;
 use Application\Actions\UsersApp\UpdatePin as UsersAppUpdatePin;
 use Application\Actions\UsersApp\Clock;
+use Application\Actions\Api\EcrJobs;
+use Application\Actions\Api\AckEcrJob;
 use Domain\Repositories\UserPermissionsRepository;
 use Middleware\Authentication;
 use Middleware\Authorization;
@@ -297,6 +299,11 @@ return function (App $app, $container) {
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
+
+    $app->group('/api', function (RouteCollectorProxy $group) {
+        $group->get('/ecr/jobs', EcrJobs::class);
+        $group->post('/ecr/jobs/{id}/ack', AckEcrJob::class);
+    });
 
     $app->add(\Middleware\Globals::class);
 };
