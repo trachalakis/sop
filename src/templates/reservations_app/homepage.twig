@@ -115,6 +115,15 @@
 {% endblock %}
 
 {% block content %}{% verbatim %}
+<script>
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        var params = new URLSearchParams(window.location.search);
+        var date = params.get('date');
+        var target = '/reservations-app/homepage-list';
+        if (date) target += '?date=' + encodeURIComponent(date);
+        window.location.replace(target);
+    }
+</script>
 <div id="app">
 
     <!-- ========== HOME VIEW ========== -->
