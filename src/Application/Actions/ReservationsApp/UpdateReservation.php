@@ -12,6 +12,8 @@ use Slim\Views\Twig;
 
 final class UpdateReservation
 {
+    private const ALLOWED_STATUSES = ['PENDING', 'ARRIVED', 'CANCELLED'];
+
     public function __construct(
         private ReservationsRepository $reservationsRepository,
         private TablesRepository $tablesRepository,
@@ -37,6 +39,10 @@ final class UpdateReservation
                 $reservation->setComments(mb_strtoupper($requestData['comments'] ?? ''));
                 $reservation->setTables($requestData['tables'] ?? []);
 
+                if (isset($requestData['status']) && in_array($requestData['status'], self::ALLOWED_STATUSES, true)) {
+                    $reservation->setStatus($requestData['status']);
+                }
+
                 $this->reservationsRepository->persist($reservation);
 
                 $response->getBody()->write(json_encode(['success' => true]));
@@ -52,6 +58,10 @@ final class UpdateReservation
             $reservation->setTelephoneNumber($requestData['telephoneNumber']);
             $reservation->setComments(mb_strtoupper($requestData['comments']));
             $reservation->setTables($requestData['tables'] ?? []);
+
+            if (isset($requestData['status']) && in_array($requestData['status'], self::ALLOWED_STATUSES, true)) {
+                $reservation->setStatus($requestData['status']);
+            }
 
             $this->reservationsRepository->persist($reservation);
 
