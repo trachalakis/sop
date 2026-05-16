@@ -78,15 +78,12 @@
             filter: brightness(0.92);
         }
         .reservation-card {
-            cursor: grab;
+            cursor: pointer;
             transition: transform 0.1s, box-shadow 0.1s;
             user-select: none;
         }
         .reservation-card:hover {
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-        .reservation-card:active {
-            cursor: grabbing;
         }
         .placement-banner {
             position: sticky;
@@ -141,17 +138,22 @@
                 {% endverbatim %}{% include 'partials/app_nav.twig' %}{% verbatim %} / <i class="bi bi-telephone"></i>
             </h1>
             <div class="d-flex align-items-center gap-3">
-                <a class="fs-2" :href="'?date=' + prevDate">
+                <a class="fs-3" :href="'?date=' + prevDate">
                     <strong><i class="bi bi-chevron-left"></i></strong>
                 </a>
-                <h2 class="mb-0 display-6">{{formattedDate}} / {{coverCount}}</h2>
-                <a class="fs-2" :href="'?date=' + nextDate">
+                <h2 class="mb-0 h3">{{formattedDate}} / {{coverCount}}</h2>
+                <a class="fs-3" :href="'?date=' + nextDate">
                     <strong><i class="bi bi-chevron-right"></i></strong>
                 </a>
             </div>
-            <button @click="openCreate()" class="btn btn-primary btn-lg">
-                <i class="bi bi-plus-lg"></i>
-            </button>
+            <div>
+                <a href="/reservations-app/homepage-list?date={% endverbatim %}{{ date.format('Y-m-d') }}{% verbatim %}" class="btn btn-outline-secondary btn-lg me-2">
+                    <i class="bi bi-list-ul"></i>
+                </a>
+                <button @click="openCreate()" class="btn btn-primary btn-lg">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Grid -->
@@ -176,13 +178,8 @@
                             :key="cell.slot"
                             class="grid-cell"
                             :colspan="cell.colspan > 1 ? cell.colspan : null"
-                            :draggable="!!cell.reservation"
                             :style="cellStyle(row.table.id, cell.slot)"
                             @click="clickCell(row.table.id, cell.slot)"
-                            @dragstart="cellDragStart(row.table.id, cell.slot, $event)"
-                            @dragover.prevent="dragOver(row.table.id, cell.slot)"
-                            @drop.prevent="drop(row.table.id, cell.slot)"
-                            @dragend="dragEnd"
                         >
                             <template v-if="cell.reservation">
                                 <div class="fw-semibold" style="font-size:11px; line-height:1.2">
@@ -196,7 +193,7 @@
                                     @click.stop
                                 >
                                     <button
-                                        v-if="(durations[cell.reservation.id] ?? 4) > 1"
+                                        v-if="(durations[cell.reservation.id] ?? 3) > 1"
                                         style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
                                         @click="adjustDuration(cell.reservation.id, -1)"
                                     >&#x2212;</button>
@@ -222,7 +219,7 @@
                 <span v-else class="badge bg-success">
                     <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
                 </span>
-                <small class="text-muted">Σύρε κράτηση σε κελί &mdash; ή κάνε κλικ για τοποθέτηση με κλικ</small>
+                <small class="text-muted">Κάνε κλικ για τοποθέτηση</small>
             </div>
 
             <div class="d-flex flex-wrap gap-2">
@@ -230,11 +227,8 @@
                     v-for="reservation in activeReservations"
                     :key="reservation.id"
                     class="reservation-card border rounded p-2"
-                    draggable="true"
                     :style="reservationCardStyle(reservation)"
                     @click="selectReservation(reservation)"
-                    @dragstart="cardDragStart(reservation, $event)"
-                    @dragend="dragEnd"
                 >
                     <div class="d-flex justify-content-between align-items-start gap-2">
                         <div>
@@ -418,9 +412,6 @@
                     nextDate: NEXT_DATE,
                     startSlot: null,
                     cutoffTime: null,
-                    dragReservationId: null,
-                    dragSourceKey: null,
-                    dragOverKey: null,
                     durations: {},
                     incomingCall: null,  // { number, session }
 
@@ -502,7 +493,7 @@
                             const slot = slots[i];
                             const reservation = this.getCellReservation(table.id, slot);
                             if (reservation) {
-                                const dur = this.durations[reservation.id] ?? 4;
+                                const dur = this.durations[reservation.id] ?? 3;
                                 const colspan = Math.min(dur, slots.length - i);
                                 cells.push({ slot, reservation, colspan });
                                 i += colspan;
@@ -585,7 +576,6 @@
                     return rid ? this.reservations.find(r => r.id === rid) : null;
                 },
                 clickCell(tableId, slot) {
-                    if (this.dragReservationId !== null) return;
                     if (this.selectedReservationId && this.selectedSlot && slot !== this.selectedSlot) return;
                     const key = this.cellKey(tableId, slot);
                     const current = this.getCellReservation(tableId, slot);
@@ -610,48 +600,6 @@
                 selectReservation(reservation) {
                     this.selectedReservationId =
                         this.selectedReservationId === reservation.id ? null : reservation.id;
-                },
-                cardDragStart(reservation, event) {
-                    this.dragReservationId = reservation.id;
-                    this.dragSourceKey = null;
-                    this.selectedReservationId = null;
-                    event.dataTransfer.effectAllowed = 'move';
-                    event.dataTransfer.setDragImage(event.currentTarget, 20, 20);
-                },
-                cellDragStart(tableId, slot, event) {
-                    const reservation = this.getCellReservation(tableId, slot);
-                    if (!reservation) { event.preventDefault(); return; }
-                    this.dragReservationId = reservation.id;
-                    this.dragSourceKey = this.cellKey(tableId, slot);
-                    this.selectedReservationId = null;
-                    event.dataTransfer.effectAllowed = 'move';
-                },
-                dragOver(tableId, slot) {
-                    const dragSlot = this.dateTimeToSlot(
-                        this.reservations.find(r => r.id === this.dragReservationId)?.dateTime
-                    );
-                    this.dragOverKey = (dragSlot && slot !== dragSlot) ? null : this.cellKey(tableId, slot);
-                },
-                drop(tableId, slot) {
-                    if (!this.dragReservationId) return;
-                    const dragSlot = this.dateTimeToSlot(
-                        this.reservations.find(r => r.id === this.dragReservationId)?.dateTime
-                    );
-                    if (dragSlot && slot !== dragSlot) return;
-                    const targetKey = this.cellKey(tableId, slot);
-                    const newCells = { ...this.cells };
-                    this.clearReservation(newCells, this.dragReservationId);
-                    newCells[targetKey] = this.dragReservationId;
-                    this.cells = newCells;
-                    this.saveAssignment(this.dragReservationId);
-                    this.dragReservationId = null;
-                    this.dragSourceKey = null;
-                    this.dragOverKey = null;
-                },
-                dragEnd() {
-                    this.dragReservationId = null;
-                    this.dragSourceKey = null;
-                    this.dragOverKey = null;
                 },
                 saveAssignment(reservationId) {
                     const tableNames = Object.entries(this.cells)
@@ -680,32 +628,25 @@
                     return PALETTE[idx % PALETTE.length];
                 },
                 cellStyle(tableId, slot) {
-                    const key = this.cellKey(tableId, slot);
                     const reservation = this.getCellReservation(tableId, slot);
-                    const isDragOver = this.dragOverKey === key;
-                    const isSource = this.dragSourceKey === key;
-                    const isDragging = this.dragReservationId !== null;
                     const inSelectMode = this.selectedReservationId !== null;
                     const isTargetSlot = inSelectMode && this.selectedSlot === slot;
                     const isDimmed = inSelectMode && this.selectedSlot && this.selectedSlot !== slot;
 
-                    if (isDragOver) {
-                        return { background: '#0d6efd', color: '#fff', cursor: 'copy', outline: '3px solid #0a58ca', outlineOffset: '-3px' };
-                    }
                     if (!reservation) {
                         if (isDimmed) return { background: '#f3f3f3', cursor: 'not-allowed', opacity: '0.5' };
                         return {
-                            background: (isTargetSlot || isDragging) ? '#e8f4ff' : '#ffffff',
-                            cursor: (isTargetSlot || isDragging) ? 'copy' : 'default',
+                            background: isTargetSlot ? '#e8f4ff' : '#ffffff',
+                            cursor: isTargetSlot ? 'copy' : 'default',
                         };
                     }
                     const color = this.reservationColor(reservation.id);
                     const isSelected = this.selectedReservationId === reservation.id;
                     return {
-                        background: isSource ? '#e9ecef' : (isDimmed ? '#ececec' : color.bg),
-                        color: isSource ? '#adb5bd' : (isDimmed ? '#adb5bd' : color.text),
-                        cursor: isSource ? 'grabbing' : (isDimmed ? 'not-allowed' : 'grab'),
-                        opacity: (isSource || isDimmed) ? '0.45' : '1',
+                        background: isDimmed ? '#ececec' : color.bg,
+                        color: isDimmed ? '#adb5bd' : color.text,
+                        cursor: isDimmed ? 'not-allowed' : 'pointer',
+                        opacity: isDimmed ? '0.45' : '1',
                         outline: isSelected ? '3px solid #0d6efd' : 'none',
                         outlineOffset: '-2px',
                         fontWeight: isSelected ? '700' : '400',
@@ -715,14 +656,12 @@
                     const isSelected = this.selectedReservationId === reservation.id;
                     const placed = this.isPlaced(reservation.id);
                     const color = this.reservationColor(reservation.id);
-                    const isDraggingThis = this.dragReservationId === reservation.id && !this.dragSourceKey;
                     return {
                         background: placed ? color.bg : '#f8f9fa',
                         color: placed ? color.text : '#495057',
                         outline: isSelected ? '3px solid #0d6efd' : '1px solid #dee2e6',
                         outlineOffset: '-1px',
                         transform: isSelected ? 'scale(1.03)' : 'scale(1)',
-                        opacity: isDraggingThis ? '0.45' : '1',
                         minWidth: '160px',
                     };
                 },
@@ -770,7 +709,7 @@
                     this.incomingCall = null;
                 },
                 adjustDuration(reservationId, delta) {
-                    const current = this.durations[reservationId] ?? 4;
+                    const current = this.durations[reservationId] ?? 3;
                     const next = Math.max(1, current + delta);
                     this.durations = { ...this.durations, [reservationId]: next };
                     localStorage.setItem('reservationDurations_' + DATE_STR, JSON.stringify(this.durations));
