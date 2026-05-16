@@ -15,7 +15,8 @@ final class AckEcrJob
 
     public function __invoke(Request $request, Response $response, array $args): Response
     {
-        if ($request->getHeaderLine('X-Api-Key') !== ($_ENV['ECR_AGENT_API_KEY'] ?? '')) {
+        $configuredKey = $_ENV['ECR_AGENT_API_KEY'] ?? '';
+        if ($configuredKey === '' || $request->getHeaderLine('X-Api-Key') !== $configuredKey) {
             $response->getBody()->write(json_encode(['error' => 'Unauthorized']));
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }
@@ -32,11 +33,11 @@ final class AckEcrJob
         $job->setAttempts($newAttempts);
         $job->setLastAttemptedAt(new DateTimeImmutable());
 
-        if ($newAttempts >= 5) {
+        if (($body['status'] ?? '') === 'sent') {
+            $job->setStatus('sent');
+        } elseif ($newAttempts >= 5 || ($body['status'] ?? '') === 'failed') {
             $job->setStatus('failed');
             $job->setError($body['error'] ?? $job->getError());
-        } elseif (($body['status'] ?? '') === 'sent') {
-            $job->setStatus('sent');
         } else {
             $job->setStatus('pending');
             $job->setError($body['error'] ?? null);

@@ -14,7 +14,8 @@ final class EcrJobs
 
     public function __invoke(Request $request, Response $response): Response
     {
-        if ($request->getHeaderLine('X-Api-Key') !== ($_ENV['ECR_AGENT_API_KEY'] ?? '')) {
+        $configuredKey = $_ENV['ECR_AGENT_API_KEY'] ?? '';
+        if ($configuredKey === '' || $request->getHeaderLine('X-Api-Key') !== $configuredKey) {
             $response->getBody()->write(json_encode(['error' => 'Unauthorized']));
             return $response->withStatus(401)->withHeader('Content-Type', 'application/json');
         }

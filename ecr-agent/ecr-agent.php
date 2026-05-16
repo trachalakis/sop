@@ -189,53 +189,55 @@ if (empty($jobs)) {
 
 log_msg("Processing " . count($jobs) . " job(s).");
 
-foreach ($jobs as $job) {
-    $jobId  = (int) $job['id'];
-    $socket = null;
+try {
+    foreach ($jobs as $job) {
+        $jobId  = (int) $job['id'];
+        $socket = null;
 
-    try {
-        // Validate fiscal departments before touching the ECR
-        foreach ($job['entries'] as $entry) {
-            if ($entry['fiscalDepartment'] === null) {
+        try {
+            // Validate fiscal departments before touching the ECR
+            foreach ($job['entries'] as $entry) {
+                if ($entry['fiscalDepartment'] === null) {
+                    throw new RuntimeException(
+                        "Entry '{$entry['name']}' has no fiscal department configured."
+                    );
+                }
+            }
+
+            // Open TCP socket to ECR
+            $socket = @fsockopen(
+                $config['ecr_host'],
+                $config['ecr_port'],
+                $errno,
+                $errstr,
+                $config['timeout']
+            );
+            if (!$socket) {
                 throw new RuntimeException(
-                    "Entry '{$entry['name']}' has no fiscal department configured."
+                    "Cannot connect to ECR at {$config['ecr_host']}:{$config['ecr_port']}: {$errstr} ({$errno})"
                 );
             }
-        }
+            stream_set_timeout($socket, $config['timeout']);
 
-        // Open TCP socket to ECR
-        $socket = @fsockopen(
-            $config['ecr_host'],
-            $config['ecr_port'],
-            $errno,
-            $errstr,
-            $config['timeout']
-        );
-        if (!$socket) {
-            throw new RuntimeException(
-                "Cannot connect to ECR at {$config['ecr_host']}:{$config['ecr_port']}: {$errstr} ({$errno})"
-            );
-        }
-        stream_set_timeout($socket, $config['timeout']);
+            // Send one item sale command per entry
+            foreach ($job['entries'] as $entry) {
+                send_item_sale($socket, $entry, $config['max_retries'], $config['timeout']);
+            }
 
-        // Send one item sale command per entry
-        foreach ($job['entries'] as $entry) {
-            send_item_sale($socket, $entry, $config['max_retries'], $config['timeout']);
-        }
-
-        fclose($socket);
-
-        ack_job($jobId, 'sent', null, $config);
-        log_msg("Job {$jobId} (order {$job['orderId']}): sent successfully.");
-
-    } catch (RuntimeException $e) {
-        if ($socket) {
             fclose($socket);
-        }
-        ack_job($jobId, 'failed', $e->getMessage(), $config);
-        log_msg("Job {$jobId} (order {$job['orderId']}): FAILED — " . $e->getMessage());
-    }
-}
 
-flock($lock, LOCK_UN);
-fclose($lock);
+            ack_job($jobId, 'sent', null, $config);
+            log_msg("Job {$jobId} (order {$job['orderId']}): sent successfully.");
+
+        } catch (RuntimeException $e) {
+            if ($socket) {
+                fclose($socket);
+            }
+            ack_job($jobId, 'failed', $e->getMessage(), $config);
+            log_msg("Job {$jobId} (order {$job['orderId']}): FAILED — " . $e->getMessage());
+        }
+    }
+} finally {
+    flock($lock, LOCK_UN);
+    fclose($lock);
+}
