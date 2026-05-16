@@ -33,6 +33,7 @@
             border: 1px solid #dee2e6;
             border-radius: 4px;
             padding: 8px;
+            transition: width 0.2s ease, padding 0.2s ease, border-width 0.2s ease;
         }
         .reservations-sidebar-header {
             position: sticky;
@@ -40,6 +41,12 @@
             background: white;
             padding-bottom: 8px;
             z-index: 1;
+        }
+        .home-body.sidebar-collapsed .reservations-sidebar {
+            width: 0;
+            padding: 0;
+            border-width: 0;
+            overflow: hidden;
         }
         .grid-wrapper {
             flex: 1;
@@ -174,6 +181,9 @@
                 <a href="/reservations-app/homepage-list?date={% endverbatim %}{{ date.format('Y-m-d') }}{% verbatim %}" class="btn btn-outline-secondary btn-lg me-2">
                     <i class="bi bi-list-ul"></i>
                 </a>
+                <button @click="sidebarOpen = !sidebarOpen" class="btn btn-outline-secondary btn-lg me-2" :title="sidebarOpen ? 'Απόκρυψη κρατήσεων' : 'Εμφάνιση κρατήσεων'">
+                    <i class="bi" :class="sidebarOpen ? 'bi-chevron-double-right' : 'bi-chevron-double-left'"></i>
+                </button>
                 <button @click="openCreate()" class="btn btn-primary btn-lg">
                     <i class="bi bi-plus-lg"></i>
                 </button>
@@ -181,7 +191,7 @@
         </div>
 
         <!-- Body: grid + sidebar -->
-        <div class="home-body">
+        <div class="home-body" :class="{ 'sidebar-collapsed': !sidebarOpen }">
 
             <!-- Grid -->
             <div class="grid-wrapper">
@@ -439,6 +449,7 @@
                     allTimeSlots: this.generateTimeSlots(),
                     cells: {},
                     selectedReservationId: null,
+                    sidebarOpen: true,
                     prevDate: PREV_DATE,
                     nextDate: NEXT_DATE,
                     startSlot: null,
