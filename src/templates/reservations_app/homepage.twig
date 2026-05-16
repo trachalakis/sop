@@ -20,19 +20,34 @@
             height: 100%;
             overflow: hidden;
         }
+        .home-body {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            gap: 12px;
+        }
+        .reservations-sidebar {
+            width: 300px;
+            flex-shrink: 0;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 8px;
+        }
+        .reservations-sidebar-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding-bottom: 8px;
+            z-index: 1;
+        }
         .grid-wrapper {
             flex: 1;
+            min-width: 0;
             min-height: 0;
             overflow: auto;
             border: 1px solid #dee2e6;
             border-radius: 4px;
-        }
-        .reservations-panel {
-            flex-shrink: 0;
-            max-height: 180px;
-            overflow-y: auto;
-            padding-top: 8px;
-            padding-bottom: 8px;
         }
         .grid-table {
             border-collapse: collapse;
@@ -165,115 +180,122 @@
             </div>
         </div>
 
-        <!-- Grid -->
-        <div class="grid-wrapper">
-            <table class="grid-table">
-                <thead>
-                    <tr>
-                        <th class="sticky-col sticky-header text-center">Τραπέζι</th>
-                        <th
-                            v-for="slot in timeSlots"
-                            class="sticky-header text-center"
-                            style="min-width:90px; width:90px"
-                            :style="selectedSlot === slot ? { background: '#0a58ca' } : {}"
-                        >{{slot}}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="row in tableRows" :key="row.table.id">
-                        <td class="sticky-col">{{row.table.name}}</td>
-                        <td
-                            v-for="cell in row.cells"
-                            :key="cell.slot"
-                            class="grid-cell"
-                            :colspan="cell.colspan > 1 ? cell.colspan : null"
-                            :style="cellStyle(row.table.id, cell.slot)"
-                            @click="clickCell(row.table.id, cell.slot)"
-                        >
-                            <template v-if="cell.reservation">
-                                <div class="fw-semibold" style="font-size:11px; line-height:1.2">
-                                    {{cell.reservation.name.substring(0, 10)}}
-                                </div>
-                                <div style="font-size:10px; opacity:0.85">
-                                    {{cell.reservation.adults + cell.reservation.minors}} ατ.
-                                </div>
-                                <div
-                                    style="position:absolute; bottom:0; right:0; display:flex; gap:1px;"
-                                    @click.stop
-                                >
-                                    <button
-                                        v-if="(durations[cell.reservation.id] ?? 3) > 1"
-                                        style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
-                                        @click="adjustDuration(cell.reservation.id, -1)"
-                                    >&#x2212;</button>
-                                    <button
-                                        style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
-                                        @click="adjustDuration(cell.reservation.id, +1)"
-                                    >&#x002B;</button>
-                                </div>
-                            </template>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+        <!-- Body: grid + sidebar -->
+        <div class="home-body">
 
-        <!-- Reservations panel -->
-        <div class="reservations-panel">
-            <div class="d-flex align-items-center gap-3 mb-2">
-                <h5 class="mb-0">Κρατήσεις</h5>
-                <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
-                    {{unplacedReservations.length}} αναθέτηση
-                </span>
-                <span v-else class="badge bg-success">
-                    <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
-                </span>
-                <small class="text-muted">Κάνε κλικ για τοποθέτηση</small>
+            <!-- Grid -->
+            <div class="grid-wrapper">
+                <table class="grid-table">
+                    <thead>
+                        <tr>
+                            <th class="sticky-col sticky-header text-center">Τραπέζι</th>
+                            <th
+                                v-for="slot in timeSlots"
+                                class="sticky-header text-center"
+                                style="min-width:90px; width:90px"
+                                :style="selectedSlot === slot ? { background: '#0a58ca' } : {}"
+                            >{{slot}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="row in tableRows" :key="row.table.id">
+                            <td class="sticky-col">{{row.table.name}}</td>
+                            <td
+                                v-for="cell in row.cells"
+                                :key="cell.slot"
+                                class="grid-cell"
+                                :colspan="cell.colspan > 1 ? cell.colspan : null"
+                                :style="cellStyle(row.table.id, cell.slot)"
+                                @click="clickCell(row.table.id, cell.slot)"
+                            >
+                                <template v-if="cell.reservation">
+                                    <div class="fw-semibold" style="font-size:11px; line-height:1.2">
+                                        {{cell.reservation.name.substring(0, 10)}}
+                                    </div>
+                                    <div style="font-size:10px; opacity:0.85">
+                                        {{cell.reservation.adults + cell.reservation.minors}} ατ.
+                                    </div>
+                                    <div
+                                        style="position:absolute; bottom:0; right:0; display:flex; gap:1px;"
+                                        @click.stop
+                                    >
+                                        <button
+                                            v-if="(durations[cell.reservation.id] ?? 3) > 1"
+                                            style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                            @click="adjustDuration(cell.reservation.id, -1)"
+                                        >&#x2212;</button>
+                                        <button
+                                            style="font-size:32px; line-height:1; padding:5px 10px; border:none; background:rgba(0,0,0,0.18); color:inherit; cursor:pointer;"
+                                            @click="adjustDuration(cell.reservation.id, +1)"
+                                        >&#x002B;</button>
+                                    </div>
+                                </template>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div class="d-flex flex-wrap gap-2">
-                <div
-                    v-for="reservation in activeReservations"
-                    :key="reservation.id"
-                    class="reservation-card border rounded p-2"
-                    :style="reservationCardStyle(reservation)"
-                    @click="selectReservation(reservation)"
-                >
-                    <div class="d-flex justify-content-between align-items-start gap-2">
-                        <div>
-                            <div class="fw-bold fs-6">{{reservation.name}}</div>
-                            <div class="mt-1" style="font-size:13px">
-                                {{reservation.dateTime.substring(11, 16)}}
-                                &nbsp;/&nbsp;
-                                {{reservation.adults}} + {{reservation.minors}}
+            <!-- Reservations sidebar -->
+            <div class="reservations-sidebar">
+                <div class="reservations-sidebar-header">
+                    <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+                        <h5 class="mb-0">Κρατήσεις</h5>
+                        <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
+                            {{unplacedReservations.length}} αναθέτηση
+                        </span>
+                        <span v-else class="badge bg-success">
+                            <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
+                        </span>
+                    </div>
+                    <small class="text-muted">Κάνε κλικ για τοποθέτηση</small>
+                </div>
+
+                <div class="d-flex flex-column gap-2 mt-2">
+                    <div
+                        v-for="reservation in activeReservations"
+                        :key="reservation.id"
+                        class="reservation-card border rounded p-2"
+                        :style="reservationCardStyle(reservation)"
+                        @click="selectReservation(reservation)"
+                    >
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div>
+                                <div class="fw-bold fs-6">{{reservation.name}}</div>
+                                <div class="mt-1" style="font-size:13px">
+                                    {{reservation.dateTime.substring(11, 16)}}
+                                    &nbsp;/&nbsp;
+                                    {{reservation.adults}} + {{reservation.minors}}
+                                </div>
+                                <div v-if="reservation.comments" style="font-size:11px; opacity:0.75; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
+                                    {{reservation.comments}}
+                                </div>
                             </div>
-                            <div v-if="reservation.comments" style="font-size:11px; opacity:0.75; max-width:160px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
-                                {{reservation.comments}}
+                            <div class="d-flex flex-column align-items-end gap-1">
+                                <span class="badge" :class="statusBadgeClass(reservation.status)" style="font-size:10px">
+                                    {{statusLabel(reservation.status)}}
+                                </span>
+                                <span v-if="isPlaced(reservation.id)" class="badge bg-secondary" style="font-size:10px">
+                                    <i class="bi bi-grid-fill"></i> τοποθ.
+                                </span>
+                                <button
+                                    class="badge bg-light text-dark border"
+                                    style="font-size:10px; cursor:pointer"
+                                    @click.stop="openUpdate(reservation)"
+                                >
+                                    <i class="bi bi-pencil"></i>
+                                </button>
                             </div>
-                        </div>
-                        <div class="d-flex flex-column align-items-end gap-1">
-                            <span class="badge" :class="statusBadgeClass(reservation.status)" style="font-size:10px">
-                                {{statusLabel(reservation.status)}}
-                            </span>
-                            <span v-if="isPlaced(reservation.id)" class="badge bg-secondary" style="font-size:10px">
-                                <i class="bi bi-grid-fill"></i> τοποθ.
-                            </span>
-                            <button
-                                class="badge bg-light text-dark border"
-                                style="font-size:10px; cursor:pointer"
-                                @click.stop="openUpdate(reservation)"
-                            >
-                                <i class="bi bi-pencil"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
+
+                <div v-if="activeReservations.length === 0" class="text-muted mt-3">
+                    Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+                </div>
             </div>
 
-            <div v-if="activeReservations.length === 0" class="text-muted mt-3">
-                Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
-            </div>
-        </div>
+        </div><!-- end home-body -->
 
     </div><!-- end home view -->
 
