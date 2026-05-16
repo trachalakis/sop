@@ -257,13 +257,18 @@
                         <span v-else class="badge bg-success">
                             <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
                         </span>
+                        <div class="form-check form-switch ms-auto mb-0">
+                            <input class="form-check-input" type="checkbox" id="showAllToggle"
+                                   v-model="pendingOnly" :true-value="false" :false-value="true">
+                            <label class="form-check-label small" for="showAllToggle">Όλες</label>
+                        </div>
                     </div>
                     <small class="text-muted">Κάνε κλικ για τοποθέτηση</small>
                 </div>
 
                 <div class="d-flex flex-column gap-2 mt-2">
                     <div
-                        v-for="reservation in activeReservations"
+                        v-for="reservation in visibleReservations"
                         :key="reservation.id"
                         class="reservation-card border rounded p-2"
                         :style="reservationCardStyle(reservation)"
@@ -300,8 +305,13 @@
                     </div>
                 </div>
 
-                <div v-if="activeReservations.length === 0" class="text-muted mt-3">
-                    Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+                <div v-if="visibleReservations.length === 0" class="text-muted mt-3">
+                    <span v-if="pendingOnly && activeReservations.length > 0">
+                        Δεν υπάρχουν εκκρεμείς κρατήσεις.
+                    </span>
+                    <span v-else>
+                        Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+                    </span>
                 </div>
             </div>
 
@@ -450,6 +460,7 @@
                     cells: {},
                     selectedReservationId: null,
                     sidebarOpen: true,
+                    pendingOnly: true,
                     prevDate: PREV_DATE,
                     nextDate: NEXT_DATE,
                     startSlot: null,
@@ -503,6 +514,10 @@
                         const rDate = new Date(r.dateTime.replace(' ', 'T'));
                         return rDate >= this.cutoffTime;
                     });
+                },
+                visibleReservations() {
+                    if (!this.pendingOnly) return this.activeReservations;
+                    return this.activeReservations.filter(r => r.status === 'PENDING');
                 },
                 placedReservationIds() {
                     return new Set(Object.values(this.cells).filter(Boolean));
