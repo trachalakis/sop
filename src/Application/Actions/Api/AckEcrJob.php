@@ -26,7 +26,7 @@ final class AckEcrJob
             return $response->withStatus(404)->withHeader('Content-Type', 'application/json');
         }
 
-        $body = $request->getParsedBody();
+        $body = $request->getParsedBody() ?? [];
 
         $newAttempts = $job->getAttempts() + 1;
         $job->setAttempts($newAttempts);
@@ -44,7 +44,7 @@ final class AckEcrJob
 
         $this->ecrJobsRepository->persist($job);
 
-        $response->getBody()->write('ok');
+        $response->getBody()->write(json_encode('ok'));
         return $response->withHeader('Content-Type', 'application/json');
     }
 }
