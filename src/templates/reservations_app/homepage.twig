@@ -237,26 +237,35 @@
             <!-- Reservations sidebar -->
             <div class="reservations-sidebar">
                 <div class="reservations-sidebar-header">
+                    <div class="d-flex align-items-center gap-3 mb-3 flex-wrap">
+                        <h5 class="mb-0">Κρατήσεις</h5>
+                        <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
+                            {{unplacedReservations.length}} αναθέτηση
+                        </span>
+                        <span v-else class="badge bg-success">
+                            <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
+                        </span>
+                    </div>
                     <div class="btn-group w-100" role="group">
                         <button @click="toggleStatusFilter('PENDING')"
                                 class="btn btn-sm"
                                 :class="statusFilter === 'PENDING' ? 'btn-warning text-dark' : 'btn-outline-warning'">
-                            Εκκρεμής
+                            ΑΝΑΜ.
                         </button>
                         <button @click="toggleStatusFilter('ARRIVED')"
                                 class="btn btn-sm"
                                 :class="statusFilter === 'ARRIVED' ? 'btn-success' : 'btn-outline-success'">
-                            Ήρθε
+                            ΗΡΘΕ
                         </button>
                         <button @click="toggleStatusFilter('NO_SHOW')"
                                 class="btn btn-sm"
                                 :class="statusFilter === 'NO_SHOW' ? 'btn-secondary' : 'btn-outline-secondary'">
-                            Δεν ήρθε
+                            NO SHOW
                         </button>
                         <button @click="toggleStatusFilter('CANCELLED')"
                                 class="btn btn-sm"
                                 :class="statusFilter === 'CANCELLED' ? 'btn-danger' : 'btn-outline-danger'">
-                            Ακύρωση
+                            ΑΚΥΡ.
                         </button>
                     </div>
                 </div>
