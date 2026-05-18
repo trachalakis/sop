@@ -319,6 +319,9 @@
                     <input type="radio" class="btn-check" id="f-status-ARRIVED" value="ARRIVED" v-model="form.status">
                     <label class="btn fs-4 btn-outline-success flex-fill" for="f-status-ARRIVED">Ήρθε</label>
 
+                    <input type="radio" class="btn-check" id="f-status-NO_SHOW" value="NO_SHOW" v-model="form.status">
+                    <label class="btn fs-4 btn-outline-secondary flex-fill" for="f-status-NO_SHOW">Δεν ήρθε</label>
+
                     <input type="radio" class="btn-check" id="f-status-CANCELLED" value="CANCELLED" v-model="form.status">
                     <label class="btn fs-4 btn-outline-danger flex-fill" for="f-status-CANCELLED">Ακύρωση</label>
                 </div>
@@ -502,9 +505,9 @@
                     return this.allTimeSlots.filter(s => s >= this.startSlot);
                 },
                 activeReservations() {
-                    const notCancelled = this.reservations.filter(r => r.status !== 'CANCELLED');
-                    if (!this.cutoffTime) return notCancelled;
-                    return notCancelled.filter(r => {
+                    const stillActive = this.reservations.filter(r => r.status !== 'CANCELLED' && r.status !== 'NO_SHOW');
+                    if (!this.cutoffTime) return stillActive;
+                    return stillActive.filter(r => {
                         const rDate = new Date(r.dateTime.replace(' ', 'T'));
                         return rDate >= this.cutoffTime;
                     });
@@ -598,7 +601,7 @@
                 initCells() {
                     const cells = {};
                     this.reservations.forEach(reservation => {
-                        if (reservation.status === 'CANCELLED') return;
+                        if (reservation.status === 'CANCELLED' || reservation.status === 'NO_SHOW') return;
                         if (!reservation.tables || reservation.tables.length === 0) return;
                         const slot = this.dateTimeToSlot(reservation.dateTime);
                         if (!slot || !this.timeSlots.includes(slot)) return;
@@ -717,10 +720,10 @@
                     };
                 },
                 statusBadgeClass(status) {
-                    return { PENDING: 'bg-warning text-dark', ARRIVED: 'bg-success', CANCELLED: 'bg-danger' }[status] ?? 'bg-secondary';
+                    return { PENDING: 'bg-warning text-dark', ARRIVED: 'bg-success', NO_SHOW: 'bg-secondary', CANCELLED: 'bg-danger' }[status] ?? 'bg-secondary';
                 },
                 statusLabel(status) {
-                    return { PENDING: 'ΑΝΑΜ.', ARRIVED: 'ΗΡΘΕ', CANCELLED: 'ΑΚΥΡ.' }[status] ?? status;
+                    return { PENDING: 'ΑΝΑΜ.', ARRIVED: 'ΗΡΘΕ', NO_SHOW: 'ΔΕΝ ΗΡΘΕ', CANCELLED: 'ΑΚΥΡ.' }[status] ?? status;
                 },
 
                 initSip() {
