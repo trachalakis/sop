@@ -151,18 +151,6 @@
     <!-- ========== HOME VIEW ========== -->
     <div class="home-view">
 
-        <!-- Placement mode banner -->
-        <div v-if="selectedReservationId" class="alert alert-primary d-flex justify-content-between align-items-center mb-2 placement-banner">
-            <span>
-                <i class="bi bi-cursor-fill me-1"></i>
-                Τοποθέτηση: <strong>{{selectedReservationName}}</strong>
-                &mdash; κάνε κλικ σε τραπέζι στις <strong>{{selectedSlot}}</strong> για να τοποθετήσεις / αφαιρέσεις
-            </span>
-            <button class="btn btn-sm btn-outline-primary" @click="selectedReservationId = null">
-                <i class="bi bi-x-lg"></i> Ακύρωση
-            </button>
-        </div>
-
         <!-- Header -->
         <div class="d-flex justify-content-between flex-wrap align-items-center pt-3 pb-2 mb-3 border-bottom flex-shrink-0">
             <h1>
@@ -251,19 +239,12 @@
                 <div class="reservations-sidebar-header">
                     <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
                         <h5 class="mb-0">Κρατήσεις</h5>
-                        <span v-if="unplacedReservations.length > 0" class="badge bg-warning text-dark">
-                            {{unplacedReservations.length}} αναθέτηση
-                        </span>
-                        <span v-else class="badge bg-success">
-                            <i class="bi bi-check-lg"></i> Όλες τοποθετημένες
-                        </span>
                         <div class="form-check form-switch ms-auto mb-0">
                             <input class="form-check-input" type="checkbox" id="showAllToggle"
                                    v-model="pendingOnly" :true-value="false" :false-value="true">
                             <label class="form-check-label small" for="showAllToggle">Όλες</label>
                         </div>
                     </div>
-                    <small class="text-muted">Κάνε κλικ για τοποθέτηση</small>
                 </div>
 
                 <div class="d-flex flex-column gap-2 mt-2">
@@ -278,9 +259,8 @@
                             <div>
                                 <div class="fw-bold fs-6">{{reservation.name}}</div>
                                 <div class="mt-1" style="font-size:13px">
-                                    {{reservation.dateTime.substring(11, 16)}}
-                                    &nbsp;/&nbsp;
-                                    {{reservation.adults}} + {{reservation.minors}}
+                                    {{reservation.dateTime.substring(11, 16)}} /
+                                    {{reservation.adults}} / {{reservation.minors}}
                                 </div>
                                 <div v-if="reservation.comments" style="font-size:11px; opacity:0.75; overflow:hidden; white-space:nowrap; text-overflow:ellipsis">
                                     {{reservation.comments}}
@@ -504,11 +484,11 @@
             mounted() {
                 const today = new Date().toISOString().split('T')[0];
                 if (DATE_STR === today) {
-                    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
-                    const h = oneHourAgo.getHours();
-                    const m = oneHourAgo.getMinutes() >= 30 ? 30 : 0;
+                    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+                    const h = twoHoursAgo.getHours();
+                    const m = twoHoursAgo.getMinutes() >= 30 ? 30 : 0;
                     this.startSlot  = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
-                    this.cutoffTime = oneHourAgo;
+                    this.cutoffTime = twoHoursAgo;
                 }
                 this.cells = this.initCells();
                 const saved = localStorage.getItem('reservationDurations_' + DATE_STR);
