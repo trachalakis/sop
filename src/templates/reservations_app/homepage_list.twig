@@ -60,6 +60,8 @@
 								ΑΝΑΜΕΝΕΤΑΙ
 							{% elseif reservation.getStatus == 'ARRIVED' %}
 								ΗΡΘΕ
+							{% elseif reservation.getStatus == 'NO_SHOW' %}
+								ΔΕΝ ΗΡΘΕ
 							{% elseif  reservation.getStatus == 'CANCELLED' %}
 								ΑΚΥΡΩΘΗΚΕ
 							{% endif %}
