@@ -12,7 +12,7 @@ use Slim\Views\Twig;
 
 final class UpdateReservation
 {
-    private const ALLOWED_STATUSES = ['PENDING', 'ARRIVED', 'CANCELLED'];
+    private const ALLOWED_STATUSES = ['PENDING', 'ARRIVED', 'NO_SHOW', 'CANCELLED'];
 
     public function __construct(
         private ReservationsRepository $reservationsRepository,
