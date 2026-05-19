@@ -153,7 +153,7 @@ Fields (per MCP section 8.2.15):
 |---|---|
 | Request code | `3` |
 | Operation | `S` (positive sale) |
-| Item name | Greek translation, truncated to 20 chars |
+| Item name | Greek translation, converted from UTF-8 to Windows-1253, then truncated to 20 bytes. The MCP String class is single-byte (§6.3.2) and the field limit is 20 bytes; sending UTF-8 directly causes ERR-2 because each Greek letter is 2 bytes in UTF-8. |
 | Extra description | empty string |
 | Quantity | formatted to 3 decimal places (e.g. `2.000`) |
 | Unit price | formatted to 2 decimal places (e.g. `8.50`) |

@@ -91,7 +91,16 @@ function read_reply($socket, int $timeout): string
 
 function send_item_sale($socket, array $entry, int $timeout): void
 {
-    $name = mb_substr($entry['name'], 0, 20);
+    // MCP spec §6.3.2 defines String fields as bytes 32-255 — a single-byte
+    // charset. Greek MIRKA III devices use Windows-1253. Convert from JSON's
+    // UTF-8 so each Greek letter is one byte and the description fits the
+    // 20-byte field limit (§8.2.15 field 3).
+    $name = iconv('UTF-8', 'WINDOWS-1253//TRANSLIT', $entry['name'] ?? '');
+    if ($name === false) {
+        $name = '';
+    }
+    $name = substr($name, 0, 20);
+
     $data = sprintf(
         '3/S/%s//%s/%s/%d/',
         $name,
