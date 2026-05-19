@@ -322,7 +322,7 @@
 
         <!-- Mobile body: list -->
         <div class="mobile-list d-md-none">
-            <div class="mobile-list-header">
+            <div class="mobile-list-header mb-3">
                 <div class="btn-group w-100" role="group">
                     <button @click="toggleStatusFilter('PENDING')"
                             class="btn btn-sm"
@@ -347,7 +347,7 @@
                 </div>
             </div>
 
-            <table class="table table-striped fs-4 mt-4">
+            <table class="table table-striped fs-6">
                 <tbody>
                     <tr v-for="r in sidebarReservations" :key="r.id">
                         <td>
