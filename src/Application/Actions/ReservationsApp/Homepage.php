@@ -39,6 +39,7 @@ final class Homepage
                 'status'          => $r->getStatus(),
                 'tables'          => $r->getTables() ?? [],
                 'telephoneNumber' => $r->getTelephoneNumber() ?? '',
+                'isTableLocked'   => $r->getIsTableLocked(),
             ];
         }, $reservations));
 
