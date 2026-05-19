@@ -159,7 +159,7 @@
             <h1>
                 {% endverbatim %}{% include 'partials/app_nav.twig' %}{% verbatim %} / <i class="bi bi-telephone"></i>
             </h1>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-1">
                 <a class="fs-3" :href="'?date=' + prevDate">
                     <strong><i class="bi bi-chevron-left"></i></strong>
                 </a>
@@ -169,10 +169,10 @@
                 </a>
             </div>
             <div>
-                <button @click="sidebarOpen = !sidebarOpen" class="btn btn-outline-secondary btn-lg me-2 d-none d-md-inline-block" :title="sidebarOpen ? 'Απόκρυψη κρατήσεων' : 'Εμφάνιση κρατήσεων'">
+                <button @click="sidebarOpen = !sidebarOpen" class="btn btn-outline-secondary me-2 d-none d-md-inline-block" :title="sidebarOpen ? 'Απόκρυψη κρατήσεων' : 'Εμφάνιση κρατήσεων'">
                     <i class="bi" :class="sidebarOpen ? 'bi-chevron-double-right' : 'bi-chevron-double-left'"></i>
                 </button>
-                <button @click="openCreate()" class="btn btn-primary btn-lg">
+                <button @click="openCreate()" class="btn btn-primary">
                     <i class="bi bi-plus-lg"></i>
                 </button>
             </div>
@@ -594,14 +594,14 @@
                     if (!this.startSlot) return this.allTimeSlots;
                     return this.allTimeSlots.filter(s => s >= this.startSlot);
                 },
-                activeReservations() {
+                /*activeReservations() {
                     const stillActive = this.reservations.filter(r => r.status !== 'CANCELLED' && r.status !== 'NO_SHOW');
                     if (!this.cutoffTime) return stillActive;
                     return stillActive.filter(r => {
                         const rDate = new Date(r.dateTime.replace(' ', 'T'));
                         return rDate >= this.cutoffTime;
                     });
-                },
+                },*/
                 sidebarReservations() {
                     if (this.statusFilter) {
                         return this.reservations.filter(r => r.status === this.statusFilter);
@@ -612,10 +612,10 @@
                     return new Set(Object.values(this.cells).filter(Boolean));
                 },
                 unplacedReservations() {
-                    return this.activeReservations.filter(r => !this.placedReservationIds.has(r.id));
+                    return this.sidebarReservations.filter(r => !this.placedReservationIds.has(r.id));
                 },
                 coverCount() {
-                    return this.activeReservations.reduce((s, r) => s + r.adults + r.minors, 0);
+                    return this.sidebarReservations.reduce((s, r) => s + r.adults + r.minors, 0);
                 },
                 formattedDate() {
                     const d = new Date(DATE_STR + 'T12:00:00');
