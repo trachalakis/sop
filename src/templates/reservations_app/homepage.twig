@@ -327,22 +327,22 @@
                     <button @click="toggleStatusFilter('PENDING')"
                             class="btn btn-sm"
                             :class="statusFilter === 'PENDING' ? 'btn-warning text-dark' : 'btn-outline-warning'">
-                        Εκκρεμής
+                        ΑΝΑΜ.
                     </button>
                     <button @click="toggleStatusFilter('ARRIVED')"
                             class="btn btn-sm"
                             :class="statusFilter === 'ARRIVED' ? 'btn-success' : 'btn-outline-success'">
-                        Ήρθε
+                        ΗΡΘΕ
                     </button>
                     <button @click="toggleStatusFilter('NO_SHOW')"
                             class="btn btn-sm"
                             :class="statusFilter === 'NO_SHOW' ? 'btn-secondary' : 'btn-outline-secondary'">
-                        Δεν ήρθε
+                        NO SHOW
                     </button>
                     <button @click="toggleStatusFilter('CANCELLED')"
                             class="btn btn-sm"
                             :class="statusFilter === 'CANCELLED' ? 'btn-danger' : 'btn-outline-danger'">
-                        Ακύρωση
+                        ΑΚΥΡ.
                     </button>
                 </div>
             </div>
@@ -594,14 +594,6 @@
                     if (!this.startSlot) return this.allTimeSlots;
                     return this.allTimeSlots.filter(s => s >= this.startSlot);
                 },
-                /*activeReservations() {
-                    const stillActive = this.reservations.filter(r => r.status !== 'CANCELLED' && r.status !== 'NO_SHOW');
-                    if (!this.cutoffTime) return stillActive;
-                    return stillActive.filter(r => {
-                        const rDate = new Date(r.dateTime.replace(' ', 'T'));
-                        return rDate >= this.cutoffTime;
-                    });
-                },*/
                 sidebarReservations() {
                     if (this.statusFilter) {
                         return this.reservations.filter(r => r.status === this.statusFilter);
