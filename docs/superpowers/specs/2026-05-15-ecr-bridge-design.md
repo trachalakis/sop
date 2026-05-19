@@ -122,8 +122,7 @@ return [
     'ecr_port'      => 9100,
     'cloud_api_url' => 'https://myapp.example.com',
     'api_key'       => 'secret-key-here',
-    'timeout'       => 5,    // socket timeout in seconds
-    'max_retries'   => 3,    // ENQ and packet retransmit limit
+    'timeout'       => 5,    // socket timeout (seconds) for the first reply byte
 ];
 ```
 
@@ -143,18 +142,13 @@ return [
 
 ### MCP Protocol — Per Command
 
-The MCP protocol uses ENQ/ACK framing around STX/ETX packets over the TCP socket.
+The MCP spec (`MCP.pdf` section 6) documents an `ENQ`/`ACK` + `STX`/`ETX` framing for the RS-232 serial layer (section 4). **This device's TCP/Ethernet interface does NOT use that framing** — packets are exchanged bare in both directions, with TCP segmentation as the message boundary. The cloud agent must NOT send `ENQ`, NOT wrap in `STX`/`ETX`, and NOT expect `ACK`. Verified empirically against MIRKA III firmware V1 R1 T37 by issuing a bare `a/44` (Read ECR identification) and receiving a properly-formatted reply with no control bytes.
 
-**Step 1 — Handshake:**
-Send `ENQ` (0x05). Wait for `ACK` (0x06) within the timeout window.
-- On `NAK` (0x15) or timeout: retry up to `max_retries` times.
-- On exhausted retries: throw exception, mark job failed.
+**Step 1 — Build packet:**
 
-**Step 2 — Build packet:**
+Data section: `3/S/<name>/<>/<qty>/<unit_price>/<dept>/`
 
-Data section: `3/S/<name>/<>/<qty>/<unit_price>/<dept>/<checksum>`
-
-Fields:
+Fields (per MCP section 8.2.15):
 | Field | Value |
 |---|---|
 | Request code | `3` |
@@ -165,18 +159,20 @@ Fields:
 | Unit price | formatted to 2 decimal places (e.g. `8.50`) |
 | Department | fiscal department integer (e.g. `1`) |
 
-Checksum: sum of all bytes in the data section (excluding the 2-digit checksum itself, including all `/` separators) mod 100, zero-padded to 2 digits.
+Checksum (per MCP section 6.3.1): sum of all bytes in the data section, held in an 8-bit accumulator (wraps at 256), then `mod 100`, zero-padded to 2 digits. Equivalent PHP: `sprintf('%02d', ($sum & 0xFF) % 100)`. The naive `sum % 100` is WRONG — it does not match the device when the byte sum exceeds 255.
 
-Full packet: `STX` (0x02) + data section + `ETX` (0x03).
+Full packet on the wire: `<data section>` + `<2-digit checksum>`. No `STX`, no `ETX`.
 
-**Step 3 — Send packet:**
-Write packet bytes to socket. Wait for `ACK`.
-- On `NAK` or timeout: retransmit packet up to `max_retries` times.
-- On exhausted retries: throw exception.
+**Step 2 — Send and receive:**
 
-**Step 4 — Receive reply:**
-Wait for `STX`, read bytes until `ETX`, send `ACK` (0x06).
-Parse reply: verify reply code matches request code (`3`). Check status hex bytes for error flags. If error flags are set, throw exception with status bytes included in message.
+Write packet bytes to socket. Read reply: wait up to `timeout` seconds for the first byte, then drain until the socket has been idle for ~500ms. The accumulated bytes are the complete reply.
+
+Reply structure (per MCP section 8.1.2):
+
+`<reply_code>/<device_status>/<fiscal_status>/<data_fields…>/<checksum>`
+
+- Reply code is a 2-digit field. `00` = success. Anything else is an MCP error code (table in MCP.pdf section 8.3). The agent throws with the code and full reply for debugging.
+- Device status and fiscal status are 2-hex-digit bit fields (section 8.1.2.2). The agent does not currently surface these but they are present.
 
 ### Cron (added to local server's crontab)
 

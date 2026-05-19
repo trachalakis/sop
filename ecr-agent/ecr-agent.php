@@ -53,59 +53,44 @@ function http_post(string $url, string $apiKey, array $data): void
 
 function calc_checksum(string $data): string
 {
+    // MCP spec section 6.3.1: 8-bit sum (BYTE arithmetic, wraps) mod 100
     $sum = 0;
     foreach (str_split($data) as $char) {
-        $sum += ord($char);
+        $sum = ($sum + ord($char)) & 0xFF;
     }
     return sprintf('%02d', $sum % 100);
 }
 
-function read_byte($socket, int $timeout): string
+function read_reply($socket, int $timeout): string
 {
-    $read = [$socket];
-    $write = $except = null;
+    // First byte: wait up to $timeout seconds.
+    $read = [$socket]; $write = $except = null;
     if (stream_select($read, $write, $except, $timeout) < 1) {
-        throw new RuntimeException("Socket read timeout");
+        throw new RuntimeException("No reply within {$timeout}s");
     }
-    $byte = fread($socket, 1);
-    if ($byte === false || $byte === '') {
-        throw new RuntimeException("Socket closed unexpectedly");
+    $reply = fread($socket, 4096);
+    if ($reply === false || $reply === '') {
+        throw new RuntimeException("Socket closed before reply received");
     }
-    return $byte;
-}
 
-function read_packet($socket, int $timeout): string
-{
-    // Wait for STX (0x02), discard anything before it
-    $deadline = time() + $timeout;
-    do {
-        if (time() > $deadline) {
-            throw new RuntimeException("Timeout waiting for STX");
-        }
-        $byte = read_byte($socket, $timeout);
-    } while ($byte !== chr(0x02));
-
-    // Read until ETX (0x03), accumulate only printable bytes (>=32)
-    $data    = '';
-    $deadline = time() + $timeout;
+    // Subsequent bytes: drain until socket idle for 500ms (end of message).
     while (true) {
-        if (time() > $deadline) {
-            throw new RuntimeException("Timeout waiting for ETX");
-        }
-        $byte = read_byte($socket, $timeout);
-        if ($byte === chr(0x03)) {
+        $read = [$socket]; $write = $except = null;
+        if (stream_select($read, $write, $except, 0, 500000) < 1) {
             break;
         }
-        if (ord($byte) >= 32) {
-            $data .= $byte;
+        $chunk = fread($socket, 4096);
+        if ($chunk === false || $chunk === '') {
+            break;
         }
+        $reply .= $chunk;
     }
-    return $data;
+
+    return $reply;
 }
 
-function send_item_sale($socket, array $entry, int $maxRetries, int $timeout): void
+function send_item_sale($socket, array $entry, int $timeout): void
 {
-    // Build data string: 3/S/<name>//<qty>/<unitPrice>/<dept>/
     $name = mb_substr($entry['name'], 0, 20);
     $data = sprintf(
         '3/S/%s//%s/%s/%d/',
@@ -114,47 +99,15 @@ function send_item_sale($socket, array $entry, int $maxRetries, int $timeout): v
         $entry['unitPrice'],
         $entry['fiscalDepartment']
     );
-    $data .= calc_checksum($data); // 2-digit checksum appended
+    $packet = $data . calc_checksum($data);
 
-    // Step 1: ENQ handshake — send ENQ (0x05), wait for ACK (0x06)
-    $acked = false;
-    for ($i = 0; $i < $maxRetries; $i++) {
-        fwrite($socket, chr(0x05));
-        $resp = read_byte($socket, $timeout);
-        if ($resp === chr(0x06)) {
-            $acked = true;
-            break;
-        }
-    }
-    if (!$acked) {
-        throw new RuntimeException("ENQ not acknowledged after {$maxRetries} attempts");
-    }
+    fwrite($socket, $packet);
+    $reply = read_reply($socket, $timeout);
 
-    // Step 2: Send packet — STX + data + ETX, wait for ACK
-    $packet = chr(0x02) . $data . chr(0x03);
-    $acked  = false;
-    for ($i = 0; $i < $maxRetries; $i++) {
-        fwrite($socket, $packet);
-        $resp = read_byte($socket, $timeout);
-        if ($resp === chr(0x06)) {
-            $acked = true;
-            break;
-        }
-    }
-    if (!$acked) {
-        throw new RuntimeException("Packet not acknowledged after {$maxRetries} attempts");
-    }
-
-    // Step 3: Receive reply packet, send ACK
-    $reply = read_packet($socket, $timeout);
-    fwrite($socket, chr(0x06)); // ACK the reply
-
-    // Verify reply code matches request code '3'
-    $parts = explode('/', $reply);
-    if (($parts[0] ?? '') !== '3') {
-        throw new RuntimeException(
-            "Unexpected reply code: " . ($parts[0] ?? 'none') . " (full reply: {$reply})"
-        );
+    $fields = explode('/', $reply);
+    $code = $fields[0] ?? '';
+    if ($code !== '00') {
+        throw new RuntimeException("ECR returned error {$code} (reply: {$reply})");
     }
 }
 
@@ -221,7 +174,7 @@ try {
 
             // Send one item sale command per entry
             foreach ($job['entries'] as $entry) {
-                send_item_sale($socket, $entry, $config['max_retries'], $config['timeout']);
+                send_item_sale($socket, $entry, $config['timeout']);
             }
 
             fclose($socket);
