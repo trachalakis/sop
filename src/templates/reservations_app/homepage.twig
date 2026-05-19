@@ -42,6 +42,13 @@
             padding-bottom: 8px;
             z-index: 1;
         }
+        .mobile-list-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 8px 0;
+            z-index: 1;
+        }
         .home-body.sidebar-collapsed .reservations-sidebar {
             width: 0;
             padding: 0;
@@ -137,15 +144,6 @@
 {% endblock %}
 
 {% block content %}{% verbatim %}
-<script>
-    if (window.matchMedia('(max-width: 768px)').matches) {
-        var params = new URLSearchParams(window.location.search);
-        var date = params.get('date');
-        var target = '/reservations-app/homepage-list';
-        if (date) target += '?date=' + encodeURIComponent(date);
-        window.location.replace(target);
-    }
-</script>
 <div id="app">
 
     <!-- ========== HOME VIEW ========== -->
@@ -166,10 +164,7 @@
                 </a>
             </div>
             <div>
-                <a href="/reservations-app/homepage-list?date={% endverbatim %}{{ date.format('Y-m-d') }}{% verbatim %}" class="btn btn-outline-secondary btn-lg me-2">
-                    <i class="bi bi-list-ul"></i>
-                </a>
-                <button @click="sidebarOpen = !sidebarOpen" class="btn btn-outline-secondary btn-lg me-2" :title="sidebarOpen ? 'Απόκρυψη κρατήσεων' : 'Εμφάνιση κρατήσεων'">
+                <button @click="sidebarOpen = !sidebarOpen" class="btn btn-outline-secondary btn-lg me-2 d-none d-md-inline-block" :title="sidebarOpen ? 'Απόκρυψη κρατήσεων' : 'Εμφάνιση κρατήσεων'">
                     <i class="bi" :class="sidebarOpen ? 'bi-chevron-double-right' : 'bi-chevron-double-left'"></i>
                 </button>
                 <button @click="openCreate()" class="btn btn-primary btn-lg">
@@ -179,7 +174,7 @@
         </div>
 
         <!-- Body: grid + sidebar -->
-        <div class="home-body" :class="{ 'sidebar-collapsed': !sidebarOpen }">
+        <div class="home-body d-none d-md-flex" :class="{ 'sidebar-collapsed': !sidebarOpen }">
 
             <!-- Grid -->
             <div class="grid-wrapper">
@@ -319,6 +314,73 @@
             </div>
 
         </div><!-- end home-body -->
+
+        <!-- Mobile body: list -->
+        <div class="mobile-list d-md-none">
+            <div class="mobile-list-header">
+                <div class="btn-group w-100" role="group">
+                    <button @click="toggleStatusFilter('PENDING')"
+                            class="btn btn-sm"
+                            :class="statusFilter === 'PENDING' ? 'btn-warning text-dark' : 'btn-outline-warning'">
+                        Εκκρεμής
+                    </button>
+                    <button @click="toggleStatusFilter('ARRIVED')"
+                            class="btn btn-sm"
+                            :class="statusFilter === 'ARRIVED' ? 'btn-success' : 'btn-outline-success'">
+                        Ήρθε
+                    </button>
+                    <button @click="toggleStatusFilter('NO_SHOW')"
+                            class="btn btn-sm"
+                            :class="statusFilter === 'NO_SHOW' ? 'btn-secondary' : 'btn-outline-secondary'">
+                        Δεν ήρθε
+                    </button>
+                    <button @click="toggleStatusFilter('CANCELLED')"
+                            class="btn btn-sm"
+                            :class="statusFilter === 'CANCELLED' ? 'btn-danger' : 'btn-outline-danger'">
+                        Ακύρωση
+                    </button>
+                </div>
+            </div>
+
+            <table class="table table-striped fs-4 mt-4">
+                <tbody>
+                    <tr v-for="r in sidebarReservations" :key="r.id">
+                        <td>
+                            <a class="text-decoration-none" href="#" @click.prevent="openUpdate(r)">
+                                {{r.dateTime.substring(11, 16)}} /
+                                {{r.adults}} / {{r.minors}} /
+                                {{r.name}}
+                            </a>
+                            <div>
+                                <a v-for="t in r.tables" :key="t"
+                                   :href="'/reservations-app/toggle-table-lock?reservationId=' + r.id"
+                                   class="badge text-bg-info text-decoration-none">
+                                    {{t}}<span v-if="r.isTableLocked">!</span>
+                                </a>
+                            </div>
+                            <div v-if="r.comments">
+                                <small class="text-body-secondary">{{r.comments}}</small>
+                            </div>
+                        </td>
+                        <td class="text-end">
+                            <span class="badge" :class="statusBadgeClass(r.status)">
+                                {{statusLabel(r.status)}}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr v-if="sidebarReservations.length === 0">
+                        <td colspan="2" class="text-muted text-center py-4">
+                            <span v-if="statusFilter">
+                                Δεν υπάρχουν κρατήσεις σε αυτή την κατάσταση.
+                            </span>
+                            <span v-else>
+                                Δεν υπάρχουν κρατήσεις για αυτή την ημέρα.
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
     </div><!-- end home view -->
 
