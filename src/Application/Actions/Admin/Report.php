@@ -10,6 +10,7 @@ use Application\Services\OrdersReportService;
 use Application\Services\ScansReportService;
 use Domain\Repositories\ScansRepository;
 use Domain\Repositories\OrdersRepository;
+use Domain\Repositories\MenusRepository;
 use Domain\Repositories\MenuSectionsRepository;
 use Doctrine\Common\Collections\Criteria;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -20,6 +21,7 @@ final class Report
 {
     public function __construct(
         private MenuSectionsRepository $menuSectionsRepository,
+        private MenusRepository $menusRepository,
         private OrdersRepository $ordersRepository,
         private OrdersReportService $ordersReportService,
         private ScansReportService $scansReportService,
@@ -67,6 +69,21 @@ final class Report
                 return $order->getCreatedAt()->format('G') >= 18;
             });
         }
+
+        if (!empty($filter['menu'])) {
+            $menuId = (int) $filter['menu'];
+            $orders = $orders->filter(function ($order) use ($menuId) {
+                foreach ($order->getOrderEntries() as $entry) {
+                    $menuItem = $entry->getMenuItem();
+                    if ($menuItem !== null) {
+                        return $menuItem->getMenuSection()->getMenu()->getId() === $menuId;
+                    }
+                }
+                return false;
+            });
+        }
+
+        $activeMenus = $this->menusRepository->findBy(['isActive' => true], ['name' => 'asc']);
 
         $report = $this->ordersReportService->buildReport($orders, $end);
 
@@ -171,6 +188,8 @@ final class Report
                 'servedMenuItems' => $servedMenuItems,
                 'servedPlates' => $servedPlates,
                 'servedDrinks' => $servedDrinks,
+
+                'activeMenus' => $activeMenus,
             ]
         );
 	}

@@ -52,6 +52,16 @@
         </div>
     </div>
     <div class="col-auto">
+        <div class="input-group">
+            <select name="filter[menu]" class="form-select">
+                <option value="">all menus</option>
+                {% for menu in activeMenus %}
+                    <option value="{{ menu.getId }}" {{ filter.menu == menu.getId ? 'selected' : '' }}>{{ menu.getName }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="col-auto">
         <button type="submit" class="btn btn-primary">Filter</button>
         <input type="reset" class="btn btn-primary" value="Reset"/>
     </div>
@@ -168,7 +178,7 @@
                             {% endif %}
                         </a>
                     </td>
-                    <td>T{{order.getTable.getName}}</td>
+                    <td>{{ order.getTable ? 'T' ~ order.getTable.getName : 'Take Out' }}</td>
                     <td>
                         &euro;{{order.getPrice}}
                     </td>
