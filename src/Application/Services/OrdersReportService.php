@@ -33,8 +33,6 @@ final class OrdersReportService
      */
     public function buildReport(iterable $orders, DateTimeInterface $end): array
     {
-        // Convert to array so we can iterate twice (served counts use all orders,
-        // not just table orders).
         $ordersArray = is_array($orders) ? $orders : iterator_to_array($orders);
 
         $recipesByMenuItemId = [];
@@ -51,17 +49,11 @@ final class OrdersReportService
         $menuSections  = [];
 
         foreach ($ordersArray as $order) {
-            // Orders without a table (take-out from orders-app) are excluded from
-            // table-based metrics. salesTakeAway is always 0 here — matching the
-            // existing Report.php behaviour where the null-table guard prevents it
-            // from ever being incremented.
-            if ($order->getTable() === null) {
-                continue;
-            }
-
             $sales += $order->getPrice();
 
-            if (!$order->isDrinksOnly()) {
+            if ($order->getTable() === null) {
+                $salesTakeAway += $order->getPrice();
+            } elseif (!$order->isDrinksOnly()) {
                 $coversAdults += $order->getAdults();
                 $coversMinors += $order->getMinors();
             }
@@ -109,7 +101,6 @@ final class OrdersReportService
             }
         }
 
-        // Served counts include ALL orders (not just table orders)
         $servedPlates = 0;
         $servedDrinks = 0;
         foreach ($ordersArray as $order) {

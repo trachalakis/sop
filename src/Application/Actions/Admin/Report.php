@@ -86,21 +86,19 @@ final class Report
         $salesPerHourData  = [];
 
         foreach ($orders as $order) {
-            if ($order->getTable() === null) {
-                continue;
-            }
-            if (isset($coversPerHourData[$order->getCreatedAt()->format('G')])) {
-                $ordersPerHourData[$order->getCreatedAt()->format('G')] += 1;
-                $coversPerHourData[$order->getCreatedAt()->format('G')] += $order->getAdults() + $order->getMinors();
-                $salesPerHourData[$order->getCreatedAt()->format('G')]  += $order->getPrice();
+            $hour = $order->getCreatedAt()->format('G');
+            if (isset($ordersPerHourData[$hour])) {
+                $ordersPerHourData[$hour] += 1;
+                $coversPerHourData[$hour] += $order->getAdults() + $order->getMinors();
+                $salesPerHourData[$hour]  += $order->getPrice();
             } else {
-                $ordersPerHourData[$order->getCreatedAt()->format('G')] = 1;
-                $coversPerHourData[$order->getCreatedAt()->format('G')] = $order->getAdults() + $order->getMinors();
-                $salesPerHourData[$order->getCreatedAt()->format('G')]  = $order->getPrice();
+                $ordersPerHourData[$hour] = 1;
+                $coversPerHourData[$hour] = $order->getAdults() + $order->getMinors();
+                $salesPerHourData[$hour]  = $order->getPrice();
             }
         }
 
-        $chartLabels = array_keys($coversPerHourData);
+        $chartLabels = array_keys($ordersPerHourData);
         sort($chartLabels);
 
         ksort($coversPerHourData);
