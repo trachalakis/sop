@@ -1,0 +1,113 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'printers' %}
+
+{% block content %}{% verbatim %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none">
+            <i class="bi bi-house"></i>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/printers" class="text-decoration-none">Εκτυπωτές</a>
+    </li>
+    <li class="breadcrumb-item active">Requests</li>
+</ol>
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <div>
+        <h1 class="mb-0">Printer requests</h1>
+        <small class="text-muted">last 5 minutes &middot; updates every second</small>
+    </div>
+</div>
+<div id="app">
+    <p v-if="entries.length === 0" class="text-muted">No requests in the last 5 minutes.</p>
+    <table v-else class="table table-sm table-striped align-middle">
+        <thead>
+            <tr>
+                <th style="width: 1%"></th>
+                <th>Time</th>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Status</th>
+                <th>Duration</th>
+                <th>Req size</th>
+                <th>Resp size</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template v-for="entry in entries" :key="entry.ts">
+                <tr @click="toggle(entry.ts)" style="cursor: pointer">
+                    <td>
+                        <i class="bi" :class="expanded[entry.ts] ? 'bi-chevron-down' : 'bi-chevron-right'"></i>
+                    </td>
+                    <td><code>{{ formatTime(entry.ts) }}</code></td>
+                    <td>{{ entry.method }}</td>
+                    <td><code>{{ entry.path }}</code></td>
+                    <td>
+                        <span class="badge" :class="entry.status < 400 ? 'text-bg-success' : 'text-bg-danger'">
+                            {{ entry.status }}
+                        </span>
+                    </td>
+                    <td>{{ entry.duration_ms }} ms</td>
+                    <td>{{ entry.request_body.length }} B</td>
+                    <td>{{ entry.response_body.length }} B</td>
+                </tr>
+                <tr v-if="expanded[entry.ts]">
+                    <td colspan="8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Request body</h6>
+                                <pre class="bg-light p-2 small" style="max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-all">{{ entry.request_body || '(empty)' }}</pre>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Response body</h6>
+                                <pre class="bg-light p-2 small" style="max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-all">{{ entry.response_body || '(empty)' }}</pre>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</div>
+{% endverbatim %}{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script src="/assets/js/vue.global.prod.js"></script>
+    <script src="/assets/js/axios.min.js"></script>
+    <script>
+        Vue.createApp({
+            data() {
+                return {
+                    entries: [],
+                    expanded: {},
+                    inFlight: false,
+                };
+            },
+            mounted() {
+                this.fetchEntries();
+                setInterval(() => this.fetchEntries(), 1000);
+            },
+            methods: {
+                fetchEntries() {
+                    if (this.inFlight) return;
+                    this.inFlight = true;
+                    axios.get('/admin/printers/requests/data')
+                        .then(r => { this.entries = r.data; })
+                        .finally(() => { this.inFlight = false; });
+                },
+                toggle(ts) {
+                    this.expanded[ts] = !this.expanded[ts];
+                },
+                formatTime(ts) {
+                    const d = new Date(ts * 1000);
+                    const pad = n => String(n).padStart(2, '0');
+                    const ms = String(Math.floor((ts % 1) * 1000)).padStart(3, '0');
+                    return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${ms}`;
+                },
+            },
+        }).mount('#app');
+    </script>
+{% endblock %}

@@ -51,6 +51,8 @@ use Application\Actions\Admin\MenuSectionStatistics;
 use Application\Actions\Admin\OpenOrder;
 use Application\Actions\Admin\Predict;
 use Application\Actions\Admin\Printers;
+use Application\Actions\Admin\PrinterRequests;
+use Application\Actions\Admin\PrinterRequestsData;
 use Application\Actions\Admin\PrintJobs;
 use Application\Actions\Admin\PrintMenu;
 use Application\Actions\Admin\Report;
@@ -134,8 +136,10 @@ return function (App $app, $container) {
     $app->map(['GET', 'POST'], '/login', Login::class);
     $app->get('/logout', Logout::class);
 
-    $app->map(['GET', 'POST'], '/printers/sdp', Sdp::class);
-    $app->map(['GET', 'POST'], '/printers/status', PrinterStatus::class);
+    $app->map(['GET', 'POST'], '/printers/sdp', Sdp::class)
+        ->add(\Middleware\PrinterRequestLogger::class);
+    $app->map(['GET', 'POST'], '/printers/status', PrinterStatus::class)
+        ->add(\Middleware\PrinterRequestLogger::class);
 
     $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->get('/', AdminHomepage::class);
@@ -232,6 +236,8 @@ return function (App $app, $container) {
         $group->get('/languages/toggle', ToggleLanguage::class);
 
         $group->get('/printers', Printers::class);
+        $group->get('/printers/requests', PrinterRequests::class);
+        $group->get('/printers/requests/data', PrinterRequestsData::class);
         $group->map(['GET', 'POST'], '/printers/create', CreatePrinter::class);
         $group->map(['GET', 'POST'], '/printers/update', UpdatePrinter::class);
         $group->get('/printers/delete', DeletePrinter::class);
