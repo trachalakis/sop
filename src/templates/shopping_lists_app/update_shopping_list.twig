@@ -168,6 +168,34 @@
             y += 6;
         };
 
+        const leftTextWrapped = (ctx, text, fontSize, bold = false) => {
+            ctx.font = `${bold ? 'bold ' : ''}${fontSize}px monospace`;
+            ctx.textAlign = 'left';
+            const maxWidth = W - PAD * 2;
+            const flush = (line) => {
+                y += fontSize;
+                ctx.fillText(line, PAD, y);
+                y += 6;
+            };
+            text.split('\n').forEach(paragraph => {
+                if (paragraph === '') {
+                    y += fontSize + 6;
+                    return;
+                }
+                let line = '';
+                paragraph.split(' ').forEach(word => {
+                    const candidate = line ? line + ' ' + word : word;
+                    if (ctx.measureText(candidate).width <= maxWidth) {
+                        line = candidate;
+                    } else {
+                        if (line) flush(line);
+                        line = word;
+                    }
+                });
+                if (line) flush(line);
+            });
+        };
+
         const separator = (ctx) => {
             y += 6;
             ctx.lineWidth = 2;
@@ -287,7 +315,7 @@
                     centerText(this.canvasCtx, dateLabel, 24);
                     if (this.notes && this.notes.trim().length > 0) {
                         separator(this.canvasCtx);
-                        leftText(this.canvasCtx, this.notes.trim(), 24);
+                        leftTextWrapped(this.canvasCtx, this.notes.trim(), 24);
                     }
                     separator(this.canvasCtx);
                     y += 36;
