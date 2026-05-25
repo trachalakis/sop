@@ -45,9 +45,8 @@ final class CreateOrder
             $order->setNotes('');
             $order->setTicketNumber($this->ordersRepository->getNextTicketNumber($now));
             $order->setCreatedAt($now);
-            $order->setWaiter($employee);
-            //in the future the employee field will be removed
-            $order->setEmployee(null);
+            $order->setWaiter(null);
+            $order->setEmployee($employee);
             $order->setReservation(null);
             $order->setStatus('CLOSED');
             $order->setPaidAt(new DatetimeImmutable);

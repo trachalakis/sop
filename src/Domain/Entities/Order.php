@@ -26,7 +26,6 @@ class Order
     #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
-    //TODO remove this field
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'employee_id', referencedColumnName: 'id')]
     private ?User $employee;
@@ -60,7 +59,7 @@ class Order
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
-    private User $waiter;
+    private ?User $waiter;
 
     #[ORM\Column(type: 'integer', name: 'ticket_number', nullable: true)]
     private ?int $ticketNumber = null;
@@ -186,7 +185,7 @@ class Order
     	return $this->uuid;
     }
 
-    public function getWaiter(): User
+    public function getWaiter(): ?User
     {
     	return $this->waiter;
     }
@@ -284,7 +283,7 @@ class Order
     	$this->uuid = $uuid;
     }
 
-    public function setWaiter(User $waiter): void
+    public function setWaiter(?User $waiter): void
     {
     	$this->waiter = $waiter;
     }
