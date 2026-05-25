@@ -27,9 +27,9 @@ function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
     const INDENT = 40;
     let y = 0;
 
-    ctx.clearRect(0, 0, W, 1500);
+    ctx.clearRect(0, 0, W, 5000);
     ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, W, 1500);
+    ctx.fillRect(0, 0, W, 5000);
     ctx.fillStyle = 'black';
 
     const centerText = (text, fontSize, bold = false) => {
