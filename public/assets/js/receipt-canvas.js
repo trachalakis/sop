@@ -9,9 +9,11 @@
  *     orderEntryExtras [{name}]
  * @param {{ waiterName?: string, label: string, tableName?: string,
  *           adults?: number, minors?: number, notes: string,
- *           ticketNumber?: number }} header
- *   If ticketNumber is set, renders take-out style header (TAKE AWAY / #N)
- *   instead of the table/adults/minors header.
+ *           ticketNumber?: number, employeeName?: string }} header
+ *   When label is 'TAKE AWAY', renders take-out style header (TAKE AWAY / #N).
+ *   When label is 'ΑΥΤΟΠΑΡΑΔΟΣΗ', renders employee-meal style header
+ *   (ΑΥΤΟΠΑΡΑΔΟΣΗ / employeeName). Otherwise renders the table/adults/minors
+ *   header.
  * @param {{ hasManyFamilies: bool,
  *           getTranslation: (menuItem, langCode) => {name: string},
  *           calculateOrderEntryPrice: (orderEntry) => number,
@@ -67,6 +69,12 @@ function drawReceiptOnCanvas(ctx, printer, entries, header, helpers) {
         centerText(header.label, 44, true);
         y += 8;
         centerText(`#${header.ticketNumber}`, 80, true);
+    } else if (header.label == 'ΑΥΤΟΠΑΡΑΔΟΣΗ') {
+        centerText(hm, 22);
+        y += 8;
+        centerText(header.label, 44, true);
+        y += 8;
+        centerText(header.employeeName, 50, true);
     } else {
         centerText(`${header.waiterName} / ${hm}`, 22);
         y += 8;

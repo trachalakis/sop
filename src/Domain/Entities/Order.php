@@ -26,6 +26,7 @@ class Order
     #[ORM\Column(type: 'datetimetz_immutable', name: 'created_at')]
     private DateTimeImmutable $createdAt;
 
+    //TODO remove this field
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'employee_id', referencedColumnName: 'id')]
     private ?User $employee;
