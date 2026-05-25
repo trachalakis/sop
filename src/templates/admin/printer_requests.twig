@@ -14,13 +14,23 @@
     </li>
     <li class="breadcrumb-item active">Requests</li>
 </ol>
+<div id="app">
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
     <div>
         <h1 class="mb-0">Printer requests</h1>
-        <small class="text-muted">last 5 minutes &middot; updates every second</small>
+        <small class="text-muted">
+            last 5 minutes &middot;
+            <span v-if="paused" class="text-warning fw-bold">paused</span>
+            <span v-else>updates every second</span>
+        </small>
+    </div>
+    <div class="btn-toolbar">
+        <button type="button" class="btn" :class="paused ? 'btn-warning' : 'btn-outline-secondary'" @click="paused = !paused">
+            <i class="bi" :class="paused ? 'bi-play-fill' : 'bi-pause-fill'"></i>
+            {{ paused ? 'Resume' : 'Pause' }}
+        </button>
     </div>
 </div>
-<div id="app">
     <p v-if="entries.length === 0" class="text-muted">No requests in the last 5 minutes.</p>
     <table v-else class="table table-sm table-striped align-middle">
         <thead>
@@ -84,6 +94,7 @@
                     entries: [],
                     expanded: {},
                     inFlight: false,
+                    paused: false,
                 };
             },
             mounted() {
@@ -92,7 +103,7 @@
             },
             methods: {
                 fetchEntries() {
-                    if (this.inFlight) return;
+                    if (this.paused || this.inFlight) return;
                     this.inFlight = true;
                     axios.get('/admin/printers/requests/data')
                         .then(r => { this.entries = r.data; })

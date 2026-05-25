@@ -136,10 +136,10 @@ return function (App $app, $container) {
     $app->map(['GET', 'POST'], '/login', Login::class);
     $app->get('/logout', Logout::class);
 
-    $app->map(['GET', 'POST'], '/printers/sdp', Sdp::class);
-        //->add(\Middleware\PrinterRequestLogger::class);
-    $app->map(['GET', 'POST'], '/printers/status', PrinterStatus::class);
-        //->add(\Middleware\PrinterRequestLogger::class);
+    $app->map(['GET', 'POST'], '/printers/sdp', Sdp::class)
+        ->add(\Middleware\PrinterRequestLogger::class);
+    $app->map(['GET', 'POST'], '/printers/status', PrinterStatus::class)
+        ->add(\Middleware\PrinterRequestLogger::class);
 
     $app->group('/admin', function (RouteCollectorProxy $group) {
         $group->get('/', AdminHomepage::class);
