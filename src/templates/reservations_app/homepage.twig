@@ -572,6 +572,7 @@
                     },
                     formError: null,
                     saving: false,
+                    pollInFlight: false,
                 };
             },
             mounted() {
@@ -588,6 +589,7 @@
                 if (saved) this.durations = JSON.parse(saved);
                 this.offcanvas = new bootstrap.Offcanvas(document.getElementById('reservationOffcanvas'));
                 this.initSip();
+                setInterval(() => this.pollReservations(), 5000);
             },
             computed: {
                 timeSlots() {
@@ -681,6 +683,17 @@
                         slots.push(`${String(h).padStart(2, '0')}:30`);
                     }
                     return slots;
+                },
+                pollReservations() {
+                    if (this.formMode || this.pollInFlight) return;
+                    this.pollInFlight = true;
+                    axios.get(`/reservations-app/data?date=${DATE_STR}`)
+                        .then(r => {
+                            this.reservations = r.data;
+                            this.cells = this.initCells();
+                        })
+                        .catch(() => {})
+                        .finally(() => { this.pollInFlight = false; });
                 },
                 initCells() {
                     const cells = {};

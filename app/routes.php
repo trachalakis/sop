@@ -110,6 +110,7 @@ use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
 use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
 use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
+use Application\Actions\ReservationsApp\ReservationsData;
 use Application\Actions\ReservationsApp\CreateReservation;
 use Application\Actions\ReservationsApp\UpdateReservation;
 use Application\Actions\ReservationsApp\AssignReservationTables;
@@ -278,6 +279,7 @@ return function (App $app, $container) {
 
     $app->group('/reservations-app', function (RouteCollectorProxy $group) {
         $group->get('/', ReservationsAppHomepage::class);
+        $group->get('/data', ReservationsData::class);
         $group->map(['GET', 'POST'], '/create', CreateReservation::class);
         $group->map(['GET', 'POST'], '/update', UpdateReservation::class);
         $group->post('/assign-tables', AssignReservationTables::class);
