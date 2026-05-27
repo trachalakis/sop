@@ -91,6 +91,7 @@ use Application\Actions\Admin\UserScans;
 use Application\Actions\Admin\UserOrders;
 use Application\Actions\Admin\ViewOrder;
 use Application\Actions\Admin\ScanInvoice;
+use Application\Actions\Admin\ScanInvoiceQr;
 use Application\Actions\Admin\ReviewInvoice;
 use Application\Actions\Admin\ConfirmInvoice;
 use Application\Actions\Admin\Invoices;
@@ -225,6 +226,7 @@ return function (App $app, $container) {
 
         $group->get('/invoices', Invoices::class);
         $group->map(['GET', 'POST'], '/invoices/scan', ScanInvoice::class);
+        $group->map(['GET', 'POST'], '/invoices/scan-qr', ScanInvoiceQr::class);
         $group->get('/invoices/review', ReviewInvoice::class);
         $group->post('/invoices/confirm', ConfirmInvoice::class);
         $group->get('/invoices/view', ViewInvoice::class);

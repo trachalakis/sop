@@ -29,6 +29,24 @@ class Invoice
     #[ORM\Column(name: 'invoice_number', type: 'string', length: 100, nullable: true)]
     private ?string $invoiceNumber = null;
 
+    #[ORM\Column(name: 'series', type: 'string', length: 50, nullable: true)]
+    private ?string $series = null;
+
+    #[ORM\Column(name: 'document_type', type: 'string', length: 100, nullable: true)]
+    private ?string $documentType = null;
+
+    #[ORM\Column(name: 'mark', type: 'string', length: 50, nullable: true, unique: true)]
+    private ?string $mark = null;
+
+    #[ORM\Column(name: 'net_total', type: 'float', nullable: true)]
+    private ?float $netTotal = null;
+
+    #[ORM\Column(name: 'vat_total', type: 'float', nullable: true)]
+    private ?float $vatTotal = null;
+
+    #[ORM\Column(name: 'gross_total', type: 'float', nullable: true)]
+    private ?float $grossTotal = null;
+
     #[ORM\Column(name: 'scanned_at', type: 'datetimetz')]
     private DateTimeInterface $scannedAt;
 
@@ -56,14 +74,44 @@ class Invoice
         return $this->date; 
     }
     
-    public function getInvoiceNumber(): ?string 
-    { 
-        return $this->invoiceNumber; 
+    public function getInvoiceNumber(): ?string
+    {
+        return $this->invoiceNumber;
     }
-    
-    public function getScannedAt(): DateTimeInterface 
-    { 
-        return $this->scannedAt; 
+
+    public function getSeries(): ?string
+    {
+        return $this->series;
+    }
+
+    public function getDocumentType(): ?string
+    {
+        return $this->documentType;
+    }
+
+    public function getMark(): ?string
+    {
+        return $this->mark;
+    }
+
+    public function getNetTotal(): ?float
+    {
+        return $this->netTotal;
+    }
+
+    public function getVatTotal(): ?float
+    {
+        return $this->vatTotal;
+    }
+
+    public function getGrossTotal(): ?float
+    {
+        return $this->grossTotal;
+    }
+
+    public function getScannedAt(): DateTimeInterface
+    {
+        return $this->scannedAt;
     }
     
     public function getEntries(): Collection 
@@ -81,14 +129,44 @@ class Invoice
         $this->date = $date; 
     }
     
-    public function setInvoiceNumber(?string $invoiceNumber): void 
-    { 
-        $this->invoiceNumber = $invoiceNumber; 
+    public function setInvoiceNumber(?string $invoiceNumber): void
+    {
+        $this->invoiceNumber = $invoiceNumber;
     }
-    
-    public function setScannedAt(DateTimeInterface $scannedAt): void 
-    { 
-        $this->scannedAt = $scannedAt; 
+
+    public function setSeries(?string $series): void
+    {
+        $this->series = $series;
+    }
+
+    public function setDocumentType(?string $documentType): void
+    {
+        $this->documentType = $documentType;
+    }
+
+    public function setMark(?string $mark): void
+    {
+        $this->mark = $mark;
+    }
+
+    public function setNetTotal(?float $netTotal): void
+    {
+        $this->netTotal = $netTotal;
+    }
+
+    public function setVatTotal(?float $vatTotal): void
+    {
+        $this->vatTotal = $vatTotal;
+    }
+
+    public function setGrossTotal(?float $grossTotal): void
+    {
+        $this->grossTotal = $grossTotal;
+    }
+
+    public function setScannedAt(DateTimeInterface $scannedAt): void
+    {
+        $this->scannedAt = $scannedAt;
     }
 
     public function addEntry(InvoiceEntry $entry): void

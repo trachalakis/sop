@@ -1,0 +1,174 @@
+{% extends 'admin/skeleton.twig' %}
+
+{% set activeNavLink = 'invoices' %}
+
+{% block pageCss %}
+    {{ parent() }}
+    <style>
+        #qr-video {
+            width: 100%;
+            max-width: 480px;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #000;
+            border-radius: .5rem;
+        }
+        #qr-overlay {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+        }
+        #qr-overlay::after {
+            content: '';
+            position: absolute;
+            inset: 12%;
+            border: 3px solid rgba(255,255,255,.7);
+            border-radius: .5rem;
+            pointer-events: none;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<ol class="breadcrumb pt-3">
+    <li class="breadcrumb-item">
+        <a href="/admin/" class="text-decoration-none"><i class="bi bi-house"></i></a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="/admin/invoices" class="text-decoration-none">Τιμολόγια</a>
+    </li>
+    <li class="breadcrumb-item active">Σάρωση QR</li>
+</ol>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-1 mb-3 border-bottom">
+    <h1 class="h2">{{'Σάρωση QR τιμολογίου'|_}}</h1>
+</div>
+
+<p class="text-muted">
+    {{'Σάρωση του QR code του τιμολογίου. Τα δεδομένα ανακτώνται απευθείας από τη myDATA της ΑΑΔΕ.'|_}}
+</p>
+
+{% if error is defined %}
+    <div class="alert alert-danger">{{error}}</div>
+{% endif %}
+
+<form method="post" id="qr-form" style="max-width:520px">
+    <div id="qr-overlay" class="mb-3 mx-auto">
+        <video id="qr-video" autoplay muted playsinline></video>
+    </div>
+
+    <div class="d-grid gap-2 mb-3">
+        <button type="button" id="qr-start" class="btn btn-primary btn-lg">
+            <i class="bi bi-camera me-1"></i> {{'Έναρξη σάρωσης'|_}}
+        </button>
+        <button type="button" id="qr-stop" class="btn btn-outline-secondary d-none">
+            {{'Παύση'|_}}
+        </button>
+    </div>
+
+    <div id="qr-status" class="text-muted small mb-3"></div>
+
+    <hr>
+
+    <div class="mb-3">
+        <label class="form-label fw-semibold">{{'ή επικόλληση URL'|_}}</label>
+        <div class="input-group">
+            <input
+                type="url"
+                name="url"
+                id="qr-url"
+                class="form-control"
+                placeholder="https://..."
+                value="{{ url|default('') }}"
+            >
+            <button type="submit" class="btn btn-primary" id="qr-submit">
+                {{'Ανάκτηση'|_}}
+            </button>
+        </div>
+        <div class="form-text">
+            {{'Είτε επικολλήστε το URL του QR απευθείας, είτε σαρώστε με την κάμερα.'|_}}
+        </div>
+    </div>
+</form>
+
+<div id="qr-loading" class="mt-4 text-center d-none" style="max-width:520px">
+    <div class="spinner-border text-primary mb-3" role="status" style="width:3rem;height:3rem"></div>
+    <p class="text-muted">{{'Ανάκτηση δεδομένων από myDATA…'|_}}</p>
+</div>
+{% endblock %}
+
+{% block javascript %}{{ parent() }}
+<script>
+(function () {
+    const form     = document.getElementById('qr-form');
+    const startBtn = document.getElementById('qr-start');
+    const stopBtn  = document.getElementById('qr-stop');
+    const video    = document.getElementById('qr-video');
+    const status   = document.getElementById('qr-status');
+    const urlInput = document.getElementById('qr-url');
+    const loading  = document.getElementById('qr-loading');
+
+    let stream = null;
+    let detector = null;
+    let scanTimer = null;
+
+    if (!('BarcodeDetector' in window)) {
+        startBtn.disabled = true;
+        startBtn.innerHTML = '<i class="bi bi-camera-video-off me-1"></i> Σάρωση μη διαθέσιμη σε αυτό το browser';
+        status.textContent = 'Το browser σας δεν υποστηρίζει σάρωση QR. Επικολλήστε το URL παρακάτω.';
+    }
+
+    function submitWithUrl(url) {
+        urlInput.value = url;
+        form.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        loading.classList.remove('d-none');
+        form.submit();
+    }
+
+    async function start() {
+        try {
+            detector = new BarcodeDetector({ formats: ['qr_code'] });
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' },
+                audio: false,
+            });
+            video.srcObject = stream;
+            await video.play();
+            startBtn.classList.add('d-none');
+            stopBtn.classList.remove('d-none');
+            status.textContent = 'Στόχευση QR…';
+
+            scanTimer = setInterval(async () => {
+                try {
+                    const codes = await detector.detect(video);
+                    if (codes.length > 0) {
+                        const raw = codes[0].rawValue || '';
+                        if (/^https?:\/\//i.test(raw)) {
+                            stop();
+                            submitWithUrl(raw);
+                        }
+                    }
+                } catch (e) { /* ignore transient errors */ }
+            }, 400);
+        } catch (e) {
+            status.textContent = 'Δεν ήταν δυνατή η ενεργοποίηση της κάμερας: ' + e.message;
+        }
+    }
+
+    function stop() {
+        if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
+        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        startBtn.classList.remove('d-none');
+        stopBtn.classList.add('d-none');
+    }
+
+    startBtn.addEventListener('click', start);
+    stopBtn.addEventListener('click', stop);
+
+    form.addEventListener('submit', () => {
+        loading.classList.remove('d-none');
+        form.querySelectorAll('button').forEach(el => el.disabled = true);
+    });
+}());
+</script>
+{% endblock %}

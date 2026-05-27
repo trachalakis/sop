@@ -19,6 +19,9 @@ class Supplier
     #[ORM\Column(name: 'name', type: 'string', unique: true)]
     private string $name;
 
+    #[ORM\Column(name: 'afm', type: 'string', length: 20, nullable: true, unique: true)]
+    private ?string $afm = null;
+
     #[ORM\Column(name: 'telephone_number', type: 'string', nullable: true)]
     private ?string $telephone = null;
 
@@ -58,5 +61,15 @@ class Supplier
     public function setDetails(?array $details): void
     {
         $this->details = $details;
+    }
+
+    public function getAfm(): ?string
+    {
+        return $this->afm;
+    }
+
+    public function setAfm(?string $afm): void
+    {
+        $this->afm = $afm;
     }
 }
