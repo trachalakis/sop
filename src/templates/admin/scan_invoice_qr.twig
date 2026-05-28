@@ -125,7 +125,9 @@
 
     function submitWithUrl(url) {
         urlInput.value = url;
-        form.querySelectorAll('button, input').forEach(el => el.disabled = true);
+        // Only disable buttons — disabling the URL input would strip it from
+        // the form submission (disabled controls aren't submitted).
+        form.querySelectorAll('button').forEach(el => el.disabled = true);
         loading.classList.remove('d-none');
         form.submit();
     }
