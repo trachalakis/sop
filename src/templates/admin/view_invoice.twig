@@ -54,8 +54,9 @@
         {% set totalVat = 0 %}
         {% for entry in invoice.getEntries %}
         {% set linePrice = entry.getEffectiveUnitPrice is not null ? entry.getEffectiveUnitPrice : entry.getUnitPrice %}
-        {% set lineNet = linePrice * entry.getQuantity %}
-        {% set lineVat = lineNet * (entry.getExtras.vat_rate ?? 0) / 100 %}
+        {% set lineNet = entry.getExtras.line_total ?? (linePrice * entry.getQuantity) %}
+        {% set vatRate = entry.getVatRate ?? entry.getExtras.vat_rate ?? 0 %}
+        {% set lineVat = entry.getVatAmount ?? (lineNet * vatRate / 100) %}
         {% set totalNet = totalNet + lineNet %}
         {% set totalVat = totalVat + lineVat %}
         <tr>
