@@ -18,10 +18,8 @@ final class PrinterStatus
 	public function __invoke(Request $request, Response $response, $args)
 	{
 		$requestParams = $request->getParsedBody();
-		
-        //$this->logger->debug('STATUS: ' . $request->getBody());
 
-        if ($requestParams['ConnectionType'] == 'SetStatus') {
+        if (isset($requestParams['ConnectionType']) && $requestParams['ConnectionType'] == 'SetStatus') {
             
             $xml = simplexml_load_string($requestParams['Status']);
             
