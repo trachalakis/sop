@@ -98,7 +98,7 @@
 {% endblock %}
 
 {% block javascript %}{{ parent() }}
-<script src="/assets/js/jsQR.js"></script>
+<script src="/assets/js/zxing.min.js"></script>
 <script>
 (function () {
     const form     = document.getElementById('qr-form');
@@ -109,18 +109,14 @@
     const urlInput = document.getElementById('qr-url');
     const loading  = document.getElementById('qr-loading');
 
-    const hasNative = 'BarcodeDetector' in window;
-    const hasJsQR   = typeof jsQR === 'function';
+    const hasZxing = typeof ZXing !== 'undefined' && ZXing.BrowserQRCodeReader;
 
-    let stream = null;
-    let detector = null;
-    let scanTimer = null;
-    let scratch = null;  // offscreen canvas for the jsQR path
+    let controls = null;  // ZXing scanner controls handle
 
-    if (!hasNative && !hasJsQR) {
+    if (!hasZxing) {
         startBtn.disabled = true;
         startBtn.innerHTML = '<i class="bi bi-camera-video-off me-1"></i> Σάρωση μη διαθέσιμη';
-        status.textContent = 'Δεν φορτώθηκε η βιβλιοθήκη jsQR. Επικολλήστε το URL παρακάτω.';
+        status.textContent = 'Δεν φορτώθηκε η βιβλιοθήκη ZXing. Επικολλήστε το URL παρακάτω.';
     }
 
     function submitWithUrl(url) {
@@ -132,54 +128,38 @@
         form.submit();
     }
 
-    async function detectOnce() {
-        if (hasNative) {
-            const codes = await detector.detect(video);
-            return codes.length > 0 ? (codes[0].rawValue || '') : null;
-        }
-        if (!video.videoWidth) return null;
-        if (!scratch) scratch = document.createElement('canvas');
-        scratch.width  = video.videoWidth;
-        scratch.height = video.videoHeight;
-        const ctx = scratch.getContext('2d', { willReadFrequently: true });
-        ctx.drawImage(video, 0, 0, scratch.width, scratch.height);
-        const img = ctx.getImageData(0, 0, scratch.width, scratch.height);
-        const result = jsQR(img.data, img.width, img.height, { inversionAttempts: 'dontInvert' });
-        return result ? result.data : null;
-    }
-
     async function start() {
         try {
-            if (hasNative) {
-                detector = new BarcodeDetector({ formats: ['qr_code'] });
-            }
-            stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: 'environment' },
-                audio: false,
-            });
-            video.srcObject = stream;
-            await video.play();
+            const reader = new ZXing.BrowserQRCodeReader();
             startBtn.classList.add('d-none');
             stopBtn.classList.remove('d-none');
             status.textContent = 'Στόχευση QR…';
 
-            scanTimer = setInterval(async () => {
-                try {
-                    const raw = await detectOnce();
-                    if (raw && /^https?:\/\//i.test(raw)) {
-                        stop();
-                        submitWithUrl(raw);
+            controls = await reader.decodeFromConstraints(
+                { video: { facingMode: 'environment' }, audio: false },
+                video,
+                (result, err) => {
+                    // ZXing fires this every frame; `err` is a NotFoundException
+                    // when no code is visible — that's expected and ignored.
+                    if (result) {
+                        const text = result.getText();
+                        if (/^https?:\/\//i.test(text)) {
+                            stop();
+                            submitWithUrl(text);
+                        }
                     }
-                } catch (e) { /* ignore transient decode errors */ }
-            }, hasNative ? 400 : 200);
+                }
+            );
         } catch (e) {
             status.textContent = 'Δεν ήταν δυνατή η ενεργοποίηση της κάμερας: ' + e.message;
         }
     }
 
     function stop() {
-        if (scanTimer) { clearInterval(scanTimer); scanTimer = null; }
-        if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        if (controls) {
+            try { controls.stop(); } catch (e) { /* ignore */ }
+            controls = null;
+        }
         startBtn.classList.remove('d-none');
         stopBtn.classList.add('d-none');
     }
