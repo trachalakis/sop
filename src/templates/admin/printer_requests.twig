@@ -2,6 +2,22 @@
 
 {% set activeNavLink = 'printers' %}
 
+{% block pageCss %}
+    {{ parent() }}
+    <style>
+        .body-pre {
+            max-height: 400px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: .25rem;
+        }
+        .body-pre.xml {
+            word-break: normal;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}{% verbatim %}
 <ol class="breadcrumb pt-3">
     <li class="breadcrumb-item">
@@ -65,14 +81,39 @@
                 </tr>
                 <tr v-if="expanded[entry.ts]">
                     <td colspan="8">
+                        <div class="d-flex justify-content-end mb-2">
+                            <button class="btn btn-sm btn-outline-secondary" @click.stop="rawView[entry.ts] = !rawView[entry.ts]">
+                                {{ rawView[entry.ts] ? 'Show formatted' : 'Show raw' }}
+                            </button>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <h6 class="text-muted">Request body</h6>
-                                <pre class="bg-light p-2 small" style="max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-all">{{ entry.request_body || '(empty)' }}</pre>
+                                <template v-if="rawView[entry.ts]">
+                                    <pre class="bg-light p-2 small body-pre">{{ entry.request_body || '(empty)' }}</pre>
+                                </template>
+                                <template v-else>
+                                    <div v-for="(block, idx) in renderBody(entry.request_body)" :key="idx">
+                                        <div v-if="block.label" class="small fw-semibold mt-2">{{ block.label }}</div>
+                                        <pre v-if="block.kind === 'xml'" class="bg-light p-2 small body-pre xml">{{ block.text }}</pre>
+                                        <pre v-else-if="block.kind === 'text'" class="bg-light p-2 small body-pre">{{ block.text }}</pre>
+                                        <div v-else class="text-muted small ps-2">(empty)</div>
+                                    </div>
+                                </template>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-muted">Response body</h6>
-                                <pre class="bg-light p-2 small" style="max-height: 400px; overflow: auto; white-space: pre-wrap; word-break: break-all">{{ entry.response_body || '(empty)' }}</pre>
+                                <template v-if="rawView[entry.ts]">
+                                    <pre class="bg-light p-2 small body-pre">{{ entry.response_body || '(empty)' }}</pre>
+                                </template>
+                                <template v-else>
+                                    <div v-for="(block, idx) in renderBody(entry.response_body)" :key="idx">
+                                        <div v-if="block.label" class="small fw-semibold mt-2">{{ block.label }}</div>
+                                        <pre v-if="block.kind === 'xml'" class="bg-light p-2 small body-pre xml">{{ block.text }}</pre>
+                                        <pre v-else-if="block.kind === 'text'" class="bg-light p-2 small body-pre">{{ block.text }}</pre>
+                                        <div v-else class="text-muted small ps-2">(empty)</div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     </td>
@@ -88,11 +129,100 @@
     <script src="/assets/js/vue.global.prod.js"></script>
     <script src="/assets/js/axios.min.js"></script>
     <script>
+        // Closure-scoped memo so render-time prettification doesn't redo work
+        // each frame (Vue re-renders the row on every poll tick).
+        const renderCache = new Map();
+
+        function looksLikeXml(s) {
+            const t = s.trimStart();
+            return t.startsWith('<?xml') || /^<[A-Za-z!]/.test(t);
+        }
+
+        function looksLikeForm(s) {
+            // Heuristic: contains "key=value" pairs, no XML tags at the start.
+            if (s.startsWith('<')) return false;
+            if (!/[A-Za-z0-9_.\-%]+=/.test(s)) return false;
+            return s.includes('=');
+        }
+
+        function prettyXml(xml) {
+            try {
+                const doc = new DOMParser().parseFromString(xml, 'application/xml');
+                if (doc.querySelector('parsererror')) return xml;
+                const ser = new XMLSerializer().serializeToString(doc);
+                return formatXmlString(ser);
+            } catch (e) {
+                return xml;
+            }
+        }
+
+        function formatXmlString(xml) {
+            const tokens = xml.replace(/>\s+</g, '><').split(/(<[^>]+>)/g).filter(t => t);
+            let indent = 0;
+            const lines = [];
+            for (let i = 0; i < tokens.length; i++) {
+                const tok = tokens[i];
+                const isEndTag    = /^<\/[^>]+>$/.test(tok);
+                const isSelfClose = /\/>$/.test(tok);
+                const isStartTag  = /^<[^/!?][^>]*>$/.test(tok) && !isSelfClose;
+
+                // Collapse <X>text</X> (leaf with only text content) onto one line.
+                if (isStartTag && i + 2 < tokens.length) {
+                    const next  = tokens[i + 1];
+                    const after = tokens[i + 2];
+                    if (!/^<[^>]+>$/.test(next) && /^<\/[^>]+>$/.test(after)) {
+                        lines.push('  '.repeat(indent) + tok + next + after);
+                        i += 2;
+                        continue;
+                    }
+                }
+
+                if (isEndTag) indent = Math.max(0, indent - 1);
+                lines.push('  '.repeat(indent) + tok);
+                if (isStartTag) indent++;
+            }
+            return lines.join('\n');
+        }
+
+        function decodeFormValue(v) {
+            try { return decodeURIComponent(v.replace(/\+/g, ' ')); }
+            catch (e) { return v; }
+        }
+
+        function parseBody(body) {
+            if (!body) return [{ kind: 'empty' }];
+            const trimmed = body.trim();
+
+            if (looksLikeXml(trimmed)) {
+                return [{ kind: 'xml', text: prettyXml(trimmed) }];
+            }
+
+            if (looksLikeForm(trimmed)) {
+                const blocks = [];
+                for (const part of trimmed.split('&')) {
+                    const eq = part.indexOf('=');
+                    const name = eq < 0 ? decodeFormValue(part) : decodeFormValue(part.slice(0, eq));
+                    const rawVal = eq < 0 ? '' : decodeFormValue(part.slice(eq + 1));
+                    if (looksLikeXml(rawVal)) {
+                        blocks.push({ label: name, kind: 'xml', text: prettyXml(rawVal) });
+                    } else if (rawVal === '') {
+                        blocks.push({ label: name, kind: 'empty' });
+                    } else {
+                        blocks.push({ label: name, kind: 'text', text: rawVal });
+                    }
+                }
+                return blocks;
+            }
+
+            return [{ kind: 'text', text: trimmed }];
+        }
+
         Vue.createApp({
             data() {
                 return {
                     entries: [],
                     expanded: {},
+                    rawView: {},
                     inFlight: false,
                     paused: false,
                 };
@@ -117,6 +247,18 @@
                     const pad = n => String(n).padStart(2, '0');
                     const ms = String(Math.floor((ts % 1) * 1000)).padStart(3, '0');
                     return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}.${ms}`;
+                },
+                renderBody(body) {
+                    const key = body || '';
+                    if (renderCache.has(key)) return renderCache.get(key);
+                    const out = parseBody(body || '');
+                    renderCache.set(key, out);
+                    // Cap the cache so a long-running tab doesn't grow without bound.
+                    if (renderCache.size > 1000) {
+                        const firstKey = renderCache.keys().next().value;
+                        renderCache.delete(firstKey);
+                    }
+                    return out;
                 },
             },
         }).mount('#app');
