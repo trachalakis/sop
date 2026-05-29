@@ -28,7 +28,8 @@ final class AadeInvoiceFetcherService
             throw new RuntimeException('Invalid URL');
         }
 
-        $html = $this->httpGet($url);
+        $html    = $this->httpGet($url);
+        $aadeUrl = $this->isAadeUrl($url) ? $url : null;
 
         // The QR may point at AADE directly, at a provider that redirects to
         // AADE (curl follows the redirect), or at a provider that renders a
@@ -48,7 +49,15 @@ final class AadeInvoiceFetcherService
             }
         }
 
-        return $this->parse($html);
+        $parsed = $this->parse($html);
+        $parsed['mydata_url'] = $aadeUrl;
+        return $parsed;
+    }
+
+    private function isAadeUrl(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST) ?? '';
+        return str_ends_with($host, self::AADE_HOST);
     }
 
     private function looksLikeAadePage(string $html): bool

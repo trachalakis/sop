@@ -71,6 +71,7 @@ final class ScanInvoiceQr
                 'gross_total'      => $parsed['gross_total'] ?? null,
                 'entries'          => $parsed['entries'] ?? [],
                 'mark'             => $parsed['mark'] ?? null,
+                'mydata_url'       => $parsed['mydata_url'] ?? null,
             ];
 
             return $response->withHeader('Location', '/admin/invoices/review')->withStatus(302);

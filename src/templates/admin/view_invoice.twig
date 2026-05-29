@@ -14,12 +14,28 @@
 </ol>
 
 <div class="pb-1 mb-3 border-bottom">
-    <h1 class="h2">{{invoice.getSupplier.getName}}</h1>
-    <p class="text-muted mb-0">
-        {{invoice.getDate.format('d/m/Y')}}
-        {% if invoice.getInvoiceNumber %}· {{invoice.getInvoiceNumber}}{% endif %}
-        · {{'Σαρώθηκε'|_}} {{invoice.getScannedAt.format('d/m/Y H:i')}}
-    </p>
+    <div class="d-flex justify-content-between align-items-start flex-wrap">
+        <div>
+            <h1 class="h2 mb-0">{{invoice.getSupplier.getName}}</h1>
+            <p class="text-muted mb-0">
+                {{invoice.getDate.format('d/m/Y')}}
+                {% if invoice.getInvoiceNumber %}· {{invoice.getInvoiceNumber}}{% endif %}
+                · {{'Σαρώθηκε'|_}} {{invoice.getScannedAt.format('d/m/Y H:i')}}
+            </p>
+        </div>
+        {% if invoice.getMydataUrl %}
+            <a
+                href="{{invoice.getMydataUrl}}"
+                target="_blank"
+                rel="noopener"
+                class="btn btn-outline-primary btn-sm"
+                title="{{'Επαλήθευση στη myDATA'|_}}"
+            >
+                <i class="bi bi-shield-check me-1"></i>
+                {{'myDATA'|_}}
+            </a>
+        {% endif %}
+    </div>
 </div>
 
 <table class="table">

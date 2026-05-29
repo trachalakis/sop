@@ -81,6 +81,7 @@ final class ConfirmInvoice
         $invoice->setNetTotal(isset($scan['net_total']) ? (float) $scan['net_total'] : null);
         $invoice->setVatTotal(isset($scan['vat_total']) ? (float) $scan['vat_total'] : null);
         $invoice->setGrossTotal(isset($scan['gross_total']) ? (float) $scan['gross_total'] : null);
+        $invoice->setMydataUrl(!empty($scan['mydata_url']) ? $scan['mydata_url'] : null);
         // scannedAt is auto-set to now() in Invoice::__construct()
 
         // Index scan entries by description so we can recover line metadata

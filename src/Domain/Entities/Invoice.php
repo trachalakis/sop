@@ -47,6 +47,9 @@ class Invoice
     #[ORM\Column(name: 'gross_total', type: 'float', nullable: true)]
     private ?float $grossTotal = null;
 
+    #[ORM\Column(name: 'mydata_url', type: 'text', nullable: true)]
+    private ?string $mydataUrl = null;
+
     #[ORM\Column(name: 'scanned_at', type: 'datetimetz')]
     private DateTimeInterface $scannedAt;
 
@@ -109,6 +112,11 @@ class Invoice
         return $this->grossTotal;
     }
 
+    public function getMydataUrl(): ?string
+    {
+        return $this->mydataUrl;
+    }
+
     public function getScannedAt(): DateTimeInterface
     {
         return $this->scannedAt;
@@ -162,6 +170,11 @@ class Invoice
     public function setGrossTotal(?float $grossTotal): void
     {
         $this->grossTotal = $grossTotal;
+    }
+
+    public function setMydataUrl(?string $mydataUrl): void
+    {
+        $this->mydataUrl = $mydataUrl;
     }
 
     public function setScannedAt(DateTimeInterface $scannedAt): void
