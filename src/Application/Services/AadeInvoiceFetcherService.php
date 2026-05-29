@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Application\Services;
 
+use Application\Services\InvoiceProviders\EpsilonNetInvoiceProvider;
+use Application\Services\InvoiceProviders\GenericInvoiceProvider;
+use Application\Services\InvoiceProviders\ImpactInvoiceProvider;
+use Application\Services\InvoiceProviders\InvoiceProvider;
 use DOMDocument;
 use DOMXPath;
 use RuntimeException;
@@ -21,11 +25,39 @@ final class AadeInvoiceFetcherService
 {
     private const AADE_HOST = 'mydatapi.aade.gr';
 
+    /** @var InvoiceProvider[] Walked in order; the generic fallback MUST be last. */
+    private array $providers;
+
+    public function __construct()
+    {
+        $this->providers = [
+            new ImpactInvoiceProvider(),
+            new EpsilonNetInvoiceProvider(),
+            new GenericInvoiceProvider(),
+        ];
+    }
+
     public function fetch(string $url): array
     {
         $url = trim($url);
         if (!preg_match('~^https?://~i', $url)) {
             throw new RuntimeException('Invalid URL');
+        }
+
+        // Fast path: a provider that has its own structured data source can
+        // produce the parsed invoice without us even fetching the URL.
+        foreach ($this->providers as $provider) {
+            if (!$provider->supports($url)) {
+                continue;
+            }
+            $direct = $provider->parseDirectly($url);
+            if ($direct !== null) {
+                return $direct;
+            }
+            // First supporting provider gets a shot at parseDirectly only;
+            // its extractAadeUrl chance comes during the HTML walk below
+            // (so it's not skipped when parseDirectly returns null).
+            break;
         }
 
         $html    = $this->httpGet($url);
@@ -36,11 +68,23 @@ final class AadeInvoiceFetcherService
         // landing page with a link to AADE. Detect the AADE page by content
         // rather than URL so all three cases collapse to one branch.
         if (!$this->looksLikeAadePage($html)) {
-            $aadeUrl = $this->extractAadeUrl($html);
+            $providerTried = null;
+            foreach ($this->providers as $provider) {
+                if (!$provider->supports($url)) {
+                    continue;
+                }
+                $providerTried = $provider->name();
+                $extracted = $provider->extractAadeUrl($html);
+                if ($extracted !== null) {
+                    $aadeUrl = $extracted;
+                    break;
+                }
+            }
             if ($aadeUrl === null) {
                 throw new RuntimeException(
-                    'This QR points at a provider page we cannot read. '
-                    . 'If the invoice has a second QR labelled "myDATA", scan that one instead.'
+                    'Could not locate AADE link in this provider page'
+                    . ($providerTried !== null ? " ({$providerTried})" : '')
+                    . '. If the invoice has a second QR labelled "myDATA", scan that one instead.'
                 );
             }
             $html = $this->httpGet($aadeUrl);
@@ -65,16 +109,6 @@ final class AadeInvoiceFetcherService
         return str_contains($html, "id='tableDiakinisis'")
             || str_contains($html, 'id="tableDiakinisis"')
             || (str_contains($html, 'id="bname"') && str_contains($html, 'id="vatnumber"'));
-    }
-
-    private function extractAadeUrl(string $html): ?string
-    {
-        // Look for any AADE TimologioQR URL anywhere in the page (href, JS
-        // string, data attribute, etc.) — providers embed it differently.
-        if (preg_match('~https?://[^\s"\'<>]*mydatapi\.aade\.gr/myDATA/TimologioQR/QRInfo\?q=[^\s"\'<>]+~i', $html, $m)) {
-            return html_entity_decode($m[0], ENT_QUOTES | ENT_HTML5);
-        }
-        return null;
     }
 
     private function httpGet(string $url): string
