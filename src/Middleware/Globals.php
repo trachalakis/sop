@@ -22,7 +22,7 @@ final class Globals implements MiddlewareInterface
     {
         $this->twig->offsetSet('siteName', $this->settings->get('siteName'));
         $this->twig->offsetSet('appMode', $this->settings->get('appMode'));
-        $this->twig->offsetSet('currentUser', $_SESSION['user']);
+        $this->twig->offsetSet('currentUser', $_SESSION['user'] ?? null);
         
         $response = $handler->handle($request);
         return $response;
