@@ -203,6 +203,7 @@
                                 :key="cell.slot"
                                 class="grid-cell"
                                 :colspan="cell.colspan > 1 ? cell.colspan : null"
+                                :data-reservation-id="cell.reservation ? cell.reservation.id : null"
                                 :style="cellStyle(row.table.id, cell.slot)"
                                 @click="clickCell(row.table.id, cell.slot)"
                             >
@@ -754,6 +755,23 @@
                 selectReservation(reservation) {
                     this.selectedReservationId =
                         this.selectedReservationId === reservation.id ? null : reservation.id;
+
+                    // If the user just selected (not deselected) a placed
+                    // reservation, scroll the grid so its cell is visible.
+                    if (this.selectedReservationId && this.isPlaced(reservation.id)) {
+                        this.$nextTick(() => {
+                            const cell = document.querySelector(
+                                `.grid-cell[data-reservation-id="${reservation.id}"]`
+                            );
+                            if (cell) {
+                                cell.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'nearest',
+                                    inline: 'center',
+                                });
+                            }
+                        });
+                    }
                 },
                 saveAssignment(reservationId) {
                     const tableNames = Object.entries(this.cells)
