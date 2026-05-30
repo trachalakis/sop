@@ -232,6 +232,12 @@
                     <td>
                         <a class="text-decoration-none" href="/admin/orders/update?id={{order.getId}}" target="_blank">
                             #{{order.getId}}
+                            {% if order.hasCancelledEntries %}
+                                <i class="fa-solid fa-trash-can"></i>
+                            {% endif %}
+                            {% if order.hasDiscountedEntries %}
+                                <i class="fa-solid fa-percent"></i>
+                            {% endif %}
                         </a>
                     </td>
                     <td>{{order.getEmployee.getFullName}}</td>
