@@ -136,20 +136,28 @@
 	</div>
 </div>
 <hr/>
-<div class="row">
-    {% for i,v in menuSections %}
-	    <div class="col-sm-3 mb-3">
-	    	<h5>{{v.menuSection.getTranslation('el').getName }} / {{v.count}} / <span class="sales">{{v.sales }}&euro;</span></h5>
-	    	{% for j,k in v.menuItems %}
-                {% if k.menuItem.isPricePerKg %}
-                    <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / {{k.weight / 1000}}Kg / <span class="sales">{{k.sales}}&euro;</span></p>
-                {% else %}
-                    <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / <span class="sales">{{k.sales}}&euro;</span></p>
-                {% endif %}
+{% for menuGroup in menuBreakdown %}
+    <div class="menu-breakdown mb-4">
+        <h3 class="border-bottom border-2 pb-2 mb-3">
+            {{ menuGroup.menu.getName }}
+            <span class="text-muted fs-5">/ {{ menuGroup.count }} / <span class="sales">{{ menuGroup.sales }}&euro;</span></span>
+        </h3>
+        <div class="row">
+            {% for v in menuGroup.sections %}
+                <div class="col-sm-3 mb-3">
+                    <h5>{{v.menuSection.getTranslation('el').getName }} / {{v.count}} / <span class="sales">{{v.sales }}&euro;</span></h5>
+                    {% for k in v.menuItems %}
+                        {% if k.menuItem.isPricePerKg %}
+                            <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / {{k.weight / 1000}}Kg / <span class="sales">{{k.sales}}&euro;</span></p>
+                        {% else %}
+                            <p class="mb-1">{{k.menuItem.getTranslation('el').getName}} / {{k.count}} / <span class="sales">{{k.sales}}&euro;</span></p>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% endfor %}
-	    </div>
-	{% endfor %}
-</div>
+        </div>
+    </div>
+{% endfor %}
 <hr/>
 {% if end.diff(start).days <= 2 %}
     <table class="table table-responsive table-striped">

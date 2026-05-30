@@ -98,6 +98,24 @@ final class Report
         $servedDrinks   = $report['servedDrinks'];
         $servedMenuItems = $servedPlates + $servedDrinks;
 
+        // Group the section breakdown by the menu each section belongs to so
+        // the template can render one block per menu instead of a flat list.
+        $menuBreakdown = [];
+        foreach ($menuSections as $section) {
+            $menu      = $section['menuSection']->getMenu();
+            $menuId    = $menu->getId();
+            $menuBreakdown[$menuId] ??= [
+                'menu'     => $menu,
+                'sections' => [],
+                'count'    => 0,
+                'sales'    => 0.0,
+            ];
+            $menuBreakdown[$menuId]['sections'][] = $section;
+            $menuBreakdown[$menuId]['count']     += $section['count'];
+            $menuBreakdown[$menuId]['sales']     += $section['sales'];
+        }
+        uasort($menuBreakdown, fn ($a, $b) => strcmp($a['menu']->getName(), $b['menu']->getName()));
+
         $coversPerHourData = [];
         $ordersPerHourData = [];
         $salesPerHourData  = [];
@@ -166,6 +184,7 @@ final class Report
             	'coversMinors' => $coversMinors,
                 'totalWeight' => $totalWeight,
                 'menuSections' => $menuSections,
+                'menuBreakdown' => $menuBreakdown,
 
                 'manHours' => $manHours,
                 'manMinutes' => $manMinutes,
