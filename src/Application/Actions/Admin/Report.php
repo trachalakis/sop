@@ -95,6 +95,7 @@ final class Report
         $foodCost       = $report['foodCost'];
         $discountsTotal    = $report['discountsTotal'];
         $cancellationsCost = $report['cancellationsCost'];
+        $waiterStats       = $report['waiterStats'];
         $menuSections   = $report['menuSections'];
         $servedPlates   = $report['servedPlates'];
         $servedDrinks   = $report['servedDrinks'];
@@ -187,6 +188,7 @@ final class Report
                 'totalWeight' => $totalWeight,
                 'discountsTotal' => $discountsTotal,
                 'cancellationsCost' => $cancellationsCost,
+                'waiterStats' => $waiterStats,
                 'menuSections' => $menuSections,
                 'menuBreakdown' => $menuBreakdown,
 

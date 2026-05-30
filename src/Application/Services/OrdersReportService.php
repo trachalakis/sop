@@ -28,6 +28,7 @@ final class OrdersReportService
      *   foodCost: float,
      *   discountsTotal: float,
      *   cancellationsCost: float,
+     *   waiterStats: array<int, array{waiter:object, orderCount:int, covers:int, sales:float}>,
      *   menuSections: array,
      *   servedPlates: int,
      *   servedDrinks: int,
@@ -50,6 +51,7 @@ final class OrdersReportService
         $foodCost          = 0.0;
         $discountsTotal    = 0.0;
         $cancellationsCost = 0.0;
+        $waiterStats       = [];
         $menuSections      = [];
 
         foreach ($ordersArray as $order) {
@@ -60,6 +62,24 @@ final class OrdersReportService
             } elseif (!$order->isDrinksOnly()) {
                 $coversAdults += $order->getAdults();
                 $coversMinors += $order->getMinors();
+            }
+
+            // Per-waiter breakdown. Self-meal (employee) orders have no waiter
+            // and are excluded.
+            $waiter = $order->getWaiter();
+            if ($waiter !== null) {
+                $wid = $waiter->getId();
+                $waiterStats[$wid] ??= [
+                    'waiter'     => $waiter,
+                    'orderCount' => 0,
+                    'covers'     => 0,
+                    'sales'      => 0.0,
+                ];
+                $waiterStats[$wid]['orderCount']++;
+                $waiterStats[$wid]['sales'] += $order->getPrice();
+                if ($order->getTable() !== null && !$order->isDrinksOnly()) {
+                    $waiterStats[$wid]['covers'] += $order->getAdults() + $order->getMinors();
+                }
             }
 
             foreach ($order->getOrderEntries() as $orderEntry) {
@@ -147,6 +167,7 @@ final class OrdersReportService
         }
 
         uasort($menuSections, fn($a, $b) => $a['menuSection']->getPosition() <=> $b['menuSection']->getPosition());
+        uasort($waiterStats, fn ($a, $b) => $b['sales'] <=> $a['sales']);
 
         return [
             'sales'             => $sales,
@@ -157,6 +178,7 @@ final class OrdersReportService
             'foodCost'          => $foodCost,
             'discountsTotal'    => $discountsTotal,
             'cancellationsCost' => $cancellationsCost,
+            'waiterStats'       => $waiterStats,
             'menuSections'      => $menuSections,
             'servedPlates'      => $servedPlates,
             'servedDrinks'      => $servedDrinks,

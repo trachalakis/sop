@@ -169,6 +169,38 @@
     </div>
 {% endfor %}
 <hr/>
+{% if waiterStats|length > 0 %}
+    <h3 class="mb-3">{{'Σερβιτόροι'|_}}</h3>
+    <table class="table table-sm table-striped">
+        <thead>
+            <tr>
+                <th>{{'Σερβιτόρος'|_}}</th>
+                <th class="text-end">{{'Παραγγελίες'|_}}</th>
+                <th class="text-end">{{'Άτομα'|_}}</th>
+                <th class="text-end">{{'Σύνολο'|_}}</th>
+                <th class="text-end">{{'Πωλήσεις/άτομο'|_}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ws in waiterStats %}
+                <tr>
+                    <td>{{ws.waiter.getFullName}}</td>
+                    <td class="text-end">{{ws.orderCount}}</td>
+                    <td class="text-end">{{ws.covers}}</td>
+                    <td class="text-end">&euro;{{ws.sales|round(2)}}</td>
+                    <td class="text-end">
+                        {% if ws.covers > 0 %}
+                            &euro;{{(ws.sales / ws.covers)|round(1)}}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr/>
+{% endif %}
 {% if end.diff(start).days <= 2 %}
     <table class="table table-responsive table-striped">
         <thead>
