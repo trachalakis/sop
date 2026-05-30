@@ -93,6 +93,8 @@ final class Report
         $coversMinors   = $report['coversMinors'];
         $totalWeight    = $report['totalWeight'];
         $foodCost       = $report['foodCost'];
+        $discountsTotal    = $report['discountsTotal'];
+        $cancellationsCost = $report['cancellationsCost'];
         $menuSections   = $report['menuSections'];
         $servedPlates   = $report['servedPlates'];
         $servedDrinks   = $report['servedDrinks'];
@@ -183,6 +185,8 @@ final class Report
             	'coversAdults' => $coversAdults,
             	'coversMinors' => $coversMinors,
                 'totalWeight' => $totalWeight,
+                'discountsTotal' => $discountsTotal,
+                'cancellationsCost' => $cancellationsCost,
                 'menuSections' => $menuSections,
                 'menuBreakdown' => $menuBreakdown,
 

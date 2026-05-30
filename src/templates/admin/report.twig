@@ -88,6 +88,16 @@
         &bull; <strong>{{((foodCost / sales) * 100)|round(1)}}%</strong>
     {% endif %}
     <br/>
+    discounts: <strong>&euro;{{discountsTotal|round(2)}}</strong>
+    {% if sales > 0 %}
+        &bull; <strong>{{((discountsTotal / sales) * 100)|round(1)}}%</strong>
+    {% endif %}
+    &bull;
+    cancellations: <strong>&euro;{{cancellationsCost|round(2)}}</strong>
+    {% if sales > 0 %}
+        &bull; <strong>{{((cancellationsCost / sales) * 100)|round(1)}}%</strong>
+    {% endif %}
+    <br/>
     man-hours: <strong>{{manHours}}h:{{manMinutes}}m:{{manSeconds}}s</strong> &bull;
     salaries: <strong>&euro;{{salaries|round}}</strong> &bull;
 	{% for role, amount in salariesPerRole %}

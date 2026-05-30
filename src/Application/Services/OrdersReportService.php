@@ -26,6 +26,8 @@ final class OrdersReportService
      *   coversMinors: int,
      *   totalWeight: float,
      *   foodCost: float,
+     *   discountsTotal: float,
+     *   cancellationsCost: float,
      *   menuSections: array,
      *   servedPlates: int,
      *   servedDrinks: int,
@@ -40,13 +42,15 @@ final class OrdersReportService
             $recipesByMenuItemId[$recipe->getMenuItem()->getId()] = $recipe;
         }
 
-        $sales         = 0.0;
-        $salesTakeAway = 0.0;
-        $coversAdults  = 0;
-        $coversMinors  = 0;
-        $totalWeight   = 0.0;
-        $foodCost      = 0.0;
-        $menuSections  = [];
+        $sales             = 0.0;
+        $salesTakeAway     = 0.0;
+        $coversAdults      = 0;
+        $coversMinors      = 0;
+        $totalWeight       = 0.0;
+        $foodCost          = 0.0;
+        $discountsTotal    = 0.0;
+        $cancellationsCost = 0.0;
+        $menuSections      = [];
 
         foreach ($ordersArray as $order) {
             $sales += $order->getPrice();
@@ -98,6 +102,25 @@ final class OrdersReportService
                 if ($recipe !== null && $recipe->getYield() > 0) {
                     $foodCost += $orderEntry->getQuantity() * ($recipe->getFoodCost($end) / $recipe->getYield());
                 }
+
+                $discountsTotal += $orderEntry->getDiscount();
+
+                $cancellationCount = count($orderEntry->getOrderEntryCancellations());
+                if ($cancellationCount > 0) {
+                    // Per-unit price matching OrderEntry::getPrice()'s internal
+                    // formula (menu price → weight adjustment → + extras), but
+                    // without the line-level discount (discount applies to the
+                    // items kept, not to the cancelled ones).
+                    $unit = $orderEntry->getMenuItemPrice();
+                    $weight = $orderEntry->getWeight();
+                    if ($weight !== null) {
+                        $unit *= $weight / 1000;
+                    }
+                    foreach ($orderEntry->getOrderEntryExtras() as $extra) {
+                        $unit += $extra->getPrice();
+                    }
+                    $cancellationsCost += $unit * $cancellationCount;
+                }
             }
         }
 
@@ -126,15 +149,17 @@ final class OrdersReportService
         uasort($menuSections, fn($a, $b) => $a['menuSection']->getPosition() <=> $b['menuSection']->getPosition());
 
         return [
-            'sales'         => $sales,
-            'salesTakeAway' => $salesTakeAway,
-            'coversAdults'  => $coversAdults,
-            'coversMinors'  => $coversMinors,
-            'totalWeight'   => $totalWeight,
-            'foodCost'      => $foodCost,
-            'menuSections'  => $menuSections,
-            'servedPlates'  => $servedPlates,
-            'servedDrinks'  => $servedDrinks,
+            'sales'             => $sales,
+            'salesTakeAway'     => $salesTakeAway,
+            'coversAdults'      => $coversAdults,
+            'coversMinors'      => $coversMinors,
+            'totalWeight'       => $totalWeight,
+            'foodCost'          => $foodCost,
+            'discountsTotal'    => $discountsTotal,
+            'cancellationsCost' => $cancellationsCost,
+            'menuSections'      => $menuSections,
+            'servedPlates'      => $servedPlates,
+            'servedDrinks'      => $servedDrinks,
         ];
     }
 }
