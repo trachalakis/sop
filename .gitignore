@@ -54,4 +54,4 @@ vendor
 #client log
 public/assets/logo.*
 
-ecr-agent/ecr-agent-config.php
+ecr-agent/ecr-agent-config.php.superpowers/
