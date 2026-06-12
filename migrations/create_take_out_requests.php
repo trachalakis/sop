@@ -34,6 +34,7 @@ echo "Connected to database '{$dbName}'.\n";
 $tableExists = $pdo->query("
     SELECT COUNT(*) FROM information_schema.tables
     WHERE table_name = 'take_out_requests'
+    AND table_schema NOT IN ('pg_catalog', 'information_schema')
 ")->fetchColumn();
 
 if ($tableExists) {
@@ -66,7 +67,7 @@ try {
         CREATE TABLE take_out_request_entries (
             id              SERIAL PRIMARY KEY,
             request_id      INTEGER NOT NULL REFERENCES take_out_requests(id) ON DELETE CASCADE,
-            menu_item_id    INTEGER NOT NULL REFERENCES menu_items(id),
+            menu_item_id    INTEGER NOT NULL REFERENCES menu_items(id) ON DELETE RESTRICT,
             menu_item_price DOUBLE PRECISION NOT NULL,
             quantity        INTEGER NOT NULL
         )
