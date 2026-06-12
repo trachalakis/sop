@@ -30,7 +30,9 @@ use Domain\Entities\Invoice;
 use Domain\Entities\InvoiceEntry;
 use Domain\Entities\SupplyAlias;
 use Domain\Entities\EcrJob;
+use Domain\Entities\TakeOutRequest;
 use Domain\Repositories\EcrJobsRepository;
+use Domain\Repositories\TakeOutRequestsRepository;
 use Domain\Repositories\DailyRoleSlotsRepository;
 use Domain\Repositories\LanguagesRepository;
 use Domain\Repositories\RolesRepository;
@@ -288,6 +290,11 @@ return function (ContainerBuilder $containerBuilder) {
             $em = $c->get(EntityManager::class);
 
             return $em->getRepository(EcrJob::class);
+        },
+        TakeOutRequestsRepository::class => function (ContainerInterface $c) {
+            $em = $c->get(EntityManager::class);
+
+            return $em->getRepository(TakeOutRequest::class);
         },
         InvoiceParserService::class => function (ContainerInterface $c) {
             return new InvoiceParserService($_ENV['ANTHROPIC_API_KEY']);
