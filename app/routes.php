@@ -111,6 +111,7 @@ use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
 use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
 use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
 use Application\Actions\CustomerSite\Menu as CustomerSiteMenu;
+use Application\Actions\CustomerSite\SubmitRequest as CustomerSiteSubmitRequest;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\ReservationsData;
 use Application\Actions\ReservationsApp\CreateReservation;
@@ -311,6 +312,7 @@ return function (App $app, $container) {
 
     $app->group('/order', function (RouteCollectorProxy $group) {
         $group->get('/', CustomerSiteMenu::class);
+        $group->post('/submit', CustomerSiteSubmitRequest::class);
     });
 
     $app->group('/api', function (RouteCollectorProxy $group) {
