@@ -1,0 +1,164 @@
+{% extends 'customer_site/skeleton.twig' %}
+
+{% block pageCss %}
+<style>
+    .mp-welcome { overflow: hidden; }
+    .mp-welcome-sun {
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 260px; height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 50% 50%, #F3D49B 0%, rgba(243,212,155,0) 68%);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .mp-welcome-top {
+        position: relative; z-index: 2;
+        display: flex; align-items: center; justify-content: flex-end;
+        padding: 16px 24px 0;
+        padding-top: max(16px, env(safe-area-inset-top));
+    }
+    .mp-welcome-hero {
+        position: relative; z-index: 2;
+        flex: 1;
+        display: flex; flex-direction: column; justify-content: center;
+        padding: 0 30px;
+    }
+    .mp-welcome-eyebrow {
+        font-weight: 700; font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
+        color: var(--mp-rust); margin-bottom: 14px;
+    }
+    .mp-welcome-name {
+        font-family: var(--mp-serif);
+        font-size: 60px; line-height: .92; color: var(--mp-ink);
+        word-break: break-word;
+    }
+    .mp-welcome-tagline {
+        font-family: var(--mp-serif); font-style: italic;
+        font-size: 21px; line-height: 1.42; color: #5C7873;
+        margin-top: 18px; max-width: 250px;
+    }
+    .mp-welcome-steps {
+        position: relative; z-index: 2;
+        padding: 0 30px;
+        display: flex; flex-direction: column; gap: 13px;
+    }
+    .mp-welcome-step { display: flex; align-items: center; gap: 13px; }
+    .mp-welcome-step .num {
+        width: 27px; height: 27px; border-radius: 50%;
+        background: var(--mp-teal-soft); color: var(--mp-teal);
+        font-weight: 700; font-size: 13px;
+        display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+    }
+    .mp-welcome-step .txt { font-weight: 500; font-size: 14px; color: var(--mp-text-2); }
+    .mp-welcome-cta {
+        position: relative; z-index: 2;
+        padding: 22px 24px calc(28px + env(safe-area-inset-bottom));
+    }
+    .mp-welcome-cta .mp-btn { display: block; text-align: center; text-decoration: none; }
+    .mp-welcome-active {
+        display: block; text-align: center; text-decoration: none;
+        color: var(--mp-rust-deep); font-weight: 600; font-size: 14px;
+        background: var(--mp-summary-bg); border: 1px solid var(--mp-summary-border);
+        border-radius: 14px; padding: 12px; margin-bottom: 13px;
+    }
+    .mp-welcome-foot {
+        text-align: center; font-weight: 500; font-size: 12px; color: var(--mp-muted-2);
+        margin-top: 13px; line-height: 1.55;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="app" class="mp-shell mp-welcome" v-cloak>
+    <div class="mp-welcome-sun"></div>
+
+    <div class="mp-welcome-top">
+        <div class="mp-lang">
+{% verbatim %}
+            <button :class="{ 'is-active': lang == 'en' }" @click="setLang('en')">EN</button>
+            <button :class="{ 'is-active': lang == 'el' }" @click="setLang('el')">ΕΛ</button>
+        </div>
+    </div>
+
+    <div class="mp-welcome-hero">
+        <div class="mp-welcome-eyebrow">{{t.eyebrow}}</div>
+{% endverbatim %}
+        <div class="mp-welcome-name">{{siteName}}</div>
+{% verbatim %}
+        <div class="mp-welcome-tagline">{{t.tagline}}</div>
+    </div>
+
+    <div class="mp-welcome-steps">
+        <div class="mp-welcome-step"><span class="num">1</span><span class="txt">{{t.step1}}</span></div>
+        <div class="mp-welcome-step"><span class="num">2</span><span class="txt">{{t.step2}}</span></div>
+        <div class="mp-welcome-step"><span class="num">3</span><span class="txt">{{t.step3}}</span></div>
+    </div>
+
+    <div class="mp-welcome-cta">
+        <a v-if="activeStatusUrl" :href="activeStatusUrl" class="mp-welcome-active">{{t.activeOrder}} →</a>
+        <a href="/order/menu" class="mp-btn">{{t.start}}</a>
+        <div class="mp-welcome-foot">{{t.payNote}}</div>
+    </div>
+{% endverbatim %}
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="/assets/js/vue.global.prod.js"></script>
+<script src="/assets/js/axios.min.js"></script>
+<script>
+    const I18N = {
+        el: {
+            eyebrow: 'Σε πακέτο',
+            tagline: 'Φρέσκα πιάτα, έτοιμα για παραλαβή.',
+            step1: 'Δείτε τον κατάλογο & φτιάξτε την παραγγελία σας',
+            step2: 'Επιβεβαιώνουμε τον χρόνο παραλαβής',
+            step3: 'Παραλαβή & πληρωμή στο κατάστημα',
+            start: 'Ξεκινήστε την παραγγελία',
+            payNote: 'Πληρώνετε κατά την παραλαβή — χωρίς κάρτα',
+            activeOrder: 'Έχετε ενεργή παραγγελία'
+        },
+        en: {
+            eyebrow: 'Take-out',
+            tagline: 'Fresh food, ready for pickup.',
+            step1: 'Browse the menu & build your order',
+            step2: 'We confirm your pickup time',
+            step3: 'Collect & pay at the counter',
+            start: 'Start your order',
+            payNote: 'Pay when you collect — no card needed',
+            activeOrder: 'You have an active order'
+        }
+    };
+
+    Vue.createApp({
+        data() {
+            return {
+                lang: localStorage.getItem('takeOutLang') || 'el',
+                activeStatusUrl: null
+            }
+        },
+        computed: {
+            t() { return I18N[this.lang]; }
+        },
+        mounted() {
+            const token = localStorage.getItem('takeOutToken');
+            if (token) {
+                axios.get('/order/status/' + token + '/poll')
+                    .then(response => {
+                        if (response.data.status === 'PENDING' || response.data.status === 'ACCEPTED') {
+                            this.activeStatusUrl = '/order/status/' + token;
+                        }
+                    })
+                    .catch(() => localStorage.removeItem('takeOutToken'));
+            }
+        },
+        methods: {
+            setLang(lang) {
+                this.lang = lang;
+                localStorage.setItem('takeOutLang', this.lang);
+            }
+        }
+    }).mount('#app');
+</script>
+{% endblock %}

@@ -113,6 +113,7 @@ use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
 use Application\Actions\TakeOutApp\PendingRequests as TakeOutAppPendingRequests;
 use Application\Actions\TakeOutApp\AcceptRequest as TakeOutAppAcceptRequest;
 use Application\Actions\TakeOutApp\RejectRequest as TakeOutAppRejectRequest;
+use Application\Actions\CustomerSite\Welcome as CustomerSiteWelcome;
 use Application\Actions\CustomerSite\Menu as CustomerSiteMenu;
 use Application\Actions\CustomerSite\SubmitRequest as CustomerSiteSubmitRequest;
 use Application\Actions\CustomerSite\Status as CustomerSiteStatus;
@@ -319,7 +320,8 @@ return function (App $app, $container) {
     ->add(new Authentication());
 
     $app->group('/order', function (RouteCollectorProxy $group) {
-        $group->get('/', CustomerSiteMenu::class);
+        $group->get('/', CustomerSiteWelcome::class);
+        $group->get('/menu', CustomerSiteMenu::class);
         $group->post('/submit', CustomerSiteSubmitRequest::class);
         $group->get('/status/{token}', CustomerSiteStatus::class);
         $group->get('/status/{token}/poll', CustomerSiteStatusPoll::class);
