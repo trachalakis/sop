@@ -2,59 +2,141 @@
 
 {% block pageCss %}
 <style>
-    [v-cloak] { display: none; }
+    .mp-status-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 28px 26px calc(34px + env(safe-area-inset-bottom));
+        gap: 0;
+    }
+
+    .mp-spinner {
+        width: 88px; height: 88px; border-radius: 50%;
+        border: 6px solid var(--mp-teal-soft);
+        border-top-color: var(--mp-teal);
+        animation: mp-spin 1s linear infinite;
+    }
+    .mp-check-circle {
+        width: 90px; height: 90px; border-radius: 50%;
+        background: var(--mp-teal);
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 16px 32px -12px rgba(60,122,114,.65);
+    }
+    .mp-check-circle span {
+        display: block; width: 24px; height: 46px;
+        border: solid #fff; border-width: 0 5px 5px 0;
+        transform: rotate(45deg) translate(-2px,-4px);
+    }
+    .mp-x-circle {
+        width: 88px; height: 88px; border-radius: 50%;
+        background: #F2EAE1;
+        display: flex; align-items: center; justify-content: center;
+        position: relative;
+    }
+    .mp-x-circle span {
+        position: absolute; width: 34px; height: 3px; border-radius: 2px; background: #B58A72;
+    }
+    .mp-x-circle span:first-child { transform: rotate(45deg); }
+    .mp-x-circle span:last-child { transform: rotate(-45deg); }
+
+    .mp-status-title {
+        font-family: var(--mp-serif);
+        font-size: 28px; line-height: 1.12;
+        color: var(--mp-ink);
+        margin-top: 24px;
+    }
+    .mp-status-title.ok { font-size: 30px; color: var(--mp-teal-deep); }
+    .mp-status-sub {
+        font-weight: 400; font-size: 15px; color: #7A7264; line-height: 1.5;
+        margin-top: 10px; max-width: 270px;
+    }
+
+    .mp-eta {
+        width: 100%;
+        background: var(--mp-notice-bg);
+        border: 1px solid var(--mp-notice-border);
+        border-radius: 18px;
+        padding: 18px; text-align: center;
+        margin-top: 22px;
+    }
+    .mp-eta-label { font-weight: 700; font-size: 11px; letter-spacing: .18em; color: var(--mp-rust-deep); }
+    .mp-eta-value { font-family: var(--mp-serif); font-size: 44px; line-height: 1.05; color: var(--mp-ink); margin: 4px 0; }
+    .mp-eta-ticket { font-weight: 600; font-size: 13px; color: var(--mp-rust); }
+
+    .mp-status-main .mp-summary { margin-top: 16px; }
+    .mp-summary.dim { opacity: .75; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div id="app" v-cloak>
-    <nav class="navbar bg-success sticky-top">
-        <div class="container-fluid">
-            <a href="/order/" class="navbar-brand text-white fw-bold text-decoration-none">{{siteName}} · Take Out</a>
-            <button class="btn btn-sm btn-outline-light" @click="toggleLang" v-text="lang == 'el' ? 'EN' : 'ΕΛ'"></button>
-        </div>
-    </nav>
-
-    <main class="container py-4" style="max-width: 480px;">
+<div id="app" class="mp-shell" v-cloak>
+    <header class="mp-header">
+        <a href="/order/" class="mp-brand" style="text-decoration:none;">
+            <span class="mp-brand-name">{{siteName}}</span>
 {% verbatim %}
-        <div class="card text-center">
-            <div class="card-body">
-                <template v-if="state.status === 'PENDING'">
-                    <div class="display-3">⏳</div>
-                    <h1 class="fs-4">{{t.waitingTitle}}</h1>
-                    <p class="text-muted">{{t.waitingSubtitle}}</p>
-                </template>
-                <template v-else-if="state.status === 'ACCEPTED'">
-                    <div class="display-3">✅</div>
-                    <h1 class="fs-4 text-success">{{t.acceptedTitle}}</h1>
-                    <p class="fs-5" v-if="state.etaMinutes">{{t.readyInAbout}} <b>{{state.etaMinutes}} {{t.minutes}}</b></p>
-                    <p class="fs-5" v-if="state.ticketNumber">{{t.ticket}} <b>#{{state.ticketNumber}}</b></p>
-                    <p class="text-muted">{{t.payAtPickup}}</p>
-                </template>
-                <template v-else>
-                    <div class="display-3">😞</div>
-                    <h1 class="fs-4">{{t.rejectedTitle}}</h1>
-                    <p class="text-muted">{{t.rejectedSubtitle}}</p>
-                </template>
-            </div>
+            <span class="mp-brand-eyebrow">{{t.statusEyebrow}}</span>
+        </a>
+        <div class="mp-lang">
+            <button :class="{ 'is-active': lang == 'en' }" @click="setLang('en')">EN</button>
+            <button :class="{ 'is-active': lang == 'el' }" @click="setLang('el')">ΕΛ</button>
         </div>
+    </header>
 
-        <div class="card mt-3">
-            <div class="card-body">
-                <div v-for="entry in state.entries" class="d-flex justify-content-between border-bottom py-1">
-                    <span>
-                        {{entry.quantity}}× {{entryName(entry)}}
-                        <span class="text-muted small" v-if="entry.extras.length > 0"><br>+ {{entry.extras.join(', ')}}</span>
-                    </span>
+    <main class="mp-status-main">
+        <!-- PENDING -->
+        <template v-if="state.status === 'PENDING'">
+            <div class="mp-spinner"></div>
+            <div class="mp-status-title">{{t.waitingTitle}}</div>
+            <div class="mp-status-sub">{{t.waitingSubtitle}}</div>
+            <div class="mp-summary" v-if="state.entries.length">
+                <div class="mp-summary-title">{{t.yourOrder}}</div>
+                <div class="mp-summary-row" v-for="entry in state.entries">
+                    <span>{{entry.quantity}}× {{entryName(entry)}}<span class="ex" v-if="entry.extras.length"> · {{entry.extras.join(', ')}}</span></span>
                     <span>&euro;{{entry.price.toFixed(2)}}</span>
                 </div>
-                <div class="d-flex justify-content-between fw-bold pt-2">
-                    <span>{{t.total}}</span><span>&euro;{{state.total.toFixed(2)}}</span>
+                <div class="mp-summary-total"><span>{{t.total}}</span><span>&euro;{{state.total.toFixed(2)}}</span></div>
+            </div>
+        </template>
+
+        <!-- ACCEPTED -->
+        <template v-else-if="state.status === 'ACCEPTED'">
+            <div class="mp-check-circle"><span></span></div>
+            <div class="mp-status-title ok">{{t.acceptedTitle}}</div>
+            <div class="mp-eta">
+                <div class="mp-eta-label">{{t.readyInAbout}}</div>
+                <div class="mp-eta-value" v-if="state.etaMinutes">{{state.etaMinutes}} {{t.minutes}}</div>
+                <div class="mp-eta-ticket">
+                    <span v-if="state.ticketNumber">{{t.ticket}} #{{state.ticketNumber}} · </span>{{t.payAtPickup}} &euro;{{state.total.toFixed(2)}}
                 </div>
             </div>
-        </div>
-{% endverbatim %}
+            <div class="mp-summary" v-if="state.entries.length">
+                <div class="mp-summary-title">{{t.yourOrder}}</div>
+                <div class="mp-summary-row" v-for="entry in state.entries">
+                    <span>{{entry.quantity}}× {{entryName(entry)}}<span class="ex" v-if="entry.extras.length"> · {{entry.extras.join(', ')}}</span></span>
+                    <span>&euro;{{entry.price.toFixed(2)}}</span>
+                </div>
+                <div class="mp-summary-total"><span>{{t.total}}</span><span>&euro;{{state.total.toFixed(2)}}</span></div>
+            </div>
+        </template>
+
+        <!-- REJECTED -->
+        <template v-else>
+            <div class="mp-x-circle"><span></span><span></span></div>
+            <div class="mp-status-title">{{t.rejectedTitle}}</div>
+            <div class="mp-status-sub">{{t.rejectedSubtitle}}</div>
+            <div class="mp-summary dim" v-if="state.entries.length">
+                <div class="mp-summary-title">{{t.yourOrder}}</div>
+                <div class="mp-summary-row" v-for="entry in state.entries">
+                    <span>{{entry.quantity}}× {{entryName(entry)}}<span class="ex" v-if="entry.extras.length"> · {{entry.extras.join(', ')}}</span></span>
+                    <span>&euro;{{entry.price.toFixed(2)}}</span>
+                </div>
+            </div>
+        </template>
     </main>
+{% endverbatim %}
 </div>
 {% endblock %}
 
@@ -67,17 +149,19 @@
 
     const I18N = {
         el: {
-            waitingTitle: 'Αναμονή επιβεβαίωσης…', waitingSubtitle: 'Το κατάστημα θα επιβεβαιώσει την παραγγελία σας σύντομα.',
-            acceptedTitle: 'Η παραγγελία έγινε δεκτή!', readyInAbout: 'Έτοιμη σε περίπου', minutes: 'λεπτά',
-            ticket: 'Απόδειξη', payAtPickup: 'Πληρώνετε κατά την παραλαβή.',
-            rejectedTitle: 'Η παραγγελία δεν έγινε δεκτή', rejectedSubtitle: 'Παρακαλούμε τηλεφωνήστε στο κατάστημα.',
+            statusEyebrow: 'ΚΑΤΑΣΤΑΣΗ ΠΑΡΑΓΓΕΛΙΑΣ', yourOrder: 'Η παραγγελία σας',
+            waitingTitle: 'Αναμονή επιβεβαίωσης', waitingSubtitle: 'Το κατάστημα ελέγχει την παραγγελία σας. Θα επιβεβαιώσουμε τον χρόνο παραλαβής σε λίγο.',
+            acceptedTitle: 'Η παραγγελία έγινε δεκτή!', readyInAbout: 'ΕΤΟΙΜΗ ΣΕ ΠΕΡΙΠΟΥ', minutes: 'λεπτά',
+            ticket: 'Απόδειξη', payAtPickup: 'πληρωμή στην παραλαβή',
+            rejectedTitle: 'Η παραγγελία δεν έγινε δεκτή', rejectedSubtitle: 'Λυπούμαστε, δεν μπορούμε να αναλάβουμε την παραγγελία αυτή τη στιγμή. Παρακαλούμε τηλεφωνήστε στο κατάστημα.',
             total: 'Σύνολο'
         },
         en: {
-            waitingTitle: 'Waiting for the restaurant…', waitingSubtitle: 'The restaurant will confirm your order shortly.',
-            acceptedTitle: 'Order accepted!', readyInAbout: 'Ready in about', minutes: 'min',
-            ticket: 'Ticket', payAtPickup: 'You pay at pickup.',
-            rejectedTitle: "The restaurant couldn't take your order", rejectedSubtitle: 'Please call the restaurant.',
+            statusEyebrow: 'ORDER STATUS', yourOrder: 'Your order',
+            waitingTitle: 'Waiting for confirmation', waitingSubtitle: 'The restaurant is reviewing your order. We will confirm your pickup time in a moment.',
+            acceptedTitle: 'Order accepted!', readyInAbout: 'READY IN ABOUT', minutes: 'min',
+            ticket: 'Ticket', payAtPickup: 'pay at pickup',
+            rejectedTitle: "Order not accepted", rejectedSubtitle: "Sorry, we can't take this order right now. Please give the restaurant a call.",
             total: 'Total'
         }
     };
@@ -102,8 +186,8 @@
             }
         },
         methods: {
-            toggleLang() {
-                this.lang = this.lang === 'el' ? 'en' : 'el';
+            setLang(lang) {
+                this.lang = lang;
                 localStorage.setItem('takeOutLang', this.lang);
             },
             entryName(entry) { return entry.names[this.lang] || entry.names.el || entry.names.en; },

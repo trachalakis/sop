@@ -2,131 +2,347 @@
 
 {% block pageCss %}
 <style>
-    .chips { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-    .chips .btn { border-radius: 1rem; }
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1040; }
-    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1050; overflow-y: auto; }
-    .cart-panel { background: #fff; border-radius: 1rem 1rem 0 0; margin-top: 20vh; min-height: 80vh; }
-    main { padding-bottom: 6rem; }
-    [v-cloak] { display: none; }
+    .mp-chips {
+        position: sticky;
+        z-index: 25;
+        top: 64px;
+        display: flex;
+        gap: 8px;
+        padding: 12px 22px;
+        background: var(--mp-cream);
+        border-bottom: 1px solid var(--mp-line);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    .mp-chips::-webkit-scrollbar { display: none; }
+    .mp-chip {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        background: transparent;
+        color: var(--mp-text-2);
+        border: 1px solid var(--mp-chip-border);
+        border-radius: 18px;
+        padding: 8px 15px;
+        font-family: var(--mp-sans);
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+    }
+    .mp-chip.is-active { background: var(--mp-teal); color: #fff; border-color: var(--mp-teal); }
+
+    .mp-main { flex: 1; padding: 6px 22px; padding-bottom: 120px; }
+
+    .mp-active-order {
+        display: block;
+        background: var(--mp-summary-bg);
+        border: 1px solid var(--mp-summary-border);
+        color: var(--mp-rust-deep);
+        border-radius: 14px;
+        padding: 13px 16px;
+        margin: 14px 0 4px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+    }
+    .mp-empty { text-align: center; color: var(--mp-muted-2); padding: 64px 0; font-size: 15px; }
+
+    .mp-section-title {
+        font-family: var(--mp-serif);
+        font-size: 24px;
+        color: var(--mp-ink);
+        margin: 22px 0 2px;
+    }
+
+    .mp-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--mp-line);
+    }
+    .mp-item-name { font-weight: 600; font-size: 16px; color: var(--mp-ink); }
+    .mp-item-price { font-weight: 700; font-size: 14px; color: var(--mp-teal); margin-top: 7px; }
+    .mp-soldout {
+        display: inline-block;
+        margin-top: 7px;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--mp-muted-2);
+        background: #F0EADD;
+        border-radius: 8px;
+        padding: 3px 8px;
+    }
+
+    .mp-add {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        border: none;
+        background: var(--mp-teal);
+        color: #fff;
+        font-size: 24px;
+        line-height: 1;
+        display: flex; align-items: center; justify-content: center;
+        flex: 0 0 auto;
+        box-shadow: 0 4px 10px -3px rgba(60,122,114,.5);
+        cursor: pointer;
+    }
+    .mp-add:disabled { background: #CBC4B4; box-shadow: none; cursor: default; }
+
+    .mp-stepper {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--mp-teal);
+        border-radius: 22px;
+        overflow: hidden;
+        flex: 0 0 auto;
+    }
+    .mp-stepper button {
+        width: 38px; height: 38px;
+        border: none;
+        font-size: 20px; line-height: 1;
+        color: var(--mp-teal);
+        background: transparent;
+        cursor: pointer;
+    }
+    .mp-stepper button.plus { background: var(--mp-teal); color: #fff; }
+    .mp-stepper button:disabled { opacity: .4; cursor: default; }
+    .mp-stepper .qty { min-width: 24px; text-align: center; font-weight: 700; font-size: 15px; color: var(--mp-ink); }
+
+    /* Cart bar */
+    .mp-cartbar {
+        position: fixed;
+        left: 50%; transform: translateX(-50%);
+        bottom: 0;
+        width: 100%; max-width: 480px;
+        z-index: 40;
+        padding: 14px 16px calc(14px + env(safe-area-inset-bottom));
+    }
+    .mp-cartbar button {
+        width: 100%;
+        border: none;
+        background: var(--mp-teal);
+        color: #fff;
+        border-radius: 18px;
+        padding: 16px 20px;
+        display: flex; justify-content: space-between; align-items: center;
+        font-family: var(--mp-sans); font-weight: 700; font-size: 15px;
+        box-shadow: 0 16px 34px -12px rgba(60,122,114,.7);
+        cursor: pointer;
+    }
+    .mp-cartbar .left { display: flex; align-items: center; gap: 11px; }
+    .mp-cartbar .count {
+        background: rgba(255,255,255,.22);
+        border-radius: 9px;
+        padding: 2px 9px;
+        font-size: 13px;
+    }
+
+    /* Drawer */
+    .mp-drawer-title {
+        font-family: var(--mp-serif);
+        font-size: 26px;
+        color: var(--mp-ink);
+    }
+    .mp-drawer-scroll { overflow-y: auto; flex: 1; margin: 8px -4px 0; padding: 0 4px; }
+    .mp-line {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--mp-line);
+    }
+    .mp-line-name { font-weight: 600; font-size: 15px; color: var(--mp-ink); }
+    .mp-line-extras { font-weight: 400; font-size: 12px; color: var(--mp-muted-2); margin-top: 2px; }
+    .mp-line-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .mp-line-price { font-weight: 700; font-size: 14px; color: var(--mp-ink); }
+    .mp-ministep {
+        display: flex; align-items: center;
+        border: 1px solid var(--mp-border);
+        border-radius: 16px; overflow: hidden;
+    }
+    .mp-ministep button {
+        width: 30px; height: 30px; border: none; background: transparent;
+        color: var(--mp-teal); font-size: 17px; line-height: 1; cursor: pointer;
+    }
+    .mp-ministep .qty { min-width: 16px; text-align: center; font-weight: 700; font-size: 13px; }
+
+    .mp-total {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 14px 0 10px;
+    }
+    .mp-total .label { font-weight: 700; font-size: 16px; color: var(--mp-ink); }
+    .mp-total .amount { font-family: var(--mp-serif); font-size: 26px; color: var(--mp-ink); }
+
+    .mp-input {
+        width: 100%;
+        border: 1px solid var(--mp-border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-family: var(--mp-sans); font-weight: 500; font-size: 14px;
+        color: var(--mp-ink);
+        background: #fff;
+        margin-bottom: 9px;
+    }
+    .mp-input:focus { outline: none; border-color: var(--mp-teal); }
+    textarea.mp-input { resize: none; }
+
+    /* Extras modal */
+    .mp-extra-title { font-family: var(--mp-serif); font-size: 24px; line-height: 1.12; color: var(--mp-ink); }
+    .mp-extra-price { font-weight: 600; font-size: 14px; color: var(--mp-teal); margin-top: 5px; }
+    .mp-extra-label {
+        font-weight: 700; font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+        color: var(--mp-muted-2); margin: 20px 0 4px;
+    }
+    .mp-check {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 13px 0; border-bottom: 1px solid var(--mp-line); cursor: pointer;
+    }
+    .mp-check .name { display: flex; align-items: center; gap: 13px; font-weight: 500; font-size: 15px; color: var(--mp-ink); }
+    .mp-check .price { font-weight: 600; font-size: 14px; color: var(--mp-muted-2); }
+    .mp-check input { position: absolute; opacity: 0; pointer-events: none; }
+    .mp-box {
+        width: 23px; height: 23px; border-radius: 7px;
+        background: #fff; border: 1.5px solid #D8CEBB;
+        flex: 0 0 auto; position: relative;
+    }
+    .mp-check input:checked + .mp-box { background: var(--mp-teal); border-color: var(--mp-teal); }
+    .mp-check input:checked + .mp-box::after {
+        content: ''; position: absolute; left: 8px; top: 3px;
+        width: 5px; height: 11px; border: solid #fff; border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+    .mp-extra-actions { display: flex; gap: 12px; margin-top: 20px; }
+    .mp-extra-actions .mp-btn { width: auto; flex: 1; padding: 15px; border-radius: 15px; font-size: 15px; }
+    .mp-extra-actions .mp-btn-outline { flex: 0 0 auto; padding: 15px 22px; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div id="app" v-cloak>
-    <nav class="navbar bg-success sticky-top">
-        <div class="container-fluid">
-            <span class="navbar-brand text-white fw-bold">{{siteName}} · Take Out</span>
-            <button class="btn btn-sm btn-outline-light" @click="toggleLang" v-text="lang == 'el' ? 'EN' : 'ΕΛ'"></button>
-        </div>
-    </nav>
+<div id="app" class="mp-shell" v-cloak>
+    <header class="mp-header">
+        <div class="mp-brand">
+            <span class="mp-brand-name">{{siteName}}</span>
 {% verbatim %}
-    <div class="chips bg-white border-bottom px-2 py-2 sticky-top" style="top: 56px;">
+            <span class="mp-brand-eyebrow">{{t.menuEyebrow}}</span>
+        </div>
+        <div class="mp-lang">
+            <button :class="{ 'is-active': lang == 'en' }" @click="setLang('en')">EN</button>
+            <button :class="{ 'is-active': lang == 'el' }" @click="setLang('el')">ΕΛ</button>
+        </div>
+    </header>
+
+    <nav class="mp-chips" v-if="sections.length > 0">
         <button
             v-for="section in sections"
             :key="section.id"
-            class="btn btn-sm btn-outline-success me-1"
+            class="mp-chip"
             @click="scrollToSection(section.id)"
         >{{sectionName(section)}}</button>
-    </div>
+    </nav>
 
-    <main class="container py-3">
-        <div v-if="activeStatusUrl" class="alert alert-info py-2">
-            <a :href="activeStatusUrl" class="text-decoration-none">{{t.activeOrder}} →</a>
-        </div>
+    <main class="mp-main">
+        <a v-if="activeStatusUrl" :href="activeStatusUrl" class="mp-active-order">{{t.activeOrder}} →</a>
 
-        <div v-if="sections.length == 0" class="text-center text-muted py-5">{{t.menuUnavailable}}</div>
+        <div v-if="sections.length == 0" class="mp-empty">{{t.menuUnavailable}}</div>
 
-        <section v-for="section in sections" :key="section.id" :id="'section-' + section.id" class="mb-4">
-            <h2 class="fs-4 border-bottom pb-2">{{sectionName(section)}}</h2>
-            <div
-                v-for="item in section.items"
-                :key="item.id"
-                class="d-flex justify-content-between align-items-center bg-white rounded border p-2 mb-2"
-            >
-                <div>
-                    <div class="fw-semibold">{{itemName(item)}}</div>
-                    <div class="text-muted">&euro;{{item.price.toFixed(2)}}</div>
-                    <span v-if="item.soldOut" class="badge bg-secondary">{{t.soldOut}}</span>
+        <section v-for="section in sections" :key="section.id" :id="'section-' + section.id">
+            <h2 class="mp-section-title">{{sectionName(section)}}</h2>
+            <div v-for="item in section.items" :key="item.id" class="mp-item">
+                <div style="min-width:0;">
+                    <div class="mp-item-name">{{itemName(item)}}</div>
+                    <div class="mp-item-price" v-if="!item.soldOut">&euro;{{item.price.toFixed(2)}}</div>
+                    <span v-if="item.soldOut" class="mp-soldout">{{t.soldOut}}</span>
                 </div>
-                <div class="text-end">
-                    <div v-if="cartQuantity(item) > 0" class="btn-group">
-                        <button class="btn btn-outline-success" @click="removeOne(item)">−</button>
-                        <span class="btn btn-outline-success disabled">{{cartQuantity(item)}}</span>
-                        <button class="btn btn-success" @click="addItem(item)" :disabled="item.soldOut">+</button>
-                    </div>
-                    <button v-else class="btn btn-success" @click="addItem(item)" :disabled="item.soldOut">+</button>
+                <div class="mp-stepper" v-if="cartQuantity(item) > 0">
+                    <button @click="removeOne(item)">−</button>
+                    <span class="qty">{{cartQuantity(item)}}</span>
+                    <button class="plus" @click="addItem(item)" :disabled="item.soldOut">+</button>
                 </div>
+                <button v-else class="mp-add" @click="addItem(item)" :disabled="item.soldOut">+</button>
             </div>
         </section>
     </main>
 
-    <div class="cart-bar p-2" v-if="cart.length > 0 && !cartOpen">
-        <button class="btn btn-success btn-lg w-100" @click="cartOpen = true">
-            {{t.viewCart}} · {{cartCount}} · &euro;{{cartTotal.toFixed(2)}}
+    <div class="mp-cartbar" v-if="cart.length > 0 && !cartOpen">
+        <button @click="cartOpen = true">
+            <span class="left"><span class="count">{{cartCount}}</span>{{t.viewCart}}</span>
+            <span>&euro;{{cartTotal.toFixed(2)}}</span>
         </button>
     </div>
 
-    <div class="cart-overlay" v-if="cartOpen" @click.self="cartOpen = false">
-        <div class="cart-panel container p-3">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="fs-4 m-0">{{t.yourOrder}}</h2>
-                <button class="btn-close" @click="cartOpen = false"></button>
+    <!-- Cart drawer -->
+    <div class="mp-overlay" v-if="cartOpen" @click.self="cartOpen = false">
+        <div class="mp-sheet">
+            <div class="mp-sheet-handle"></div>
+            <div style="display:flex;align-items:baseline;justify-content:space-between;flex:0 0 auto;">
+                <span class="mp-drawer-title">{{t.yourOrder}}</span>
+                <button class="mp-lang" style="border:none;background:none;color:var(--mp-muted-2);font-weight:700;cursor:pointer;font-family:var(--mp-sans);" @click="cartOpen = false">✕</button>
             </div>
 
-            <div v-for="(line, index) in cart" :key="lineKey(line)" class="border-bottom pb-2 mb-2">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <div class="fw-semibold">{{line.quantity}}× {{lineName(line)}}</div>
-                        <div class="text-muted small" v-if="line.extras.length > 0">+ {{line.extras.join(', ')}}</div>
+            <div class="mp-drawer-scroll">
+                <div v-for="(line, index) in cart" :key="lineKey(line)" class="mp-line">
+                    <div style="min-width:0;">
+                        <div class="mp-line-name">{{line.quantity}}× {{lineName(line)}}</div>
+                        <div class="mp-line-extras" v-if="line.extras.length > 0">+ {{line.extras.join(', ')}}</div>
                     </div>
-                    <div class="text-end">
-                        <div>&euro;{{lineTotal(line).toFixed(2)}}</div>
-                        <div class="btn-group btn-group-sm mt-1">
-                            <button class="btn btn-outline-secondary" @click="decrementLine(index)">−</button>
-                            <button class="btn btn-outline-secondary" @click="incrementLine(index)">+</button>
+                    <div class="mp-line-right">
+                        <span class="mp-line-price">&euro;{{lineTotal(line).toFixed(2)}}</span>
+                        <div class="mp-ministep">
+                            <button @click="decrementLine(index)">−</button>
+                            <span class="qty">{{line.quantity}}</span>
+                            <button @click="incrementLine(index)">+</button>
                         </div>
                     </div>
                 </div>
+
+                <div class="mp-total">
+                    <span class="label">{{t.total}}</span>
+                    <span class="amount">&euro;{{cartTotal.toFixed(2)}}</span>
+                </div>
+
+                <input class="mp-input" v-model.trim="customerName" :placeholder="t.name" maxlength="100">
+                <input class="mp-input" v-model.trim="customerPhone" :placeholder="t.phone" maxlength="20" inputmode="tel">
+                <textarea class="mp-input" v-model.trim="notes" :placeholder="t.noteForKitchen" rows="2" maxlength="500"></textarea>
+                <input type="text" v-model="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+
+                <div class="mp-notice" style="margin-top:4px;">{{t.payAtPickupNotice}}</div>
+                <div class="mp-error" style="margin-top:10px;" v-if="errorMessage">{{errorMessage}}</div>
             </div>
 
-            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
-                <span>{{t.total}}</span><span>&euro;{{cartTotal.toFixed(2)}}</span>
+            <div style="flex:0 0 auto;padding-top:14px;">
+                <button class="mp-btn" @click="submit" :disabled="sending || cart.length == 0">
+                    <span v-if="sending">…</span>
+                    <span v-else>{{t.sendOrder}} · &euro;{{cartTotal.toFixed(2)}}</span>
+                </button>
             </div>
-
-            <input class="form-control mb-2" v-model.trim="customerName" :placeholder="t.name" maxlength="100">
-            <input class="form-control mb-2" v-model.trim="customerPhone" :placeholder="t.phone" maxlength="20" inputmode="tel">
-            <textarea class="form-control mb-2" v-model.trim="notes" :placeholder="t.noteForKitchen" rows="2" maxlength="500"></textarea>
-            <input type="text" v-model="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
-
-            <div class="alert alert-warning py-2">{{t.payAtPickupNotice}}</div>
-            <div class="alert alert-danger py-2" v-if="errorMessage">{{errorMessage}}</div>
-
-            <button class="btn btn-success btn-lg w-100" @click="submit" :disabled="sending || cart.length == 0">
-                <span class="spinner-border spinner-border-sm me-1" v-if="sending"></span>{{t.sendOrder}}
-            </button>
         </div>
     </div>
 
-    <div class="modal d-block" tabindex="-1" v-if="extrasModalItem" style="background: rgba(0,0,0,.5)">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">{{itemName(extrasModalItem)}}</h5>
-                    <button type="button" class="btn-close" @click="extrasModalItem = null"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-check" v-for="extra in extrasModalItem.extras" :key="extra.name">
-                        <input class="form-check-input" type="checkbox" :value="extra.name" v-model="selectedExtras" :id="'extra-' + extra.name">
-                        <label class="form-check-label d-flex justify-content-between" :for="'extra-' + extra.name">
-                            <span>{{extra.name}}</span><span>+&euro;{{extra.price.toFixed(2)}}</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @click="extrasModalItem = null">{{t.cancel}}</button>
-                    <button class="btn btn-success" @click="confirmExtras">{{t.add}}</button>
-                </div>
+    <!-- Extras modal -->
+    <div class="mp-overlay" v-if="extrasModalItem" @click.self="extrasModalItem = null">
+        <div class="mp-sheet">
+            <div class="mp-sheet-handle"></div>
+            <div class="mp-extra-title">{{itemName(extrasModalItem)}}</div>
+            <div class="mp-extra-price">&euro;{{extrasModalItem.price.toFixed(2)}} {{t.each}}</div>
+            <div class="mp-extra-label">{{t.addExtras}}</div>
+            <div class="mp-drawer-scroll" style="margin-top:0;">
+                <label class="mp-check" v-for="extra in extrasModalItem.extras" :key="extra.name">
+                    <span class="name">
+                        <input type="checkbox" :value="extra.name" v-model="selectedExtras">
+                        <span class="mp-box"></span>
+                        <span>{{extra.name}}</span>
+                    </span>
+                    <span class="price">{{extra.price > 0 ? '+€' + extra.price.toFixed(2) : (extra.price < 0 ? '−€' + Math.abs(extra.price).toFixed(2) : t.free)}}</span>
+                </label>
+            </div>
+            <div class="mp-extra-actions">
+                <button class="mp-btn mp-btn-outline" @click="extrasModalItem = null">{{t.cancel}}</button>
+                <button class="mp-btn" @click="confirmExtras">{{t.add}} · &euro;{{extrasModalTotal.toFixed(2)}}</button>
             </div>
         </div>
     </div>
@@ -142,19 +358,23 @@
 
     const I18N = {
         el: {
-            viewCart: 'Δείτε την παραγγελία', yourOrder: 'Η παραγγελία σας', total: 'Σύνολο',
+            menuEyebrow: 'ΣΕ ΠΑΚΕΤΟ',
+            viewCart: 'Παραγγελία', yourOrder: 'Η παραγγελία σας', total: 'Σύνολο',
             name: 'Όνομα', phone: 'Τηλέφωνο', noteForKitchen: 'Σχόλιο για την κουζίνα (προαιρετικό)',
             payAtPickupNotice: 'Πληρώνετε κατά την παραλαβή. Το κατάστημα θα επιβεβαιώσει την παραγγελία σας με εκτιμώμενο χρόνο.',
-            sendOrder: 'Αποστολή παραγγελίας', soldOut: 'Εξαντλήθηκε', add: 'Προσθήκη', cancel: 'Άκυρο',
+            sendOrder: 'Αποστολή', soldOut: 'Εξαντλήθηκε', add: 'Προσθήκη', cancel: 'Άκυρο',
+            each: 'το τεμάχιο', addExtras: 'Προσθέστε extra', free: 'δωρεάν',
             activeOrder: 'Έχετε ενεργή παραγγελία', menuUnavailable: 'Ο κατάλογος δεν είναι διαθέσιμος αυτή τη στιγμή.',
             errorGeneric: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
             errorName: 'Συμπληρώστε το όνομά σας.', errorPhone: 'Συμπληρώστε ένα έγκυρο τηλέφωνο.'
         },
         en: {
+            menuEyebrow: 'TAKE-OUT MENU',
             viewCart: 'View order', yourOrder: 'Your order', total: 'Total',
             name: 'Name', phone: 'Phone', noteForKitchen: 'Note for the kitchen (optional)',
             payAtPickupNotice: 'You pay at pickup. The restaurant will confirm your order with an estimated time.',
             sendOrder: 'Send order', soldOut: 'Sold out', add: 'Add', cancel: 'Cancel',
+            each: 'each', addExtras: 'Add extras', free: 'free',
             activeOrder: 'You have an active order', menuUnavailable: 'The menu is currently unavailable.',
             errorGeneric: 'Something went wrong. Please try again.',
             errorName: 'Please enter your name.', errorPhone: 'Please enter a valid phone number.'
@@ -182,7 +402,16 @@
         computed: {
             t() { return I18N[this.lang]; },
             cartCount() { return this.cart.reduce((sum, line) => sum + line.quantity, 0); },
-            cartTotal() { return this.cart.reduce((sum, line) => sum + this.lineTotal(line), 0); }
+            cartTotal() { return this.cart.reduce((sum, line) => sum + this.lineTotal(line), 0); },
+            extrasModalTotal() {
+                if (!this.extrasModalItem) return 0;
+                let price = this.extrasModalItem.price;
+                for (const name of this.selectedExtras) {
+                    const extra = this.extrasModalItem.extras.find(e => e.name === name);
+                    if (extra) price += extra.price;
+                }
+                return price;
+            }
         },
         watch: {
             cart: { deep: true, handler(value) { localStorage.setItem('takeOutCart', JSON.stringify(value)); } }
@@ -200,8 +429,8 @@
             }
         },
         methods: {
-            toggleLang() {
-                this.lang = this.lang === 'el' ? 'en' : 'el';
+            setLang(lang) {
+                this.lang = lang;
                 localStorage.setItem('takeOutLang', this.lang);
             },
             sectionName(section) { return section.names[this.lang] || section.names.el || section.names.en; },
