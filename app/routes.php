@@ -110,6 +110,7 @@ use Application\Actions\TakeOutApp\Homepage as TakeOutAppHomepage;
 use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
 use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
 use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
+use Application\Actions\CustomerSite\Menu as CustomerSiteMenu;
 use Application\Actions\ReservationsApp\Homepage as ReservationsAppHomepage;
 use Application\Actions\ReservationsApp\ReservationsData;
 use Application\Actions\ReservationsApp\CreateReservation;
@@ -307,6 +308,10 @@ return function (App $app, $container) {
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());
+
+    $app->group('/order', function (RouteCollectorProxy $group) {
+        $group->get('/', CustomerSiteMenu::class);
+    });
 
     $app->group('/api', function (RouteCollectorProxy $group) {
         $group->get('/ecr/jobs', EcrJobs::class);

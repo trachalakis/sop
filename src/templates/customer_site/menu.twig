@@ -1,0 +1,300 @@
+{% extends 'customer_site/skeleton.twig' %}
+
+{% block pageCss %}
+<style>
+    .chips { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    .chips .btn { border-radius: 1rem; }
+    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 1040; }
+    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 1050; overflow-y: auto; }
+    .cart-panel { background: #fff; border-radius: 1rem 1rem 0 0; margin-top: 20vh; min-height: 80vh; }
+    main { padding-bottom: 6rem; }
+    [v-cloak] { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="app" v-cloak>
+    <nav class="navbar bg-success sticky-top">
+        <div class="container-fluid">
+            <span class="navbar-brand text-white fw-bold">{{siteName}} · Take Out</span>
+            <button class="btn btn-sm btn-outline-light" @click="toggleLang" v-text="lang == 'el' ? 'EN' : 'ΕΛ'"></button>
+        </div>
+    </nav>
+{% verbatim %}
+    <div class="chips bg-white border-bottom px-2 py-2 sticky-top" style="top: 56px;">
+        <button
+            v-for="section in sections"
+            :key="section.id"
+            class="btn btn-sm btn-outline-success me-1"
+            @click="scrollToSection(section.id)"
+        >{{sectionName(section)}}</button>
+    </div>
+
+    <main class="container py-3">
+        <div v-if="activeStatusUrl" class="alert alert-info py-2">
+            <a :href="activeStatusUrl" class="text-decoration-none">{{t.activeOrder}} →</a>
+        </div>
+
+        <div v-if="sections.length == 0" class="text-center text-muted py-5">{{t.menuUnavailable}}</div>
+
+        <section v-for="section in sections" :key="section.id" :id="'section-' + section.id" class="mb-4">
+            <h2 class="fs-4 border-bottom pb-2">{{sectionName(section)}}</h2>
+            <div
+                v-for="item in section.items"
+                :key="item.id"
+                class="d-flex justify-content-between align-items-center bg-white rounded border p-2 mb-2"
+            >
+                <div>
+                    <div class="fw-semibold">{{itemName(item)}}</div>
+                    <div class="text-muted">&euro;{{item.price.toFixed(2)}}</div>
+                    <span v-if="item.soldOut" class="badge bg-secondary">{{t.soldOut}}</span>
+                </div>
+                <div class="text-end">
+                    <div v-if="cartQuantity(item) > 0" class="btn-group">
+                        <button class="btn btn-outline-success" @click="removeOne(item)">−</button>
+                        <span class="btn btn-outline-success disabled">{{cartQuantity(item)}}</span>
+                        <button class="btn btn-success" @click="addItem(item)" :disabled="item.soldOut">+</button>
+                    </div>
+                    <button v-else class="btn btn-success" @click="addItem(item)" :disabled="item.soldOut">+</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="cart-bar p-2" v-if="cart.length > 0 && !cartOpen">
+        <button class="btn btn-success btn-lg w-100" @click="cartOpen = true">
+            {{t.viewCart}} · {{cartCount}} · &euro;{{cartTotal.toFixed(2)}}
+        </button>
+    </div>
+
+    <div class="cart-overlay" v-if="cartOpen" @click.self="cartOpen = false">
+        <div class="cart-panel container p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="fs-4 m-0">{{t.yourOrder}}</h2>
+                <button class="btn-close" @click="cartOpen = false"></button>
+            </div>
+
+            <div v-for="(line, index) in cart" :key="lineKey(line)" class="border-bottom pb-2 mb-2">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-semibold">{{line.quantity}}× {{lineName(line)}}</div>
+                        <div class="text-muted small" v-if="line.extras.length > 0">+ {{line.extras.join(', ')}}</div>
+                    </div>
+                    <div class="text-end">
+                        <div>&euro;{{lineTotal(line).toFixed(2)}}</div>
+                        <div class="btn-group btn-group-sm mt-1">
+                            <button class="btn btn-outline-secondary" @click="decrementLine(index)">−</button>
+                            <button class="btn btn-outline-secondary" @click="incrementLine(index)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between fw-bold fs-5 mb-3">
+                <span>{{t.total}}</span><span>&euro;{{cartTotal.toFixed(2)}}</span>
+            </div>
+
+            <input class="form-control mb-2" v-model.trim="customerName" :placeholder="t.name" maxlength="100">
+            <input class="form-control mb-2" v-model.trim="customerPhone" :placeholder="t.phone" maxlength="20" inputmode="tel">
+            <textarea class="form-control mb-2" v-model.trim="notes" :placeholder="t.noteForKitchen" rows="2" maxlength="500"></textarea>
+            <input type="text" v-model="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+
+            <div class="alert alert-warning py-2">{{t.payAtPickupNotice}}</div>
+            <div class="alert alert-danger py-2" v-if="errorMessage">{{errorMessage}}</div>
+
+            <button class="btn btn-success btn-lg w-100" @click="submit" :disabled="sending || cart.length == 0">
+                <span class="spinner-border spinner-border-sm me-1" v-if="sending"></span>{{t.sendOrder}}
+            </button>
+        </div>
+    </div>
+
+    <div class="modal d-block" tabindex="-1" v-if="extrasModalItem" style="background: rgba(0,0,0,.5)">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{itemName(extrasModalItem)}}</h5>
+                    <button type="button" class="btn-close" @click="extrasModalItem = null"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-check" v-for="extra in extrasModalItem.extras" :key="extra.name">
+                        <input class="form-check-input" type="checkbox" :value="extra.name" v-model="selectedExtras" :id="'extra-' + extra.name">
+                        <label class="form-check-label d-flex justify-content-between" :for="'extra-' + extra.name">
+                            <span>{{extra.name}}</span><span>+&euro;{{extra.price.toFixed(2)}}</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @click="extrasModalItem = null">{{t.cancel}}</button>
+                    <button class="btn btn-success" @click="confirmExtras">{{t.add}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endverbatim %}
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="/assets/js/vue.global.prod.js"></script>
+<script src="/assets/js/axios.min.js"></script>
+<script>
+    const SECTIONS = {{ sectionsJson|raw }};
+
+    const I18N = {
+        el: {
+            viewCart: 'Δείτε την παραγγελία', yourOrder: 'Η παραγγελία σας', total: 'Σύνολο',
+            name: 'Όνομα', phone: 'Τηλέφωνο', noteForKitchen: 'Σχόλιο για την κουζίνα (προαιρετικό)',
+            payAtPickupNotice: 'Πληρώνετε κατά την παραλαβή. Το κατάστημα θα επιβεβαιώσει την παραγγελία σας με εκτιμώμενο χρόνο.',
+            sendOrder: 'Αποστολή παραγγελίας', soldOut: 'Εξαντλήθηκε', add: 'Προσθήκη', cancel: 'Άκυρο',
+            activeOrder: 'Έχετε ενεργή παραγγελία', menuUnavailable: 'Ο κατάλογος δεν είναι διαθέσιμος αυτή τη στιγμή.',
+            errorGeneric: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
+            errorName: 'Συμπληρώστε το όνομά σας.', errorPhone: 'Συμπληρώστε ένα έγκυρο τηλέφωνο.'
+        },
+        en: {
+            viewCart: 'View order', yourOrder: 'Your order', total: 'Total',
+            name: 'Name', phone: 'Phone', noteForKitchen: 'Note for the kitchen (optional)',
+            payAtPickupNotice: 'You pay at pickup. The restaurant will confirm your order with an estimated time.',
+            sendOrder: 'Send order', soldOut: 'Sold out', add: 'Add', cancel: 'Cancel',
+            activeOrder: 'You have an active order', menuUnavailable: 'The menu is currently unavailable.',
+            errorGeneric: 'Something went wrong. Please try again.',
+            errorName: 'Please enter your name.', errorPhone: 'Please enter a valid phone number.'
+        }
+    };
+
+    Vue.createApp({
+        data() {
+            return {
+                lang: localStorage.getItem('takeOutLang') || 'el',
+                sections: SECTIONS,
+                cart: JSON.parse(localStorage.getItem('takeOutCart') || '[]'),
+                cartOpen: false,
+                customerName: localStorage.getItem('takeOutName') || '',
+                customerPhone: localStorage.getItem('takeOutPhone') || '',
+                notes: '',
+                website: '',
+                sending: false,
+                errorMessage: '',
+                extrasModalItem: null,
+                selectedExtras: [],
+                activeStatusUrl: null
+            }
+        },
+        computed: {
+            t() { return I18N[this.lang]; },
+            cartCount() { return this.cart.reduce((sum, line) => sum + line.quantity, 0); },
+            cartTotal() { return this.cart.reduce((sum, line) => sum + this.lineTotal(line), 0); }
+        },
+        watch: {
+            cart: { deep: true, handler(value) { localStorage.setItem('takeOutCart', JSON.stringify(value)); } }
+        },
+        mounted() {
+            const token = localStorage.getItem('takeOutToken');
+            if (token) {
+                axios.get('/order/status/' + token + '/poll')
+                    .then(response => {
+                        if (response.data.status === 'PENDING' || response.data.status === 'ACCEPTED') {
+                            this.activeStatusUrl = '/order/status/' + token;
+                        }
+                    })
+                    .catch(() => localStorage.removeItem('takeOutToken'));
+            }
+        },
+        methods: {
+            toggleLang() {
+                this.lang = this.lang === 'el' ? 'en' : 'el';
+                localStorage.setItem('takeOutLang', this.lang);
+            },
+            sectionName(section) { return section.names[this.lang] || section.names.el || section.names.en; },
+            itemName(item) { return item.names[this.lang] || item.names.el || item.names.en; },
+            findItem(id) {
+                for (const section of this.sections) {
+                    const item = section.items.find(i => i.id === id);
+                    if (item) return item;
+                }
+                return null;
+            },
+            lineName(line) {
+                const item = this.findItem(line.id);
+                return item ? this.itemName(item) : '';
+            },
+            lineKey(line) { return line.id + '|' + line.extras.join(','); },
+            lineTotal(line) {
+                const item = this.findItem(line.id);
+                if (!item) return 0;
+                let price = item.price;
+                for (const name of line.extras) {
+                    const extra = item.extras.find(e => e.name === name);
+                    if (extra) price += extra.price;
+                }
+                return line.quantity * price;
+            },
+            cartQuantity(item) {
+                return this.cart.filter(line => line.id === item.id).reduce((sum, line) => sum + line.quantity, 0);
+            },
+            addItem(item) {
+                if (item.extras.length > 0) {
+                    this.extrasModalItem = item;
+                    this.selectedExtras = [];
+                } else {
+                    this.pushLine(item, []);
+                }
+            },
+            confirmExtras() {
+                this.pushLine(this.extrasModalItem, [...this.selectedExtras].sort());
+                this.extrasModalItem = null;
+            },
+            pushLine(item, extras) {
+                const key = item.id + '|' + extras.join(',');
+                const line = this.cart.find(l => this.lineKey(l) === key);
+                if (line && line.quantity < 20) {
+                    line.quantity++;
+                } else if (!line) {
+                    this.cart.push({ id: item.id, quantity: 1, extras });
+                }
+            },
+            removeOne(item) {
+                for (let i = this.cart.length - 1; i >= 0; i--) {
+                    if (this.cart[i].id === item.id) { this.decrementLine(i); return; }
+                }
+            },
+            incrementLine(index) {
+                if (this.cart[index].quantity < 20) this.cart[index].quantity++;
+            },
+            decrementLine(index) {
+                this.cart[index].quantity--;
+                if (this.cart[index].quantity <= 0) this.cart.splice(index, 1);
+            },
+            scrollToSection(id) {
+                document.getElementById('section-' + id).scrollIntoView({ behavior: 'smooth' });
+            },
+            submit() {
+                this.errorMessage = '';
+                if (this.customerName.length === 0) { this.errorMessage = this.t.errorName; return; }
+                if (!/^\+?[0-9 ]{8,20}$/.test(this.customerPhone)) { this.errorMessage = this.t.errorPhone; return; }
+
+                this.sending = true;
+                axios.post('/order/submit', {
+                    customerName: this.customerName,
+                    customerPhone: this.customerPhone,
+                    notes: this.notes,
+                    website: this.website,
+                    entries: this.cart.map(line => ({
+                        menuItemId: line.id,
+                        quantity: line.quantity,
+                        extras: line.extras
+                    }))
+                }).then(response => {
+                    localStorage.setItem('takeOutToken', response.data.statusUrl.split('/').pop());
+                    localStorage.setItem('takeOutCart', '[]');
+                    localStorage.setItem('takeOutName', this.customerName);
+                    localStorage.setItem('takeOutPhone', this.customerPhone);
+                    window.location.href = response.data.statusUrl;
+                }).catch(error => {
+                    this.sending = false;
+                    this.errorMessage = error.response?.data?.error || this.t.errorGeneric;
+                });
+            }
+        }
+    }).mount('#app');
+</script>
+{% endblock %}
