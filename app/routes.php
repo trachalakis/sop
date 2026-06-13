@@ -110,6 +110,9 @@ use Application\Actions\TakeOutApp\Homepage as TakeOutAppHomepage;
 use Application\Actions\TakeOutApp\CreateOrder as TakeOutAppCreateOrder;
 use Application\Actions\TakeOutApp\UpdateOrder as TakeOutAppUpdateOrder;
 use Application\Actions\TakeOutApp\Payment as TakeOutAppPayment;
+use Application\Actions\TakeOutApp\PendingRequests as TakeOutAppPendingRequests;
+use Application\Actions\TakeOutApp\AcceptRequest as TakeOutAppAcceptRequest;
+use Application\Actions\TakeOutApp\RejectRequest as TakeOutAppRejectRequest;
 use Application\Actions\CustomerSite\Menu as CustomerSiteMenu;
 use Application\Actions\CustomerSite\SubmitRequest as CustomerSiteSubmitRequest;
 use Application\Actions\CustomerSite\Status as CustomerSiteStatus;
@@ -279,6 +282,9 @@ return function (App $app, $container) {
         $group->map(['GET', 'POST'], '/create', TakeOutAppCreateOrder::class);
         $group->map(['GET', 'POST'], '/update', TakeOutAppUpdateOrder::class);
         $group->post('/payment', TakeOutAppPayment::class);
+        $group->get('/requests/pending', TakeOutAppPendingRequests::class);
+        $group->post('/requests/{id}/accept', TakeOutAppAcceptRequest::class);
+        $group->post('/requests/{id}/reject', TakeOutAppRejectRequest::class);
     })
     ->add(new Authorization($container->get(UserPermissionsRepository::class)))
     ->add(new Authentication());

@@ -11,6 +11,37 @@
 	    </div>
 	</div>
 {% verbatim %}
+	<div v-if="pendingRequests.length > 0" class="mb-4">
+		<h2 class="fs-5 text-warning-emphasis"><i class="bi bi-globe"></i> Online παραγγελίες ({{pendingRequests.length}})</h2>
+		<div v-for="request in pendingRequests" :key="request.id" class="card border-warning mb-2">
+			<div class="card-body">
+				<div class="d-flex justify-content-between flex-wrap">
+					<div>
+						<span class="fw-bold fs-5">{{request.customerName}}</span>
+						<a :href="'tel:' + request.customerPhone" class="ms-2"><i class="bi bi-telephone"></i> {{request.customerPhone}}</a>
+						<span class="text-muted ms-2">πριν {{minutesAgo(request.createdAt)}}′</span>
+					</div>
+					<span class="fw-bold fs-5">&euro;{{request.total}}</span>
+				</div>
+				<ul class="mb-1">
+					<li v-for="entry in request.entries">
+						{{entry.quantity}}× {{entry.name}}
+						<span class="text-muted" v-if="entry.extras.length > 0">(+ {{entry.extras.join(', ')}})</span>
+					</li>
+				</ul>
+				<p class="fst-italic mb-2" v-if="request.notes"><i class="bi bi-chat-left-text"></i> {{request.notes}}</p>
+				<div class="btn-toolbar gap-2">
+					<button class="btn btn-success" @click="acceptingRequest = request">
+						<i class="bi bi-check-lg"></i> Αποδοχή
+					</button>
+					<button class="btn btn-outline-danger" @click="rejectingRequest = request">
+						<i class="bi bi-x-lg"></i> Απόρριψη
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<table class="table table-striped fs-4 mt-4">
 		<tbody>
 			<tr v-for="(order, index) in orders">
@@ -48,6 +79,56 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="modal" tabindex="-1" :class="acceptingRequest ? 'd-block' : ''">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Αποδοχή παραγγελίας</h5>
+					<button type="button" class="btn-close" @click="acceptingRequest = null"></button>
+				</div>
+				<div class="modal-body" v-if="acceptingRequest">
+					<p class="fs-5">{{acceptingRequest.customerName}} / &euro;{{acceptingRequest.total}}</p>
+					<p>Έτοιμη σε:</p>
+					<div class="btn-group mb-2">
+						<button
+							v-for="minutes in [15, 25, 40, 60]"
+							class="btn btn-lg"
+							:class="etaMinutes == minutes ? 'btn-primary' : 'btn-outline-primary'"
+							@click="etaMinutes = minutes"
+						>{{minutes}}′</button>
+					</div>
+					<input type="number" class="form-control" v-model.number="etaMinutes" min="5" max="180">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-lg" @click="acceptingRequest = null">Άκυρο</button>
+					<button type="button" class="btn btn-success btn-lg" @click="accept" :disabled="processingRequest">
+						<span class="spinner-border spinner-border-sm me-1" v-if="processingRequest"></span>Αποδοχή
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" tabindex="-1" :class="rejectingRequest ? 'd-block' : ''">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Απόρριψη παραγγελίας</h5>
+					<button type="button" class="btn-close" @click="rejectingRequest = null"></button>
+				</div>
+				<div class="modal-body" v-if="rejectingRequest">
+					<p class="fs-5">{{rejectingRequest.customerName}} / &euro;{{rejectingRequest.total}}</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary btn-lg" @click="rejectingRequest = null">Άκυρο</button>
+					<button type="button" class="btn btn-danger btn-lg" @click="reject" :disabled="processingRequest">
+						<span class="spinner-border spinner-border-sm me-1" v-if="processingRequest"></span>Απόρριψη
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endverbatim %}{% endblock %}
 
@@ -61,7 +142,12 @@
 		    	return {
 		    		orders: [],
 		    		payingOrder: null,
-		    		paying: false
+		    		paying: false,
+		    		pendingRequests: [],
+		    		acceptingRequest: null,
+		    		rejectingRequest: null,
+		    		etaMinutes: 25,
+		    		processingRequest: false
 		    	}
 		    },
 		    mounted() {
@@ -69,6 +155,11 @@
 					this.fetchOrders()
 				}, 5000)
                 this.fetchOrders();
+
+		    	setInterval(() => {
+					this.fetchPendingRequests()
+				}, 15000)
+                this.fetchPendingRequests();
 		    },
 		    methods: {
 		    	fetchOrders() {
@@ -83,6 +174,47 @@
 	                }).then(response => {
 	                    this.orders = response.data.data.activeTakeOutOrders
 	                });
+		    	},
+		    	fetchPendingRequests() {
+		    		axios.get('/take-out/requests/pending').then(response => {
+		    			if (response.data.length > this.pendingRequests.length) {
+		    				this.beep();
+		    			}
+		    			this.pendingRequests = response.data;
+		    		});
+		    	},
+		    	beep() {
+		    		const ctx = new (window.AudioContext || window.webkitAudioContext)();
+		    		const oscillator = ctx.createOscillator();
+		    		oscillator.type = 'sine';
+		    		oscillator.frequency.value = 880;
+		    		oscillator.connect(ctx.destination);
+		    		oscillator.start();
+		    		setTimeout(() => { oscillator.stop(); ctx.close(); }, 400);
+		    	},
+		    	minutesAgo(createdAt) {
+		    		return Math.max(0, Math.round((Date.now() - new Date(createdAt.replace(' ', 'T'))) / 60000));
+		    	},
+		    	accept() {
+		    		this.processingRequest = true;
+		    		axios.post('/take-out/requests/' + this.acceptingRequest.id + '/accept', { etaMinutes: this.etaMinutes })
+		    			.then(() => {
+		    				this.acceptingRequest = null;
+		    				this.fetchPendingRequests();
+		    				this.fetchOrders();
+		    			})
+		    			.catch(error => alert(error.response?.data?.error || error))
+		    			.finally(() => { this.processingRequest = false; });
+		    	},
+		    	reject() {
+		    		this.processingRequest = true;
+		    		axios.post('/take-out/requests/' + this.rejectingRequest.id + '/reject')
+		    			.then(() => {
+		    				this.rejectingRequest = null;
+		    				this.fetchPendingRequests();
+		    			})
+		    			.catch(error => alert(error.response?.data?.error || error))
+		    			.finally(() => { this.processingRequest = false; });
 		    	},
 		    	getTime(date) {
 		    		return date.substr(date.length - 8, 5);
