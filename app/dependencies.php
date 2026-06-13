@@ -67,6 +67,7 @@ use Application\Settings\Settings;
 use Application\Services\OrdersReportService;
 use Application\Services\ScansReportService;
 use Application\Services\InvoiceParserService;
+use Application\Services\TakeOutOrderFactory;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
@@ -256,6 +257,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
         ScansReportService::class => function (ContainerInterface $c) {
             return new ScansReportService();
+        },
+        TakeOutOrderFactory::class => function (ContainerInterface $c) {
+            return new TakeOutOrderFactory(
+                $c->get(EcrJobsRepository::class),
+                $c->get(MenuItemsRepository::class),
+                $c->get(OrdersRepository::class)
+            );
         },
         ShoppingListsRepository::class => function (ContainerInterface $c) {
             $em = $c->get(EntityManager::class);
