@@ -135,6 +135,9 @@
                 </div>
             </div>
         </template>
+
+        <a href="/order/menu" class="mp-btn" :class="{ 'mp-btn-outline': state.status !== 'REJECTED' }"
+           style="display:block;text-decoration:none;text-align:center;margin-top:26px;">{{t.newOrder}}</a>
     </main>
 {% endverbatim %}
 </div>
@@ -154,7 +157,7 @@
             acceptedTitle: 'Η παραγγελία έγινε δεκτή!', readyInAbout: 'ΕΤΟΙΜΗ ΣΕ ΠΕΡΙΠΟΥ', minutes: 'λεπτά',
             ticket: 'Απόδειξη', payAtPickup: 'πληρωμή στην παραλαβή',
             rejectedTitle: 'Η παραγγελία δεν έγινε δεκτή', rejectedSubtitle: 'Λυπούμαστε, δεν μπορούμε να αναλάβουμε την παραγγελία αυτή τη στιγμή. Παρακαλούμε τηλεφωνήστε στο κατάστημα.',
-            total: 'Σύνολο'
+            newOrder: 'Νέα παραγγελία', total: 'Σύνολο'
         },
         en: {
             statusEyebrow: 'ORDER STATUS', yourOrder: 'Your order',
@@ -162,7 +165,7 @@
             acceptedTitle: 'Order accepted!', readyInAbout: 'READY IN ABOUT', minutes: 'min',
             ticket: 'Ticket', payAtPickup: 'pay at pickup',
             rejectedTitle: "Order not accepted", rejectedSubtitle: "Sorry, we can't take this order right now. Please give the restaurant a call.",
-            total: 'Total'
+            newOrder: 'Start a new order', total: 'Total'
         }
     };
 
