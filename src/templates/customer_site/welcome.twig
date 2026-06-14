@@ -26,17 +26,15 @@
     }
     .mp-welcome-eyebrow {
         font-weight: 700; font-size: 12px; letter-spacing: .22em; text-transform: uppercase;
-        color: var(--mp-rust); margin-bottom: 14px;
+        color: var(--mp-rust); margin-bottom: 18px;
     }
-    .mp-welcome-name {
-        font-family: var(--mp-serif);
-        font-size: 60px; line-height: .92; color: var(--mp-ink);
-        word-break: break-word;
+    .mp-welcome-logo {
+        width: 252px; max-width: 82%; height: auto; display: block;
     }
     .mp-welcome-tagline {
         font-family: var(--mp-serif); font-style: italic;
         font-size: 21px; line-height: 1.42; color: #5C7873;
-        margin-top: 18px; max-width: 250px;
+        margin-top: 22px; max-width: 250px;
     }
     .mp-welcome-steps {
         position: relative; z-index: 2;
@@ -84,7 +82,7 @@
     <div class="mp-welcome-hero">
         <div class="mp-welcome-eyebrow">{{t.eyebrow}}</div>
 {% endverbatim %}
-        <div class="mp-welcome-name">{{siteName}}</div>
+        <img src="/assets/customer_logo.png" class="mp-welcome-logo" alt="{{siteName}}">
 {% verbatim %}
         <div class="mp-welcome-tagline">{{t.tagline}}</div>
     </div>
