@@ -2,18 +2,36 @@
 
 {% block pageCss %}
 <style>
+    /* Combined sticky bar so the chips always sit right under the header */
+    .mp-topbar { position: sticky; top: 0; z-index: 30; background: var(--mp-cream); }
+    .mp-topbar .mp-header { position: static; }
+
+    .mp-chips-wrap {
+        position: relative;
+        background: var(--mp-cream);
+        border-bottom: 1px solid var(--mp-line);
+    }
+    /* Edge fades hint that the row scrolls; shown only when there's more that way */
+    .mp-chips-wrap::before,
+    .mp-chips-wrap::after {
+        content: '';
+        position: absolute; top: 0; bottom: 0; width: 42px;
+        pointer-events: none; z-index: 2;
+        opacity: 0; transition: opacity .2s ease;
+    }
+    .mp-chips-wrap::before { left: 0; background: linear-gradient(to right, var(--mp-cream) 30%, rgba(252,250,244,0)); }
+    .mp-chips-wrap::after  { right: 0; background: linear-gradient(to left,  var(--mp-cream) 30%, rgba(252,250,244,0)); }
+    .mp-chips-wrap.has-fade-left::before { opacity: 1; }
+    .mp-chips-wrap.has-fade-right::after { opacity: 1; }
+
     .mp-chips {
-        position: sticky;
-        z-index: 25;
-        top: 64px;
         display: flex;
         gap: 8px;
         padding: 12px 22px;
-        background: var(--mp-cream);
-        border-bottom: 1px solid var(--mp-line);
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        scroll-behavior: smooth;
     }
     .mp-chips::-webkit-scrollbar { display: none; }
     .mp-chip {
@@ -224,6 +242,7 @@
 
 {% block content %}
 <div id="app" class="mp-shell" v-cloak>
+    <div class="mp-topbar">
     <header class="mp-header">
         <div class="mp-brand">
             <img src="/assets/customer_logo.png" class="mp-brand-logo" alt="{{siteName}}">
@@ -236,14 +255,19 @@
         </div>
     </header>
 
-    <nav class="mp-chips" v-if="sections.length > 0">
-        <button
-            v-for="section in sections"
-            :key="section.id"
-            class="mp-chip"
-            @click="scrollToSection(section.id)"
-        >{{sectionName(section)}}</button>
-    </nav>
+    <div class="mp-chips-wrap" v-if="sections.length > 0" :class="{ 'has-fade-left': fadeLeft, 'has-fade-right': fadeRight }">
+        <nav class="mp-chips" ref="chips" @scroll="onChipsScroll">
+            <button
+                v-for="section in sections"
+                :key="section.id"
+                :id="'chip-' + section.id"
+                class="mp-chip"
+                :class="{ 'is-active': activeSection === section.id }"
+                @click="scrollToSection(section.id)"
+            >{{sectionName(section)}}</button>
+        </nav>
+    </div>
+    </div>
 
     <main class="mp-main">
         <a v-if="activeStatusUrl" :href="activeStatusUrl" class="mp-active-order">{{t.activeOrder}} →</a>
@@ -396,7 +420,10 @@
                 errorMessage: '',
                 extrasModalItem: null,
                 selectedExtras: [],
-                activeStatusUrl: null
+                activeStatusUrl: null,
+                activeSection: SECTIONS.length ? SECTIONS[0].id : null,
+                fadeLeft: false,
+                fadeRight: false
             }
         },
         computed: {
@@ -414,7 +441,8 @@
             }
         },
         watch: {
-            cart: { deep: true, handler(value) { localStorage.setItem('takeOutCart', JSON.stringify(value)); } }
+            cart: { deep: true, handler(value) { localStorage.setItem('takeOutCart', JSON.stringify(value)); } },
+            activeSection(id) { this.centerChip(id); }
         },
         mounted() {
             const token = localStorage.getItem('takeOutToken');
@@ -427,6 +455,12 @@
                     })
                     .catch(() => localStorage.removeItem('takeOutToken'));
             }
+
+            this.$nextTick(() => {
+                this.updateFades();
+                this.setupScrollSpy();
+            });
+            window.addEventListener('resize', this.updateFades);
         },
         methods: {
             setLang(lang) {
@@ -493,8 +527,46 @@
                 this.cart[index].quantity--;
                 if (this.cart[index].quantity <= 0) this.cart.splice(index, 1);
             },
+            topbarOffset() {
+                const topbar = document.querySelector('.mp-topbar');
+                return (topbar ? topbar.offsetHeight : 100) + 8;
+            },
             scrollToSection(id) {
-                document.getElementById('section-' + id).scrollIntoView({ behavior: 'smooth' });
+                this.activeSection = id;
+                const el = document.getElementById('section-' + id);
+                if (!el) return;
+                const y = el.getBoundingClientRect().top + window.scrollY - this.topbarOffset();
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            },
+            onChipsScroll() { this.updateFades(); },
+            updateFades() {
+                const el = this.$refs.chips;
+                if (!el) { this.fadeLeft = false; this.fadeRight = false; return; }
+                this.fadeLeft = el.scrollLeft > 4;
+                this.fadeRight = (el.scrollWidth - el.clientWidth - el.scrollLeft) > 4;
+            },
+            centerChip(id) {
+                const wrap = this.$refs.chips;
+                const chip = document.getElementById('chip-' + id);
+                if (!wrap || !chip) return;
+                const target = chip.offsetLeft - (wrap.clientWidth - chip.clientWidth) / 2;
+                wrap.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+            },
+            setupScrollSpy() {
+                if (!this.sections.length || typeof IntersectionObserver === 'undefined') return;
+                const observer = new IntersectionObserver((entries) => {
+                    // Pick the topmost section currently crossing the bar band
+                    const visible = entries
+                        .filter(e => e.isIntersecting)
+                        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+                    if (visible.length) {
+                        this.activeSection = parseInt(visible[0].target.id.replace('section-', ''), 10);
+                    }
+                }, { root: null, rootMargin: '-' + this.topbarOffset() + 'px 0px -70% 0px', threshold: 0 });
+                for (const section of this.sections) {
+                    const el = document.getElementById('section-' + section.id);
+                    if (el) observer.observe(el);
+                }
             },
             submit() {
                 this.errorMessage = '';
