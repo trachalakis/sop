@@ -109,7 +109,9 @@ final class AcceptRequest
 
             $printers = [];
             foreach ($menuItem->getPrinters() as $printer) {
-                $printers[] = ['id' => $printer->getId()];
+                // String id to match the GraphQL `ID` type the client compares against
+                // (receipt-canvas does a strict `p.id === printer.id`)
+                $printers[] = ['id' => (string) $printer->getId()];
             }
 
             $extras = [];
