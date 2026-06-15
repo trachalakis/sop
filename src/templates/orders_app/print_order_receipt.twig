@@ -424,8 +424,12 @@
 		    	},
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItemPrice;
-
 		    		let weight = orderEntry.weight;
+                    
+                    if (orderEntry.quantity <= 0) {
+                        return 0;
+                    }
+                    
 		    		if (weight > 0) {
 		    			if (weight < 1000) {
 		    				price -= (price * ((1000 - weight) / 1000));
@@ -474,7 +478,8 @@
 		    		);
 		    		y += 16;
 
-		    		addImage(this.canvasCtx, img, 500, 417, true);
+		    		addImage(this.canvasCtx, img, 500, 148, true);
+                    y += 16;
 		    		separator(this.canvasCtx);
 
 		    		const entries = this.familyOrderEntries(this.allOrdeEntries, family);

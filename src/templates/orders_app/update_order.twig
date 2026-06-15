@@ -1095,8 +1095,12 @@
 		    	},
 		    	calculateOrderEntryPrice(orderEntry) {
 		    		let price = orderEntry.menuItemPrice;
-
 		    		let weight = orderEntry.weight;
+                    
+                    if (orderEntry.quantity <= 0) {
+                        return 0;
+                    }
+                    
 		    		if (weight > 0) {
 		    			if (weight < 1000) {
 		    				price -= (price * ((1000 - weight) / 1000));
