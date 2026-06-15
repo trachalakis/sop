@@ -82,8 +82,61 @@ final class AcceptRequest
 
         $response->getBody()->write(json_encode([
             'ticketNumber' => $order->getTicketNumber(),
+            'notes' => $takeOutRequest->getNotes(),
+            'entries' => $this->buildPrintEntries($order),
         ]));
         return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    /**
+     * Shape the created order's entries the way the client-side receipt
+     * canvas (drawReceiptOnCanvas) expects, so the staff app can print the
+     * accepted order exactly like a staff-entered take-out order.
+     */
+    private function buildPrintEntries(\Domain\Entities\Order $order): array
+    {
+        $entries = [];
+        foreach ($order->getOrderEntries() as $orderEntry) {
+            $menuItem = $orderEntry->getMenuItem();
+
+            $translations = [];
+            foreach ($menuItem->getTranslations() as $translation) {
+                $translations[] = [
+                    'name' => $translation->getName(),
+                    'language' => $translation->getLanguage()->getIsoCode(),
+                ];
+            }
+
+            $printers = [];
+            foreach ($menuItem->getPrinters() as $printer) {
+                $printers[] = ['id' => $printer->getId()];
+            }
+
+            $extras = [];
+            foreach ($orderEntry->getOrderEntryExtras() as $extra) {
+                $extras[] = ['name' => $extra->getName(), 'price' => $extra->getPrice()];
+            }
+
+            $entries[] = [
+                'timing' => $orderEntry->getTiming(),
+                'quantity' => $orderEntry->getQuantity(),
+                'weight' => $orderEntry->getWeight(),
+                'notes' => $orderEntry->getNotes(),
+                'family' => $orderEntry->getFamily(),
+                'menuItemPrice' => $orderEntry->getMenuItemPrice(),
+                'menuItem' => [
+                    // price mirrors the snapshot so the receipt total matches the order
+                    'price' => $orderEntry->getMenuItemPrice(),
+                    'priceUnit' => $menuItem->getPriceUnit(),
+                    'menuPosition' => $menuItem->getMenuPosition(),
+                    'printers' => $printers,
+                    'translations' => $translations,
+                ],
+                'orderEntryExtras' => $extras,
+            ];
+        }
+
+        return $entries;
     }
 
     private function fail(Response $response, string $message, int $status): Response

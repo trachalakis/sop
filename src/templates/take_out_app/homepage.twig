@@ -130,12 +130,16 @@
 		</div>
 	</div>
 </div>
+<canvas width="576" height="1500" class="d-none"></canvas>
 {% endverbatim %}{% endblock %}
 
 {% block javascript %}
 	{{ parent() }}
 	<script src="/assets/js/vue.global.prod.js"></script>
 	<script src="/assets/js/axios.min.js"></script>
+	<script src="/assets/js/lodash.min.js"></script>
+	<script src="/assets/js/epos-2.24.0.js"></script>
+	<script src="/assets/js/receipt-canvas.js"></script>
 	<script>
 		vueApp = Vue.createApp({
 		    data() {
@@ -147,10 +151,15 @@
 		    		acceptingRequest: null,
 		    		rejectingRequest: null,
 		    		etaMinutes: 25,
-		    		processingRequest: false
+		    		processingRequest: false,
+		    		printers: [],
+		    		canvasCtx: null
 		    	}
 		    },
 		    mounted() {
+		    	this.canvasCtx = document.querySelector('canvas').getContext('2d');
+		    	this.fetchPrinters();
+
 		    	setInterval(() => {
 					this.fetchOrders()
 				}, 5000)
@@ -198,13 +207,75 @@
 		    	accept() {
 		    		this.processingRequest = true;
 		    		axios.post('/take-out/requests/' + this.acceptingRequest.id + '/accept', { etaMinutes: this.etaMinutes })
-		    			.then(() => {
+		    			.then(response => {
 		    				this.acceptingRequest = null;
 		    				this.fetchPendingRequests();
 		    				this.fetchOrders();
+		    				if (response.data && response.data.entries) {
+		    					this.printAcceptedOrder(response.data.ticketNumber, response.data.entries, response.data.notes);
+		    				}
 		    			})
 		    			.catch(error => alert(error.response?.data?.error || error))
 		    			.finally(() => { this.processingRequest = false; });
+		    	},
+		    	fetchPrinters() {
+		    		axios({
+		    			url: '/admin/graph-ql?useCachedResults=true',
+		    			method: 'post',
+		    			data: `{ printers { id, name, printerAddress, isReceiptPrinter } }`
+		    		}).then(response => {
+		    			this.printers = response.data.data.printers;
+		    		});
+		    	},
+		    	getTranslation(object, language) {
+		    		return _.find(object.translations, t => t.language == language);
+		    	},
+		    	calculateOrderEntryPrice(orderEntry) {
+		    		let price = orderEntry.menuItem.price;
+		    		_.each(orderEntry.orderEntryExtras, extra => { price += extra.price; });
+		    		return _.round(price * orderEntry.quantity, 1);
+		    	},
+		    	orderTotal(entries) {
+		    		let total = 0;
+		    		_.each(entries, entry => { total += this.calculateOrderEntryPrice(entry); });
+		    		return _.round(total, 1);
+		    	},
+		    	printAcceptedOrder(ticketNumber, entries, notes) {
+		    		if (!this.canvasCtx || this.printers.length === 0) return;
+
+		    		_.each(this.printers, printer => {
+		    			let { orderEntriesCount, canvasHeight } = drawReceiptOnCanvas(
+		    				this.canvasCtx,
+		    				printer,
+		    				entries,
+		    				{
+		    					label: 'TAKE AWAY',
+		    					ticketNumber: ticketNumber,
+		    					notes: notes || '',
+		    				},
+		    				{
+		    					hasManyFamilies: false,
+		    					getTranslation: this.getTranslation.bind(this),
+		    					calculateOrderEntryPrice: this.calculateOrderEntryPrice.bind(this),
+		    					total: this.orderTotal(entries),
+		    				}
+		    			);
+
+		    			if (orderEntriesCount > 0) {
+		    				let pr = new epson.ePOSBuilder();
+		    				pr.addImage(this.canvasCtx, 0, 0, 576, canvasHeight, pr.COLOR_1, pr.MODE_MONO);
+		    				pr.addFeedLine(5);
+		    				pr.addCut(pr.CUT_FEED);
+		    				const xml = pr.toString();
+		    				const count = printer.isReceiptPrinter ? 2 : 1;
+		    				for (let i = 0; i < count; i++) {
+		    					axios.post('/admin/print-jobs/create', {
+		    						printer: printer.name,
+		    						xml,
+		    					}).catch(error => console.error(error));
+		    				}
+		    			}
+		    		});
 		    	},
 		    	reject() {
 		    		this.processingRequest = true;
