@@ -55,3 +55,6 @@ vendor
 public/assets/logo.*
 
 ecr-agent/ecr-agent-config.php.superpowers/
+
+# Customer-site design mockups (large bundled artifacts, kept locally only)
+src/templates/customer_site/mamas_place_design*.html
