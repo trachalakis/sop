@@ -125,7 +125,9 @@ class Order
 
     public function getPaymentMethod()
    	{
-   		$cashEntries = 0;
+   		return 'BOTH';
+        
+        $cashEntries = 0;
    		$creditCardEntries = 0;
    		foreach($this->orderEntries as $orderEntry) {
    			if ($orderEntry->getPaymentMethod() == 'CASH') {
@@ -204,7 +206,7 @@ class Order
     public function hasDiscountedEntries()
     {
         foreach($this->orderEntries as $orderEntry) {
-            if ($orderEntry->getDiscount() > 0) {
+            if ($orderEntry->getDiscount() != 0) {
                 return true;
             }
         }
