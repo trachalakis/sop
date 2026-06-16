@@ -58,3 +58,6 @@ ecr-agent/ecr-agent-config.php.superpowers/
 
 # Customer-site design mockups (large bundled artifacts, kept locally only)
 src/templates/customer_site/mamas_place_design*.html
+
+# Design source folders (large mockups, kept locally only)
+design_files/
