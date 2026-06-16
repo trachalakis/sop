@@ -152,11 +152,7 @@
             <span style="width:30px; height:30px; border-radius:8px; background:rgba(226,162,58,0.13); display:flex; align-items:center; justify-content:center; color:var(--accent,#E2A23A);"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 7c0-1.7-2.7-3-6-3S6 5.3 6 7s2.7 3 6 3 6 1.3 6 3-2.7 3-6 3-6-1.3-6-3M12 3v18"/></svg></span>
           </div>
           <div style="display:flex; align-items:baseline; gap:9px;">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">€3.248<span style="font-size:18px; color:#868B94;">,50</span></span>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="display:inline-flex; align-items:center; gap:3px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:2px 7px; border-radius:6px;">▲ 12,4%</span>
-            <svg width="74" height="30" viewBox="0 0 74 30" fill="none" preserveAspectRatio="none"><polyline points="2,24 12,22 22,23 32,16 42,18 52,10 62,12 72,4" stroke="#1E9D62" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">€{{revenue.whole}}<span style="font-size:18px; color:#868B94;">,{{revenue.decimals}}</span></span>
           </div>
         </div>
 
@@ -166,12 +162,8 @@
             <span style="width:30px; height:30px; border-radius:8px; background:rgba(91,160,201,0.14); display:flex; align-items:center; justify-content:center; color:#3B83B2;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></span>
           </div>
           <div style="display:flex; align-items:baseline; gap:9px;">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">84</span>
-            <span style="font-size:12px; color:#868B94; font-weight:500;">12 ανοιχτές</span>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="display:inline-flex; align-items:center; gap:3px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:2px 7px; border-radius:6px;">▲ 6,3%</span>
-            <svg width="74" height="30" viewBox="0 0 74 30" fill="none" preserveAspectRatio="none"><polyline points="2,22 12,24 22,18 32,20 42,12 52,15 62,8 72,10" stroke="#3B83B2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">{{ordersCount}}</span>
+            <span style="font-size:12px; color:#868B94; font-weight:500;">{{openCount}} ανοιχτές</span>
           </div>
         </div>
 
@@ -181,12 +173,8 @@
             <span style="width:30px; height:30px; border-radius:8px; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#1F2024;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0M16 5.5a3.4 3.4 0 0 1 0 6M18 20a5.5 5.5 0 0 0-3-5"/></svg></span>
           </div>
           <div style="display:flex; align-items:baseline; gap:9px;">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">213</span>
-            <span style="font-size:12px; color:#868B94; font-weight:500;">187 ενήλικες</span>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="display:inline-flex; align-items:center; gap:3px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:2px 7px; border-radius:6px;">▲ 9,1%</span>
-            <svg width="74" height="30" viewBox="0 0 74 30" fill="none" preserveAspectRatio="none"><polyline points="2,20 12,21 22,16 32,18 42,13 52,14 62,7 72,9" stroke="#6A6F78" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">{{covers}}</span>
+            <span style="font-size:12px; color:#868B94; font-weight:500;">{{coverAdults}} ενήλικες</span>
           </div>
         </div>
 
@@ -196,11 +184,7 @@
             <span style="width:30px; height:30px; border-radius:8px; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#1F2024;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
           </div>
           <div style="display:flex; align-items:baseline; gap:9px;">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">€38<span style="font-size:18px; color:#868B94;">,70</span></span>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="display:inline-flex; align-items:center; gap:3px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#D8493F; background:rgba(238,107,99,0.12); padding:2px 7px; border-radius:6px;">▼ 2,1%</span>
-            <svg width="74" height="30" viewBox="0 0 74 30" fill="none" preserveAspectRatio="none"><polyline points="2,8 12,10 22,9 32,14 42,12 52,17 62,16 72,20" stroke="#D8493F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:27px; letter-spacing:-0.02em; color:#16181C;">€{{avg.whole}}<span style="font-size:18px; color:#868B94;">,{{avg.decimals}}</span></span>
           </div>
         </div>
 
@@ -328,31 +312,15 @@
             <a href="/reservations-app/" style="font-size:11.5px; font-weight:600; color:var(--accent,#E2A23A); cursor:pointer;">Όλες →</a>
           </div>
           <div style="display:flex; flex-direction:column; gap:9px; flex:1;">
+{% for r in reservations %}
             <div style="display:flex; align-items:center; gap:12px; padding:10px 11px; border-radius:11px; background:rgba(0,0,0,0.028);">
-              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">20:30</div>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Παπαδόπουλος</div><div style="font-size:11.5px; color:#868B94;">4 άτομα · Τ12</div></div>
-              <span style="font-size:10.5px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:3px 8px; border-radius:20px;">ΟΚ</span>
+              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">{{r.time}}</div>
+              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{r.name}}</div><div style="font-size:11.5px; color:#868B94;">{{r.people}} άτομα · {{r.tables}}</div></div>
+              {% if r.statusKind == 'ok' %}<span style="font-size:10.5px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:3px 8px; border-radius:20px;">{{r.statusLabel}}</span>{% else %}<span style="font-size:10.5px; font-weight:600; color:#C2891B; background:rgba(232,176,75,0.14); padding:3px 8px; border-radius:20px;">{{r.statusLabel}}</span>{% endif %}
             </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 11px; border-radius:11px; background:rgba(0,0,0,0.028);">
-              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">21:00</div>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Γεωργίου</div><div style="font-size:11.5px; color:#868B94;">2 άτομα · Τ5</div></div>
-              <span style="font-size:10.5px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:3px 8px; border-radius:20px;">ΟΚ</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 11px; border-radius:11px; background:rgba(0,0,0,0.028);">
-              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">21:00</div>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Βασιλείου</div><div style="font-size:11.5px; color:#868B94;">6 άτομα · Τ18–19</div></div>
-              <span style="font-size:10.5px; font-weight:600; color:#C2891B; background:rgba(232,176,75,0.14); padding:3px 8px; border-radius:20px;">Εκκρεμεί</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 11px; border-radius:11px; background:rgba(0,0,0,0.028);">
-              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">21:30</div>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ιωάννου</div><div style="font-size:11.5px; color:#868B94;">3 άτομα · Τ7</div></div>
-              <span style="font-size:10.5px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:3px 8px; border-radius:20px;">ΟΚ</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 11px; border-radius:11px; background:rgba(0,0,0,0.028);">
-              <div style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:14px; color:var(--accent,#E2A23A); width:42px;">22:00</div>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Αντωνίου</div><div style="font-size:11.5px; color:#868B94;">8 άτομα · Βεράντα</div></div>
-              <span style="font-size:10.5px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:3px 8px; border-radius:20px;">ΟΚ</span>
-            </div>
+{% else %}
+            <div style="padding:30px 11px; text-align:center; color:#9197A0; font-size:13px;">Καμία επόμενη κράτηση.</div>
+{% endfor %}
           </div>
         </div>
 
@@ -369,65 +337,19 @@
             <span>Δελτίο</span><span>Τραπέζι</span><span>Σερβιτόρος</span><span style="text-align:center;">Καλ.</span><span style="text-align:right;">Σύνολο</span><span>Πληρωμή</span><span style="text-align:right;">Κατάσταση</span>
           </div>
 
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center; border-bottom:1px solid rgba(0,0,0,0.04);" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1042</span>
-            <span style="font-size:13px; color:#3C3F45;">Τ6</span>
-            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Μαρία Κ.</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">6</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€128,40</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B83B2" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>Κάρτα</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:var(--accent,#E2A23A); background:color-mix(in srgb,var(--accent,#E2A23A) 14%,transparent); padding:3px 9px; border-radius:20px;">Ανοιχτή</span></span>
+{% for o in recentOrders %}
+          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center;{% if not loop.last %} border-bottom:1px solid rgba(0,0,0,0.04);{% endif %}" style-hover="background:rgba(0,0,0,0.022);">
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#{{o.ticket}}</span>
+            {% if o.isTakeAway %}<span style="font-size:12px; color:#868B94; display:inline-flex; align-items:center; gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8h14l-1 12H6L5 8zM9 8a3 3 0 0 1 6 0"/></svg>{{o.tableLabel}}</span>{% else %}<span style="font-size:13px; color:#3C3F45;">{{o.tableLabel}}</span>{% endif %}
+            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{o.waiter}}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">{{o.covers}}</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">&euro;{{o.price}}</span>
+            <span style="font-size:12px; color:#6A6F78;">{{o.payment}}</span>
+            <span style="text-align:right;">{% if o.statusOpen %}<span style="font-size:11px; font-weight:700; color:var(--accent,#E2A23A); background:color-mix(in srgb,var(--accent,#E2A23A) 14%,transparent); padding:3px 9px; border-radius:20px;">{{o.statusLabel}}</span>{% else %}<span style="font-size:11px; font-weight:700; color:#6A6F78; background:rgba(0,0,0,0.06); padding:3px 9px; border-radius:20px;">{{o.statusLabel}}</span>{% endif %}</span>
           </div>
-
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center; border-bottom:1px solid rgba(0,0,0,0.04);" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1041</span>
-            <span style="font-size:13px; color:#3C3F45;">Τ13</span>
-            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Γιώργος Π.</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">4</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€74,00</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1E9D62" stroke-width="2" stroke-linecap="round"><path d="M3 6h18v12H3zM3 10h18"/></svg>Μετρητά</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:var(--accent,#E2A23A); background:color-mix(in srgb,var(--accent,#E2A23A) 14%,transparent); padding:3px 9px; border-radius:20px;">Ανοιχτή</span></span>
-          </div>
-
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center; border-bottom:1px solid rgba(0,0,0,0.04);" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1040</span>
-            <span style="font-size:12px; color:#868B94; display:inline-flex; align-items:center; gap:4px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8h14l-1 12H6L5 8zM9 8a3 3 0 0 1 6 0"/></svg>Take-away</span>
-            <span style="font-size:13px; color:#868B94;">—</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">2</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€23,50</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B83B2" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>Κάρτα</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:#6A6F78; background:rgba(0,0,0,0.06); padding:3px 9px; border-radius:20px;">Κλειστή</span></span>
-          </div>
-
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center; border-bottom:1px solid rgba(0,0,0,0.04);" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1039</span>
-            <span style="font-size:13px; color:#3C3F45;">Τ4</span>
-            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Ελένη Σ.</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">4</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€96,80</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6A6F78" stroke-width="2"><path d="M12 3v18M7 7h7a3 3 0 0 1 0 6H7"/></svg>Μικτή</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:#3B83B2; background:rgba(91,160,201,0.13); padding:3px 9px; border-radius:20px;">Λογαριασμός</span></span>
-          </div>
-
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center; border-bottom:1px solid rgba(0,0,0,0.04);" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1038</span>
-            <span style="font-size:13px; color:#3C3F45;">Τ1</span>
-            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Νίκος Δ.</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">4</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€54,20</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1E9D62" stroke-width="2" stroke-linecap="round"><path d="M3 6h18v12H3zM3 10h18"/></svg>Μετρητά</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:#6A6F78; background:rgba(0,0,0,0.06); padding:3px 9px; border-radius:20px;">Κλειστή</span></span>
-          </div>
-
-          <div style="display:grid; grid-template-columns:0.85fr 0.7fr 1.35fr 0.5fr 0.95fr 0.95fr 1fr; gap:12px; padding:13px 22px; align-items:center;" style-hover="background:rgba(0,0,0,0.022);">
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#1F2024;">#1037</span>
-            <span style="font-size:13px; color:#3C3F45;">Τ9</span>
-            <span style="font-size:13px; color:#3C3F45; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Μαρία Κ.</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-size:13px; color:#6A6F78; text-align:center;">4</span>
-            <span style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13px; color:#16181C; text-align:right;">€141,00</span>
-            <span style="font-size:12px; color:#6A6F78; display:flex; align-items:center; gap:5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#3B83B2" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2.5"/><path d="M2 10h20"/></svg>Κάρτα</span>
-            <span style="text-align:right;"><span style="font-size:11px; font-weight:700; color:#6A6F78; background:rgba(0,0,0,0.06); padding:3px 9px; border-radius:20px;">Κλειστή</span></span>
-          </div>
+{% else %}
+          <div style="padding:30px 22px; text-align:center; color:#9197A0; font-size:13px;">Δεν υπάρχουν παραγγελίες σήμερα ακόμη.</div>
+{% endfor %}
         </div>
 
         <div style="background:#FFFFFF; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:20px 20px 16px; display:flex; flex-direction:column;">
