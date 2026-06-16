@@ -113,7 +113,8 @@ final class Homepage
     {
         $tableNames = [];
         foreach ($reservation->getTables() as $table) {
-            $tableNames[] = $table->getName();
+            //$tableNames[] = $table->getName();
+            $tableNames[] = $table;
         }
 
         $statusMap = [
