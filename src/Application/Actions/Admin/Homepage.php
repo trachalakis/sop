@@ -147,7 +147,7 @@ final class Homepage
         $reserved = [];
         foreach ($upcoming as $reservation) {
             foreach ($reservation->getTables() as $table) {
-                $reserved[$table->getId()] ??= $reservation->getDateTime()->format('H:i');
+                $reserved[$table] ??= $reservation->getDateTime()->format('H:i');
             }
         }
 
@@ -155,19 +155,19 @@ final class Homepage
         $rows = [];
         $counts = ['occupied' => 0, 'free' => 0, 'reserved' => 0];
         foreach ($tables as $table) {
-            $id = $table->getId();
-            if (isset($occupied[$id])) {
+            $tableName = $table->getName();
+            if (isset($occupied[$tableName])) {
                 $state = 'occupied';
                 $info = '';
-            } elseif (isset($reserved[$id])) {
+            } elseif (isset($reserved[$tableName])) {
                 $state = 'reserved';
-                $info = $reserved[$id];
+                $info = $reserved[$tableName];
             } else {
                 $state = 'free';
                 $info = '';
             }
             $counts[$state]++;
-            $rows[] = ['name' => $table->getName(), 'state' => $state, 'info' => $info];
+            $rows[] = ['name' => $tableName, 'state' => $state, 'info' => $info];
         }
 
         return ['tables' => $rows, 'counts' => $counts];
