@@ -197,10 +197,9 @@
             <div>
               <div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C;">Κίνηση ημέρας</div>
               <div style="display:flex; align-items:baseline; gap:10px; margin-top:8px;">
-                <span id="sopMetaValue" style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:24px; letter-spacing:-0.02em; color:#16181C;">€3.248,50</span>
-                <span id="sopMetaDelta" style="display:inline-flex; align-items:center; gap:3px; font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:600; color:#1E9D62; background:rgba(70,201,138,0.12); padding:2px 7px; border-radius:6px;">▲ 12,4%</span>
+                <span id="sopMetaValue" style="font-family:'JetBrains Mono',monospace; font-weight:600; font-size:24px; letter-spacing:-0.02em; color:#16181C;">{{chart.revenue.value}}</span>
               </div>
-              <div id="sopMetaSub" style="font-size:12px; color:#868B94; margin-top:5px;">Σύνολο εσόδων · σήμερα</div>
+              <div id="sopMetaSub" style="font-size:12px; color:#868B94; margin-top:5px;">{{chart.revenue.sub}}</div>
             </div>
             <div style="display:flex; padding:4px; gap:2px; background:rgba(0,0,0,0.04); border:1px solid rgba(0,0,0,0.06); border-radius:11px;">
               <button data-tab="revenue" style="padding:6px 13px; border-radius:8px; border:none; cursor:pointer; font-family:'Mulish',sans-serif; font-size:12.5px; font-weight:700; background:rgba(0,0,0,0.07); color:#16181C; transition:all .15s ease;">Έσοδα</button>
@@ -220,49 +219,33 @@
             <line x1="20" y1="80" x2="780" y2="80" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
             <line x1="20" y1="130" x2="780" y2="130" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
             <line x1="20" y1="180" x2="780" y2="180" stroke="rgba(0,0,0,0.05)" stroke-width="1"/>
-            <path id="sopChartArea" d="M20,170 L83,175 L146,160 L209,150 L272,120 L335,135 L398,95 L461,80 L524,60 L587,72 L650,55 L713,90 L776,130 L776,190 L20,190 Z" fill="url(#sopArea)"/>
-            <path id="sopChartLine" d="M20,170 L83,175 L146,160 L209,150 L272,120 L335,135 L398,95 L461,80 L524,60 L587,72 L650,55 L713,90 L776,130" fill="none" stroke="var(--accent,#E2A23A)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path id="sopChartArea" d="{{chart.revenue.area}}" fill="url(#sopArea)"/>
+            <path id="sopChartLine" d="{{chart.revenue.line}}" fill="none" stroke="var(--accent,#E2A23A)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
           <div style="display:flex; justify-content:space-between; padding:8px 16px 0; font-family:'JetBrains Mono',monospace; font-size:11px; color:#9197A0;">
-            <span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span><span>22:00</span><span>24:00</span>
+            {% for l in chart.labels %}<span>{{l}}</span>{% endfor %}
           </div>
         </div>
 
         <div style="background:#FFFFFF; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:20px 20px 14px; display:flex; flex-direction:column;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
             <div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C;">Κατάσταση συστήματος</div>
-            <span style="display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:#1E9D62;"><span style="width:6px; height:6px; border-radius:50%; background:#1E9D62;"></span>4/5</span>
+            <span style="display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; color:#1E9D62;"><span style="width:6px; height:6px; border-radius:50%; background:#1E9D62;"></span>{{system.clear}}/{{system.total}}</span>
           </div>
           <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
-            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#1E9D62; flex-shrink:0; box-shadow:0 0 8px rgba(70,201,138,0.5);"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">Κουζίνα — θερμή</div><div style="font-size:11.5px; color:#9197A0;">Επίταχο TM-T88 · 0 στην ουρά</div></div>
-              <span style="font-size:11.5px; font-weight:600; color:#1E9D62;">Online</span>
+{% for p in system.printers %}
+            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px;{% if not loop.last %} border-bottom:1px solid rgba(0,0,0,0.05);{% endif %}">
+              <span style="width:8px; height:8px; border-radius:50%; background:{% if p.ok %}#1E9D62{% else %}#C2891B{% endif %}; flex-shrink:0; box-shadow:0 0 8px rgba(70,201,138,0.5);"></span>
+              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">{{p.name}}</div><div style="font-size:11.5px; color:#9197A0;">{{p.subtitle}}</div></div>
+              <span style="font-size:11.5px; font-weight:600; color:{% if p.ok %}#1E9D62{% else %}#C2891B{% endif %};">{{p.statusLabel}}</span>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#1E9D62; flex-shrink:0; box-shadow:0 0 8px rgba(70,201,138,0.5);"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">Κρύα κουζίνα</div><div style="font-size:11.5px; color:#9197A0;">Star SP700 · 1 στην ουρά</div></div>
-              <span style="font-size:11.5px; font-weight:600; color:#1E9D62;">Online</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#1E9D62; flex-shrink:0; box-shadow:0 0 8px rgba(70,201,138,0.5);"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">Μπαρ</div><div style="font-size:11.5px; color:#9197A0;">Επίταχο TM-m30 · 0 στην ουρά</div></div>
-              <span style="font-size:11.5px; font-weight:600; color:#1E9D62;">Online</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#1E9D62; flex-shrink:0; box-shadow:0 0 8px rgba(70,201,138,0.5);"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">Ταμειακή (ΦΗΜ)</div><div style="font-size:11.5px; color:#9197A0;">RBS Aade · συγχρονισμένη</div></div>
-              <span style="font-size:11.5px; font-weight:600; color:#1E9D62;">Online</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:11px 4px;">
-              <span style="width:8px; height:8px; border-radius:50%; background:#D8493F; flex-shrink:0; box-shadow:0 0 8px rgba(238,107,99,0.5);"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13.5px; font-weight:600; color:#1F2024;">Εκτυπωτής ταμείου</div><div style="font-size:11.5px; color:#D8493F;">Καθυστέρηση · 4 στην ουρά</div></div>
-              <span style="font-size:11.5px; font-weight:600; color:#D8493F;">Σφάλμα</span>
-            </div>
+{% else %}
+            <div style="padding:24px 4px; text-align:center; color:#9197A0; font-size:13px;">Δεν υπάρχουν ενεργοί εκτυπωτές.</div>
+{% endfor %}
           </div>
           <div style="margin-top:8px; padding-top:13px; border-top:1px solid rgba(0,0,0,0.07); display:flex; gap:10px;">
-            <div style="flex:1; background:rgba(0,0,0,0.03); border-radius:9px; padding:9px 11px;"><div style="font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:600; color:#16181C;">12</div><div style="font-size:11px; color:#868B94;">ανοιχτές παραγγ.</div></div>
-            <div style="flex:1; background:rgba(0,0,0,0.03); border-radius:9px; padding:9px 11px;"><div style="font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:600; color:#16181C;">7′ 20″</div><div style="font-size:11px; color:#868B94;">μέσος χρόνος</div></div>
+            <div style="flex:1; background:rgba(0,0,0,0.03); border-radius:9px; padding:9px 11px;"><div style="font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:600; color:#16181C;">{{system.openCount}}</div><div style="font-size:11px; color:#868B94;">ανοιχτές παραγγ.</div></div>
+            <div style="flex:1; background:rgba(0,0,0,0.03); border-radius:9px; padding:9px 11px;"><div style="font-family:'JetBrains Mono',monospace; font-size:17px; font-weight:600; color:#16181C;">{{system.queueTotal}}</div><div style="font-size:11px; color:#868B94;">στην ουρά εκτύπωσης</div></div>
           </div>
         </div>
 
@@ -274,35 +257,26 @@
           <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap;">
             <div>
               <div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C;">Κάτοψη — Κύρια αίθουσα</div>
-              <div style="font-size:12px; color:#868B94; margin-top:3px;">11 κατειλημμένα · 4 ελεύθερα · 2 κρατήσεις · 1 ζητά λογαριασμό</div>
+              <div style="font-size:12px; color:#868B94; margin-top:3px;">{{floor.counts.occupied}} κατειλημμένα · {{floor.counts.free}} ελεύθερα · {{floor.counts.reserved}} κρατήσεις</div>
             </div>
             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
               <span style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#6A6F78;"><span style="width:9px; height:9px; border-radius:3px; background:color-mix(in srgb,var(--accent,#E2A23A) 30%,transparent); border:1px solid var(--accent,#E2A23A);"></span>Κατειλημμένο</span>
               <span style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#6A6F78;"><span style="width:9px; height:9px; border-radius:3px; background:transparent; border:1px dashed rgba(0,0,0,0.3);"></span>Ελεύθερο</span>
               <span style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#6A6F78;"><span style="width:9px; height:9px; border-radius:3px; background:rgba(91,160,201,0.3); border:1px solid #3B83B2;"></span>Κράτηση</span>
-              <span style="display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:#6A6F78;"><span style="width:9px; height:9px; border-radius:3px; background:rgba(70,201,138,0.3); border:1px solid #1E9D62;"></span>Λογαριασμός</span>
+              
             </div>
           </div>
 
           <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:11px;">
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ1</span><span style="font-size:10.5px; color:#868B94;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(0,0,0,0.025); border:1px dashed rgba(0,0,0,0.13);" style-hover="filter:brightness(1.3);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#9197A0;">Τ2</span><span style="font-size:10.5px; color:#AAAFB7;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ3</span><span style="font-size:10.5px; color:#868B94;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(70,201,138,0.12); border:1px solid rgba(70,201,138,0.4);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#1E9D62;">Τ4</span><span style="font-size:10.5px; color:#1E9D62;">λογ/σμός</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(91,160,201,0.12); border:1px solid rgba(91,160,201,0.4);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#3B83B2;">Τ5</span><span style="font-size:10.5px; color:#3B83B2;">21:00</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ6</span><span style="font-size:10.5px; color:#868B94;">6 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(0,0,0,0.025); border:1px dashed rgba(0,0,0,0.13);" style-hover="filter:brightness(1.3);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#9197A0;">Τ7</span><span style="font-size:10.5px; color:#AAAFB7;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ8</span><span style="font-size:10.5px; color:#868B94;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ9</span><span style="font-size:10.5px; color:#868B94;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(0,0,0,0.025); border:1px dashed rgba(0,0,0,0.13);" style-hover="filter:brightness(1.3);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#9197A0;">Τ10</span><span style="font-size:10.5px; color:#AAAFB7;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ11</span><span style="font-size:10.5px; color:#868B94;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(91,160,201,0.12); border:1px solid rgba(91,160,201,0.4);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#3B83B2;">Τ12</span><span style="font-size:10.5px; color:#3B83B2;">20:30</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ13</span><span style="font-size:10.5px; color:#868B94;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ14</span><span style="font-size:10.5px; color:#868B94;">2 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(0,0,0,0.025); border:1px dashed rgba(0,0,0,0.13);" style-hover="filter:brightness(1.3);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#9197A0;">Τ15</span><span style="font-size:10.5px; color:#AAAFB7;">6 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ16</span><span style="font-size:10.5px; color:#868B94;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ17</span><span style="font-size:10.5px; color:#868B94;">4 θ.</span></div>
-            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">Τ18</span><span style="font-size:10.5px; color:#868B94;">2 θ.</span></div>
+{% for t in floor.tables %}{% if t.state == 'occupied' %}
+            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:color-mix(in srgb,var(--accent,#E2A23A) 13%,transparent); border:1px solid color-mix(in srgb,var(--accent,#E2A23A) 36%,transparent);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:var(--accent,#E2A23A);">{{t.name}}</span><span style="font-size:10.5px; color:#868B94;">ανοιχτό</span></div>
+{% elseif t.state == 'reserved' %}
+            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(91,160,201,0.12); border:1px solid rgba(91,160,201,0.4);" style-hover="filter:brightness(1.15);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#3B83B2;">{{t.name}}</span><span style="font-size:10.5px; color:#3B83B2;">{{t.info}}</span></div>
+{% else %}
+            <div style="border-radius:11px; padding:12px 0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; background:rgba(0,0,0,0.025); border:1px dashed rgba(0,0,0,0.13);" style-hover="filter:brightness(1.3);"><span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:15px; color:#9197A0;">{{t.name}}</span><span style="font-size:10.5px; color:#AAAFB7;">ελεύθερο</span></div>
+{% endif %}{% else %}
+            <div style="grid-column:1/-1; padding:26px; text-align:center; color:#9197A0; font-size:13px;">Δεν υπάρχουν ενεργά τραπέζια.</div>
+{% endfor %}
           </div>
         </div>
 
@@ -355,30 +329,17 @@
         <div style="background:#FFFFFF; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:20px 20px 16px; display:flex; flex-direction:column;">
           <div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C; margin-bottom:16px;">Ροή δραστηριότητας</div>
           <div style="display:flex; flex-direction:column; gap:0; flex:1;">
+{% for a in activity %}
             <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:color-mix(in srgb,var(--accent,#E2A23A) 14%,transparent); display:flex; align-items:center; justify-content:center; color:var(--accent,#E2A23A); flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span></div>
-              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Νέα παραγγελία</b> · Τ8</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">Γιώργος Π. · πριν 2′</div></div>
+              <div style="display:flex; flex-direction:column; align-items:center;">
+                {% if a.kind == 'order' %}<span style="width:30px; height:30px; border-radius:8px; background:color-mix(in srgb,var(--accent,#E2A23A) 14%,transparent); display:flex; align-items:center; justify-content:center; color:var(--accent,#E2A23A); flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>{% elseif a.kind == 'payment' %}<span style="width:30px; height:30px; border-radius:8px; background:rgba(70,201,138,0.13); display:flex; align-items:center; justify-content:center; color:#1E9D62; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>{% else %}<span style="width:30px; height:30px; border-radius:8px; background:rgba(91,160,201,0.14); display:flex; align-items:center; justify-content:center; color:#3B83B2; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>{% endif %}
+                {% if not loop.last %}<span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span>{% endif %}
+              </div>
+              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">{{a.title}}</b> · {{a.detail}}</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">{{a.who}} · {{a.ago}}</div></div>
             </div>
-            <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:rgba(70,201,138,0.13); display:flex; align-items:center; justify-content:center; color:#1E9D62; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span></div>
-              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Πληρωμή</b> · Τ4 €96,80</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">Ελένη Σ. · πριν 5′</div></div>
-            </div>
-            <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:rgba(91,160,201,0.14); display:flex; align-items:center; justify-content:center; color:#3B83B2; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span><span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span></div>
-              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Νέα κράτηση</b> · 4 άτομα</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">Παπαδόπουλος 20:30 · πριν 11′</div></div>
-            </div>
-            <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:rgba(91,160,201,0.14); display:flex; align-items:center; justify-content:center; color:#3B83B2; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8zM9 8a3 3 0 0 1 6 0"/></svg></span><span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span></div>
-              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Αίτημα take-away</b> · #1040</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">Κωνσταντίνου · πριν 18′</div></div>
-            </div>
-            <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:rgba(238,107,99,0.14); display:flex; align-items:center; justify-content:center; color:#D8493F; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><span style="width:1px; flex:1; background:rgba(0,0,0,0.07); margin:4px 0;"></span></div>
-              <div style="padding-bottom:14px;"><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Χαμηλό απόθεμα</b> · Μοσχάρι κιλότο</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">2,4 kg απομένουν · πριν 25′</div></div>
-            </div>
-            <div style="display:flex; gap:12px;">
-              <div style="display:flex; flex-direction:column; align-items:center;"><span style="width:30px; height:30px; border-radius:8px; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:#6A6F78; flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span></div>
-              <div><div style="font-size:13px; color:#1F2024;"><b style="font-weight:700;">Ακύρωση είδους</b> · Τ13</div><div style="font-size:11.5px; color:#9197A0; margin-top:2px;">Μπιφτέκι ×1 · πριν 32′</div></div>
-            </div>
+{% else %}
+            <div style="padding:24px; text-align:center; color:#9197A0; font-size:13px;">Καμία πρόσφατη δραστηριότητα.</div>
+{% endfor %}
           </div>
         </div>
 
@@ -392,60 +353,29 @@
             <a href="/admin/report" style="font-size:11.5px; font-weight:600; color:var(--accent,#E2A23A); cursor:pointer;">Αναφορά →</a>
           </div>
           <div style="display:flex; flex-direction:column; gap:15px;">
+{% for it in topItems %}
             <div style="display:flex; align-items:center; gap:13px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">1</span>
-              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">Σουβλάκι χοιρινό</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">142 τεμ · <span style="color:#1F2024; font-weight:600;">€497</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:100%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
+              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">{{loop.index}}</span>
+              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">{{it.name}}</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">{{it.qty}} τεμ · <span style="color:#1F2024; font-weight:600;">{{it.revenue}}</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:{{it.pct}}%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
             </div>
-            <div style="display:flex; align-items:center; gap:13px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">2</span>
-              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">Μπιφτέκι σχάρας</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">96 τεμ · <span style="color:#1F2024; font-weight:600;">€768</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:68%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
-            </div>
-            <div style="display:flex; align-items:center; gap:13px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">3</span>
-              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">Χωριάτικη σαλάτα</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">88 τεμ · <span style="color:#1F2024; font-weight:600;">€572</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:62%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
-            </div>
-            <div style="display:flex; align-items:center; gap:13px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">4</span>
-              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">Πατάτες τηγανητές</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">81 τεμ · <span style="color:#1F2024; font-weight:600;">€324</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:57%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
-            </div>
-            <div style="display:flex; align-items:center; gap:13px;">
-              <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#9197A0; width:14px;">5</span>
-              <div style="flex:1; min-width:0;"><div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px;"><span style="font-size:13px; font-weight:600; color:#1F2024;">Κρασί χύμα (καράφα)</span><span style="font-family:'JetBrains Mono',monospace; font-size:12.5px; color:#868B94;">63 τεμ · <span style="color:#1F2024; font-weight:600;">€441</span></span></div><div style="height:6px; border-radius:6px; background:rgba(0,0,0,0.05);"><div style="height:100%; width:44%; border-radius:6px; background:var(--accent,#E2A23A);"></div></div></div>
-            </div>
+{% else %}
+            <div style="padding:22px 0; text-align:center; color:#9197A0; font-size:13px;">Δεν υπάρχουν πωλήσεις σήμερα ακόμη.</div>
+{% endfor %}
           </div>
         </div>
 
         <div style="background:#FFFFFF; border:1px solid rgba(0,0,0,0.07); border-radius:16px; padding:20px 22px; display:flex; flex-direction:column;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-            <div style="display:flex; align-items:center; gap:9px;"><div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C;">Χαμηλό απόθεμα</div><span style="font-size:11px; font-weight:700; color:#D8493F; background:rgba(238,107,99,0.14); padding:2px 8px; border-radius:20px;">5</span></div>
+            <div style="display:flex; align-items:center; gap:9px;"><div style="font-family:'Commissioner',sans-serif; font-weight:700; font-size:16px; color:#16181C;">Χαμηλό απόθεμα</div></div>
             <a href="/shopping-lists-app/update" style="font-size:11.5px; font-weight:600; color:var(--accent,#E2A23A); cursor:pointer;">Λίστα αγορών →</a>
           </div>
           <div style="display:flex; flex-direction:column; gap:2px; flex:1;">
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#D8493F; flex-shrink:0;"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#1F2024;">Μοσχάρι κιλότο</div><div style="font-size:11px; color:#9197A0;">Κρεοπωλείο Παππάς · Κρέατα</div></div>
-              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#D8493F;">2,4 kg</span>
+
+            <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:9px; padding:26px 8px;">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#C7CCD3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7M12 11v10"/></svg>
+              <div style="font-size:13px; color:#868B94; max-width:240px; line-height:1.5;">Η παρακολούθηση αποθέματος δεν είναι ακόμη διαθέσιμη.</div>
             </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#C2891B; flex-shrink:0;"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#1F2024;">Φέτα ΠΟΠ</div><div style="font-size:11px; color:#9197A0;">Γαλακτοκομικά Ηπείρου · Τυριά</div></div>
-              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#C2891B;">4,1 kg</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#C2891B; flex-shrink:0;"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#1F2024;">Ελαιόλαδο έξτρα παρθένο</div><div style="font-size:11px; color:#9197A0;">Ελαιώνες Καλαμάτας · Λάδια</div></div>
-              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#C2891B;">6 L</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 2px; border-bottom:1px solid rgba(0,0,0,0.05);">
-              <span style="width:8px; height:8px; border-radius:50%; background:#C2891B; flex-shrink:0;"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#1F2024;">Κρασί λευκό χύμα</div><div style="font-size:11px; color:#9197A0;">Κτήμα Νεμέας · Ποτά</div></div>
-              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#C2891B;">11 L</span>
-            </div>
-            <div style="display:flex; align-items:center; gap:12px; padding:10px 2px;">
-              <span style="width:8px; height:8px; border-radius:50%; background:#C2891B; flex-shrink:0;"></span>
-              <div style="flex:1; min-width:0;"><div style="font-size:13px; font-weight:600; color:#1F2024;">Πατάτες</div><div style="font-size:11px; color:#9197A0;">Λαχανικά Κρήτης · Λαχανικά</div></div>
-              <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:600; color:#C2891B;">18 kg</span>
-            </div>
+          
           </div>
           <a href="/shopping-lists-app/update" style="margin-top:14px; width:100%; padding:11px; border-radius:10px; background:rgba(0,0,0,0.045); border:1px solid rgba(0,0,0,0.09); cursor:pointer; font-family:'Mulish',sans-serif; font-weight:600; font-size:13px; color:#1F2024; display:flex; align-items:center; justify-content:center; gap:8px;" style-hover="background:rgba(0,0,0,0.08);">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
@@ -489,14 +419,19 @@
 
   // Chart tabs — swap the line + meta the way the design does
   var paths = {
-    revenue: 'M20,170 L83,175 L146,160 L209,150 L272,120 L335,135 L398,95 L461,80 L524,60 L587,72 L650,55 L713,90 L776,130',
-    orders:  'M20,175 L83,178 L146,165 L209,150 L272,130 L335,140 L398,105 L461,92 L524,72 L587,85 L650,68 L713,100 L776,140',
-    covers:  'M20,180 L83,182 L146,170 L209,158 L272,128 L335,145 L398,100 L461,85 L524,65 L587,80 L650,60 L713,95 L776,135'
+    revenue: '{{ chart.revenue.line }}',
+    orders:  '{{ chart.orders.line }}',
+    covers:  '{{ chart.covers.line }}'
+  };
+  var areas = {
+    revenue: '{{ chart.revenue.area }}',
+    orders:  '{{ chart.orders.area }}',
+    covers:  '{{ chart.covers.area }}'
   };
   var meta = {
-    revenue: { value: '€3.248,50', delta: '▲ 12,4%', pos: true, sub: 'Σύνολο εσόδων · σήμερα' },
-    orders:  { value: '84', delta: '▲ 6,3%', pos: true, sub: 'Παραγγελίες · σήμερα' },
-    covers:  { value: '213', delta: '▲ 9,1%', pos: true, sub: 'Καλυμμένες θέσεις · σήμερα' }
+    revenue: { value: '{{ chart.revenue.value }}', sub: '{{ chart.revenue.sub }}' },
+    orders:  { value: '{{ chart.orders.value }}', sub: '{{ chart.orders.sub }}' },
+    covers:  { value: '{{ chart.covers.value }}', sub: '{{ chart.covers.sub }}' }
   };
   function tabStyle(active) {
     return 'padding:6px 13px; border-radius:8px; border:none; cursor:pointer;'
@@ -508,19 +443,15 @@
   var line = document.getElementById('sopChartLine');
   var area = document.getElementById('sopChartArea');
   var mValue = document.getElementById('sopMetaValue');
-  var mDelta = document.getElementById('sopMetaDelta');
   var mSub = document.getElementById('sopMetaSub');
   var tabBtns = document.querySelectorAll('[data-tab]');
   tabBtns.forEach(function (b) {
     b.addEventListener('click', function () {
       var tab = b.getAttribute('data-tab');
       line.setAttribute('d', paths[tab]);
-      area.setAttribute('d', paths[tab] + ' L776,190 L20,190 Z');
+      area.setAttribute('d', areas[tab]);
       var m = meta[tab];
       mValue.textContent = m.value;
-      mDelta.textContent = m.delta;
-      mDelta.style.color = m.pos ? '#1E9D62' : '#D8493F';
-      mDelta.style.background = m.pos ? 'rgba(70,201,138,0.12)' : 'rgba(238,107,99,0.12)';
       mSub.textContent = m.sub;
       tabBtns.forEach(function (x) { x.setAttribute('style', tabStyle(x.getAttribute('data-tab') === tab)); });
     });
